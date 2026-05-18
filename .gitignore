@@ -57,10 +57,14 @@ src/manga_translate/**/*.pyc
 
 # Benchmark / debug review output
 debug/
-benchmark/
+/benchmark/
 benchmark_*/
-data/benchmark_*/
-data/*/debug/
-data/reviews/
-data/runs/
-data/samples/
+/data/benchmark_*/
+/data/*/debug/
+/data/reviews/
+/data/runs/
+/data/samples/
+!tests/benchmark/
+!tests/benchmark/**
+!tests/runtime/
+!tests/runtime/**
