@@ -1,53 +1,66 @@
-result
-*.ckpt
-*.pt
-.vscode
-*.onnx
-__pycache__
-ocrs
-Manga
-Manga-translated
-/models
-.env
-*.local
-*.local.*
-test/testdata
-.idea
-pyvenv.cfg
-Scripts
-Lib
-include
-share
-.DS_Store
-dev/
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
 *.egg-info/
-.installed.cfg
+dist/
+build/
+.eggs/
 *.egg
-MANIFEST
-.history
-/venv
 .venv/
+venv/
+env/
+.main-cli-venv/
+.external-venv/
+.external-*/
+.legacy-venv/
 
-# Input and Output
-/input/
-/input-translated/
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# SSL Used for running server locally
-cert.pem
-key.pem
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+output/
+temp/
+.cache/
+data/
+external/
+manga/
+vendor/
+
+# Provider keys
+.env
+.env.local
+providers.toml
+configs/providers.toml
+
+# Model weights
+models/
+*.bin
+*.safetensors
+*.onnx
+
+# Translation output
+translations/
+
+# Python cache
+src/manga_translate/__pycache__/
+src/manga_translate/**/*.pyc
+
+# Benchmark / debug review output
+debug/
+benchmark/
+benchmark_*/
+data/benchmark_*/
+data/*/debug/
+data/reviews/
+data/runs/
+data/samples/
