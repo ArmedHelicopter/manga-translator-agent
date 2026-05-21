@@ -71,7 +71,7 @@ class CharacterConsistencyProofreader(QAProofreader):
     def _check_tone(
         self, bubble: Any, candidate: TranslationCandidate, profile: Dict[str, Any],
     ) -> List[QAFeedback]:
-        expected_tones = profile.get("tones", [])
+        expected_tones = profile.get("tone_spectrum", {})
         source_tone = bubble.tone
         if not source_tone or not expected_tones:
             return []

@@ -19,7 +19,25 @@ def _build_translation_prompt(
 ) -> str:
     parts = [f"Translate the following manga dialogue to {target_lang}."]
     if memory_ctx:
-        parts.append(f"Character context: {memory_ctx}")
+        parts.append("## 角色档案")
+        if memory_ctx.get("name_jp") or memory_ctx.get("name_zh"):
+            name_line = f"- 名字：{memory_ctx.get('name_jp', '')}"
+            if memory_ctx.get("name_zh"):
+                name_line += f" → {memory_ctx['name_zh']}"
+            parts.append(name_line)
+        if memory_ctx.get("archetype"):
+            parts.append(f"- 原型：{memory_ctx['archetype']}")
+        if memory_ctx.get("speech_patterns"):
+            patterns = "; ".join(f"{k}={v}" for k, v in memory_ctx["speech_patterns"].items())
+            parts.append(f"- 语言模式：{patterns}")
+        if memory_ctx.get("catchphrases"):
+            parts.append(f"- 口头禅：{', '.join(memory_ctx['catchphrases'])}")
+        if memory_ctx.get("tone_spectrum"):
+            tones = "; ".join(f"{k}={v}" for k, v in memory_ctx["tone_spectrum"].items())
+            parts.append(f"- 语气：{tones}")
+        if memory_ctx.get("translation_notes"):
+            notes = "; ".join(f"{k}={v}" for k, v in memory_ctx["translation_notes"].items())
+            parts.append(f"- 翻译注意：{notes}")
     if cultural_ctx.get("translation_context"):
         parts.append(cultural_ctx["translation_context"])
     parts.append(f"Source: {source_text}")
@@ -71,7 +89,8 @@ class TranslationStage(PipelineStage):
         cultural_adapter: CulturalAdapter,
     ) -> list[TranslationCandidate]:
         results: list[TranslationCandidate] = []
-        mem_page = context.memory_context.get(page.page_id, {})
+        page_profiles = context.memory_context.get("page_profiles", {})
+        mem_page = page_profiles.get(page.page_id, {})
         cult_page = context.cultural_context.get(page.page_id, {})
 
         for bubble in page.bubbles:
