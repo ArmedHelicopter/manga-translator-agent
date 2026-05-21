@@ -16,6 +16,7 @@ def _build_translation_prompt(
     memory_ctx: dict,
     cultural_ctx: dict,
     target_lang: str,
+    relationship_ctx: str = "",
 ) -> str:
     parts = [f"Translate the following manga dialogue to {target_lang}."]
     if memory_ctx:
@@ -38,6 +39,8 @@ def _build_translation_prompt(
         if memory_ctx.get("translation_notes"):
             notes = "; ".join(f"{k}={v}" for k, v in memory_ctx["translation_notes"].items())
             parts.append(f"- 翻译注意：{notes}")
+    if relationship_ctx:
+        parts.append(relationship_ctx)
     if cultural_ctx.get("translation_context"):
         parts.append(cultural_ctx["translation_context"])
     parts.append(f"Source: {source_text}")
@@ -62,10 +65,21 @@ class TranslationStage(PipelineStage):
         project_dir = cfg.working_dir or "."
         cultural_adapter = CulturalAdapter(project_dir)
 
+        # Load character relationship graph if available
+        graph_retrieval = None
+        try:
+            from mga.memory.graph import CharacterGraph
+            from mga.memory.graph_retrieval import GraphRetrieval
+            graph = CharacterGraph.load(Path(project_dir))
+            if graph.graph.number_of_nodes() > 0:
+                graph_retrieval = GraphRetrieval(graph)
+        except Exception:
+            pass
+
         all_translations: list[TranslationCandidate] = []
         for page in context.pages:
             page_translations = self._translate_page(
-                provider, page, context, cfg, cultural_adapter,
+                provider, page, context, cfg, cultural_adapter, graph_retrieval,
             )
             all_translations.extend(page_translations)
 
@@ -87,6 +101,7 @@ class TranslationStage(PipelineStage):
         self, provider: object, page: object,
         context: PipelineContext, cfg: ProjectConfig,
         cultural_adapter: CulturalAdapter,
+        graph_retrieval: object | None = None,
     ) -> list[TranslationCandidate]:
         results: list[TranslationCandidate] = []
         page_profiles = context.memory_context.get("page_profiles", {})
@@ -96,8 +111,24 @@ class TranslationStage(PipelineStage):
         for bubble in page.bubbles:
             speaker = bubble.speaker_id or bubble.speaker_name or ""
             char_mem = mem_page.get(speaker, {})
+
+            # Get relationship context from graph
+            relationship_ctx = ""
+            if graph_retrieval and speaker:
+                # Find the most likely listener on this page
+                other_speakers = [
+                    b.speaker_id or b.speaker_name
+                    for b in page.bubbles
+                    if (b.speaker_id or b.speaker_name) and (b.speaker_id or b.speaker_name) != speaker
+                ]
+                if other_speakers:
+                    # Use the first other speaker as the listener
+                    listener = other_speakers[0]
+                    relationship_ctx = graph_retrieval.get_translation_context(speaker, listener)
+
             prompt = _build_translation_prompt(
                 bubble.source_text, char_mem, cult_page, cfg.target_lang,
+                relationship_ctx=relationship_ctx,
             )
             candidate = self._call_llm(provider, bubble.bubble_id, prompt)
 
