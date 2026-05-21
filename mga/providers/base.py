@@ -19,14 +19,14 @@ class LLMProvider(ABC):
         """Return the model identifier."""
 
     @property
+    @abstractmethod
     def supports_vision(self) -> bool:
         """Whether this provider supports vision/image inputs."""
-        return False
 
     @property
+    @abstractmethod
     def cost_per_1k_tokens(self) -> Optional[float]:
         """Cost per 1000 tokens in USD, or None if unknown."""
-        return None
 
     @abstractmethod
     def chat(

@@ -10,7 +10,7 @@ from mga.cultural.strategies import (
 
 def test_honorific_high_weight():
     s = select_strategy(CulturalProblemType.HONORIFIC, "high", "")
-    assert s == TranslationStrategy.EQUIVALENT
+    assert s == TranslationStrategy.ADAPT
 
 
 def test_honorific_low_weight():
@@ -25,22 +25,22 @@ def test_coined_term_high_weight():
 
 def test_cultural_concept_medium_weight():
     s = select_strategy(CulturalProblemType.CULTURAL_CONCEPT, "medium", "")
-    assert s == TranslationStrategy.EQUIVALENT
+    assert s == TranslationStrategy.ADAPT
 
 
 def test_onomatopoeia_sfx_override():
     s = select_strategy(CulturalProblemType.ONOMATOPOEIA, "high", "sfx context")
-    assert s == TranslationStrategy.PRESERVE_ORIGINAL
+    assert s == TranslationStrategy.PRESERVE
 
 
 def test_honorific_narration_override():
     s = select_strategy(CulturalProblemType.HONORIFIC, "high", "narration text")
-    assert s == TranslationStrategy.CALQUE
+    assert s == TranslationStrategy.TRANSLITERATE
 
 
 def test_fictional_script_title_override():
     s = select_strategy(CulturalProblemType.FICTIONAL_SCRIPT, "high", "title: ゲーム")
-    assert s == TranslationStrategy.PRESERVE_ORIGINAL
+    assert s == TranslationStrategy.PRESERVE
 
 
 def test_unknown_type_defaults_to_literal():
@@ -51,5 +51,13 @@ def test_unknown_type_defaults_to_literal():
 
 
 def test_describe_strategy():
-    desc = describe_strategy(TranslationStrategy.CALQUE)
-    assert "calque" in desc.lower() or "loan" in desc.lower()
+    desc = describe_strategy(TranslationStrategy.TRANSLITERATE)
+    assert "phonet" in desc.lower() or "render" in desc.lower()
+
+
+def test_legacy_aliases_exist():
+    # Legacy enum values should still resolve
+    assert TranslationStrategy.CALQUE.value == "calque"
+    assert TranslationStrategy.PRESERVE_ORIGINAL.value == "preserve_original"
+    assert TranslationStrategy.EXPLANATORY.value == "explanatory"
+    assert TranslationStrategy.EQUIVALENT.value == "equivalent"

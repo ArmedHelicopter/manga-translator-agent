@@ -81,6 +81,10 @@ class OllamaProvider(LLMProvider):
     def supports_vision(self) -> bool:
         return True
 
+    @property
+    def cost_per_1k_tokens(self) -> Optional[float]:
+        return None
+
     def _chat(self, messages: List[Dict[str, Any]], *, model: Optional[str] = None,
               images: Optional[List[str]] = None) -> str:
         ollama_msgs = []

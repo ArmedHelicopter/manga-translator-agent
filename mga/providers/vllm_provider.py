@@ -84,6 +84,10 @@ class VLLMProvider(LLMProvider):
     def supports_vision(self) -> bool:
         return self._vision_enabled
 
+    @property
+    def cost_per_1k_tokens(self) -> float | None:
+        return None
+
     # -- ABC abstract methods -------------------------------------------------
 
     def chat(self, messages: List[Dict[str, Any]], **kwargs: Any) -> str:
