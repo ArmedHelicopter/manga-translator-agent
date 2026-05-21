@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import logging
-import shutil
 from pathlib import Path
 
 import click
@@ -12,21 +11,16 @@ import click
 logger = logging.getLogger("mga.cli")
 
 
-def _seed_memory(learn_dir: Path, project_dir: Path) -> None:
-    """Best-effort import of memory state from *learn_dir* into *project_dir*."""
-    state_dir = learn_dir / "memory" / "state"
-    if not state_dir.exists():
-        logger.info("No memory state in %s, skipping seed.", learn_dir)
-        return
-    click.echo(f"Seeding memory from {state_dir}...")
-    dest = project_dir / "memory" / "state"
-    dest.mkdir(parents=True, exist_ok=True)
-    for child in state_dir.iterdir():
-        if child.is_dir():
-            shutil.copytree(child, dest / child.name, dirs_exist_ok=True)
-        else:
-            shutil.copy2(child, dest / child.name)
-    click.echo("Memory seeded.")
+def _seed_memory(learn_dir: Path, project_dir: Path, mode: str = "auto") -> None:
+    """Run the LearningEngine to extract and seed memory from *learn_dir*."""
+    from mga.learning.engine import LearningEngine
+
+    engine = LearningEngine(project_dir)
+    result = engine.learn(learn_dir, mode=mode)
+    click.echo(
+        f"Learning complete: {len(result.characters)} characters, "
+        f"{len(result.terms)} terms"
+    )
 
 
 def _resolve_provider(cfg, stage: str = "vision"):
@@ -90,7 +84,7 @@ def translate(input_path, output_path, provider, output_format, mode, learn_from
     cfg.input_format = detected_format
 
     if learn_from:
-        _seed_memory(Path(learn_from), Path(cfg.working_dir))
+        _seed_memory(Path(learn_from), Path(cfg.working_dir), mode=pipeline_mode)
         if learn_only:
             click.echo("Memory seeded. --learn-only set, skipping translation.")
             return

@@ -47,6 +47,7 @@ dependencies = [
     "shapely",
     "tiktoken",
     "toml",
+    "tomli_w",
     "torch",
     "torch-summary",
     "torchvision",
