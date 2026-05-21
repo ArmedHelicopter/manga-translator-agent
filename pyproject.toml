@@ -1,11 +1,78 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "manga-image-translator"
+name = "manga-translate-agent"
 version = "0.1.0"
-description = ""
+description = "External-first host layer for manga-image-translator with artifacts, benchmark, and review workflows."
 authors = []
 readme = "README.md"
-requires-python = ">=3.10, <3.12"
+requires-python = ">=3.10, <3.13"
 license = "GPL-3.0-only"
+dependencies = [
+    "Pillow",
+    "aiofiles",
+    "aiohttp",
+    "aioshutil",
+    "backports.cached-property",
+    "colorama",
+    "einops",
+    "fastapi",
+    "freetype-py",
+    "httpx==0.27.2",
+    "langcodes[data]",
+    "manga-ocr",
+    "networkx",
+    "numpy==1.26.4",
+    "omegaconf",
+    "onnxruntime",
+    "open_clip_torch",
+    "openai==1.63.0",
+    "opencv-python",
+    "pandas",
+    "psutil",
+    "py3langid==0.2.2",
+    "pyclipper",
+    "pydantic==2.5.0",
+    "pydensecrf @ https://github.com/lucasb-eyer/pydensecrf/archive/refs/heads/master.zip",
+    "pyhyphen",
+    "python-dotenv",
+    "python-multipart",
+    "regex",
+    "requests",
+    "rich",
+    "rusty-manga-image-translator",
+    "shapely",
+    "tiktoken",
+    "toml",
+    "torch",
+    "torch-summary",
+    "torchvision",
+    "tqdm",
+    "transformers",
+    "uvicorn",
+    "websockets",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ipykernel==6.29.5",
+    "pytest==7.2.2",
+    "pytest-asyncio==0.21.1",
+    "pytest-sugar==0.9.6",
+    "pytest-xdist==3.3.1",
+    "pylint==3.3.0",
+]
+pdf = ["PyMuPDF"]
+ebook = ["PyMuPDF"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["manga_translator*", "manga_translate*", "mga*"]
+
+[tool.setuptools.package-data]
+mga = ["py.typed"]
 
 [tool.isort]
 profile = 'black'
@@ -26,4 +93,4 @@ generated-members = ["torch.*", "cv2.*"]
 [tool.pytest.ini_options]
 addopts = "-ra -v -p no:faulthandler"
 minversion = "6.0"
-testpaths = ["test"]
+testpaths = ["test", "tests"]

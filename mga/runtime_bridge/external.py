@@ -9,9 +9,9 @@ import subprocess
 import sys
 from typing import Any
 
-from manga_translate.artifacts import ArtifactStore
-from manga_translate.format import build_manifest_payload, discover_image_paths, load_image_metadata
-from manga_translate.models import Page, PageImage, ProjectConfig
+from ..artifacts import ArtifactStore
+from ..format.manifest import build_manifest_payload, discover_image_paths, load_image_metadata
+from ..models import Page, PageImage, ProjectConfig
 
 DEFAULT_EXTERNAL_RUNTIME_CANDIDATES = (
     Path("external/manga-image-translator"),

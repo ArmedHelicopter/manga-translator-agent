@@ -10,9 +10,9 @@ from dataclasses import dataclass
 from difflib import SequenceMatcher
 from pathlib import Path
 
-from manga_translate.artifacts import ArtifactStore
-from manga_translate.legacy.providers import LLMProvider
-from manga_translate.models import Page, TranslationCandidate
+from ..artifacts import ArtifactStore
+from ..providers.base import LLMProvider
+from ..models import Page, TranslationCandidate
 
 DEFAULT_OCR_SPECS = ("tesseract_jpn", "tesseract_jpn_vert", "tesseract_jpn+eng")
 DEFAULT_VISION_MODES = ("structured", "direct")
@@ -333,7 +333,7 @@ def run_translation_benchmark(
                     }
                     for bubble in sorted(analyzed_page.bubbles, key=lambda item: item.reading_order)
                 ]
-                from manga_translate.models import Utterance  # local import to avoid cycle at module import time
+                from ..models import Utterance  # local import to avoid cycle at module import time
 
                 translations, _ = provider.translate(
                     analyzed_page,

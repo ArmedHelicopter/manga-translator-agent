@@ -43,7 +43,7 @@ providers.toml
 configs/providers.toml
 
 # Model weights
-models/
+/models/
 *.bin
 *.safetensors
 *.onnx
