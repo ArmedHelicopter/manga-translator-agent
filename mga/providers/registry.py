@@ -15,6 +15,7 @@ _PROVIDER_MAP: dict[str, tuple[str, str]] = {
     "ollama": (".ollama_provider", "OllamaProvider"),
     "lmstudio": (".vllm_provider", "VLLMProvider"),
     "vllm": (".vllm_provider", "VLLMProvider"),
+    "openrouter": (".openrouter_provider", "OpenRouterProvider"),
 }
 
 

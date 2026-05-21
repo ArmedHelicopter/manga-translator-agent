@@ -14,6 +14,7 @@ __all__ = [
     "DeepSeekProvider",
     "OllamaProvider",
     "VLLMProvider",
+    "OpenRouterProvider",
 ]
 
 
