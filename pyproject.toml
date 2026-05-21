@@ -16,6 +16,7 @@ dependencies = [
     "aiohttp",
     "aioshutil",
     "backports.cached-property",
+    "click>=8.0",
     "colorama",
     "einops",
     "fastapi",

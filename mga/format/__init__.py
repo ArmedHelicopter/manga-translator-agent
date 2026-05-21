@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from .base import FormatAdapter
+from .bilingual import BilingualAdapter
 from .cbz_adapter import CBZAdapter
 from .epub_adapter import EPUBAdapter
 from .images import ImageDirAdapter
@@ -12,6 +13,7 @@ from .pdf_adapter import PDFAdapter
 
 __all__ = [
     "FormatAdapter",
+    "BilingualAdapter",
     "ImageDirAdapter",
     "PDFAdapter",
     "EPUBAdapter",
@@ -35,6 +37,7 @@ _ADAPTER_REGISTRY: dict[str, type[FormatAdapter]] = {
     "cbz": CBZAdapter,
     "cbr": CBZAdapter,
     "mobi": MOBIAdapter,
+    "bilingual": BilingualAdapter,
 }
 
 
