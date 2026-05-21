@@ -12,6 +12,7 @@ from .character_consistency import CharacterConsistencyProofreader
 from .dialog_hierarchy import DialogHierarchyProofreader
 from .emotion_consistency import EmotionConsistencyProofreader
 from .fact_check import FactCheckProofreader
+from .fictional_script import FictionalScriptProofreader
 from .hallucination_guard import HallucinationGuardProofreader
 from .language_evolution import LanguageEvolutionProofreader
 from .style_polish import StylePolishProofreader
@@ -20,6 +21,7 @@ _DEFAULT_PROOFREADERS: list[QAProofreader] = [
     FactCheckProofreader(),
     HallucinationGuardProofreader(),
     CharacterConsistencyProofreader(),
+    FictionalScriptProofreader(),
     DialogHierarchyProofreader(),
     EmotionConsistencyProofreader(),
     LanguageEvolutionProofreader(),
