@@ -35,28 +35,59 @@ def _resolve_provider(cfg, stage: str = "vision"):
     return name, cfg.provider_settings.get(name, {})
 
 
+_NOVEL_EXTENSIONS = {".epub", ".txt", ".mobi"}
+
+
+def _detect_mode(input_path: str, mode: str | None) -> tuple[str, str]:
+    """Detect pipeline mode and input format from file extension.
+
+    Returns (pipeline_mode, input_format).
+    """
+    if mode == "novel":
+        return "novel", Path(input_path).suffix.lstrip(".").lower()
+    if mode == "manga":
+        return "manga", "images"
+    # Auto-detect: novel extensions -> novel mode
+    ext = Path(input_path).suffix.lower()
+    if ext in _NOVEL_EXTENSIONS:
+        return "novel", ext.lstrip(".")
+    return "manga", "images"
+
+
 @click.command()
 @click.argument("input_path", type=click.Path(exists=True))
 @click.option("-o", "--output-path", required=True, type=click.Path())
 @click.option("--provider", default=None)
-@click.option("--format", "output_format", default="images")
+@click.option("--format", "output_format", default=None)
+@click.option("--mode", type=click.Choice(["manga", "novel"]), default=None)
 @click.option("--learn-from", default=None, type=click.Path(exists=True))
 @click.option("--learn-only", is_flag=True)
 @click.option("--lang", default="ja-zh")
 @click.option("--config", "config_path", default=None, type=click.Path(exists=True))
+@click.option("--save-json", is_flag=True, help="Save full translation report and debug artifacts.")
 @click.option("--dry-run", is_flag=True)
-def translate(input_path, output_path, provider, output_format, learn_from, learn_only, lang, config_path, dry_run):
+def translate(input_path, output_path, provider, output_format, mode, learn_from, learn_only, lang, config_path, save_json, dry_run):
     """Run the translation pipeline on INPUT_PATH."""
     from mga.config.loader import build_project_config
     from mga.pipeline.orchestrator import PipelineOrchestrator
 
     parts = lang.split("-", 1)
     src, tgt = parts[0] if parts else "ja", parts[1] if len(parts) > 1 else "zh-CN"
+    pipeline_mode, detected_format = _detect_mode(input_path, mode)
     cfg, _ = build_project_config(
         input_path=input_path, output_path=output_path,
         provider_override=provider, save_json=False, dry_run=dry_run, config_path=config_path,
     )
-    cfg.source_lang, cfg.target_lang, cfg.output_format = src, tgt, output_format
+    cfg.source_lang, cfg.target_lang = src, tgt
+    cfg.pipeline_mode = pipeline_mode
+    cfg.save_artifacts = save_json
+    if output_format:
+        cfg.output_format = output_format
+    elif pipeline_mode == "novel":
+        cfg.output_format = detected_format
+    else:
+        cfg.output_format = "images"
+    cfg.input_format = detected_format
 
     if learn_from:
         _seed_memory(Path(learn_from), Path(cfg.working_dir))
@@ -67,19 +98,17 @@ def translate(input_path, output_path, provider, output_format, learn_from, lear
         click.echo(f"Dry run:\n{cfg.model_dump_json(indent=2)}")
         return
 
-    click.echo(f"Translating {input_path} -> {output_path}  ({src} -> {tgt})")
-    ctx = PipelineOrchestrator().run(input_path, output_path, cfg)
-    out = Path(output_path); out.mkdir(parents=True, exist_ok=True)
-    record = {
-        "translation_mode": "pipeline", "source_lang": src, "target_lang": tgt,
-        "provider": provider or _resolve_provider(cfg)[0],
-        "status": "completed" if not ctx.errors else "partial",
-        "stage_timings": ctx.metadata.get("stage_timings", {}),
-        "total_duration": ctx.metadata.get("total_duration", 0),
-        "errors": ctx.errors,
-    }
-    (out / "run.json").write_text(json.dumps(record, indent=2, ensure_ascii=False), encoding="utf-8")
-    click.echo(f"Done. run.json -> {out / 'run.json'}")
+    mode_label = f" ({pipeline_mode} mode)" if pipeline_mode == "novel" else ""
+    click.echo(f"Translating{mode_label} {input_path} -> {output_path}  ({src} -> {tgt})")
+    ctx = PipelineOrchestrator(config=cfg).run(input_path, output_path, cfg)
+    out = Path(output_path)
+    if pipeline_mode == "novel":
+        out.parent.mkdir(parents=True, exist_ok=True)
+    else:
+        out.mkdir(parents=True, exist_ok=True)
+    # run.json is now written by OutputStage via ArtifactStore — no duplicate write here
+    run_dir = out if pipeline_mode == "manga" else out.parent
+    click.echo(f"Done. run.json -> {run_dir / 'run.json'}")
     for err in ctx.errors:
         click.echo(f"  [!] {err['stage']}: {err['error']}", err=True)
 

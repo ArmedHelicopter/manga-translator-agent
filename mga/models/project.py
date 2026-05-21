@@ -27,6 +27,7 @@ class ProjectConfig(BaseModel):
     artifact_dir: str = ""
     input_format: str = "images"
     output_format: str = "images"
+    pipeline_mode: str = "manga"
     reading_direction: str = "rtl"
     local_only: bool = False
     save_artifacts: bool = True

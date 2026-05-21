@@ -9,6 +9,9 @@ from .epub_adapter import EPUBAdapter
 from .images import ImageDirAdapter
 from .manifest import build_manifest_payload, discover_image_paths, load_image_metadata
 from .mobi_adapter import MOBIAdapter
+from .novel_epub import NovelEPUBAdapter
+from .novel_mobi import NovelMOBIAdapter
+from .novel_txt import NovelTXTAdapter
 from .pdf_adapter import PDFAdapter
 
 __all__ = [
@@ -19,6 +22,9 @@ __all__ = [
     "EPUBAdapter",
     "CBZAdapter",
     "MOBIAdapter",
+    "NovelEPUBAdapter",
+    "NovelTXTAdapter",
+    "NovelMOBIAdapter",
     "build_manifest_payload",
     "discover_image_paths",
     "load_image_metadata",
@@ -38,6 +44,9 @@ _ADAPTER_REGISTRY: dict[str, type[FormatAdapter]] = {
     "cbr": CBZAdapter,
     "mobi": MOBIAdapter,
     "bilingual": BilingualAdapter,
+    "novel-epub": NovelEPUBAdapter,
+    "novel-txt": NovelTXTAdapter,
+    "novel-mobi": NovelMOBIAdapter,
 }
 
 

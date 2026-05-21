@@ -37,5 +37,6 @@ class Page(BaseModel):
     page_index: int = 0
     image: PageImage = Field(default_factory=PageImage)
     source_lang: str = "ja"
+    source_text: str = ""
     bubbles: List[Bubble] = Field(default_factory=list)
     scene_summary: str = ""
