@@ -5,9 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from manga_translate.artifacts import ArtifactStore
-from manga_translate.format import discover_image_paths
-from manga_translate.runtime.external import (
+from ..artifacts import ArtifactStore
+from ..format.manifest import discover_image_paths
+from ..runtime_bridge.external import (
     _build_external_child_env,
     _normalize_external_text_blocks,
     _parse_saved_text_blocks,
@@ -36,7 +36,7 @@ def run_manga_image_translator_baseline(
 ) -> dict:
     """Run the external runtime through the shared external-core integration."""
 
-    from manga_translate.models import ProjectConfig, ProviderRoute, StageProviderConfig
+    from ..models import ProjectConfig, ProviderRoute, StageProviderConfig
 
     project_config = ProjectConfig(
         project_name=Path(input_dir).resolve().name or "manga-project",

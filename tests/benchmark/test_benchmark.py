@@ -96,9 +96,9 @@ def test_run_extraction_benchmark_writes_report(monkeypatch, tmp_path: Path) -> 
         result.character_count = 8
         return result
 
-    monkeypatch.setattr("manga_translate.benchmark.evaluate._run_tesseract_ocr", fake_ocr)
+    monkeypatch.setattr("mga.benchmark.evaluate._run_tesseract_ocr", fake_ocr)
     monkeypatch.setattr(
-        "manga_translate.benchmark.evaluate._run_ocr_spec",
+        "mga.benchmark.evaluate._run_ocr_spec",
         lambda image_path, ocr_dir, page_id, spec_name: fake_ocr(image_path, ocr_dir, page_id, spec_name),
     )
     summary = run_extraction_benchmark(
