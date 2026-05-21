@@ -59,8 +59,9 @@ def _detect_mode(input_path: str, mode: str | None) -> tuple[str, str]:
 @click.option("--lang", default="ja-zh")
 @click.option("--config", "config_path", default=None, type=click.Path(exists=True))
 @click.option("--save-json", is_flag=True, help="Save full translation report and debug artifacts.")
+@click.option("--bilingual", is_flag=True, help="Output bilingual PDF (original + translation side-by-side).")
 @click.option("--dry-run", is_flag=True)
-def translate(input_path, output_path, provider, output_format, mode, learn_from, learn_only, lang, config_path, save_json, dry_run):
+def translate(input_path, output_path, provider, output_format, mode, learn_from, learn_only, lang, config_path, save_json, bilingual, dry_run):
     """Run the translation pipeline on INPUT_PATH."""
     from mga.config.loader import build_project_config
     from mga.pipeline.orchestrator import PipelineOrchestrator
@@ -82,6 +83,8 @@ def translate(input_path, output_path, provider, output_format, mode, learn_from
     else:
         cfg.output_format = "images"
     cfg.input_format = detected_format
+    if bilingual:
+        cfg.output_format = "bilingual"
 
     if learn_from:
         _seed_memory(Path(learn_from), Path(cfg.working_dir), mode=pipeline_mode)

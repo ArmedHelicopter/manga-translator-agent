@@ -17,12 +17,18 @@ from .hallucination_guard import HallucinationGuardProofreader
 from .language_evolution import LanguageEvolutionProofreader
 from .style_polish import StylePolishProofreader
 
+try:
+    from mga.cultural.qa_check import CulturalQAProofreader
+except ImportError:
+    CulturalQAProofreader = None
+
 _DEFAULT_PROOFREADERS: list[QAProofreader] = [
     FactCheckProofreader(),
     HallucinationGuardProofreader(),
     CharacterConsistencyProofreader(),
     FictionalScriptProofreader(),
     DialogHierarchyProofreader(),
+    *([CulturalQAProofreader()] if CulturalQAProofreader else []),
     EmotionConsistencyProofreader(),
     LanguageEvolutionProofreader(),
     StylePolishProofreader(),

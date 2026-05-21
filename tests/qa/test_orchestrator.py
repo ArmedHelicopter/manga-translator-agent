@@ -11,7 +11,7 @@ def _make_page(bubbles):
 
 def test_orchestrator_runs_all_proofreaders():
     orch = QAOrchestrator()
-    assert len(orch.proofreaders) == 8
+    assert len(orch.proofreaders) == 9
 
 
 def test_orchestrator_proofread_clean():
