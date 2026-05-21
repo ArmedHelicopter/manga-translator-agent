@@ -155,5 +155,6 @@ def build_project_config(
         save_artifacts=True,
         save_debug_json=save_json or dry_run,
         provider_routes=provider_routes,
+        provider_settings=dict(providers_data),
     )
     return project_config, raw_config

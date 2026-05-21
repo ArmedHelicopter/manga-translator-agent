@@ -32,3 +32,7 @@ class ProjectConfig(BaseModel):
     save_artifacts: bool = True
     save_debug_json: bool = False
     provider_routes: Dict[str, StageProviderConfig] = Field(default_factory=dict)
+    provider_settings: Dict[str, dict] = Field(
+        default_factory=dict,
+        description="Per-provider kwargs (api_key, base_url, model, ...) for get_provider().",
+    )
