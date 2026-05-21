@@ -8,8 +8,8 @@ from pathlib import Path
 import toml
 from toml import TomlDecodeError
 
-from manga_translate.exceptions import ConfigError
-from manga_translate.models import ProjectConfig, ProviderRoute, StageProviderConfig
+from ..exceptions import ConfigError
+from ..models import ProjectConfig, ProviderRoute, StageProviderConfig
 
 DEFAULT_CONFIG_PATH = Path("configs/providers.toml")
 SUPPORTED_STAGE_NAMES = ("vision", "translate")
