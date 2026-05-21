@@ -8,15 +8,26 @@ from .classifier import CulturalProblemType
 
 
 class TranslationStrategy(Enum):
-    """Approaches for rendering cultural content in the target language."""
+    """Approaches for rendering cultural content in the target language.
+
+    Named to match SPEC §8.2: literal, adapt, coined, transliterate,
+    contextual, preserve, hybrid.  OMIT is kept as an internal fallback.
+    """
 
     LITERAL = "literal"
+    ADAPT = "adapt"
+    COINED = "coined"
+    TRANSLITERATE = "transliterate"
+    CONTEXTUAL = "contextual"
+    PRESERVE = "preserve"
+    HYBRID = "hybrid"
+    OMIT = "omit"
+
+    # Legacy aliases (kept for backward compat with existing call sites)
     CALQUE = "calque"
     PRESERVE_ORIGINAL = "preserve_original"
     EXPLANATORY = "explanatory"
     EQUIVALENT = "equivalent"
-    COINED = "coined"
-    OMIT = "omit"
 
 
 # Default strategy matrix: problem_type -> (high_weight, mid_weight, low_weight)
@@ -25,38 +36,38 @@ _DEFAULT_MATRIX: dict[
     tuple[TranslationStrategy, TranslationStrategy, TranslationStrategy],
 ] = {
     CulturalProblemType.HONORIFIC: (
-        TranslationStrategy.EQUIVALENT,
-        TranslationStrategy.CALQUE,
+        TranslationStrategy.ADAPT,
+        TranslationStrategy.TRANSLITERATE,
         TranslationStrategy.LITERAL,
     ),
     CulturalProblemType.COINED_TERM: (
         TranslationStrategy.COINED,
-        TranslationStrategy.PRESERVE_ORIGINAL,
-        TranslationStrategy.EXPLANATORY,
+        TranslationStrategy.PRESERVE,
+        TranslationStrategy.HYBRID,
     ),
     CulturalProblemType.CULTURAL_CONCEPT: (
-        TranslationStrategy.EXPLANATORY,
-        TranslationStrategy.EQUIVALENT,
-        TranslationStrategy.CALQUE,
+        TranslationStrategy.HYBRID,
+        TranslationStrategy.ADAPT,
+        TranslationStrategy.TRANSLITERATE,
     ),
     CulturalProblemType.ONOMATOPOEIA: (
-        TranslationStrategy.EQUIVALENT,
-        TranslationStrategy.CALQUE,
+        TranslationStrategy.ADAPT,
+        TranslationStrategy.TRANSLITERATE,
         TranslationStrategy.LITERAL,
     ),
     CulturalProblemType.FICTIONAL_SCRIPT: (
-        TranslationStrategy.PRESERVE_ORIGINAL,
+        TranslationStrategy.PRESERVE,
         TranslationStrategy.COINED,
         TranslationStrategy.OMIT,
     ),
     CulturalProblemType.IDIOM: (
-        TranslationStrategy.EQUIVALENT,
-        TranslationStrategy.EXPLANATORY,
-        TranslationStrategy.CALQUE,
+        TranslationStrategy.ADAPT,
+        TranslationStrategy.HYBRID,
+        TranslationStrategy.TRANSLITERATE,
     ),
     CulturalProblemType.FORM_OF_ADDRESS: (
-        TranslationStrategy.EQUIVALENT,
-        TranslationStrategy.CALQUE,
+        TranslationStrategy.ADAPT,
+        TranslationStrategy.TRANSLITERATE,
         TranslationStrategy.LITERAL,
     ),
 }
@@ -66,12 +77,18 @@ _WEIGHT_ORDER = {"high": 0, "medium": 1, "low": 2}
 # Strategy descriptions for prompt injection and debugging.
 STRATEGY_DESCRIPTIONS: dict[TranslationStrategy, str] = {
     TranslationStrategy.LITERAL: "Translate word-for-word, preserving Japanese structure.",
+    TranslationStrategy.ADAPT: "Localise to a culturally equivalent target-language expression.",
+    TranslationStrategy.COINED: "Invent a new target-language term that mirrors the source feel.",
+    TranslationStrategy.TRANSLITERATE: "Render phonetically in the target language.",
+    TranslationStrategy.CONTEXTUAL: "Choose the rendering based on surrounding context.",
+    TranslationStrategy.PRESERVE: "Keep the original term untranslated with optional gloss.",
+    TranslationStrategy.HYBRID: "Combine a translated term with an explanatory note.",
+    TranslationStrategy.OMIT: "Drop the term when it adds no narrative value.",
+    # Legacy aliases
     TranslationStrategy.CALQUE: "Adapt as a loan-calque, keeping the foreign flavour.",
     TranslationStrategy.PRESERVE_ORIGINAL: "Keep the original term untranslated with optional gloss.",
     TranslationStrategy.EXPLANATORY: "Use a short explanatory phrase in the target language.",
     TranslationStrategy.EQUIVALENT: "Replace with a culturally equivalent target-language expression.",
-    TranslationStrategy.COINED: "Invent a new target-language term that mirrors the source feel.",
-    TranslationStrategy.OMIT: "Drop the term when it adds no narrative value.",
 }
 
 
@@ -100,16 +117,16 @@ def select_strategy(
     # Context-driven overrides
     if problem_type == CulturalProblemType.HONORIFIC:
         if any(kw in context for kw in ("narration", "inner_monologue", "旁白")):
-            if base == TranslationStrategy.EQUIVALENT:
-                return TranslationStrategy.CALQUE
+            if base == TranslationStrategy.ADAPT:
+                return TranslationStrategy.TRANSLITERATE
 
     if problem_type == CulturalProblemType.ONOMATOPOEIA:
         if any(kw in context for kw in ("sfx", "sound_effect", "音效")):
-            return TranslationStrategy.PRESERVE_ORIGINAL
+            return TranslationStrategy.PRESERVE
 
     if problem_type == CulturalProblemType.FICTIONAL_SCRIPT:
         if "title" in context.lower() or "logo" in context.lower():
-            return TranslationStrategy.PRESERVE_ORIGINAL
+            return TranslationStrategy.PRESERVE
 
     return base
 

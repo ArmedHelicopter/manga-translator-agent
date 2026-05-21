@@ -15,6 +15,8 @@ __all__ = [
     "OllamaProvider",
     "VLLMProvider",
     "OpenRouterProvider",
+    "LMStudioProvider",
+    "LlamaCppProvider",
 ]
 
 
