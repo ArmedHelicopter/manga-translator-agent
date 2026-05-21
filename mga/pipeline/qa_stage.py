@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from mga.models import ProjectConfig, TranslationCandidate
+from mga.providers import get_provider
 from mga.qa import QAOrchestrator
+from mga.qa.base import QAFeedbackType
 
 from .stages import PipelineContext, PipelineStage
 
@@ -39,8 +39,12 @@ class QAStage(PipelineStage):
             per_page[page.page_id] = page_findings
             all_findings.extend(page_findings)
 
-            if context.project_config.save_debug_json:
-                self._attempt_retranslate(context, page, grouped)
+            error_bubbles = {
+                bid: fbs for bid, fbs in grouped.items()
+                if any(f.feedback_type == QAFeedbackType.ERROR for f in fbs)
+            }
+            if error_bubbles:
+                self._attempt_retranslate(context, page, error_bubbles)
 
         context.qa_report = {
             "passed": len(all_findings) == 0,
@@ -61,8 +65,33 @@ class QAStage(PipelineStage):
 
     def _attempt_retranslate(
         self, context: PipelineContext, page: object,
-        grouped: dict[str, list],  # noqa: ARG002
+        error_bubbles: dict[str, list],
     ) -> None:
-        """Placeholder: re-translate bubbles with error-level feedback."""
-        # Full re-translation requires provider access and is deferred
-        # to a future iteration per SPEC Section 5.
+        cfg: ProjectConfig = context.project_config
+        route = cfg.provider_routes.get("translation")
+        if route and route.primary.provider:
+            provider = get_provider(route.primary.provider, model=route.primary.model)
+        else:
+            provider = get_provider("openai")
+
+        translation_by_id = {t.bubble_id: t for t in context.translations}
+
+        for bubble_id, feedbacks in error_bubbles.items():
+            candidate = translation_by_id.get(bubble_id)
+            if candidate is None:
+                continue
+
+            feedback_summary = "; ".join(f.message for f in feedbacks)
+            retranslate_prompt = (
+                f"Re-translate the following manga dialogue. "
+                f"Previous translation had issues: {feedback_summary}\n"
+                f"Source: {candidate.text}\n"
+                f"Return corrected Simplified Chinese translation."
+            )
+            try:
+                raw = provider.chat([{"role": "user", "content": retranslate_prompt}])
+                if raw and raw.strip():
+                    candidate.text = raw.strip()
+                    candidate.rationale = f"QA re-translated: {feedback_summary}"
+            except Exception:
+                pass

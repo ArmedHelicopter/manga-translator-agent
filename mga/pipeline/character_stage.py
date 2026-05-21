@@ -6,9 +6,28 @@ from pathlib import Path
 
 from mga.cultural import CulturalAdapter
 from mga.memory import MemoryRetrieval
+from mga.memory.seeding import seed_memory_from_external_output
+from mga.memory.state import StateManager
 from mga.models import ProjectConfig
 
 from .stages import PipelineContext, PipelineStage
+
+
+def _memory_state_empty(project_dir: Path) -> bool:
+    """Return True if the memory/state/ directory has no entity files."""
+    state_dir = project_dir / "memory" / "state"
+    if not state_dir.exists():
+        return True
+    for subdir in ("characters", "scenes", "terms", "decisions"):
+        entity_dir = state_dir / subdir
+        if entity_dir.exists() and any(entity_dir.glob("*.json")):
+            return False
+    return True
+
+
+def _external_output_exists(output_dir: Path) -> bool:
+    """Return True if external output artifacts exist."""
+    return (output_dir / "external-baseline-text-normalized.json").exists()
 
 
 class CharacterAttributionStage(PipelineStage):
@@ -25,6 +44,15 @@ class CharacterAttributionStage(PipelineStage):
     def execute(self, context: PipelineContext) -> PipelineContext:
         cfg: ProjectConfig = context.project_config
         project_dir = Path(cfg.working_dir) if cfg.working_dir else Path(".")
+
+        # Auto-seed memory from external output on first runs
+        if _memory_state_empty(project_dir):
+            output_dir = Path(cfg.output_dir) if cfg.output_dir else project_dir / "output"
+            if _external_output_exists(output_dir):
+                seed_result = seed_memory_from_external_output(
+                    str(project_dir), str(output_dir),
+                )
+                context.artifacts.setdefault(self.name, {})["auto_seed"] = seed_result
 
         cultural_adapter = CulturalAdapter(str(project_dir))
         all_memory: dict[str, dict] = {}

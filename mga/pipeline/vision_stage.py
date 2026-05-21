@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from mga.models import Bubble, ProjectConfig
-from mga.providers import select_provider
+from mga.providers import get_provider
 
 from .stages import PipelineContext, PipelineStage
 
@@ -45,9 +45,11 @@ class VisionStage(PipelineStage):
 
     def _get_provider(self, cfg: ProjectConfig) -> object:
         route = cfg.provider_routes.get("vision")
-        if route:
-            return select_provider(route.primary.model or "openai")
-        return select_provider("openai")
+        if route and route.primary.provider:
+            name = route.primary.provider
+            settings = cfg.provider_settings.get(name, {})
+            return get_provider(name, model=route.primary.model, **settings)
+        return get_provider("openai")
 
     def _extract_page(self, provider: object, page: object, cfg: ProjectConfig) -> dict:
         img_path = Path(page.image.path)

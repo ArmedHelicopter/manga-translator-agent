@@ -6,7 +6,7 @@ from typing import Any
 
 from mga.cultural import CulturalAdapter
 from mga.models import ProjectConfig, TranslationCandidate
-from mga.providers import select_provider
+from mga.providers import get_provider
 
 from .stages import PipelineContext, PipelineStage
 
@@ -59,9 +59,11 @@ class TranslationStage(PipelineStage):
 
     def _get_provider(self, cfg: ProjectConfig) -> object:
         route = cfg.provider_routes.get("translation")
-        if route:
-            return select_provider(route.primary.model or "openai")
-        return select_provider("openai")
+        if route and route.primary.provider:
+            name = route.primary.provider
+            settings = cfg.provider_settings.get(name, {})
+            return get_provider(name, model=route.primary.model, **settings)
+        return get_provider("openai")
 
     def _translate_page(
         self, provider: object, page: object,
