@@ -57,14 +57,20 @@ class CharacterAttributionStage(PipelineStage):
         cultural_adapter = CulturalAdapter(str(project_dir))
         all_memory: dict[str, dict] = {}
         all_cultural: dict[str, dict] = {}
+        all_profiles: dict[str, dict] = {}  # global speaker → profile
 
         for page in context.pages:
             page_mem = self._build_memory_context(project_dir, page)
             page_cult = self._build_cultural_context(cultural_adapter, page)
             all_memory[page.page_id] = page_mem
             all_cultural[page.page_id] = page_cult
+            # Accumulate global profiles for QA access
+            all_profiles.update(page_mem)
 
-        context.memory_context = all_memory
+        context.memory_context = {
+            "character_profiles": all_profiles,
+            "page_profiles": all_memory,
+        }
         context.cultural_context = all_cultural
         context.artifacts[self.name] = {
             "pages_processed": len(context.pages),

@@ -83,6 +83,7 @@ class MemoryRetrieval:
             "character_id": ch.character_id,
             "name_jp": ch.name_jp,
             "name_zh": ch.name_zh,
+            "archetype": ch.archetype,
             "speech_patterns": ch.speech_patterns,
             "catchphrases": ch.catchphrases,
             "tone_spectrum": ch.tone_spectrum,
