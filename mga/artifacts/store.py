@@ -60,3 +60,15 @@ class ArtifactStore:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
         return str(path.relative_to(self.root))
+
+    def write_run_summary(self, payload: Any) -> str:
+        """Write run.json summary."""
+        return self.write_json("run.json", payload)
+
+    def write_qa_report(self, payload: Any) -> str:
+        """Write qa_report.json."""
+        return self.write_json("qa_report.json", payload)
+
+    def write_translation_report(self, payload: Any) -> str:
+        """Write translation-report.json."""
+        return self.write_json("translation-report.json", payload)

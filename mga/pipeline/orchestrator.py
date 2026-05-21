@@ -30,6 +30,14 @@ _DEFAULT_STAGES: list[PipelineStage] = [
     OutputStage(),
 ]
 
+_NOVEL_STAGES: list[PipelineStage] = [
+    FormatStage(),
+    CharacterAttributionStage(),
+    TranslationStage(),
+    QAStage(),
+    OutputStage(),
+]
+
 
 class PipelineOrchestrator:
     """Execute the 7-stage pipeline sequentially, catching per-stage errors."""
@@ -37,11 +45,14 @@ class PipelineOrchestrator:
     def __init__(
         self,
         stages: Sequence[PipelineStage] | None = None,
+        config: ProjectConfig | None = None,
     ) -> None:
-        self._stages = sorted(
-            list(stages) if stages is not None else list(_DEFAULT_STAGES),
-            key=lambda s: s.order,
-        )
+        if stages is not None:
+            self._stages = sorted(list(stages), key=lambda s: s.order)
+        elif config is not None and config.pipeline_mode == "novel":
+            self._stages = list(_NOVEL_STAGES)
+        else:
+            self._stages = list(_DEFAULT_STAGES)
 
     @property
     def stages(self) -> list[PipelineStage]:
