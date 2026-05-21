@@ -55,4 +55,13 @@ def __getattr__(name: str):
             "build_and_save_profile": build_and_save_profile,
             "build_profile_from_translations": build_profile_from_translations,
         }[name]
+    if name in ("CharacterGraph",):
+        from .graph import CharacterGraph
+        return CharacterGraph
+    if name in ("GraphRetrieval",):
+        from .graph_retrieval import GraphRetrieval
+        return GraphRetrieval
+    if name in ("EvolutionTracker",):
+        from .evolution_tracker import EvolutionTracker
+        return EvolutionTracker
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
