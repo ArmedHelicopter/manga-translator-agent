@@ -13,9 +13,10 @@ _PROVIDER_MAP: dict[str, tuple[str, str]] = {
     "gemini": (".gemini_provider", "GeminiProvider"),
     "deepseek": (".deepseek_provider", "DeepSeekProvider"),
     "ollama": (".ollama_provider", "OllamaProvider"),
-    "lmstudio": (".vllm_provider", "VLLMProvider"),
+    "lmstudio": (".lmstudio_provider", "LMStudioProvider"),
     "vllm": (".vllm_provider", "VLLMProvider"),
     "openrouter": (".openrouter_provider", "OpenRouterProvider"),
+    "llamacpp": (".llamacpp_provider", "LlamaCppProvider"),
 }
 
 
