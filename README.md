@@ -1,8 +1,6 @@
 # Manga Translate Agent
 
-`mga` is an external-first manga translation host: it uses `manga-image-translator` as the runtime core and adds orchestration, artifact normalization, benchmarking, review workflows, and future intelligence-layer features on top.
-
-This repository is the new `mga` main repo. The external runtime remains the execution core; `mga` is the host layer that makes runs inspectable, comparable, and extensible.
+`mga` is an external-first manga translation agent: it uses `manga-image-translator` as the rendering runtime and adds intelligence, orchestration, cultural adaptation, character consistency, QA proofreading, and memory/wiki on top.
 
 ## Architecture
 
@@ -10,9 +8,11 @@ This repository is the new `mga` main repo. The external runtime remains the exe
 ┌──────────────────────────────────────────────┐
 │ mga intelligence layer                       │
 │ character consistency · QA · memory/wiki    │
+│ cultural adaptation · learning engine        │
 ├──────────────────────────────────────────────┤
 │ mga orchestration layer                      │
-│ artifacts · benchmark · review · config     │
+│ 7-stage pipeline · artifacts · benchmark     │
+│ incremental · batch · review · config       │
 ├──────────────────────────────────────────────┤
 │ external runtime core                        │
 │ detection · OCR · inpainting · rendering    │
@@ -20,113 +20,95 @@ This repository is the new `mga` main repo. The external runtime remains the exe
 └──────────────────────────────────────────────┘
 ```
 
-## Current Repo Status
+## Features
 
-- `manga_translator/` is still the upstream external runtime codebase.
-- `mga/` is the emerging host-layer package for artifact, benchmark, config, and runtime-bridge logic.
-- `docs/PRD.md`, [docs/SPEC.md](/home/exusiai/_dev/manga-translator-agent/docs/SPEC.md), `docs/analysis/`, and `docs/research/` have already been migrated into this repo.
-- Phase 1 is still in progress: the host-layer package exists, but the formal `translate`, `benchmark-external`, and `review` CLI surface is not fully wired yet.
+- **Character Consistency** — Character profiles injected into translation prompts; same character speaks differently to different people
+- **Relationship Graph** — NetworkX graph with formality levels (intimate/casual/polite/formal/honorific); honorific-aware translation
+- **Cultural Adaptation** — 7 translation strategies, 7-level term grading, coinage auto-discovery, honorific compensation
+- **QA Proofreading** — 9 proofreaders: fact check, hallucination guard, character consistency, fictional script, dialog hierarchy, cultural QA, emotion consistency, language evolution, style polish
+- **Learning Engine** — Extract character profiles, terminology, and style guides from existing translations (warm start)
+- **Memory/Wiki** — Dual-structure: JSON state (canonical) + Markdown wiki (human-readable)
+- **Incremental Translation** — Load previous chapter context, translate new chapters, update profiles
+- **Batch Processing** — Multi-chapter parallel processing with resume
+- **9 LLM Providers** — OpenAI, Anthropic, Gemini, DeepSeek, OpenRouter, Ollama, vLLM, LM Studio, llama.cpp
+- **6 Format Adapters** — Images, PDF, EPUB, CBZ/CBR, MOBI, Bilingual PDF
+
+## Quick Start
+
+```bash
+# Install
+pip install -e ".[dev]"
+
+# Translate (cold start)
+manga-translate input/ -o output/
+
+# Hot start: learn from existing translations
+manga-translate ch11/ --learn-from ch01_to_10_translated/ -o output/
+
+# Bilingual output
+manga-translate input.pdf --bilingual -o bilingual.pdf
+
+# Run tests (329 tests)
+pytest tests/ -v
+```
 
 ## Package Layout
 
 ```text
 mga/
-├── artifacts/       # stable artifact persistence
-├── benchmark/       # report generation and external benchmark workflows
-├── cli/             # future formal entrypoints
-├── config/          # mga -> external runtime config bridge
-├── memory/          # future memory/wiki layer
-├── qa/              # future QA evidence layer
-├── review/          # future review entrypoints
-└── runtime_bridge/  # external runtime invocation and normalization
+├── artifacts/       # ArtifactStore for structured output
+├── benchmark/       # Extraction, translation, and external benchmarks
+├── cli/             # Click CLI (translate, benchmark-external, legacy, memory, profile, term)
+├── config/          # TOML config loading, provider route resolution
+├── cultural/        # Problem classification, strategies, terminology DB, honorific, coinage
+├── format/          # FormatAdapter ABC + 6 adapters
+├── learning/        # 4-stage translation learning engine (L1-L4)
+├── memory/          # Dual-structure state + wiki + graph + profiles + evolution tracker
+├── models/          # Pydantic v2 data models
+├── pipeline/        # 7-stage pipeline + incremental + batch
+├── providers/       # LLMProvider ABC + 9 providers + registry
+├── qa/              # 9 proofreaders + orchestrator
+├── review/          # Review diff tools
+└── runtime_bridge/  # External runtime subprocess integration
 ```
 
-## Planned Default Entrypoints
+## Pipeline
 
-The repository is converging on these top-level host commands:
-
-- `translate`
-- `benchmark-external`
-- `review`
-- `legacy` or `research` for non-productized experiments
-
-Those commands are part of the active migration plan in [plan.md](/home/exusiai/_dev/manga-translator-agent/plan.md:1). The package structure in this repo is being aligned to support them, but this README intentionally does not claim they are complete today.
-
-## Stable Host-Layer Responsibilities
-
-`mga` is responsible for:
-
-- resolving provider and host config before runtime launch
-- invoking the external runtime in a controlled way
-- normalizing runtime outputs into stable artifacts
-- generating benchmark and review inputs
-- keeping future intelligence features out of the external runtime core
-
-The external runtime remains responsible for:
-
-- page/image translation execution
-- detection, OCR, inpainting, and rendering internals
-- runtime-specific CLI/config behavior
-
-## Artifact Contract
-
-The Phase 1 target contract for a translated run is:
-
-```text
-output/
-├── manifest.json
-├── external-baseline-summary.json
-├── external-baseline-text.txt
-├── external-baseline-text-normalized.json
-└── run.json
+```
+Format → Vision → Character+Culture → Translation → QA → Render → Output
 ```
 
-If the external runtime emits rendered images, the output summary should also record them explicitly.
+Each stage can independently select its LLM provider with primary → fallback → local cascade.
 
-## Benchmark And Review
+## CLI Reference
 
-Benchmarking is not a side script in this repo; it is one of the core `mga` capabilities.
-
-The immediate migration priority is:
-
-- external translation benchmark
-- same-page review assembly
-- multi-page review assembly
-- external text normalization
-
-The migrated benchmark code lives under [mga/benchmark](/home/exusiai/_dev/manga-translator-agent/mga/benchmark) and related tests live under [tests/benchmark](/home/exusiai/_dev/manga-translator-agent/tests/benchmark).
-
-## Legacy And Research Assets
-
-This repository still carries a large amount of upstream runtime code and legacy experimentation material:
-
-- upstream runtime implementation in `manga_translator/`
-- migration and product docs in `docs/`
-- review assembly scripts in `scripts/`
-- legacy and exploratory tests under `test/`
-
-For this migration round, those assets remain available, but the target product path is the external-core host architecture described above.
+| Command | Description |
+|---------|-------------|
+| `manga-translate input/ -o output/` | Translate manga |
+| `manga-translate --learn-from dir/` | Warm start from existing translations |
+| `manga-translate --learn-only dir/` | Learn profiles without translating |
+| `manga-translate --bilingual` | Output bilingual PDF |
+| `manga-translate --save-json` | Save translation report + debug artifacts |
+| `manga-translate benchmark-external` | Run external runtime benchmark |
+| `manga-translate legacy benchmark-extraction` | Legacy extraction benchmark |
+| `manga-translate memory init/sync` | Memory management |
+| `manga-translate profile list` | List character profiles |
+| `manga-translate term list` | List terminology |
 
 ## Tests
 
-The new host-layer test layout is:
-
-- [tests/runtime](/home/exusiai/_dev/manga-translator-agent/tests/runtime) for runtime-bridge and smoke coverage
-- [tests/benchmark](/home/exusiai/_dev/manga-translator-agent/tests/benchmark) for benchmark/report behavior
-- [tests/fixtures](/home/exusiai/_dev/manga-translator-agent/tests/fixtures) for shared file fixtures
-
-See [tests/README.md](/home/exusiai/_dev/manga-translator-agent/tests/README.md) for the intended coverage split.
+```bash
+pytest tests/ -v          # All 329 tests
+pytest tests/qa/ -v       # QA proofreaders
+pytest tests/cultural/    # Cultural adaptation
+pytest tests/learning/    # Learning engine
+pytest tests/memory/      # Memory/wiki/graph
+pytest tests/pipeline/    # Pipeline stages + incremental + batch
+```
 
 ## Related Docs
 
-- [docs/PRD.md](/home/exusiai/_dev/manga-translator-agent/docs/PRD.md)
-- [docs/SPEC.md](/home/exusiai/_dev/manga-translator-agent/docs/SPEC.md)
-- [docs/research/oss-landscape.md](/home/exusiai/_dev/manga-translator-agent/docs/research/oss-landscape.md)
-- [docs/research/market-landscape.md](/home/exusiai/_dev/manga-translator-agent/docs/research/market-landscape.md)
-- [README_CN.md](/home/exusiai/_dev/manga-translator-agent/README_CN.md) for the upstream/runtime-oriented Chinese README that still needs migration
-
-## Migration Notes
-
-- `README.mga-draft.md` was the draft source for the repo identity rewrite and is now superseded by this front-door README.
-- The old internal schema and pipeline shape are not being promoted as the new core contract.
-- Memory/wiki, QA, and character-consistency systems should be reattached only after the host path is stable.
+- [docs/SPEC.md](docs/SPEC.md) — Full system specification
+- [docs/PRD.md](docs/PRD.md) — Product requirements
+- [docs/ROADMAP.md](docs/ROADMAP.md) — Module delivery roadmap
+- [CLAUDE.md](CLAUDE.md) — Developer guidance for Claude Code
