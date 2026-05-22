@@ -94,8 +94,11 @@ class TranslationStage(PipelineStage):
         if route and route.primary.provider:
             name = route.primary.provider
             settings = cfg.provider_settings.get(name, {})
-            return get_provider(name, model=route.primary.model, **settings)
-        return get_provider("openai")
+            if route.primary.model and "model" not in settings:
+                settings["model"] = route.primary.model
+            return get_provider(name, **settings)
+        settings = cfg.provider_settings.get("openai", {})
+        return get_provider("openai", **settings)
 
     def _translate_page(
         self, provider: object, page: object,
@@ -146,8 +149,26 @@ class TranslationStage(PipelineStage):
         messages = [{"role": "user", "content": prompt}]
         try:
             raw = provider.chat(messages)
-            return TranslationCandidate(bubble_id=bubble_id, text=raw)
+            return self._parse_translation_response(bubble_id, raw)
         except Exception as exc:
             return TranslationCandidate(
                 bubble_id=bubble_id, text="", rationale=f"LLM error: {exc}",
             )
+
+    def _parse_translation_response(self, bubble_id: str, raw: str) -> TranslationCandidate:
+        """Parse LLM response — handles both plain text and JSON formats."""
+        import json as _json
+        text = raw.strip()
+        # Try JSON parse (LLM may return {"text": "...", "rationale": "..."})
+        if text.startswith("{"):
+            try:
+                data = _json.loads(text)
+                return TranslationCandidate(
+                    bubble_id=bubble_id,
+                    text=data.get("text", data.get("translation", text)),
+                    rationale=data.get("rationale", ""),
+                    confidence=float(data.get("confidence", 0.8)),
+                )
+            except (ValueError, KeyError):
+                pass
+        return TranslationCandidate(bubble_id=bubble_id, text=text)

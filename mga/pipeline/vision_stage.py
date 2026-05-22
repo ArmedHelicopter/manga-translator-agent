@@ -40,41 +40,66 @@ class VisionStage(PipelineStage):
         return self._execute_from_llm(context, cfg)
 
     def _execute_from_artifact(self, context: PipelineContext, payload_dir: str) -> PipelineContext:
-        """Read OCR results from a runtime-exported artifact.json."""
-        artifact_path = Path(payload_dir) / "artifact.json"
-        artifact_data = json.loads(artifact_path.read_text(encoding="utf-8"))
+        """Read OCR results from runtime-exported per-page artifacts."""
+        payload_path = Path(payload_dir)
 
-        regions = artifact_data.get("text_regions", [])
-        page = context.pages[0] if context.pages else None
-        if not page:
-            context.artifacts[self.name] = {"source": "artifact", "regions": 0}
-            return context
+        # Find all per-page artifact files
+        pages_manifest = payload_path / "pages.json"
+        if pages_manifest.exists():
+            import json as _json
+            pages_list = _json.loads(pages_manifest.read_text(encoding="utf-8"))
+        else:
+            # Fallback: single artifact.json
+            pages_list = [{"page_index": 0, "artifact": "artifact.json"}]
 
-        for i, region in enumerate(regions):
-            lines = region.get("lines", [])
-            bbox = BoundingBox()
-            if lines:
-                import numpy as np
-                pts = np.array(lines).reshape(-1, 2)
-                x_min, y_min = pts.min(axis=0)
-                x_max, y_max = pts.max(axis=0)
-                bbox = BoundingBox(
-                    x=float(x_min), y=float(y_min),
-                    width=float(x_max - x_min), height=float(y_max - y_min),
-                )
+        for page_entry in pages_list:
+            artifact_file = payload_path / page_entry["artifact"]
+            if not artifact_file.exists():
+                continue
 
-            page.bubbles.append(Bubble(
-                bubble_id=f"region-{i:04d}",
-                bbox=bbox,
-                source_text=region.get("text", ""),
-                reading_order=i,
-            ))
+            artifact_data = json.loads(artifact_file.read_text(encoding="utf-8"))
+            regions = artifact_data.get("text_regions", [])
+            page_idx = page_entry["page_index"]
 
-        page.scene_summary = f"Page with {len(regions)} text regions (from runtime OCR)"
+            # Match to existing page or create one
+            page = None
+            for p in context.pages:
+                if p.page_index == page_idx:
+                    page = p
+                    break
+            if not page and page_idx < len(context.pages):
+                page = context.pages[page_idx]
+            if not page:
+                continue
+
+            for i, region in enumerate(regions):
+                lines = region.get("lines", [])
+                bbox = BoundingBox()
+                if lines:
+                    import numpy as np
+                    pts = np.array(lines).reshape(-1, 2)
+                    x_min, y_min = pts.min(axis=0)
+                    x_max, y_max = pts.max(axis=0)
+                    bbox = BoundingBox(
+                        x=float(x_min), y=float(y_min),
+                        width=float(x_max - x_min), height=float(y_max - y_min),
+                    )
+
+                page.bubbles.append(Bubble(
+                    bubble_id=f"region-{page_idx:04d}-{i:04d}",
+                    bbox=bbox,
+                    source_text=region.get("text", ""),
+                    reading_order=i,
+                ))
+
+            page.scene_summary = f"Page with {len(regions)} text regions (from runtime OCR)"
+
+        total_regions = sum(len(p.bubbles) for p in context.pages)
         context.artifacts[self.name] = {
             "source": "artifact",
             "payload_dir": payload_dir,
-            "regions": len(regions),
+            "pages": len(pages_list),
+            "regions": total_regions,
         }
         return context
 
@@ -96,8 +121,11 @@ class VisionStage(PipelineStage):
         if route and route.primary.provider:
             name = route.primary.provider
             settings = cfg.provider_settings.get(name, {})
-            return get_provider(name, model=route.primary.model, **settings)
-        return get_provider("openai")
+            if route.primary.model and "model" not in settings:
+                settings["model"] = route.primary.model
+            return get_provider(name, **settings)
+        settings = cfg.provider_settings.get("openai", {})
+        return get_provider("openai", **settings)
 
     def _extract_page(self, provider: object, page: object, cfg: ProjectConfig) -> dict:
         img_path = Path(page.image.path)
@@ -121,10 +149,12 @@ class VisionStage(PipelineStage):
 
     def _apply_to_page(self, page: object, result: dict) -> None:
         bubbles_raw = result.get("bubbles", [])
-        for b in bubbles_raw:
+        for i, b in enumerate(bubbles_raw):
+            raw_id = str(b.get("bubble_id", i + 1))
+            bubble_id = f"{page.page_id}-{raw_id}"
             page.bubbles.append(Bubble(
-                bubble_id=b.get("bubble_id", ""),
-                source_text=b.get("source_text", ""),
+                bubble_id=bubble_id,
+                source_text=str(b.get("source_text", "")),
                 speaker_id=b.get("speaker_id"),
                 speaker_name=b.get("speaker_name"),
                 tone=b.get("tone"),
