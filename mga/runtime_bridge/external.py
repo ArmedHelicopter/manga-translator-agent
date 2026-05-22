@@ -378,7 +378,14 @@ def run_export_artifact(
     The runtime stops after inpainting and writes artifact.json + inpainted.png
     to *payload_dir*. No translation or rendering happens.
     """
-    resolved_repo = resolve_external_runtime_repo(repo_dir)
+    # Use the project root (which has our modified manga_translator/) rather than
+    # the external clone, since --export-artifact is our addition.
+    project_root = Path(__file__).resolve().parent.parent.parent
+    if not (project_root / "manga_translator" / "__main__.py").exists():
+        resolved_repo = resolve_external_runtime_repo(repo_dir)
+    else:
+        resolved_repo = project_root
+
     external_python = Path(os.getenv("MANGA_TRANSLATE_EXTERNAL_PYTHON") or sys.executable).expanduser()
     if not external_python.is_absolute():
         external_python = (Path.cwd() / external_python).absolute()
@@ -412,10 +419,15 @@ def run_export_artifact(
             f"stderr: {completed.stderr[-2000:]}"
         )
 
-    artifact_path = payload_dir / "artifact.json"
-    if not artifact_path.exists():
+    # Check for either per-page or single-file artifact format
+    has_artifact = (
+        (payload_dir / "pages.json").exists()
+        or (payload_dir / "artifact.json").exists()
+        or (payload_dir / "artifact-0000.json").exists()
+    )
+    if not has_artifact:
         raise RuntimeError(
-            f"Export artifact completed but artifact.json not found in {payload_dir}.\n"
+            f"Export artifact completed but no artifact files found in {payload_dir}.\n"
             f"stdout: {completed.stdout[-2000:]}"
         )
 
@@ -429,15 +441,20 @@ def run_render_only(
     *,
     payload_dir: Path,
     output_dir: Path,
+    page_index: int = 0,
     repo_dir: Path | None = None,
     config_path: Path | None = None,
 ) -> dict[str, Any]:
-    """Pass 2: Load payload + translations.json and run rendering only.
+    """Pass 2: Load payload + translations and run rendering for one page.
 
-    Expects *payload_dir* to contain artifact.json, inpainted.png, and
-    translations.json (written by the mga intelligence pipeline).
+    Expects *payload_dir* to contain per-page artifact/inpainted/translations files.
     """
-    resolved_repo = resolve_external_runtime_repo(repo_dir)
+    project_root = Path(__file__).resolve().parent.parent.parent
+    if not (project_root / "manga_translator" / "__main__.py").exists():
+        resolved_repo = resolve_external_runtime_repo(repo_dir)
+    else:
+        resolved_repo = project_root
+
     external_python = Path(os.getenv("MANGA_TRANSLATE_EXTERNAL_PYTHON") or sys.executable).expanduser()
     if not external_python.is_absolute():
         external_python = (Path.cwd() / external_python).absolute()

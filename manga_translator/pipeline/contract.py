@@ -138,11 +138,12 @@ def _dict_to_textblock(d: Dict[str, Any]) -> TextBlock:
     )
 
 
-def serialize_render_payload(ctx, config, payload_dir: str) -> None:
+def serialize_render_payload(ctx, config, payload_dir: str, page_index: int = 0) -> None:
     """Export text regions + inpainted image + render config to a payload directory.
 
     Called after inpainting completes, before rendering. Enables a two-pass
-    workflow where mga injects translations between passes.
+    workflow where mga injects translations between passes. Each page gets its
+    own artifact file and inpainted image, keyed by page_index.
     """
     payload_path = Path(payload_dir)
     payload_path.mkdir(parents=True, exist_ok=True)
@@ -166,47 +167,75 @@ def serialize_render_payload(ctx, config, payload_dir: str) -> None:
 
     artifact = {
         "version": 1,
+        "page_index": page_index,
         "text_regions": regions_data,
         "render_config": render_config,
         "image_shape": [h, w, c],
     }
 
-    (payload_path / "artifact.json").write_text(
+    suffix = f"-{page_index:04d}"
+    (payload_path / f"artifact{suffix}.json").write_text(
         json.dumps(artifact, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
 
     cv2.imwrite(
-        str(payload_path / "inpainted.png"),
+        str(payload_path / f"inpainted{suffix}.png"),
         cv2.cvtColor(ctx.img_inpainted, cv2.COLOR_RGB2BGR),
     )
 
     if ctx.mask is not None:
-        cv2.imwrite(str(payload_path / "mask.png"), ctx.mask)
+        cv2.imwrite(str(payload_path / f"mask{suffix}.png"), ctx.mask)
+
+    # Also write/update a manifest listing all pages exported so far
+    manifest_path = payload_path / "pages.json"
+    if manifest_path.exists():
+        pages_list = json.loads(manifest_path.read_text(encoding="utf-8"))
+    else:
+        pages_list = []
+    pages_list.append({
+        "page_index": page_index,
+        "artifact": f"artifact{suffix}.json",
+        "inpainted": f"inpainted{suffix}.png",
+    })
+    manifest_path.write_text(
+        json.dumps(pages_list, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
 
-def deserialize_render_payload(payload_dir: str):
+def deserialize_render_payload(payload_dir: str, page_index: int = 0):
     """Load text regions + inpainted image + render config from a payload directory.
 
     Returns (text_regions, img_inpainted, mask_or_none, render_config).
     """
     payload_path = Path(payload_dir)
 
-    artifact_data = json.loads(
-        (payload_path / "artifact.json").read_text(encoding="utf-8")
-    )
+    # Try per-page file first, fall back to single-file format
+    suffix = f"-{page_index:04d}"
+    artifact_file = payload_path / f"artifact{suffix}.json"
+    if not artifact_file.exists():
+        artifact_file = payload_path / "artifact.json"
+
+    artifact_data = json.loads(artifact_file.read_text(encoding="utf-8"))
 
     text_regions = [
         _dict_to_textblock(d) for d in artifact_data["text_regions"]
     ]
 
-    img_bgr = cv2.imread(str(payload_path / "inpainted.png"))
+    inpainted_file = payload_path / f"inpainted{suffix}.png"
+    if not inpainted_file.exists():
+        inpainted_file = payload_path / "inpainted.png"
+
+    img_bgr = cv2.imread(str(inpainted_file))
     img_inpainted = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
 
     mask = None
-    mask_path = payload_path / "mask.png"
-    if mask_path.exists():
-        mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
+    mask_file = payload_path / f"mask{suffix}.png"
+    if not mask_file.exists():
+        mask_file = payload_path / "mask.png"
+    if mask_file.exists():
+        mask = cv2.imread(str(mask_file), cv2.IMREAD_GRAYSCALE)
 
     return text_regions, img_inpainted, mask, artifact_data.get("render_config", {})
 
