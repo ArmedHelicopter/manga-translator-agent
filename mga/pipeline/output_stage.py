@@ -38,8 +38,14 @@ class OutputStage(PipelineStage):
         self._write_qa_report(store, context)
         self._write_translation_report(store, context)
 
+        # Format conversion: repack rendered images into target format
+        output_format = cfg.output_format or "images"
+        if output_format != "images":
+            self._repack_to_format(output_dir, context, cfg, output_format)
+
         context.artifacts[self.name] = {
             "output_dir": str(output_dir),
+            "output_format": output_format,
             "files_written": [
                 "manifest.json", "run.json", "qa_report.json",
                 "translation-report.json",
@@ -131,3 +137,37 @@ class OutputStage(PipelineStage):
         from mga.artifacts.translation_report import build_translation_report, write_translation_report
         report = build_translation_report(ctx)
         write_translation_report(store, report)
+
+    def _repack_to_format(
+        self, output_dir: Path, ctx: PipelineContext, cfg: ProjectConfig, output_format: str
+    ) -> None:
+        """Convert rendered page images into the target format (pdf, epub, cbz, etc.)."""
+        import logging
+        logger = logging.getLogger(__name__)
+
+        rendered_images = sorted(output_dir.glob("page-*.png"))
+        if not rendered_images:
+            logger.warning(f"No rendered page images found in {output_dir}, skipping format conversion")
+            return
+
+        from mga.format import get_adapter
+        from mga.models.format import TranslatedPage
+
+        try:
+            adapter = get_adapter(output_format)
+        except ValueError as e:
+            logger.error(f"Format conversion failed: {e}")
+            return
+
+        pages = [
+            TranslatedPage(
+                index=i,
+                image_path=str(img),
+                page_json={"source": "rendered"},
+            )
+            for i, img in enumerate(rendered_images)
+        ]
+
+        output_file = output_dir / f"output.{output_format}"
+        adapter.repack(iter(pages), output_file)
+        logger.info(f"Format conversion complete: {output_file}")
