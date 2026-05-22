@@ -78,6 +78,14 @@ mga/
 Format → Vision → Character+Culture → Translation → QA → Render → Output
 ```
 
+When the external runtime (`manga-image-translator`) is available, the pipeline uses a two-pass architecture:
+
+1. **Pass 1** — Runtime runs detect/OCR/merge/inpaint, exports `artifact.json` + `inpainted.png`
+2. **Intelligence** — mga reads the artifact, runs character attribution, cultural adaptation, translation, and QA
+3. **Pass 2** — Runtime loads mga translations and renders them onto the inpainted image
+
+When the runtime is unavailable, the pipeline falls back to LLM vision for OCR and produces JSON artifacts only (no rendered images).
+
 Each stage can independently select its LLM provider with primary → fallback → local cascade.
 
 ## CLI Reference

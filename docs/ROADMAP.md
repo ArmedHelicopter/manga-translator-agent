@@ -1,19 +1,19 @@
 # MGA 最终产品交付路线图
 
-> 日期：2026-05-21
-> 状态：active
+> 日期：2026-05-22
+> 状态：modules complete, integration shipped
 
 ---
 
 ## 现状总览
 
-代码库已实现：Models / Providers(6) / Formats(11) / Memory / Cultural / QA(6 proofreaders) / Pipeline(7 stages) / CLI / Runtime Bridge / Novel Mode。134 tests passing。
+代码库已实现：Models / Providers(9) / Formats(6+novel) / Memory+Wiki+Graph / Cultural(7 strategies) / QA(9 proofreaders) / Pipeline(7 stages) / CLI / Runtime Bridge(two-pass) / Learning Engine(L1-L4) / Novel Mode。329 tests passing。
 
-核心差距：artifact 归一化不完整、学习引擎未接入、角色档案 RAG 未联动翻译、关系图谱未建、造词发现未实现。
+所有 6 模块已完成。两阶段渲染集成已实现（export-artifact + render-only）。
 
 ---
 
-## 6 模块交付计划
+## 6 模块交付计划（全部完成）
 
 ### 模块 A：Artifacts 归一化 + 翻译报告
 
