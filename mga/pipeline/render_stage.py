@@ -83,9 +83,10 @@ class RenderStage(PipelineStage):
     def _write_page_translations(
         self, payload_path: Path, context: PipelineContext, cfg: ProjectConfig, page_idx: int
     ) -> None:
-        """Write translations for a specific page."""
+        """Write translations for a specific page, including footnotes."""
         prefix = f"region-{page_idx:04d}-"
         translations = []
+        footnotes = []
         for t in context.translations:
             if not t.bubble_id.startswith(prefix):
                 continue
@@ -98,11 +99,18 @@ class RenderStage(PipelineStage):
                 "translation": t.text,
                 "target_lang": cfg.target_lang or "CHS",
             })
+            for fn in t.footnotes:
+                footnotes.append({
+                    "original": fn.original,
+                    "translation": fn.translation,
+                    "type": fn.type,
+                })
 
         payload = {
             "version": 1,
             "target_lang": cfg.target_lang or "CHS",
             "translations": translations,
+            "footnotes": footnotes,
         }
         suffix = f"-{page_idx:04d}"
         (payload_path / f"translations{suffix}.json").write_text(

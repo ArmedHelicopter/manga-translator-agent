@@ -727,6 +727,11 @@ class MangaTranslator:
 
             ctx.img_rendered = await self._run_text_rendering(config, ctx)
 
+            # Draw footnotes at page bottom if present
+            footnotes_data = trans_data.get("footnotes", []) if trans_file.exists() else []
+            if footnotes_data:
+                ctx.img_rendered = self._draw_footnotes(ctx.img_rendered, footnotes_data)
+
             from PIL import Image
             ctx.result = Image.fromarray(cv2.cvtColor(ctx.img_rendered, cv2.COLOR_RGB2BGR))
 
@@ -739,6 +744,52 @@ class MangaTranslator:
             last_ctx = ctx
 
         return last_ctx or Context()
+
+    def _draw_footnotes(self, img: np.ndarray, footnotes: list) -> np.ndarray:
+        """Draw katakana footnotes at the bottom of the rendered page."""
+        if not footnotes:
+            return img
+        from PIL import Image, ImageDraw, ImageFont
+
+        h, w = img.shape[:2]
+        font_size = max(16, h // 80)
+        line_height = int(font_size * 1.4)
+        margin = 10
+
+        lines = []
+        for fn in footnotes:
+            orig = fn.get("original", "")
+            trans = fn.get("translation", "")
+            fn_type = fn.get("type", "")
+            if orig and trans:
+                label = f"※ {trans}（{orig}）" if fn_type != "sfx" else f"※ {trans}（{orig}，拟声）"
+                lines.append(label)
+
+        if not lines:
+            return img
+
+        footer_h = len(lines) * line_height + margin * 2
+        new_h = h + footer_h
+        result = np.ones((new_h, w, 3), dtype=np.uint8) * 255
+        result[:h, :, :] = img
+
+        pil_img = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
+        draw = ImageDraw.Draw(pil_img)
+
+        try:
+            font = ImageFont.truetype("/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc", font_size)
+        except (OSError, IOError):
+            try:
+                font = ImageFont.truetype("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", font_size)
+            except (OSError, IOError):
+                font = ImageFont.load_default()
+
+        y = h + margin
+        for line in lines:
+            draw.text((margin, y), line, fill=(80, 80, 80), font=font)
+            y += line_height
+
+        return cv2.cvtColor(np.array(pil_img), cv2.COLOR_BGR2RGB)
 
     async def _run_colorizer(self, config: Config, ctx: Context):
         current_time = time.time()
