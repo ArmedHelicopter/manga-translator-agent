@@ -130,13 +130,12 @@ class ComicTextDetector(OfflineDetector):
     async def _infer(self, image: np.ndarray, detect_size: int, text_threshold: float, box_threshold: float,
                      unclip_ratio: float, verbose: bool = False):
 
-        # keep_undetected_mask = False
-        # refine_mode = REFINEMASK_INPAINT
-
         im_h, im_w = image.shape[:2]
         lines_map, mask = det_rearrange_forward(image, self.det_batch_forward_ctd, self.input_size[0], 4, self.device, verbose)
-        # blks = []
-        # resize_ratio = [1, 1]
+
+        # Always run a single-pass YOLO inference for balloon bbox detection
+        balloon_bboxes = self._detect_balloons(image)
+
         if lines_map is None:
             img_in, ratio, dw, dh = preprocess_img(image, input_size=self.input_size, device=self.device, half=self.half, to_tensor=self.backend=='torch')
             blks, mask, lines_map = self.model(img_in)
@@ -147,8 +146,6 @@ class ComicTextDetector(OfflineDetector):
                     mask = lines_map
                     lines_map = tmp
             mask = mask.squeeze()
-            # resize_ratio = (im_w / (self.input_size[0] - dw), im_h / (self.input_size[1] - dh))
-            # blks = postprocess_yolo(blks, self.conf_thresh, self.nms_thresh, resize_ratio)
             mask = mask[..., :mask.shape[0]-dh, :mask.shape[1]-dw]
             lines_map = lines_map[..., :lines_map.shape[2]-dh, :lines_map.shape[3]-dw]
 
@@ -176,11 +173,92 @@ class ComicTextDetector(OfflineDetector):
         textlines = [Quadrilateral(pts.astype(int), '', score) for pts, score in zip(lines, scores)]
         mask_refined = refine_mask(image, mask, textlines, refine_mode=None)
 
+        # Expand mask within detected balloon regions using flood fill
+        if balloon_bboxes is not None and len(balloon_bboxes) > 0:
+            mask_refined = self._expand_mask_in_balloons(image, mask_refined, textlines, balloon_bboxes)
+
         return textlines, mask_refined, None
 
-        # blk_list = group_output(blks, lines, im_w, im_h, mask)
-        # mask_refined = refine_mask(image, mask, blk_list, refine_mode=refine_mode)
-        # if keep_undetected_mask:
-        #     mask_refined = refine_undetected_mask(image, mask, mask_refined, blk_list, refine_mode=refine_mode)
+    @torch.no_grad()
+    def _detect_balloons(self, image: np.ndarray) -> np.ndarray:
+        """Run a single low-res YOLO pass to detect balloon bounding boxes.
 
-        # return blk_list, mask, mask_refined
+        Returns array of [x1, y1, x2, y2] for class=1 (balloon) detections.
+        """
+        im_h, im_w = image.shape[:2]
+        img_in, ratio, dw, dh = preprocess_img(
+            image, input_size=self.input_size, device=self.device,
+            half=self.half, to_tensor=self.backend == 'torch'
+        )
+
+        if self.backend != 'torch':
+            return np.array([])
+
+        blks, _, _ = self.model(img_in)
+        resize_ratio = (im_w / (self.input_size[0] - dw), im_h / (self.input_size[1] - dh))
+        bboxes, cls, confs = postprocess_yolo(blks, self.conf_thresh, self.nms_thresh, resize_ratio)
+
+        if len(bboxes) == 0:
+            return np.array([])
+
+        # class 1 = balloon/speech bubble with clear boundary
+        balloon_mask = cls == 1
+        return bboxes[balloon_mask]
+
+    def _expand_mask_in_balloons(
+        self, image: np.ndarray, mask: np.ndarray,
+        textlines: list, balloon_bboxes: np.ndarray
+    ) -> np.ndarray:
+        """For text regions inside detected balloons, expand mask via flood fill.
+
+        This fills the entire balloon interior (typically white/light background)
+        rather than just the text pixels, giving cleaner inpainting results.
+        """
+        im_h, im_w = image.shape[:2]
+        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY) if len(image.shape) == 3 else image
+
+        for bbox in balloon_bboxes:
+            x1, y1, x2, y2 = bbox.astype(int)
+            x1, y1 = max(0, x1), max(0, y1)
+            x2, y2 = min(im_w, x2), min(im_h, y2)
+
+            # Check if any textline center falls within this balloon bbox
+            has_text = False
+            for tl in textlines:
+                cx = int(tl.pts[:, 0].mean())
+                cy = int(tl.pts[:, 1].mean())
+                if x1 <= cx <= x2 and y1 <= cy <= y2:
+                    has_text = True
+                    break
+
+            if not has_text:
+                continue
+
+            # Flood fill from the center of the balloon bbox
+            # Use a tolerance that captures the balloon's background color
+            roi = gray[y1:y2, x1:x2]
+            center_y, center_x = (y2 - y1) // 2, (x2 - x1) // 2
+
+            # Sample the background color at center
+            bg_val = int(roi[center_y, center_x])
+
+            # Only expand if the center is light (typical balloon background)
+            if bg_val < 180:
+                continue
+
+            # Create flood fill mask for this balloon region
+            fill_mask = np.zeros((y2 - y1 + 2, x2 - x1 + 2), dtype=np.uint8)
+            tolerance = 30
+            cv2.floodFill(
+                roi.copy(), fill_mask,
+                (center_x, center_y),
+                255,
+                loDiff=(tolerance,), upDiff=(tolerance,),
+                flags=cv2.FLOODFILL_MASK_ONLY | (255 << 8)
+            )
+
+            # Apply the flood fill result to the mask (within bbox bounds)
+            balloon_fill = fill_mask[1:-1, 1:-1]
+            mask[y1:y2, x1:x2] = cv2.bitwise_or(mask[y1:y2, x1:x2], balloon_fill)
+
+        return mask
