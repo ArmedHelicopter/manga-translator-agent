@@ -57,6 +57,9 @@ dependencies = [
     "websockets",
 ]
 
+[project.scripts]
+manga-translate = "mga.cli.main:main"
+
 [project.optional-dependencies]
 dev = [
     "ipykernel==6.29.5",

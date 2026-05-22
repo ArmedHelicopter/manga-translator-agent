@@ -63,12 +63,15 @@ class PipelineOrchestrator:
         input_path: str,
         output_path: str,
         config: ProjectConfig,
+        metadata: dict | None = None,
     ) -> PipelineContext:
         """Execute all stages and return the final context."""
         context = PipelineContext(project_config=config)
         context.metadata["input_path"] = input_path
         context.metadata["output_path"] = output_path
         context.metadata["stage_timings"] = {}
+        if metadata:
+            context.metadata.update(metadata)
 
         for stage in self._stages:
             t0 = time.monotonic()

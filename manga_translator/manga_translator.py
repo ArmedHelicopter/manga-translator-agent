@@ -601,6 +601,15 @@ class MangaTranslator:
             except Exception as e:
                 logger.error(f"Error saving inpainted.png debug image: {e}")
                 logger.debug(f"Exception details: {traceback.format_exc()}")
+
+        # -- Export artifact (two-pass mode: stop before rendering)
+        if getattr(self, '_export_artifact_dir', None):
+            from .pipeline.contract import serialize_render_payload
+            serialize_render_payload(ctx, config, self._export_artifact_dir)
+            from PIL import Image
+            ctx.result = Image.fromarray(cv2.cvtColor(ctx.img_inpainted, cv2.COLOR_RGB2BGR))
+            return await self._revert_upscale(config, ctx)
+
         # -- Rendering
         await self._report_progress('rendering')
 
@@ -664,6 +673,38 @@ class MangaTranslator:
             ctx.use_placeholder = True
             return ctx
 
+        return ctx
+
+    async def render_only(self, payload_dir: str, config: Config) -> Context:
+        """Run rendering from a pre-exported payload directory.
+
+        Expects payload_dir to contain:
+          artifact.json   — serialized text regions + render config
+          inpainted.png   — inpainted image (text removed)
+          translations.json — mga translations keyed by region_index
+        """
+        from .pipeline.contract import deserialize_render_payload, load_translations
+
+        text_regions, img_inpainted, mask, render_config = deserialize_render_payload(payload_dir)
+        translations = load_translations(payload_dir)
+
+        for entry in translations:
+            idx = entry.get("region_index", -1)
+            if 0 <= idx < len(text_regions):
+                text_regions[idx].translation = entry["translation"]
+                text_regions[idx].target_lang = entry.get("target_lang", config.translator.target_lang)
+
+        ctx = Context()
+        ctx.text_regions = text_regions
+        ctx.img_inpainted = img_inpainted
+        ctx.img_rgb = img_inpainted
+        ctx.render_mask = None
+        ctx.mask = mask
+
+        ctx.img_rendered = await self._run_text_rendering(config, ctx)
+
+        from PIL import Image
+        ctx.result = Image.fromarray(cv2.cvtColor(ctx.img_rendered, cv2.COLOR_RGB2BGR))
         return ctx
 
     async def _run_colorizer(self, config: Config, ctx: Context):
