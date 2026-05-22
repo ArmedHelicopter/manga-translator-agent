@@ -1,17 +1,26 @@
-"""Stage 6 -- Rendering (external runtime responsibility)."""
+"""Stage 6 -- Rendering via external runtime (two-pass mode)."""
 
 from __future__ import annotations
 
-from mga.models import ProjectConfig, TranslatedPage
+import json
+import logging
+from pathlib import Path
+
+from mga.models import ProjectConfig
 
 from .stages import PipelineContext, PipelineStage
 
+logger = logging.getLogger(__name__)
+
 
 class RenderStage(PipelineStage):
-    """Stub stage -- rendering is delegated to the external manga-image-translator.
+    """Invoke the external runtime in render-only mode.
 
-    This stage passes translations through to the artifacts and records
-    that rendering will be handled externally.
+    When a payload directory is available (from Pass 1 export), this stage:
+    1. Writes translations.json with mga's translation output
+    2. Calls the runtime with --render-only to produce final images
+
+    When no payload directory is available, rendering is skipped (artifact-only mode).
     """
 
     @property
@@ -24,25 +33,65 @@ class RenderStage(PipelineStage):
 
     def execute(self, context: PipelineContext) -> PipelineContext:
         cfg: ProjectConfig = context.project_config
-        translated_pages: list[TranslatedPage] = []
+        payload_dir = context.metadata.get("artifact_payload_dir")
 
-        for page in context.pages:
-            page_translations = [
-                t for t in context.translations
-                if t.bubble_id in {b.bubble_id for b in page.bubbles}
-            ]
-            translated_pages.append(TranslatedPage(
-                index=page.page_index,
-                image_path=page.image.path,
-                page_json={
-                    "page_id": page.page_id,
-                    "translations": [t.model_dump() for t in page_translations],
-                },
-            ))
+        if not payload_dir:
+            context.artifacts[self.name] = {
+                "mode": "skipped",
+                "note": "No payload directory — rendering requires two-pass mode with external runtime",
+            }
+            return context
 
-        context.artifacts[self.name] = {
-            "mode": "external",
-            "pages": [p.model_dump() for p in translated_pages],
-            "note": "Rendering delegated to manga-image-translator runtime",
-        }
+        payload_path = Path(payload_dir)
+        output_dir = Path(cfg.output_dir) if cfg.output_dir else Path("output")
+
+        self._write_translations_json(payload_path, context, cfg)
+
+        try:
+            from mga.runtime_bridge.external import run_render_only
+            result = run_render_only(
+                payload_dir=payload_path,
+                output_dir=output_dir,
+            )
+            context.artifacts[self.name] = {
+                "mode": "render-only",
+                "rendered_images": result.get("rendered_images", []),
+                "output_dir": str(output_dir),
+            }
+        except Exception as e:
+            logger.error(f"Render-only failed: {e}")
+            context.artifacts[self.name] = {
+                "mode": "render-only",
+                "error": str(e),
+            }
+            context.errors.append({"stage": self.name, "error": str(e)})
+
         return context
+
+    def _write_translations_json(
+        self, payload_path: Path, context: PipelineContext, cfg: ProjectConfig
+    ) -> None:
+        """Write mga translations in the format the runtime expects."""
+        translations = []
+        for t in context.translations:
+            if not t.bubble_id.startswith("region-"):
+                continue
+            try:
+                idx = int(t.bubble_id.split("-")[1])
+            except (IndexError, ValueError):
+                continue
+            translations.append({
+                "region_index": idx,
+                "translation": t.text,
+                "target_lang": cfg.target_lang or "CHS",
+            })
+
+        payload = {
+            "version": 1,
+            "target_lang": cfg.target_lang or "CHS",
+            "translations": translations,
+        }
+        (payload_path / "translations.json").write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )

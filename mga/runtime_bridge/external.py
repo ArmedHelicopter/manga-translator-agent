@@ -364,3 +364,117 @@ def run_external_translation_runtime(
         "normalized_pages": normalized_pages,
         "parsed_blocks": parsed_blocks,
     }
+
+
+def run_export_artifact(
+    *,
+    input_dir: Path,
+    payload_dir: Path,
+    repo_dir: Path | None = None,
+    config_path: Path | None = None,
+) -> dict[str, Any]:
+    """Pass 1: Run detect/OCR/merge/inpaint and export the render payload.
+
+    The runtime stops after inpainting and writes artifact.json + inpainted.png
+    to *payload_dir*. No translation or rendering happens.
+    """
+    resolved_repo = resolve_external_runtime_repo(repo_dir)
+    external_python = Path(os.getenv("MANGA_TRANSLATE_EXTERNAL_PYTHON") or sys.executable).expanduser()
+    if not external_python.is_absolute():
+        external_python = (Path.cwd() / external_python).absolute()
+
+    payload_dir.mkdir(parents=True, exist_ok=True)
+
+    command = [
+        str(external_python),
+        "-m", "manga_translator", "local",
+        "-i", str(input_dir.resolve()),
+        "-o", str(payload_dir.resolve()),
+        "--overwrite",
+        "--export-artifact", str(payload_dir.resolve()),
+    ]
+    if config_path:
+        command.extend(["--config-file", str(config_path)])
+
+    child_env = _build_external_child_env()
+    completed = subprocess.run(
+        command,
+        cwd=resolved_repo,
+        env=child_env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f"Export artifact failed (exit {completed.returncode}).\n"
+            f"stderr: {completed.stderr[-2000:]}"
+        )
+
+    artifact_path = payload_dir / "artifact.json"
+    if not artifact_path.exists():
+        raise RuntimeError(
+            f"Export artifact completed but artifact.json not found in {payload_dir}.\n"
+            f"stdout: {completed.stdout[-2000:]}"
+        )
+
+    return {
+        "payload_dir": str(payload_dir),
+        "returncode": completed.returncode,
+    }
+
+
+def run_render_only(
+    *,
+    payload_dir: Path,
+    output_dir: Path,
+    repo_dir: Path | None = None,
+    config_path: Path | None = None,
+) -> dict[str, Any]:
+    """Pass 2: Load payload + translations.json and run rendering only.
+
+    Expects *payload_dir* to contain artifact.json, inpainted.png, and
+    translations.json (written by the mga intelligence pipeline).
+    """
+    resolved_repo = resolve_external_runtime_repo(repo_dir)
+    external_python = Path(os.getenv("MANGA_TRANSLATE_EXTERNAL_PYTHON") or sys.executable).expanduser()
+    if not external_python.is_absolute():
+        external_python = (Path.cwd() / external_python).absolute()
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    command = [
+        str(external_python),
+        "-m", "manga_translator", "local",
+        "-i", str(payload_dir.resolve()),
+        "-o", str(output_dir.resolve()),
+        "--overwrite",
+        "--render-only", str(payload_dir.resolve()),
+    ]
+    if config_path:
+        command.extend(["--config-file", str(config_path)])
+
+    child_env = _build_external_child_env()
+    completed = subprocess.run(
+        command,
+        cwd=resolved_repo,
+        env=child_env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    rendered_images = _collect_rendered_images(output_dir)
+
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f"Render-only failed (exit {completed.returncode}).\n"
+            f"stderr: {completed.stderr[-2000:]}"
+        )
+
+    return {
+        "output_dir": str(output_dir),
+        "rendered_images": rendered_images,
+        "returncode": completed.returncode,
+    }

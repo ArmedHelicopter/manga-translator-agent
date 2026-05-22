@@ -1,10 +1,11 @@
-"""Stage 2 -- Vision extraction via LLM provider."""
+"""Stage 2 -- Vision extraction via LLM provider or runtime artifact."""
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
-from mga.models import Bubble, ProjectConfig
+from mga.models import BoundingBox, Bubble, ProjectConfig
 from mga.providers import get_provider
 
 from .stages import PipelineContext, PipelineStage
@@ -20,7 +21,7 @@ def _build_vision_prompt() -> str:
 
 
 class VisionStage(PipelineStage):
-    """Use LLM vision to extract bubble text and scene summaries per page."""
+    """Use LLM vision or runtime artifact to extract bubble text per page."""
 
     @property
     def name(self) -> str:
@@ -32,6 +33,53 @@ class VisionStage(PipelineStage):
 
     def execute(self, context: PipelineContext) -> PipelineContext:
         cfg: ProjectConfig = context.project_config
+        payload_dir = context.metadata.get("artifact_payload_dir")
+
+        if payload_dir:
+            return self._execute_from_artifact(context, payload_dir)
+        return self._execute_from_llm(context, cfg)
+
+    def _execute_from_artifact(self, context: PipelineContext, payload_dir: str) -> PipelineContext:
+        """Read OCR results from a runtime-exported artifact.json."""
+        artifact_path = Path(payload_dir) / "artifact.json"
+        artifact_data = json.loads(artifact_path.read_text(encoding="utf-8"))
+
+        regions = artifact_data.get("text_regions", [])
+        page = context.pages[0] if context.pages else None
+        if not page:
+            context.artifacts[self.name] = {"source": "artifact", "regions": 0}
+            return context
+
+        for i, region in enumerate(regions):
+            lines = region.get("lines", [])
+            bbox = BoundingBox()
+            if lines:
+                import numpy as np
+                pts = np.array(lines).reshape(-1, 2)
+                x_min, y_min = pts.min(axis=0)
+                x_max, y_max = pts.max(axis=0)
+                bbox = BoundingBox(
+                    x=float(x_min), y=float(y_min),
+                    width=float(x_max - x_min), height=float(y_max - y_min),
+                )
+
+            page.bubbles.append(Bubble(
+                bubble_id=f"region-{i:04d}",
+                bbox=bbox,
+                source_text=region.get("text", ""),
+                reading_order=i,
+            ))
+
+        page.scene_summary = f"Page with {len(regions)} text regions (from runtime OCR)"
+        context.artifacts[self.name] = {
+            "source": "artifact",
+            "payload_dir": payload_dir,
+            "regions": len(regions),
+        }
+        return context
+
+    def _execute_from_llm(self, context: PipelineContext, cfg: ProjectConfig) -> PipelineContext:
+        """Original LLM vision extraction path."""
         provider = self._get_provider(cfg)
 
         extractions: list[dict] = []
@@ -40,7 +88,7 @@ class VisionStage(PipelineStage):
             extractions.append(result)
             self._apply_to_page(page, result)
 
-        context.artifacts[self.name] = {"extractions": extractions}
+        context.artifacts[self.name] = {"source": "llm", "extractions": extractions}
         return context
 
     def _get_provider(self, cfg: ProjectConfig) -> object:
