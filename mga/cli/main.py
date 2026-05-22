@@ -97,7 +97,24 @@ def translate(input_path, output_path, provider, output_format, mode, learn_from
 
     mode_label = f" ({pipeline_mode} mode)" if pipeline_mode == "novel" else ""
     click.echo(f"Translating{mode_label} {input_path} -> {output_path}  ({src} -> {tgt})")
-    ctx = PipelineOrchestrator(config=cfg).run(input_path, output_path, cfg)
+
+    # Two-pass mode: export artifact from runtime, then run intelligence pipeline
+    pipeline_metadata: dict = {}
+    if pipeline_mode == "manga":
+        try:
+            from mga.runtime_bridge.external import run_export_artifact
+            payload_dir = Path(output_path) / ".mga-payload"
+            click.echo(f"Pass 1: Exporting runtime artifact to {payload_dir}")
+            run_export_artifact(
+                input_dir=Path(input_path),
+                payload_dir=payload_dir,
+            )
+            pipeline_metadata["artifact_payload_dir"] = str(payload_dir)
+            click.echo("Pass 1 complete. Running intelligence pipeline...")
+        except Exception as e:
+            click.echo(f"Runtime export unavailable ({e}), falling back to LLM vision.", err=True)
+
+    ctx = PipelineOrchestrator(config=cfg).run(input_path, output_path, cfg, metadata=pipeline_metadata)
     out = Path(output_path)
     if pipeline_mode == "novel":
         out.parent.mkdir(parents=True, exist_ok=True)
