@@ -605,7 +605,9 @@ class MangaTranslator:
         # -- Export artifact (two-pass mode: stop before rendering)
         if getattr(self, '_export_artifact_dir', None):
             from .pipeline.contract import serialize_render_payload
-            serialize_render_payload(ctx, config, self._export_artifact_dir)
+            page_idx = getattr(self, '_export_page_counter', 0)
+            self._export_page_counter = page_idx + 1
+            serialize_render_payload(ctx, config, self._export_artifact_dir, page_index=page_idx)
             from PIL import Image
             ctx.result = Image.fromarray(cv2.cvtColor(ctx.img_inpainted, cv2.COLOR_RGB2BGR))
             return await self._revert_upscale(config, ctx)
@@ -675,37 +677,68 @@ class MangaTranslator:
 
         return ctx
 
-    async def render_only(self, payload_dir: str, config: Config) -> Context:
+    async def render_only(self, payload_dir: str, config: Config, output_dir: str = None) -> Context:
         """Run rendering from a pre-exported payload directory.
 
-        Expects payload_dir to contain:
-          artifact.json   — serialized text regions + render config
-          inpainted.png   — inpainted image (text removed)
-          translations.json — mga translations keyed by region_index
+        Renders each page independently and saves to output_dir. Supports both
+        single-page (artifact.json) and multi-page (pages.json) formats.
         """
         from .pipeline.contract import deserialize_render_payload, load_translations
+        import json as _json
+        from pathlib import Path
 
-        text_regions, img_inpainted, mask, render_config = deserialize_render_payload(payload_dir)
-        translations = load_translations(payload_dir)
+        payload_path = Path(payload_dir)
+        pages_manifest = payload_path / "pages.json"
 
-        for entry in translations:
-            idx = entry.get("region_index", -1)
-            if 0 <= idx < len(text_regions):
-                text_regions[idx].translation = entry["translation"]
-                text_regions[idx].target_lang = entry.get("target_lang", config.translator.target_lang)
+        if pages_manifest.exists():
+            pages_list = _json.loads(pages_manifest.read_text(encoding="utf-8"))
+        else:
+            pages_list = [{"page_index": 0}]
 
-        ctx = Context()
-        ctx.text_regions = text_regions
-        ctx.img_inpainted = img_inpainted
-        ctx.img_rgb = img_inpainted
-        ctx.render_mask = None
-        ctx.mask = mask
+        out_path = Path(output_dir) if output_dir else None
+        last_ctx = None
 
-        ctx.img_rendered = await self._run_text_rendering(config, ctx)
+        for page_entry in pages_list:
+            page_idx = page_entry["page_index"]
+            text_regions, img_inpainted, mask, render_config = deserialize_render_payload(
+                payload_dir, page_index=page_idx
+            )
 
-        from PIL import Image
-        ctx.result = Image.fromarray(cv2.cvtColor(ctx.img_rendered, cv2.COLOR_RGB2BGR))
-        return ctx
+            suffix = f"-{page_idx:04d}"
+            trans_file = payload_path / f"translations{suffix}.json"
+            if trans_file.exists():
+                trans_data = _json.loads(trans_file.read_text(encoding="utf-8"))
+                translations = trans_data.get("translations", [])
+            else:
+                translations = load_translations(payload_dir)
+
+            for entry in translations:
+                idx = entry.get("region_index", -1)
+                if 0 <= idx < len(text_regions):
+                    text_regions[idx].translation = entry["translation"]
+                    text_regions[idx].target_lang = entry.get("target_lang", config.translator.target_lang)
+
+            ctx = Context()
+            ctx.text_regions = text_regions
+            ctx.img_inpainted = img_inpainted
+            ctx.img_rgb = img_inpainted
+            ctx.render_mask = None
+            ctx.mask = mask
+
+            ctx.img_rendered = await self._run_text_rendering(config, ctx)
+
+            from PIL import Image
+            ctx.result = Image.fromarray(cv2.cvtColor(ctx.img_rendered, cv2.COLOR_RGB2BGR))
+
+            if out_path:
+                out_path.mkdir(parents=True, exist_ok=True)
+                page_file = out_path / f"page-{page_idx + 1:03d}.png"
+                ctx.result.save(str(page_file))
+                logger.info(f'Rendered page {page_idx + 1} -> {page_file}')
+
+            last_ctx = ctx
+
+        return last_ctx or Context()
 
     async def _run_colorizer(self, config: Config, ctx: Context):
         current_time = time.time()

@@ -45,8 +45,19 @@ class RenderStage(PipelineStage):
         payload_path = Path(payload_dir)
         output_dir = Path(cfg.output_dir) if cfg.output_dir else Path("output")
 
-        self._write_translations_json(payload_path, context, cfg)
+        # Check for multi-page manifest
+        pages_manifest = payload_path / "pages.json"
+        if pages_manifest.exists():
+            import json as _json
+            pages_list = _json.loads(pages_manifest.read_text(encoding="utf-8"))
+        else:
+            pages_list = [{"page_index": 0}]
 
+        # Write per-page translation files
+        for page_entry in pages_list:
+            self._write_page_translations(payload_path, context, cfg, page_entry["page_index"])
+
+        # Single subprocess call renders all pages
         try:
             from mga.runtime_bridge.external import run_render_only
             result = run_render_only(
@@ -57,6 +68,7 @@ class RenderStage(PipelineStage):
                 "mode": "render-only",
                 "rendered_images": result.get("rendered_images", []),
                 "output_dir": str(output_dir),
+                "pages_rendered": len(pages_list),
             }
         except Exception as e:
             logger.error(f"Render-only failed: {e}")
@@ -68,20 +80,21 @@ class RenderStage(PipelineStage):
 
         return context
 
-    def _write_translations_json(
-        self, payload_path: Path, context: PipelineContext, cfg: ProjectConfig
+    def _write_page_translations(
+        self, payload_path: Path, context: PipelineContext, cfg: ProjectConfig, page_idx: int
     ) -> None:
-        """Write mga translations in the format the runtime expects."""
+        """Write translations for a specific page."""
+        prefix = f"region-{page_idx:04d}-"
         translations = []
         for t in context.translations:
-            if not t.bubble_id.startswith("region-"):
+            if not t.bubble_id.startswith(prefix):
                 continue
             try:
-                idx = int(t.bubble_id.split("-")[1])
+                region_idx = int(t.bubble_id.split("-")[2])
             except (IndexError, ValueError):
                 continue
             translations.append({
-                "region_index": idx,
+                "region_index": region_idx,
                 "translation": t.text,
                 "target_lang": cfg.target_lang or "CHS",
             })
@@ -91,7 +104,8 @@ class RenderStage(PipelineStage):
             "target_lang": cfg.target_lang or "CHS",
             "translations": translations,
         }
-        (payload_path / "translations.json").write_text(
+        suffix = f"-{page_idx:04d}"
+        (payload_path / f"translations{suffix}.json").write_text(
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )

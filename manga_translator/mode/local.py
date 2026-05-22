@@ -106,10 +106,9 @@ class MangaTranslatorLocal(MangaTranslator):
                 config = Config(**config_dict)
             else:
                 config = Config()
-            ctx = await self.render_only(self.render_only_dir, config)
+            ctx = await self.render_only(self.render_only_dir, config, output_dir=dest)
             if ctx.result and dest:
-                os.makedirs(os.path.dirname(dest) or '.', exist_ok=True)
-                ctx.result.save(dest)
+                logger.info(f'Render-only complete. Output in: {dest}')
             return
 
         if not os.path.exists(path):
