@@ -1491,7 +1491,10 @@ class MangaTranslator:
 
     async def _run_mask_refinement(self, config: Config, ctx: Context):
         return await dispatch_mask_refinement(ctx.text_regions, ctx.img_rgb, ctx.mask_raw, 'fit_text',
-                                              config.mask_dilation_offset, config.ocr.ignore_bubble, self.verbose,self.kernel_size)
+                                              config.mask_dilation_offset, config.ocr.ignore_bubble, self.verbose, self.kernel_size,
+                                              config.bubble_mask_mode,
+                                              config.bubble_mask_prior, config.bubble_mask_enlarge_ratio,
+                                              config.bubble_mask_min_area_ratio, config.bubble_mask_max_area_ratio)
 
     async def _run_inpainting(self, config: Config, ctx: Context):
         current_time = time.time()

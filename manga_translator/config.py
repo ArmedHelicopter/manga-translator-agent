@@ -341,6 +341,16 @@ class Config(BaseModel):
     """Set the convolution kernel size of the text erasure area to completely clean up text residues"""
     mask_dilation_offset: int = 20
     """By how much to extend the text mask to remove left-over text pixels of the original image."""
+    bubble_mask_prior: bool = True
+    """Enable bubble-mask prior merge to expand erase regions to speech balloon interiors."""
+    bubble_mask_mode: Literal["off", "expand_text", "full"] = "expand_text"
+    """Bubble mask strategy: off / expand_text / full bubble fill."""
+    bubble_mask_enlarge_ratio: float = 5.0
+    """Balloon extractor enlarge ratio for per-region bubble mask prior."""
+    bubble_mask_min_area_ratio: float = 0.35
+    """Reject extracted bubble masks smaller than this area ratio vs text bbox area."""
+    bubble_mask_max_area_ratio: float = 8.0
+    """Reject extracted bubble masks larger than this area ratio vs text bbox area."""
     _filter_text = None
 
     @property
