@@ -81,11 +81,36 @@ class MangaTranslatorLocal(MangaTranslator):
         self.prep_manual = params.get('prep_manual', None)
         self.batch_size = params.get('batch_size', 1)
         self.disable_memory_optimization = params.get('disable_memory_optimization', False)
+        self.export_artifact_dir = params.get('export_artifact', None)
+        self.render_only_dir = params.get('render_only', None)
 
     async def translate_path(self, path: str, dest: str = None, params: dict[str, Union[int, str]] = None):
         """
         Translates an image or folder (recursively) specified through the path.
         """
+        # Render-only mode: load payload and render directly
+        if self.render_only_dir:
+            params = params or {}
+            config_file_path = params.get("config_file", None)
+            if config_file_path:
+                with open(config_file_path, 'r') as file:
+                    config_content = file.read()
+                config_extension = os.path.splitext(config_file_path)[1].lower()
+                if config_extension == ".toml":
+                    import tomllib
+                    config_dict = tomllib.loads(config_content)
+                elif config_extension == ".json":
+                    config_dict = json.loads(config_content)
+                else:
+                    config_dict = {}
+                config = Config(**config_dict)
+            else:
+                config = Config()
+            ctx = await self.render_only(self.render_only_dir, config, output_dir=dest)
+            if ctx.result and dest:
+                logger.info(f'Render-only complete. Output in: {dest}')
+            return
+
         if not os.path.exists(path):
             raise FileNotFoundError(path)
         path = os.path.abspath(os.path.expanduser(path))
@@ -206,6 +231,9 @@ class MangaTranslatorLocal(MangaTranslator):
             return True
 
         logger.info(f'Translating: "{path}"')
+
+        if self.export_artifact_dir:
+            self._export_artifact_dir = self.export_artifact_dir
 
         # Turn dict to context to make values also accessible through params.<property>
         params = params or {}

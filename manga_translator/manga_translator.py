@@ -24,8 +24,8 @@ from .utils import (
     dump_image,
     visualize_textblocks,
     is_valuable_text,
-    sort_regions,
 )
+from .pipeline import build_post_ocr_artifact, reorder_artifact
 
 from .detection import dispatch as dispatch_detection, prepare as prepare_detection, unload as unload_detection
 from .upscaling import dispatch as dispatch_upscaling, prepare as prepare_upscaling, unload as unload_upscaling
@@ -507,10 +507,12 @@ class MangaTranslator:
             ctx.result = ctx.upscaled
             return await self._revert_upscale(config, ctx)
 
+        ctx.raw_ocr_textlines = list(ctx.textlines)
+
         # -- Textline merge
         await self._report_progress('textline_merge')
         try:
-            ctx.text_regions = await self._run_textline_merge(config, ctx)
+            ctx.text_regions = await self._run_post_ocr_pipeline(config, ctx)
         except Exception as e:  
             logger.error(f"Error during textline_merge:\n{traceback.format_exc()}")  
             if not self.ignore_errors:  
@@ -599,6 +601,17 @@ class MangaTranslator:
             except Exception as e:
                 logger.error(f"Error saving inpainted.png debug image: {e}")
                 logger.debug(f"Exception details: {traceback.format_exc()}")
+
+        # -- Export artifact (two-pass mode: stop before rendering)
+        if getattr(self, '_export_artifact_dir', None):
+            from .pipeline.contract import serialize_render_payload
+            page_idx = getattr(self, '_export_page_counter', 0)
+            self._export_page_counter = page_idx + 1
+            serialize_render_payload(ctx, config, self._export_artifact_dir, page_index=page_idx)
+            from PIL import Image
+            ctx.result = Image.fromarray(cv2.cvtColor(ctx.img_inpainted, cv2.COLOR_RGB2BGR))
+            return await self._revert_upscale(config, ctx)
+
         # -- Rendering
         await self._report_progress('rendering')
 
@@ -663,6 +676,120 @@ class MangaTranslator:
             return ctx
 
         return ctx
+
+    async def render_only(self, payload_dir: str, config: Config, output_dir: str = None) -> Context:
+        """Run rendering from a pre-exported payload directory.
+
+        Renders each page independently and saves to output_dir. Supports both
+        single-page (artifact.json) and multi-page (pages.json) formats.
+        """
+        from .pipeline.contract import deserialize_render_payload, load_translations
+        import json as _json
+        from pathlib import Path
+
+        payload_path = Path(payload_dir)
+        pages_manifest = payload_path / "pages.json"
+
+        if pages_manifest.exists():
+            pages_list = _json.loads(pages_manifest.read_text(encoding="utf-8"))
+        else:
+            pages_list = [{"page_index": 0}]
+
+        out_path = Path(output_dir) if output_dir else None
+        last_ctx = None
+
+        for page_entry in pages_list:
+            page_idx = page_entry["page_index"]
+            text_regions, img_inpainted, mask, render_config = deserialize_render_payload(
+                payload_dir, page_index=page_idx
+            )
+
+            suffix = f"-{page_idx:04d}"
+            trans_file = payload_path / f"translations{suffix}.json"
+            if trans_file.exists():
+                trans_data = _json.loads(trans_file.read_text(encoding="utf-8"))
+                translations = trans_data.get("translations", [])
+            else:
+                translations = load_translations(payload_dir)
+
+            for entry in translations:
+                idx = entry.get("region_index", -1)
+                if 0 <= idx < len(text_regions):
+                    text_regions[idx].translation = entry["translation"]
+                    text_regions[idx].target_lang = entry.get("target_lang", config.translator.target_lang)
+
+            ctx = Context()
+            ctx.text_regions = text_regions
+            ctx.img_inpainted = img_inpainted
+            ctx.img_rgb = img_inpainted
+            ctx.render_mask = None
+            ctx.mask = mask
+
+            ctx.img_rendered = await self._run_text_rendering(config, ctx)
+
+            # Draw footnotes at page bottom if present
+            footnotes_data = trans_data.get("footnotes", []) if trans_file.exists() else []
+            if footnotes_data:
+                ctx.img_rendered = self._draw_footnotes(ctx.img_rendered, footnotes_data)
+
+            from PIL import Image
+            ctx.result = Image.fromarray(cv2.cvtColor(ctx.img_rendered, cv2.COLOR_RGB2BGR))
+
+            if out_path:
+                out_path.mkdir(parents=True, exist_ok=True)
+                page_file = out_path / f"page-{page_idx + 1:03d}.png"
+                ctx.result.save(str(page_file))
+                logger.info(f'Rendered page {page_idx + 1} -> {page_file}')
+
+            last_ctx = ctx
+
+        return last_ctx or Context()
+
+    def _draw_footnotes(self, img: np.ndarray, footnotes: list) -> np.ndarray:
+        """Draw katakana footnotes at the bottom of the rendered page."""
+        if not footnotes:
+            return img
+        from PIL import Image, ImageDraw, ImageFont
+
+        h, w = img.shape[:2]
+        font_size = max(16, h // 80)
+        line_height = int(font_size * 1.4)
+        margin = 10
+
+        lines = []
+        for fn in footnotes:
+            orig = fn.get("original", "")
+            trans = fn.get("translation", "")
+            fn_type = fn.get("type", "")
+            if orig and trans:
+                label = f"※ {trans}（{orig}）" if fn_type != "sfx" else f"※ {trans}（{orig}，拟声）"
+                lines.append(label)
+
+        if not lines:
+            return img
+
+        footer_h = len(lines) * line_height + margin * 2
+        new_h = h + footer_h
+        result = np.ones((new_h, w, 3), dtype=np.uint8) * 255
+        result[:h, :, :] = img
+
+        pil_img = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
+        draw = ImageDraw.Draw(pil_img)
+
+        try:
+            font = ImageFont.truetype("/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc", font_size)
+        except (OSError, IOError):
+            try:
+                font = ImageFont.truetype("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", font_size)
+            except (OSError, IOError):
+                font = ImageFont.load_default()
+
+        y = h + margin
+        for line in lines:
+            draw.text((margin, y), line, fill=(80, 80, 80), font=font)
+            y += line_height
+
+        return cv2.cvtColor(np.array(pil_img), cv2.COLOR_BGR2RGB)
 
     async def _run_colorizer(self, config: Config, ctx: Context):
         current_time = time.time()
@@ -767,128 +894,100 @@ class MangaTranslator:
                 new_textlines.append(textline)
         return new_textlines
 
-    async def _run_textline_merge(self, config: Config, ctx: Context):
-        current_time = time.time()
-        self._model_usage_timestamps[("textline_merge", "textline_merge")] = current_time
-        text_regions = await dispatch_textline_merge(ctx.textlines, ctx.img_rgb.shape[1], ctx.img_rgb.shape[0],
-                                                     verbose=self.verbose)
-        for region in text_regions:
-            if not hasattr(region, "text_raw"):
-                region.text_raw = region.text      # <- Save the initial OCR results to expand the render detection box. Also, prevent affecting the forbidden translation function.       
-        # Filter out languages to skip  
-        if config.translator.skip_lang is not None:  
-            skip_langs = [lang.strip().upper() for lang in config.translator.skip_lang.split(',')]  
-            filtered_textlines = []  
-            for txtln in ctx.textlines:  
-                try:  
-                    detected_lang, confidence = langid.classify(txtln.text)
-                    source_language = ISO_639_1_TO_VALID_LANGUAGES.get(detected_lang, 'UNKNOWN')
-                    if source_language != 'UNKNOWN':
-                        source_language = source_language.upper()
-                except Exception:  
-                    source_language = 'UNKNOWN'  
-    
-                # Print detected source_language and whether it's in skip_langs  
-                # logger.info(f'Detected source language: {source_language}, in skip_langs: {source_language in skip_langs}, text: "{txtln.text}"')  
-    
-                if source_language in skip_langs:  
-                    logger.info(f'Filtered out: {txtln.text}')  
-                    logger.info(f'Reason: Detected language {source_language} is in skip_langs')  
-                    continue  # Skip this region  
-                filtered_textlines.append(txtln)  
-            ctx.textlines = filtered_textlines  
-    
-        text_regions = await dispatch_textline_merge(ctx.textlines, ctx.img_rgb.shape[1], ctx.img_rgb.shape[0],  
-                                                     verbose=self.verbose)  
+    def _filter_ocr_textlines(self, config: Config, textlines: List[Any]) -> List[Any]:
+        if config.translator.skip_lang is None:
+            return list(textlines)
 
+        skip_langs = [lang.strip().upper() for lang in config.translator.skip_lang.split(',')]
+        filtered_textlines = []
+        for txtln in textlines:
+            try:
+                detected_lang, confidence = langid.classify(txtln.text)
+                source_language = ISO_639_1_TO_VALID_LANGUAGES.get(detected_lang, 'UNKNOWN')
+                if source_language != 'UNKNOWN':
+                    source_language = source_language.upper()
+            except Exception:
+                source_language = 'UNKNOWN'
+
+            if source_language in skip_langs:
+                logger.info(f'Filtered out: {txtln.text}')
+                logger.info(f'Reason: Detected language {source_language} is in skip_langs')
+                continue
+            filtered_textlines.append(txtln)
+        return filtered_textlines
+
+    def _normalize_text_regions(self, config: Config, text_regions: List[Any]) -> List[Any]:
         new_text_regions = []
         for region in text_regions:
-            # Remove leading spaces after pre-translation dictionary replacement                
-            original_text = region.text  
-            stripped_text = original_text.strip()  
-            
-            # Record removed leading characters  
-            removed_start_chars = original_text[:len(original_text) - len(stripped_text)]  
-            if removed_start_chars:  
-                logger.info(f'Removed leading characters: "{removed_start_chars}" from "{original_text}"')  
-            
-            # Modified filtering condition: handle incomplete parentheses  
-            bracket_pairs = {  
-                '(': ')', '（': '）', '[': ']', '【': '】', '{': '}', '〔': '〕', '〈': '〉', '「': '」',  
-                '"': '"', '＂': '＂', "'": "'", "“": "”", '《': '》', '『': '』', '"': '"', '〝': '〞', '﹁': '﹂', '﹃': '﹄',  
-                '⸂': '⸃', '⸄': '⸅', '⸉': '⸊', '⸌': '⸍', '⸜': '⸝', '⸠': '⸡', '‹': '›', '«': '»', '＜': '＞', '<': '>'  
-            }   
-            left_symbols = set(bracket_pairs.keys())  
-            right_symbols = set(bracket_pairs.values())  
-            
-            has_brackets = any(s in stripped_text for s in left_symbols) or any(s in stripped_text for s in right_symbols)  
-            
-            if has_brackets:  
-                result_chars = []  
-                stack = []  
-                to_skip = []    
-                
-                # 第一次遍历：标记匹配的括号  
-                # First traversal: mark matching brackets
-                for i, char in enumerate(stripped_text):  
-                    if char in left_symbols:  
-                        stack.append((i, char))  
-                    elif char in right_symbols:  
-                        if stack:  
-                            # 有对应的左括号，出栈  
-                            # There is a corresponding left bracket, pop the stack
-                            stack.pop()  
-                        else:  
-                            # 没有对应的左括号，标记为删除  
-                            # No corresponding left parenthesis, marked for deletion
-                            to_skip.append(i)  
-                
-                # 标记未匹配的左括号为删除
-                # Mark unmatched left brackets as delete  
-                for pos, _ in stack:  
-                    to_skip.append(pos)  
-                
-                has_removed_symbols = len(to_skip) > 0  
-                
-                # 第二次遍历：处理匹配但不对应的括号
-                # Second pass: Process matching but mismatched brackets
-                stack = []  
-                for i, char in enumerate(stripped_text):  
-                    if i in to_skip:  
-                        # 跳过孤立的括号
-                        # Skip isolated parentheses
-                        continue  
-                        
-                    if char in left_symbols:  
-                        stack.append(char)  
-                        result_chars.append(char)  
-                    elif char in right_symbols:  
-                        if stack:  
-                            left_bracket = stack.pop()  
-                            expected_right = bracket_pairs.get(left_bracket)  
-                            
-                            if char != expected_right:  
-                                # 替换不匹配的右括号为对应左括号的正确右括号
-                                # Replace mismatched right brackets with the correct right brackets corresponding to the left brackets
-                                result_chars.append(expected_right)  
-                                logger.info(f'Fixed mismatched bracket: replaced "{char}" with "{expected_right}"')  
-                            else:  
-                                result_chars.append(char)  
-                    else:  
-                        result_chars.append(char)  
-                
-                new_stripped_text = ''.join(result_chars)  
-                
-                if has_removed_symbols:  
-                    logger.info(f'Removed unpaired bracket from "{stripped_text}"')  
-                
-                if new_stripped_text != stripped_text and not has_removed_symbols:  
-                    logger.info(f'Fixed brackets: "{stripped_text}" → "{new_stripped_text}"')  
-                
-                stripped_text = new_stripped_text  
-              
-            region.text = stripped_text.strip()     
-            
+            if not hasattr(region, "text_raw"):
+                region.text_raw = region.text
+
+            original_text = region.text
+            stripped_text = original_text.strip()
+
+            removed_start_chars = original_text[:len(original_text) - len(stripped_text)]
+            if removed_start_chars:
+                logger.info(f'Removed leading characters: "{removed_start_chars}" from "{original_text}"')
+
+            bracket_pairs = {
+                '(': ')', '（': '）', '[': ']', '【': '】', '{': '}', '〔': '〕', '〈': '〉', '「': '」',
+                '"': '"', '＂': '＂', "'": "'", "“": "”", '《': '》', '『': '』', '"': '"', '〝': '〞', '﹁': '﹂', '﹃': '﹄',
+                '⸂': '⸃', '⸄': '⸅', '⸉': '⸊', '⸌': '⸍', '⸜': '⸝', '⸠': '⸡', '‹': '›', '«': '»', '＜': '＞', '<': '>'
+            }
+            left_symbols = set(bracket_pairs.keys())
+            right_symbols = set(bracket_pairs.values())
+            has_brackets = any(s in stripped_text for s in left_symbols) or any(s in stripped_text for s in right_symbols)
+
+            if has_brackets:
+                result_chars = []
+                stack = []
+                to_skip = []
+
+                for i, char in enumerate(stripped_text):
+                    if char in left_symbols:
+                        stack.append((i, char))
+                    elif char in right_symbols:
+                        if stack:
+                            stack.pop()
+                        else:
+                            to_skip.append(i)
+
+                for pos, _ in stack:
+                    to_skip.append(pos)
+
+                has_removed_symbols = len(to_skip) > 0
+
+                stack = []
+                for i, char in enumerate(stripped_text):
+                    if i in to_skip:
+                        continue
+
+                    if char in left_symbols:
+                        stack.append(char)
+                        result_chars.append(char)
+                    elif char in right_symbols:
+                        if stack:
+                            left_bracket = stack.pop()
+                            expected_right = bracket_pairs.get(left_bracket)
+                            if char != expected_right:
+                                result_chars.append(expected_right)
+                                logger.info(f'Fixed mismatched bracket: replaced "{char}" with "{expected_right}"')
+                            else:
+                                result_chars.append(char)
+                    else:
+                        result_chars.append(char)
+
+                new_stripped_text = ''.join(result_chars)
+
+                if has_removed_symbols:
+                    logger.info(f'Removed unpaired bracket from "{stripped_text}"')
+                if new_stripped_text != stripped_text and not has_removed_symbols:
+                    logger.info(f'Fixed brackets: "{stripped_text}" → "{new_stripped_text}"')
+
+                stripped_text = new_stripped_text
+
+            region.text = stripped_text.strip()
+
             if len(region.text) < config.ocr.min_text_length \
                     or not is_valuable_text(region.text) \
                     or (not config.translator.no_text_lang_skip and langcodes.tag_distance(region.source_lang, config.translator.target_lang) == 0):
@@ -905,16 +1004,55 @@ class MangaTranslator:
                     if config.render.font_color_bg:
                         region.adjust_bg_color = False
                 new_text_regions.append(region)
-        text_regions = new_text_regions
 
-        text_regions = sort_regions(
-            text_regions,
+        return new_text_regions
+
+    async def _run_post_ocr_pipeline(self, config: Config, ctx: Context):
+        source_textlines = list(getattr(ctx, 'raw_ocr_textlines', None) or ctx.textlines or [])
+        ctx.ocr_textlines = self._filter_ocr_textlines(config, source_textlines)
+        ctx.textlines = ctx.ocr_textlines
+
+        if not ctx.ocr_textlines:
+            artifact = build_post_ocr_artifact([], [], source='post-ocr-empty')
+            ctx.post_ocr_artifact_raw = artifact
+            ctx.post_ocr_artifact = artifact
+            ctx.agent_seam_artifact = artifact
+            ctx.post_ocr_region_order = artifact.order
+            return []
+
+        text_regions = await self._run_textline_merge(config, ctx)
+        artifact = build_post_ocr_artifact(ctx.ocr_textlines, text_regions, source='post-ocr-merged')
+        ctx.post_ocr_artifact_raw = artifact
+
+        await self._report_progress('text_reorder')
+        artifact = await self._run_text_reorder(config, ctx, artifact)
+
+        ctx.post_ocr_artifact = artifact
+        ctx.agent_seam_artifact = artifact
+        ctx.post_ocr_region_order = artifact.order
+        return artifact.text_regions
+
+    async def _run_textline_merge(self, config: Config, ctx: Context):
+        current_time = time.time()
+        self._model_usage_timestamps[("textline_merge", "textline_merge")] = current_time
+        text_regions = await dispatch_textline_merge(
+            ctx.textlines,
+            ctx.img_rgb.shape[1],
+            ctx.img_rgb.shape[0],
+            verbose=self.verbose,
+        )
+        return self._normalize_text_regions(config, text_regions)
+
+    async def _run_text_reorder(self, config: Config, ctx: Context, artifact):
+        current_time = time.time()
+        self._model_usage_timestamps[("text_reorder", "text_reorder")] = current_time
+        return reorder_artifact(
+            artifact,
             right_to_left=config.render.rtl,
             img=ctx.img_rgb,
-            force_simple_sort=config.force_simple_sort
-        )   
-        
-        return text_regions
+            force_simple_sort=config.force_simple_sort,
+            source='runtime-reading-order',
+        )
 
     def _build_prev_context(self, use_original_text=False, current_page_index=None, batch_index=None, batch_original_texts=None):
         """
@@ -1353,7 +1491,10 @@ class MangaTranslator:
 
     async def _run_mask_refinement(self, config: Config, ctx: Context):
         return await dispatch_mask_refinement(ctx.text_regions, ctx.img_rgb, ctx.mask_raw, 'fit_text',
-                                              config.mask_dilation_offset, config.ocr.ignore_bubble, self.verbose,self.kernel_size)
+                                              config.mask_dilation_offset, config.ocr.ignore_bubble, self.verbose, self.kernel_size,
+                                              config.bubble_mask_mode,
+                                              config.bubble_mask_prior, config.bubble_mask_enlarge_ratio,
+                                              config.bubble_mask_min_area_ratio, config.bubble_mask_max_area_ratio)
 
     async def _run_inpainting(self, config: Config, ctx: Context):
         current_time = time.time()
@@ -1427,6 +1568,8 @@ class MangaTranslator:
             'upscaling': 'Running upscaling',
             'detection': 'Running text detection',
             'ocr': 'Running ocr',
+            'textline_merge': 'Running textline merge',
+            'text_reorder': 'Running post-ocr text reorder',
             'mask-generation': 'Running mask refinement',
             'translating': 'Running text translation',
             'rendering': 'Running rendering',
@@ -1763,10 +1906,12 @@ class MangaTranslator:
             ctx.result = ctx.upscaled
             return await self._revert_upscale(config, ctx)
 
+        ctx.raw_ocr_textlines = list(ctx.textlines)
+
         # -- Textline merge
         await self._report_progress('textline_merge')
         try:
-            ctx.text_regions = await self._run_textline_merge(config, ctx)
+            ctx.text_regions = await self._run_post_ocr_pipeline(config, ctx)
         except Exception as e:  
             logger.error(f"Error during textline_merge:\n{traceback.format_exc()}")  
             if not self.ignore_errors:  
