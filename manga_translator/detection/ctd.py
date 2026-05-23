@@ -235,20 +235,19 @@ class ComicTextDetector(OfflineDetector):
                 continue
 
             # Flood fill from the center of the balloon bbox
-            # Use a tolerance that captures the balloon's background color
             roi = gray[y1:y2, x1:x2]
             center_y, center_x = (y2 - y1) // 2, (x2 - x1) // 2
 
             # Sample the background color at center
             bg_val = int(roi[center_y, center_x])
 
-            # Only expand if the center is light (typical balloon background)
-            if bg_val < 180:
+            # Skip only if center is very dark (likely artwork, not balloon)
+            if bg_val < 100:
                 continue
 
             # Create flood fill mask for this balloon region
             fill_mask = np.zeros((y2 - y1 + 2, x2 - x1 + 2), dtype=np.uint8)
-            tolerance = 30
+            tolerance = 50
             cv2.floodFill(
                 roi.copy(), fill_mask,
                 (center_x, center_y),
