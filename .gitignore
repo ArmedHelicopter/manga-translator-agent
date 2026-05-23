@@ -11,10 +11,6 @@ build/
 .venv/
 venv/
 env/
-.main-cli-venv/
-.external-venv/
-.external-*/
-.legacy-venv/
 
 # IDE
 .vscode/
@@ -27,44 +23,32 @@ env/
 .DS_Store
 Thumbs.db
 
-# Project specific
-output/
-temp/
-.cache/
-data/
+# Data (user content + models)
+data/input/
+data/output/
+data/models/
+
+# External runtime clone
 external/
-manga/
-vendor/
 
 # Provider keys
 .env
 .env.local
-providers.toml
-configs/providers.toml
+mga.toml
 
 # Model weights
-/models/
 *.bin
 *.safetensors
 *.onnx
+*.pt
 
-# Translation output
-translations/
+# Cache
+.cache/
+.pytest_cache/
+temp/
 
-# Python cache
-src/manga_translate/__pycache__/
-src/manga_translate/**/*.pyc
+# Legacy
+legacy/
 
-# Benchmark / debug review output
-debug/
-/benchmark/
-benchmark_*/
-/data/benchmark_*/
-/data/*/debug/
-/data/reviews/
-/data/runs/
-/data/samples/
-!tests/benchmark/
-!tests/benchmark/**
-!tests/runtime/
-!tests/runtime/**
+# Misc
+uv.lock
