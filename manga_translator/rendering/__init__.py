@@ -106,19 +106,19 @@ def resize_regions_to_font_size(img: np.ndarray, text_regions: List['TextBlock']
 
             if needed_rows > used_rows:
                 scale_x = ((needed_rows - used_rows) / used_rows) * 1 + 1
-                try:  
+                scale_x = min(scale_x, 1.5)  # Cap expansion to 50% to prevent overflow
+                try:
                     poly = Polygon(region.unrotated_min_rect[0])
                     minx, miny, maxx, maxy = poly.bounds
-                    poly = affinity.scale(poly, xfact=scale_x, yfact=1.0, origin=(minx, miny))        
-                
-                    pts = np.array(poly.exterior.coords[:4])  
-                    dst_points = rotate_polygons(  
-                        region.center, pts.reshape(1, -1), -region.angle,  
-                        to_int=False  
-                    ).reshape(-1, 4, 2)  
-                    # 移除边界限制，允许文本超出检测框边界
-                    # dst_points[..., 0] = dst_points[..., 0].clip(0, img.shape[1] - 1)  
-                    # dst_points[..., 1] = dst_points[..., 1].clip(0, img.shape[0] - 1)  
+                    poly = affinity.scale(poly, xfact=scale_x, yfact=1.0, origin=(minx, miny))
+
+                    pts = np.array(poly.exterior.coords[:4])
+                    dst_points = rotate_polygons(
+                        region.center, pts.reshape(1, -1), -region.angle,
+                        to_int=False
+                    ).reshape(-1, 4, 2)
+                    dst_points[..., 0] = dst_points[..., 0].clip(0, img.shape[1] - 1)
+                    dst_points[..., 1] = dst_points[..., 1].clip(0, img.shape[0] - 1)
                     dst_points = dst_points.astype(np.int64)
                     single_axis_expanded = True
                     # logger.debug(f"Successfully expanded horizontal text width: xfact={scale_x:.2f}")  
@@ -139,19 +139,19 @@ def resize_regions_to_font_size(img: np.ndarray, text_regions: List['TextBlock']
             # logger.debug(f"Needed columns: {needed_cols}") 
             if needed_cols > used_cols:
                 scale_x = ((needed_cols - used_cols) / used_cols) * 1 + 1
-                try:  
+                scale_x = min(scale_x, 1.5)  # Cap expansion to 50% to prevent overflow
+                try:
                     poly = Polygon(region.unrotated_min_rect[0])
                     minx, miny, maxx, maxy = poly.bounds
-                    poly = affinity.scale(poly, xfact=1.0, yfact=scale_x, origin=(minx, miny))                    
-                    
-                    pts = np.array(poly.exterior.coords[:4])  
-                    dst_points = rotate_polygons(  
-                        region.center, pts.reshape(1, -1), -region.angle,  
-                        to_int=False  
-                    ).reshape(-1, 4, 2)  
-                    # 移除边界限制，允许文本超出检测框边界
-                    # dst_points[..., 0] = dst_points[..., 0].clip(0, img.shape[1] - 1)  
-                    # dst_points[..., 1] = dst_points[..., 1].clip(0, img.shape[0] - 1)  
+                    poly = affinity.scale(poly, xfact=1.0, yfact=scale_x, origin=(minx, miny))
+
+                    pts = np.array(poly.exterior.coords[:4])
+                    dst_points = rotate_polygons(
+                        region.center, pts.reshape(1, -1), -region.angle,
+                        to_int=False
+                    ).reshape(-1, 4, 2)
+                    dst_points[..., 0] = dst_points[..., 0].clip(0, img.shape[1] - 1)
+                    dst_points[..., 1] = dst_points[..., 1].clip(0, img.shape[0] - 1)
                     dst_points = dst_points.astype(np.int64)
                     single_axis_expanded = True
                     # logger.debug(f"Successfully expanded vertical text width: xfact={scale_x:.2f}")  
@@ -167,16 +167,13 @@ def resize_regions_to_font_size(img: np.ndarray, text_regions: List['TextBlock']
             char_count_trans = count_text_length(region.translation.strip())     
             length_ratio = 1.0
 
-            if char_count_orig > 0 and char_count_trans > char_count_orig:  
+            if char_count_orig > 0 and char_count_trans > char_count_orig:
                 increase_percentage = (char_count_trans - char_count_orig) / char_count_orig
-                font_increase_ratio = 1 + (increase_percentage * 0.3)
-                font_increase_ratio = min(1.5, max(1.0, font_increase_ratio))
-                # logger.debug(f"Translation is {increase_percentage:.2%} longer, font increase ratio: {font_increase_ratio:.2f}")
-                target_font_size = int(target_font_size * font_increase_ratio)
-                # logger.debug(f"Adjusted target font size: {target_font_size}")
-                # Need greater bounding box scaling to accommodate larger font size and longer text
-                target_scale = max(1, min(1 + increase_percentage * 0.3, 2))  # Possibly max(1, min(1 + (font_increase_ratio-1), 2))
-                # logger.debug(f"Translation is longer than original and font increased, need larger bounding box scaling. Target scale factor: {target_scale:.2f}")
+                # Shrink font when translation is longer to fit within the region
+                font_shrink_ratio = 1 / (1 + increase_percentage * 0.5)
+                font_shrink_ratio = max(0.6, min(1.0, font_shrink_ratio))
+                target_font_size = int(target_font_size * font_shrink_ratio)
+                target_scale = 1.0  # Do not expand bounding box
             # Short text box expansion is quite aggressive, in many cases short text boxes don't need expansion
             # elif char_count_orig > 0 and char_count_trans < char_count_orig:
             #     # Translation is shorter, increase font proportionally
