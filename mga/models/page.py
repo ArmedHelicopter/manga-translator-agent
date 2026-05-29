@@ -21,6 +21,14 @@ class PageImage(BaseModel):
     dpi: Optional[int] = None
 
 
+class VisualFootnote(BaseModel):
+    source_text: str = ""
+    translation_hint: str = ""
+    kind: str = "other"
+    bbox: Optional[BoundingBox] = None
+    notes: Optional[str] = None
+
+
 class Bubble(BaseModel):
     bubble_id: str = ""
     bbox: BoundingBox = Field(default_factory=BoundingBox)
@@ -30,6 +38,10 @@ class Bubble(BaseModel):
     speaker_name: Optional[str] = None
     tone: Optional[str] = None
     notes: Optional[str] = None
+    box_type: str = "dialogue"
+    provisional_speaker: Optional[str] = None
+    voice_hint: Optional[str] = None
+    vision_notes: Optional[str] = None
 
 
 class Page(BaseModel):
@@ -40,3 +52,5 @@ class Page(BaseModel):
     source_text: str = ""
     bubbles: List[Bubble] = Field(default_factory=list)
     scene_summary: str = ""
+    visual_footnotes: List[VisualFootnote] = Field(default_factory=list)
+    voice_hints: List[str] = Field(default_factory=list)

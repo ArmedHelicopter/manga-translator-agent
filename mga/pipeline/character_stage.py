@@ -80,7 +80,7 @@ class CharacterAttributionStage(PipelineStage):
     def _build_memory_context(self, project_dir: Path, page: object) -> dict:
         ctx: dict = {}
         for bubble in page.bubbles:
-            speaker = bubble.speaker_id or bubble.speaker_name
+            speaker = bubble.speaker_id
             if speaker and speaker not in ctx:
                 char_ctx = MemoryRetrieval.get_character_context(project_dir, speaker)
                 if char_ctx:

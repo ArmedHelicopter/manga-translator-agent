@@ -14,15 +14,18 @@ from .format_stage import FormatStage
 from .output_stage import OutputStage
 from .qa_stage import QAStage
 from .render_stage import RenderStage
+from .speaker_attribution_stage import SpeakerAttributionStage
 from .stages import PipelineContext, PipelineStage
 from .translation_stage import TranslationStage
-from .vision_stage import VisionStage
+from .vision_stage import OCRArtifactStage, VisionEnrichmentStage
 
 logger = logging.getLogger(__name__)
 
 _DEFAULT_STAGES: list[PipelineStage] = [
     FormatStage(),
-    VisionStage(),
+    OCRArtifactStage(),
+    VisionEnrichmentStage(),
+    SpeakerAttributionStage(),
     CharacterAttributionStage(),
     TranslationStage(),
     QAStage(),
@@ -92,6 +95,7 @@ class PipelineOrchestrator:
                 logger.error(
                     "Stage '%s' failed: %s", stage.name, exc, exc_info=True,
                 )
+                break
 
         context.metadata["total_duration"] = sum(
             context.metadata["stage_timings"].values()

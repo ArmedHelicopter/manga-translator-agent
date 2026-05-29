@@ -1,7 +1,13 @@
 """Data models for the Manga Translate Agent host layer."""
 
-from .page import BoundingBox, Bubble, Page, PageImage
-from .translation import TranslationCandidate, Utterance
+from .page import BoundingBox, Bubble, Page, PageImage, VisualFootnote
+from .translation import (
+    DialogueRealizationTrace,
+    PersonaRenderTrace,
+    SemanticTranslation,
+    TranslationCandidate,
+    Utterance,
+)
 from .project import ProjectConfig, ProviderRoute, StageProviderConfig
 from .format import PageRef, TranslatedPage
 
@@ -10,6 +16,10 @@ __all__ = [
     "Bubble",
     "Page",
     "PageImage",
+    "VisualFootnote",
+    "DialogueRealizationTrace",
+    "PersonaRenderTrace",
+    "SemanticTranslation",
     "TranslationCandidate",
     "Utterance",
     "ProjectConfig",

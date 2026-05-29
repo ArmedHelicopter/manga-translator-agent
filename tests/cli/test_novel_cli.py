@@ -1,10 +1,13 @@
 """Tests for CLI novel mode."""
 
+import importlib
 from pathlib import Path
 
 from click.testing import CliRunner
 
+from mga.models import Page, PageImage
 from mga.cli.main import _detect_mode, translate
+from mga.pipeline.stages import PipelineContext
 
 
 def _setup_config(tmp_path: Path, monkeypatch) -> Path:
@@ -86,3 +89,51 @@ def test_translate_auto_detect_novel_dry_run(tmp_path, monkeypatch):
     ])
     assert result.exit_code == 0, result.output
     assert "novel" in result.output.lower() or "Dry run" in result.output
+
+
+def test_translate_manga_runs_intelligence_pipeline_after_runtime_export(tmp_path, monkeypatch):
+    """Manga CLI should pass runtime artifacts into the mga pipeline, not stop at external-core."""
+    _setup_config(tmp_path, monkeypatch)
+    input_dir = tmp_path / "pages"
+    input_dir.mkdir()
+    (input_dir / "page-0001.png").write_bytes(b"fake")
+    output_dir = tmp_path / "out"
+    payload_dir = output_dir / ".mga-payload"
+    captured = {}
+
+    def fake_precheck(cfg):
+        captured["precheck_pipeline_mode"] = cfg.pipeline_mode
+
+    def fake_export(input_dir, payload_dir):
+        payload_dir.mkdir(parents=True)
+        captured["export_input_dir"] = input_dir
+        captured["export_payload_dir"] = payload_dir
+
+    class FakeOrchestrator:
+        def __init__(self, config=None):
+            captured["orchestrator_config"] = config
+
+        def run(self, input_path, output_path, cfg, metadata=None):
+            captured["run_input_path"] = input_path
+            captured["run_output_path"] = output_path
+            captured["run_cfg"] = cfg
+            captured["run_metadata"] = metadata
+            return PipelineContext(
+                project_config=cfg,
+                pages=[Page(page_id="page_0000", page_index=0, image=PageImage(path=str(input_dir / "page-0001.png")))],
+            )
+
+    cli_main = importlib.import_module("mga.cli.main")
+    monkeypatch.setattr(cli_main, "_check_translation_provider_connectivity", fake_precheck)
+    monkeypatch.setattr("mga.runtime_bridge.external.run_export_artifact", fake_export)
+    monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FakeOrchestrator)
+
+    runner = CliRunner()
+    result = runner.invoke(translate, [str(input_dir), "-o", str(output_dir), "--lang", "ja-zh"])
+
+    assert result.exit_code == 0, result.output
+    assert captured["precheck_pipeline_mode"] == "manga"
+    assert captured["export_input_dir"] == input_dir
+    assert captured["export_payload_dir"] == payload_dir
+    assert captured["run_metadata"] == {"artifact_payload_dir": str(payload_dir)}
+    assert captured["run_cfg"].pipeline_mode == "manga"

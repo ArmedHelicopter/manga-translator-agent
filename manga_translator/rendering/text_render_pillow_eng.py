@@ -5,7 +5,7 @@ from typing import List
 
 from .ballon_extractor import extract_ballon_region
 from ..utils import TextBlock
-from .text_render_eng import seg_eng
+from .text_render_eng import fit_font_size_to_ballon, seg_eng
 
 def merge_seg_eng(text: str, font, bbox_width, size_ratio=1.2) -> List[str]:
     """Segments text into words that fit within bbox_width"""
@@ -151,6 +151,17 @@ def render_textblock_list_eng(
         words = merge_seg_eng(region.translation, font, region.xywh[2])
         if not words:
             continue
+        font_size = fit_font_size_to_ballon(
+            font_size,
+            max(1, int(font_size * downscale_constraint)),
+            max(font_size, max(ballon_mask.shape[:2]) * 2, max_font_size),
+            ballon_mask,
+            words,
+            stroke_width=0.25,
+        )
+        font_size = min(font_size, max_font_size)
+        font = ImageFont.truetype(font_path, font_size)
+        words = merge_seg_eng(region.translation, font, region.xywh[2])
 
         sw, line_height, delimiter_len, base_length, word_lengths = calculate_font_values(font, words)
         ballon_area = (ballon_mask > 0).sum()

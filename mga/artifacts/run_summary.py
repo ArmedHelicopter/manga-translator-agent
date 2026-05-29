@@ -30,6 +30,7 @@ class RunSummary:
     error_count: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
     status: str = "completed"
+    graph_mode: str = ""
 
 
 def build_run_summary(ctx: PipelineContext, cfg: ProjectConfig) -> RunSummary:
@@ -50,6 +51,9 @@ def build_run_summary(ctx: PipelineContext, cfg: ProjectConfig) -> RunSummary:
     elif cfg.provider_routes.get("vision"):
         provider = cfg.provider_routes["vision"].primary.provider or ""
 
+    dialogue_realization = ctx.artifacts.get("translation", {}).get("dialogue_realization", {})
+    graph_mode = "translation_graph_v0_linear" if dialogue_realization else ""
+
     return RunSummary(
         timestamp=datetime.now(timezone.utc).isoformat(),
         pipeline_mode=cfg.pipeline_mode,
@@ -68,6 +72,7 @@ def build_run_summary(ctx: PipelineContext, cfg: ProjectConfig) -> RunSummary:
         error_count=len(ctx.errors),
         errors=ctx.errors,
         status=status,
+        graph_mode=graph_mode,
     )
 
 

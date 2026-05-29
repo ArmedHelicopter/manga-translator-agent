@@ -18,11 +18,13 @@ def _make_context(
     pages: list[Page] | None = None,
     translations: list[TranslationCandidate] | None = None,
     qa_report: dict | None = None,
+    artifacts: dict | None = None,
 ) -> PipelineContext:
     ctx = PipelineContext()
     ctx.pages = pages or []
     ctx.translations = translations or []
     ctx.qa_report = qa_report or {}
+    ctx.artifacts = artifacts or {}
     return ctx
 
 
@@ -49,6 +51,47 @@ def test_build_translation_report_basic():
     assert entry.page_id == "p1"
     assert entry.source_text == "太郎は学校に行った"
     assert entry.translated_text == "太郎去了学校"
+
+
+def test_translation_entry_includes_dialogue_realization_trace():
+    pages = [
+        Page(page_id="p1", page_index=0, bubbles=[
+            Bubble(bubble_id="b1", source_text="よろしく"),
+        ]),
+    ]
+    translations = [
+        TranslationCandidate(bubble_id="b1", text="拜托啦。", confidence=0.9),
+    ]
+    artifacts = {
+        "translation": {
+            "dialogue_realization": {
+                "entries": [
+                    {
+                        "bubble_id": "b1",
+                        "speaker_id": "ren",
+                        "semantic": {
+                            "text": "拜托了。",
+                            "rationale": "semantic meaning",
+                        },
+                        "persona": {
+                            "persona_moves": ["rough_directness"],
+                            "rationale": "rendered as Ren",
+                        },
+                    }
+                ]
+            }
+        }
+    }
+
+    ctx = _make_context(pages=pages, translations=translations, artifacts=artifacts)
+    report = build_translation_report(ctx)
+
+    entry = report.entries[0]
+    assert entry.speaker_id == "ren"
+    assert entry.semantic_text == "拜托了。"
+    assert entry.semantic_rationale == "semantic meaning"
+    assert entry.persona_moves == ["rough_directness"]
+    assert entry.persona_rationale == "rendered as Ren"
 
 
 def test_translation_entry_qa_findings_association():

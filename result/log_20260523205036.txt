@@ -1,0 +1,271 @@
+[manga-translator.local] Log file created: /home/exusiai/_dev/manga-translator-agent/result/log_20260523205036.txt
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/bubble-mask-10page-20260523/page-001.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9951448440551758 NEXT fg: (135, 87, 91) bg: (135, 87, 91)
+[manga-translator.Model48pxOCR] prob: 0.9983921647071838 電撃コミックス fg: (112, 116, 115) bg: (112, 116, 115)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: 電撃コミックスNEXT => Dengeki Comics NexT
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 1 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/bubble-mask-10page-20260523/page-001.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/bubble-mask-10page-20260523/page-002.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.6784384846687317 CoverDesign：SALIDAS fg: (24, 22, 15) bg: (24, 22, 15)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: CoverDesign：SALIDAS => Cover Design: SALIDAS
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 1 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/bubble-mask-10page-20260523/page-002.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/bubble-mask-10page-20260523/page-003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/bubble-mask-10page-20260523/page-003.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/bubble-mask-10page-20260523/page-004.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9695869088172913 36 fg: (203, 32, 40) bg: (203, 32, 40)
+[manga-translator.Model48pxOCR] prob: 0.9994893074035645 話 fg: (207, 31, 59) bg: (207, 31, 59)
+[manga-translator.Model48pxOCR] prob: 0.9998145699501038 話 fg: (198, 13, 30) bg: (198, 13, 30)
+[manga-translator.Model48pxOCR] prob: 0.9993183612823486 話 fg: (189, 18, 43) bg: (232, 208, 223)
+[manga-translator.Model48pxOCR] prob: 0.9207262396812439 32 fg: (203, 14, 42) bg: (203, 14, 42)
+[manga-translator.Model48pxOCR] prob: 0.999592125415802 話 fg: (186, 19, 31) bg: (235, 207, 224)
+[manga-translator.Model48pxOCR] prob: 0.9857758283615112 33 fg: (217, 22, 49) bg: (217, 22, 49)
+[manga-translator.Model48pxOCR] prob: 0.9311084747314453 35 fg: (213, 18, 54) bg: (213, 18, 54)
+[manga-translator.Model48pxOCR] prob: 0.9808652400970459 34 fg: (208, 22, 46) bg: (224, 114, 130)
+[manga-translator.Model48pxOCR] prob: 0.9973820447921753 幕間 fg: (205, 22, 51) bg: (205, 22, 51)
+[manga-translator.Model48pxOCR] prob: 0.9985204935073853 変化 fg: (215, 13, 30) bg: (215, 13, 30)
+[manga-translator.Model48pxOCR] prob: 0.9962884783744812 罪過 fg: (209, 17, 32) bg: (209, 17, 32)
+[manga-translator.Model48pxOCR] prob: 0.9998596906661987 社美胡 fg: (212, 11, 20) bg: (212, 11, 20)
+[manga-translator.Model48pxOCR] prob: 0.9997765421867371 番外編 fg: (204, 35, 66) bg: (204, 35, 66)
+[manga-translator.Model48pxOCR] prob: 0.9975631237030029 慚愧の轍 fg: (209, 14, 33) bg: (209, 14, 33)
+[manga-translator.Model48pxOCR] prob: 0.6190263032913208 083 fg: (197, 40, 61) bg: (197, 40, 61)
+[manga-translator.Model48pxOCR] prob: 0.9990513324737549 昔日の足音 fg: (215, 17, 28) bg: (215, 17, 28)
+[manga-translator.Model48pxOCR] prob: 0.989466667175293 CONTENTS fg: (223, 15, 26) bg: (223, 15, 26)
+[manga-translator.Model48pxOCR] prob: 0.7371279001235962 あとがき 174 fg: (216, 22, 43) bg: (217, 23, 44)
+[manga-translator.Model48pxOCR] prob: 0.9998441934585571 陽を縁取るもの fg: (211, 11, 22) bg: (211, 11, 22)
+[manga-translator.Model48pxOCR] prob: 0.7475972175598145 わたたべっ！ ２ fg: (215, 16, 26) bg: (214, 17, 27)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 35
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: 34
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: 083
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: CONTENTS
+[manga-translator.local] Reason: Text language matches the target language and no_text_lang_skip is False.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: 32話 => Episode 32
+[manga-translator.SugoiTranslator] 1: 昔日の足音 => Footsteps from the past
+[manga-translator.SugoiTranslator] 2: 33話 => Episode 33
+[manga-translator.SugoiTranslator] 3: 罪過 => Sins
+[manga-translator.SugoiTranslator] 4: 幕間 => Makuma
+[manga-translator.SugoiTranslator] 5: 社美胡 => Shamiko
+[manga-translator.SugoiTranslator] 6: 話 => Talk
+[manga-translator.SugoiTranslator] 7: 慚愧の轍 => Shameful rut
+[manga-translator.SugoiTranslator] 8: 陽を縁取るもの => The Sunbeams
+[manga-translator.SugoiTranslator] 9: 36話 => Episode 36
+[manga-translator.SugoiTranslator] 10: 変化 => Change
+[manga-translator.SugoiTranslator] 11: 番外編 => Bangaihen
+[manga-translator.SugoiTranslator] 12: わたたべっ！ ２ => Eat up! 2
+[manga-translator.SugoiTranslator] 13: あとがき 174 => Atogaki 174
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Starting page-level target language check with 14 regions...
+[manga-translator.local] Page-level target language ratio check passed
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/bubble-mask-10page-20260523/page-004.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/bubble-mask-10page-20260523/page-005.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9998999834060669 化け狐 fg: (3, 3, 1) bg: (3, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999744892120361 これが fg: (2, 4, 1) bg: (2, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9711712598800659 人を愛し 慈しみ fg: (3, 3, 1) bg: (3, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9990291595458984 信じた者の末路さ fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: これが人を愛し 慈しみ信じた者の末路さ => This is the end of those who loved and cared for others.
+[manga-translator.SugoiTranslator] 1: 化け狐 => Monster fox
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 2 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/bubble-mask-10page-20260523/page-005.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/bubble-mask-10page-20260523/page-006.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.999832034111023 いいや fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998403787612915 居続ける fg: (4, 5, 2) bg: (4, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9998571872711182 見てなお fg: (4, 5, 1) bg: (4, 5, 1)
+[manga-translator.Model48pxOCR] prob: 0.9997660517692566 違わんさ fg: (3, 5, 2) bg: (3, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9989047646522522 …あたしは fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9923053979873657 つもりかい？ fg: (3, 5, 2) bg: (3, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9993742108345032 お前とは違う fg: (3, 4, 1) bg: (3, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9996697306632996 こんなあたしを fg: (3, 3, 1) bg: (3, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9998281002044678 お前は人間の側に fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: こんなあたしを見てなお => Even after seeing me like this...
+[manga-translator.SugoiTranslator] 1: お前は人間の側に居続けるつもりかい？ => Are you going to stay by the human side?
+[manga-translator.SugoiTranslator] 2: …あたしはお前とは違う => ...I'm not like you.
+[manga-translator.SugoiTranslator] 3: いいや違わんさ => No, that's not it.
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 4 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/bubble-mask-10page-20260523/page-006.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/bubble-mask-10page-20260523/page-007.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9999058246612549 悲しいかな fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.7137218117713928 同じだよ――… fg: (3, 5, 2) bg: (3, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9997244477272034 お前の行く末も fg: (2, 4, 2) bg: (2, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9994356632232666 きっとあたしと fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: 悲しいかな => Sadly
+[manga-translator.SugoiTranslator] 1: お前の行く末も => Your future, too.
+[manga-translator.SugoiTranslator] 2: きっとあたしと同じだよ――… => She's probably the same as me----
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 3 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/bubble-mask-10page-20260523/page-007.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/bubble-mask-10page-20260523/page-008.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.49498918652534485 【32話】 fg: (246, 246, 241) bg: (246, 246, 241)
+[manga-translator.Model48pxOCR] prob: 0.9989014863967896 昔日の足音 fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: 【32話】 => 【32】
+[manga-translator.SugoiTranslator] 1: 昔日の足音 => Footsteps from the past
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 2 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/bubble-mask-10page-20260523/page-008.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/bubble-mask-10page-20260523/page-009.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9998917579650879 美胡ちゃん fg: (3, 3, 0) bg: (3, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998122453689575 美胡ちゃん fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: 美胡ちゃん => Miko-chan.
+[manga-translator.SugoiTranslator] 1: 美胡ちゃん => Miko-chan.
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 2 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/bubble-mask-10page-20260523/page-009.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/bubble-mask-10page-20260523/page-010.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9993932247161865 うん fg: (4, 3, 0) bg: (4, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9529364109039307 あー fg: (7, 9, 3) bg: (7, 9, 3)
+[manga-translator.Model48pxOCR] prob: 0.9982641339302063 うん fg: (3, 2, 0) bg: (3, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9833086729049683 あー fg: (4, 4, 0) bg: (4, 4, 0)
+[manga-translator.Model48pxOCR] prob: 0.7571998238563538 お昼… fg: (7, 6, 4) bg: (7, 6, 4)
+[manga-translator.Model48pxOCR] prob: 0.9975160360336304 ねぇ… fg: (3, 5, 1) bg: (3, 5, 1)
+[manga-translator.Model48pxOCR] prob: 0.9980189204216003 って… fg: (4, 3, 1) bg: (4, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999063014984131 もうすぐ fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9902965426445007 えっと… fg: (8, 5, 2) bg: (8, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.999339759349823 お昼だから fg: (5, 5, 2) bg: (5, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9958599209785461 …美胡ちゃん fg: (5, 6, 2) bg: (5, 6, 2)
+[manga-translator.Model48pxOCR] prob: 0.9998683929443359 ごめんごめん fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998966455459595 しちゃってた fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9932182431221008 なんだっけ？ fg: (3, 4, 1) bg: (3, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9996606707572937 どうしようかな fg: (3, 2, 0) bg: (3, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9972574710845947 ちょっとボーっと fg: (3, 2, 0) bg: (3, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: あーごめんごめん => Oh, I'm sorry. Sorry!
+[manga-translator.SugoiTranslator] 1: ちょっとボーっとしちゃってた => I was a little out of it
+[manga-translator.SugoiTranslator] 2: えっと…なんだっけ？ => Um... What was it again?
+[manga-translator.SugoiTranslator] 3: うん => Yeah.
+[manga-translator.SugoiTranslator] 4: もうすぐお昼だからどうしようかなって… => It's almost lunchtime, so I was wondering what to do...
+[manga-translator.SugoiTranslator] 5: あーうん => Ah, yeah
+[manga-translator.SugoiTranslator] 6: お昼…ねぇ… => Lunch... huh?
+[manga-translator.SugoiTranslator] 7: …美胡ちゃん => ...Miko-chan.
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Starting page-level target language check with 8 regions...
+[manga-translator.local] Page-level target language ratio check passed
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/bubble-mask-10page-20260523/page-010.png"
+[manga-translator.local] Done. Translated 10 images in 4.2 minutes
+[manga-translator.local] Results saved to: "/home/exusiai/_dev/manga-translator-agent/data/output/bubble-mask-10page-20260523"
+

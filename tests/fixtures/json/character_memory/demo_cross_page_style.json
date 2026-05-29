@@ -1,0 +1,49 @@
+{
+  "pages": [
+    {
+      "page_id": "p001",
+      "bubbles": [
+        {
+          "bubble_id": "p001-b001",
+          "speaker_id": "akari",
+          "source_text": "おはようございます。"
+        },
+        {
+          "bubble_id": "p001-b002",
+          "speaker_id": "ren",
+          "source_text": "行くぜ！"
+        }
+      ]
+    },
+    {
+      "page_id": "p002",
+      "bubbles": [
+        {
+          "bubble_id": "p002-b001",
+          "speaker_id": "akari",
+          "source_text": "ありがとうございます。"
+        },
+        {
+          "bubble_id": "p002-b002",
+          "speaker_id": "ren",
+          "source_text": "そんなの知るかよ。"
+        }
+      ]
+    },
+    {
+      "page_id": "p003",
+      "bubbles": [
+        {
+          "bubble_id": "p003-b001",
+          "speaker_id": "akari",
+          "source_text": "少しだけ待ってください。"
+        },
+        {
+          "bubble_id": "p003-b002",
+          "speaker_id": "ren",
+          "source_text": "早くしろよ。"
+        }
+      ]
+    }
+  ]
+}

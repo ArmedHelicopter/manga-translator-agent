@@ -1,11 +1,11 @@
-"""Stage 2 -- Vision extraction via LLM provider or runtime artifact."""
+"""Stage 2 -- OCR artifact loading plus Vision enrichment."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
-from mga.models import BoundingBox, Bubble, ProjectConfig
+from mga.models import BoundingBox, Bubble, ProjectConfig, VisualFootnote
 from mga.providers import get_provider
 
 from .stages import PipelineContext, PipelineStage
@@ -13,31 +13,39 @@ from .stages import PipelineContext, PipelineStage
 
 def _build_vision_prompt() -> str:
     return (
-        "Analyze this manga page. For each speech bubble, extract:\n"
-        "- bubble_id (sequential), source_text, speaker_id, tone\n"
-        "Also provide a one-sentence scene_summary.\n"
-        "Return structured JSON with 'bubbles' and 'scene_summary'."
+        "Analyze this manga page as visual enrichment for an OCR-first manga translation pipeline.\n"
+        "Do not replace OCR text. For each existing OCR bubble, return optional metadata keyed by bubble_id:\n"
+        "- box_type: dialogue, narration, sfx, sign, letter, graffiti, or other\n"
+        "- provisional_speaker: temporary visible speaker label, not final attribution\n"
+        "- voice_hint: speech style hints such as politeness, catchphrases, tone, register\n"
+        "- tone and notes if visually inferable\n"
+        "Also detect author-drawn or OCR-missed text such as signs, letters, graffiti, and hand lettering.\n"
+        "Return JSON with keys: bubbles, visual_footnotes, voice_hints, scene_summary.\n"
+        "visual_footnotes items should include source_text, translation_hint, kind, optional bbox, and notes."
     )
 
 
-class VisionStage(PipelineStage):
-    """Use LLM vision or runtime artifact to extract bubble text per page."""
+class OCRArtifactStage(PipelineStage):
+    """Load OCR text regions from runtime artifacts."""
 
     @property
     def name(self) -> str:
-        return "vision"
+        return "ocr_artifact"
 
     @property
     def order(self) -> int:
         return 20
 
     def execute(self, context: PipelineContext) -> PipelineContext:
-        cfg: ProjectConfig = context.project_config
         payload_dir = context.metadata.get("artifact_payload_dir")
-
-        if payload_dir:
-            return self._execute_from_artifact(context, payload_dir)
-        return self._execute_from_llm(context, cfg)
+        if not payload_dir:
+            context.artifacts[self.name] = {
+                "source": "none",
+                "mode": "skipped",
+                "note": "No runtime payload; Vision enrichment may run in degraded extraction mode.",
+            }
+            return context
+        return self._execute_from_artifact(context, payload_dir)
 
     def _execute_from_artifact(self, context: PipelineContext, payload_dir: str) -> PipelineContext:
         """Read OCR results from runtime-exported per-page artifacts."""
@@ -103,6 +111,25 @@ class VisionStage(PipelineStage):
         }
         return context
 
+
+class VisionEnrichmentStage(PipelineStage):
+    """Add non-authoritative visual context without replacing OCR text."""
+
+    @property
+    def name(self) -> str:
+        return "vision"
+
+    @property
+    def order(self) -> int:
+        return 25
+
+    def execute(self, context: PipelineContext) -> PipelineContext:
+        cfg: ProjectConfig = context.project_config
+        has_ocr_bubbles = any(page.bubbles for page in context.pages)
+        if has_ocr_bubbles:
+            return self._enrich_with_vision(context, cfg, source="ocr-artifact")
+        return self._execute_from_llm(context, cfg)
+
     def _execute_from_llm(self, context: PipelineContext, cfg: ProjectConfig) -> PipelineContext:
         """Original LLM vision extraction path."""
         provider = self._get_provider(cfg)
@@ -113,7 +140,40 @@ class VisionStage(PipelineStage):
             extractions.append(result)
             self._apply_to_page(page, result)
 
-        context.artifacts[self.name] = {"source": "llm", "extractions": extractions}
+        context.artifacts[self.name] = {
+            "source": "llm",
+            "mode": "vision-only-degraded",
+            "extractions": extractions,
+        }
+        return context
+
+    def _enrich_with_vision(
+        self,
+        context: PipelineContext,
+        cfg: ProjectConfig,
+        *,
+        source: str,
+    ) -> PipelineContext:
+        provider = self._get_provider(cfg)
+        enrichments: list[dict] = []
+        errors: list[dict] = []
+        for page in context.pages:
+            try:
+                result = self._extract_page(provider, page, cfg)
+                enrichments.append({"page_id": page.page_id, "result": result})
+                self._apply_enrichment_to_page(page, result)
+            except Exception as exc:
+                errors.append({"page_id": page.page_id, "error": str(exc)})
+
+        existing = dict(context.artifacts.get(self.name, {}))
+        existing.update({
+            "source": source,
+            "enrichment": "vision",
+            "enriched_pages": len(enrichments),
+        })
+        if errors:
+            existing["enrichment_errors"] = errors
+        context.artifacts[self.name] = existing
         return context
 
     def _get_provider(self, cfg: ProjectConfig) -> object:
@@ -139,7 +199,15 @@ class VisionStage(PipelineStage):
             return provider.vision_structured(
                 messages=[{"role": "user", "content": prompt}],
                 images=[image_bytes],
-                schema={"type": "object", "properties": {"bubbles": {"type": "array"}, "scene_summary": {"type": "string"}}},
+                schema={
+                    "type": "object",
+                    "properties": {
+                        "bubbles": {"type": "array"},
+                        "visual_footnotes": {"type": "array"},
+                        "voice_hints": {"type": "array"},
+                        "scene_summary": {"type": "string"},
+                    },
+                },
             )
         raw = provider.vision(
             messages=[{"role": "user", "content": prompt}],
@@ -155,8 +223,79 @@ class VisionStage(PipelineStage):
             page.bubbles.append(Bubble(
                 bubble_id=bubble_id,
                 source_text=str(b.get("source_text", "")),
+                reading_order=int(b.get("reading_order", i)),
                 speaker_id=b.get("speaker_id"),
                 speaker_name=b.get("speaker_name"),
                 tone=b.get("tone"),
+                notes=b.get("notes"),
+                box_type=b.get("box_type", "dialogue") or "dialogue",
+                provisional_speaker=b.get("provisional_speaker") or b.get("speaker_name"),
+                voice_hint=b.get("voice_hint"),
+                vision_notes=b.get("vision_notes") or b.get("notes"),
             ))
+        self._apply_page_level_enrichment(page, result)
         page.scene_summary = result.get("scene_summary", "")
+
+    def _apply_enrichment_to_page(self, page: object, result: dict) -> None:
+        by_id = {bubble.bubble_id: bubble for bubble in page.bubbles}
+        by_order = {bubble.reading_order: bubble for bubble in page.bubbles}
+        for i, raw in enumerate(result.get("bubbles", [])):
+            bubble = self._match_enrichment_bubble(raw, by_id, by_order, i)
+            if bubble is None:
+                continue
+            # OCR remains authoritative for source_text and bbox.
+            bubble.box_type = raw.get("box_type") or bubble.box_type
+            bubble.provisional_speaker = raw.get("provisional_speaker") or bubble.provisional_speaker
+            bubble.voice_hint = raw.get("voice_hint") or bubble.voice_hint
+            bubble.vision_notes = raw.get("vision_notes") or raw.get("notes") or bubble.vision_notes
+            bubble.tone = raw.get("tone") or bubble.tone
+            bubble.notes = raw.get("notes") or bubble.notes
+        self._apply_page_level_enrichment(page, result)
+        if result.get("scene_summary"):
+            page.scene_summary = result["scene_summary"]
+
+    def _match_enrichment_bubble(
+        self,
+        raw: dict,
+        by_id: dict[str, Bubble],
+        by_order: dict[int, Bubble],
+        fallback_order: int,
+    ) -> Bubble | None:
+        raw_id = str(raw.get("bubble_id", ""))
+        if raw_id in by_id:
+            return by_id[raw_id]
+        try:
+            order = int(raw.get("reading_order", fallback_order))
+        except (TypeError, ValueError):
+            order = fallback_order
+        return by_order.get(order)
+
+    def _apply_page_level_enrichment(self, page: object, result: dict) -> None:
+        page.visual_footnotes = [
+            self._make_visual_footnote(item)
+            for item in result.get("visual_footnotes", [])
+            if isinstance(item, dict)
+        ]
+        hints = result.get("voice_hints", [])
+        page.voice_hints = [str(h) for h in hints if str(h).strip()]
+
+    def _make_visual_footnote(self, raw: dict) -> VisualFootnote:
+        bbox = raw.get("bbox")
+        parsed_bbox = None
+        if isinstance(bbox, dict):
+            parsed_bbox = BoundingBox(
+                x=float(bbox.get("x", 0.0)),
+                y=float(bbox.get("y", 0.0)),
+                width=float(bbox.get("width", 0.0)),
+                height=float(bbox.get("height", 0.0)),
+            )
+        return VisualFootnote(
+            source_text=str(raw.get("source_text", "")),
+            translation_hint=str(raw.get("translation_hint", "")),
+            kind=str(raw.get("kind", "other") or "other"),
+            bbox=parsed_bbox,
+            notes=raw.get("notes"),
+        )
+
+
+VisionStage = VisionEnrichmentStage

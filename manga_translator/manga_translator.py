@@ -602,6 +602,12 @@ class MangaTranslator:
                 logger.error(f"Error saving inpainted.png debug image: {e}")
                 logger.debug(f"Exception details: {traceback.format_exc()}")
 
+        if getattr(self, '_payload_dir', None):
+            from .pipeline.contract import serialize_render_payload
+            page_idx = getattr(self, '_payload_page_counter', 0)
+            self._payload_page_counter = page_idx + 1
+            serialize_render_payload(ctx, config, self._payload_dir, page_index=page_idx)
+
         # -- Export artifact (two-pass mode: stop before rendering)
         if getattr(self, '_export_artifact_dir', None):
             from .pipeline.contract import serialize_render_payload
@@ -746,7 +752,7 @@ class MangaTranslator:
         return last_ctx or Context()
 
     def _draw_footnotes(self, img: np.ndarray, footnotes: list) -> np.ndarray:
-        """Draw katakana footnotes at the bottom of the rendered page."""
+        """Draw katakana footnotes in bottom blank corners (fallback to footer strip)."""
         if not footnotes:
             return img
         from PIL import Image, ImageDraw, ImageFont
@@ -768,12 +774,7 @@ class MangaTranslator:
         if not lines:
             return img
 
-        footer_h = len(lines) * line_height + margin * 2
-        new_h = h + footer_h
-        result = np.ones((new_h, w, 3), dtype=np.uint8) * 255
-        result[:h, :, :] = img
-
-        pil_img = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
+        pil_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
         draw = ImageDraw.Draw(pil_img)
 
         try:
@@ -784,9 +785,56 @@ class MangaTranslator:
             except (OSError, IOError):
                 font = ImageFont.load_default()
 
-        y = h + margin
+        # Compute text box size
+        max_line_w = 0
         for line in lines:
-            draw.text((margin, y), line, fill=(80, 80, 80), font=font)
+            bbox = draw.textbbox((0, 0), line, font=font)
+            max_line_w = max(max_line_w, max(0, bbox[2] - bbox[0]))
+        box_w = max_line_w + margin * 2
+        box_h = len(lines) * line_height + margin * 2
+
+        # Candidate anchors: left-bottom, right-bottom
+        candidates = [
+            (margin, h - box_h - margin),
+            (w - box_w - margin, h - box_h - margin),
+        ]
+
+        # Prefer corner regions that are mostly blank (bright)
+        arr_gray = cv2.cvtColor(np.array(pil_img), cv2.COLOR_BGR2GRAY)
+        chosen = None
+        best_score = -1.0
+        for x, y in candidates:
+            if x < 0 or y < 0 or x + box_w > w or y + box_h > h:
+                continue
+            patch = arr_gray[y : y + box_h, x : x + box_w]
+            if patch.size == 0:
+                continue
+            score = float(patch.mean())
+            if score > best_score:
+                best_score = score
+                chosen = (x, y)
+
+        # If no usable corner blank area, fallback to footer strip as before
+        if chosen is None or best_score < 180.0:
+            footer_h = box_h + margin
+            new_h = h + footer_h
+            result = np.ones((new_h, w, 3), dtype=np.uint8) * 255
+            result[:h, :, :] = cv2.cvtColor(np.array(pil_img), cv2.COLOR_BGR2RGB)
+            pil_img = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
+            draw = ImageDraw.Draw(pil_img)
+            chosen = (margin, h + margin)
+            h = new_h
+
+        x0, y0 = chosen
+        # Draw semi-opaque white panel for readability
+        draw.rectangle(
+            [(x0, y0), (x0 + box_w, y0 + box_h)],
+            fill=(255, 255, 255),
+            outline=None,
+        )
+        y = y0 + margin
+        for line in lines:
+            draw.text((x0 + margin, y), line, fill=(80, 80, 80), font=font)
             y += line_height
 
         return cv2.cvtColor(np.array(pil_img), cv2.COLOR_BGR2RGB)

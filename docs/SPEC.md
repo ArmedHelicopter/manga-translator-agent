@@ -103,7 +103,7 @@ OCR 只提取文字，丢失了：谁在说（角色归属）、怎么说（情�
 2. **关系约束**——RAG 驱动的角色档案 + 图模型的关系图谱共同约束语言生成
 3. **翻译学习引擎**——有已有翻译就从中学习，热启动永远优先于冷启动
 4. **校对层**——独立 QA Stage，不只纠错，也审查人设漂移与关系失真
-5. **Vision-first**——保留画面、叙事与说话场景，作为人格模拟的感知基础
+5. **Vision enrichment**——在 OCR 主文本之上保留画面、叙事与说话场景，作为人格模拟的感知基础
 6. **文化适配层**——术语库 + 文化词汇分级策略 + 作者造词自动发现
 7. **格式全支持**——输入/输出均支持图片/EPUB/MOBI/PDF/CBR/CBZ
 8. **供应商自由**——云端/本地模型随意切换，无锁定
@@ -114,7 +114,7 @@ OCR 只提取文字，丢失了：谁在说（角色归属）、怎么说（情�
 `mga` 当前不把“完全替代现有漫画翻译 runtime”作为近期工程目标，而采用 external-first 路线：
 
 - 复用成熟 runtime 负责检测、OCR、擦字、嵌字与基础页级翻译
-- 由 `mga` 负责 orchestration、benchmark、review、artifacts 与 intelligence
+- 由 `mga` 负责 orchestration、benchmark、review、artifacts、OCR-aware translation、Vision enrichment 与逐步增强的 intelligence
 - 先证明“角色一致性生成 + 可审查工程能力”能创造明显价值，再决定是否需要更深的 runtime 替换
 
 因此近期的关键判断不是：
@@ -136,7 +136,7 @@ OCR 只提取文字，丢失了：谁在说（角色归属）、怎么说（情�
 ### 设计原则
 
 1. **角色一致性优先**：单句正确是底线，角色稳定才是目标
-2. **Vision-first**：多模态模型是主干，OCR 是 fallback
+2. **OCR + Vision 分工**：OCR/runtime 是主文本和嵌字几何来源，Vision 是画面理解与语言风格 enrichment
 3. **角色即知识**：角色语言档案通过 RAG 注入，不是硬编码在 prompt 里
 4. **关系即约束**：人物关系不是背景资料，而是对白生成约束
 5. **文化即层次**：文化词汇分级处理，不硬译不回避
@@ -164,11 +164,11 @@ OCR 只提取文字，丢失了：谁在说（角色归属）、怎么说（情�
    - run control
    - CLI 与批处理脚本
 3. **mga intelligence layer**
-   - 角色一致性翻译
-   - `learn-from`
+   - OCR-aware translation
+   - Vision enrichment
    - QA
-   - 关系约束
-   - 人格校准
+   - memory/wiki infrastructure
+   - 角色一致性、关系约束、人格校准的后续闭环
 
 近期默认语义：
 
@@ -176,6 +176,21 @@ OCR 只提取文字，丢失了：谁在说（角色归属）、怎么说（情�
 - `internal`：历史验证资产与参考实现，不再作为产品实现路线继续推进
 
 `internal` 可以保留代码与文档参考价值，但不再承担任何近期产品交付承诺。
+
+### 1.2 当前实现边界
+
+| 能力 | 当前实现语义 |
+|------|-------------|
+| CLI 主入口 | `manga-translate = mga.cli.main:main`；漫画模式会先导出 runtime payload，再调用 `PipelineOrchestrator` |
+| OCR Artifact | 已实现；读取 runtime `text_regions`，生成 `Bubble.source_text` 与 bbox |
+| Vision enrichment | 已实现；对已有 OCR bubbles 补充 `box_type`、`provisional_speaker`、`voice_hint`、`visual_footnotes` |
+| Translation | 已实现；prompt 消费 Vision hints、memory context 和 cultural context；正式 speaker 会触发 page-sequential 角色记忆更新 |
+| Render-only | 已接线；把 mga translations 写回 payload 后调用 runtime render-only |
+| QA | 已接线；质量取决于当前 context 是否有足够角色/术语信息 |
+| 角色归属 | 已有保守最小闭环；Vision provisional speaker 默认只是语气提示，只有强匹配既有角色档案时才提升为正式 `speaker_id` |
+| 角色记忆 / RAG / 关系图谱 | 正式 `speaker_id` 下已有最小可测记忆闭环；关系图谱和自动归属仍需补强 |
+| Learning engine | 模块与 mock 测试存在；真实漫画热启动端到端仍需补强 |
+| 兼容 CLI | `manga_translate.cli` 是 legacy external-core shim，不代表当前产品主链 |
 
 ### 启动模式
 
@@ -192,9 +207,9 @@ if 已有翻译文件:
     → 用学习结果翻译新文件
 else:
     → 冷启动（Cold Start）
-    → Vision Stage 自动发现角色和术语
-    → 边翻译边建立档案
-    → 后续章节逐步完善
+    → OCR/runtime 生成可嵌字文本与几何
+    → Vision enrichment 补充文本框类型、视觉脚注、临时说话人和语言风格提示
+    → 后续章节逐步完善角色档案
 ```
 
 ```bash
@@ -378,7 +393,7 @@ manga-translate legacy benchmark-extraction input/ -o output/
 
 | 格式 | 扩展名 | 处理方式 |
 |------|--------|---------|
-| **图片** | `.jpg` `.jpeg` `.png` `.webp` `.bmp` `.tiff` | 直接送 Vision Stage |
+| **图片** | `.jpg` `.jpeg` `.png` `.webp` `.bmp` `.tiff` | external runtime 导出 OCR artifact + inpainted image，再进入 MGA Translation Graph v0 |
 | **PDF** | `.pdf` | 逐页提取为图片（PyMuPDF/Poppler） |
 | **EPUB** | `.epub` | 解压→提取 XHTML 中的图片→翻译→重新打包 |
 | **MOBI/AZW** | `.mobi` `.azw` `.azw3` | 转换为 EPUB 后处理 |
@@ -467,60 +482,191 @@ class TranslatedPage:
 
 ## 4. 系统架构
 
+`mga` 的正式架构不再按线性 pipeline 理解，而是一个围绕 `PageArtifact` / `BubbleArtifact` 反复读写的 **MGA Translation Graph**。external runtime 提供检测、OCR、擦字、嵌字等交付底座；`mga` 在 runtime artifact 之上构建 OCR/Vision 双感知流、智能工作区、对白生成和 QA/repair 闭环。
+
+### 4.1 产品架构：Delivery Shell → Artifact Spine → Intelligence Core
+
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    用户输入层                              │
-│  输入：漫画文件 + 项目元数据 + 供应商配置                    │
-└──────────────────────────┬──────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│              Stage 0: 格式解析（Format Stage）              │
-│  FormatAdapter → PageRef 迭代器                            │
-└──────────────────────────┬──────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│              Stage 1: 全页视觉理解（Vision Stage）          │
-│  多模态 LLM → Page JSON                                    │
-└──────────────────────────┬──────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│           Stage 2: 角色归属 + 文化适配                      │
-│  角色图谱 RAG + 术语库检索 + 文化词汇分类                    │
-└──────────────────────────┬──────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│            Stage 3: 语境化翻译（Translation Stage）         │
-│  LLM 逐气泡翻译（携带角色档案+文化上下文）                    │
-└──────────────────────────┬──────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│           Stage 4: 校对与一致性检查（QA Stage）              │
-│  独立 LLM 校对（事实+角色+情绪+文化）                        │
-└──────────────────────────┬──────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│            Stage 5: 擦除与嵌字（Rendering Stage）           │
-│  LaMa 擦除 + 字体选择 + 排版 + 渲染                        │
-└──────────────────────────┬──────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│              Stage 6: 格式输出 + 人工审查                    │
-│  FormatAdapter.repack() + QA Report                       │
+│                    Delivery Shell                        │
+│  format adapter / runtime bridge / render-only / output  │
+│                                                         │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │                Artifact Spine                      │  │
+│  │  PageArtifact / BubbleArtifact / RunManifest       │  │
+│  │                                                   │  │
+│  │  ┌─────────────────────────────────────────────┐  │  │
+│  │  │             Intelligence Core                │  │  │
+│  │  │ memory / relation / culture / QA / learning  │  │  │
+│  │  │                                             │  │  │
+│  │  │  ┌───────────────────────────────────────┐  │  │  │
+│  │  │  │        Dialogue Realization            │  │  │  │
+│  │  │  │ semantic meaning → persona rendering   │  │  │  │
+│  │  │  └───────────────────────────────────────┘  │  │  │
+│  │  └─────────────────────────────────────────────┘  │  │
+│  └───────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
 ```
+
+核心含义：
+
+- **Delivery Shell** 负责格式、runtime 调用、render-only 和最终输出。
+- **Artifact Spine** 是运行时事实底座，记录每页、每个气泡、每次生成和审查的结构化产物。
+- **Intelligence Core** 不直接等同单个 stage，而是由 memory、relation、culture、learning、QA 等子系统围绕 artifact 协同工作。
+- **Dialogue Realization** 是最终差异化核心：先得到语义忠实的中间表达，再把它渲染成符合角色人格、关系和场景的目标语言对白。
+
+### 4.2 运行图：OCR/Vision 双感知流 + 智能工作区 DAG
+
+```
+                              ┌─────────────────┐
+                              │   Page Image     │
+                              └────────┬────────┘
+                                       │
+             ┌─────────────────────────┴─────────────────────────┐
+             ▼                                                   ▼
+┌─────────────────────────┐                         ┌─────────────────────────┐
+│ OCR / Runtime Perception │                         │ Vision Perception        │
+│ authoritative text       │                         │ visual + narrative hints │
+│ bbox / region / mask     │                         │ mood / speaker / scene   │
+└────────────┬────────────┘                         └────────────┬────────────┘
+             │                                                   │
+             ▼                                                   ▼
+      ┌──────────────┐                                  ┌────────────────┐
+      │ OCRSpine     │                                  │ VisionLayer    │
+      └──────┬───────┘                                  └───────┬────────┘
+             │                                                  │
+             └───────────────────┬──────────────────────────────┘
+                                 ▼
+                    ┌────────────────────────┐
+                    │ Page Understanding Hub │
+                    │ page/bubble artifact   │
+                    └───────────┬────────────┘
+                                │
+       ┌────────────────────────┼────────────────────────┐
+       ▼                        ▼                        ▼
+┌──────────────┐        ┌────────────────┐        ┌──────────────┐
+│ Memory RAG   │        │ Relation Graph │        │ Culture/Term │
+└──────┬───────┘        └───────┬────────┘        └──────┬───────┘
+       │                        │                        │
+       └────────────────────────┼────────────────────────┘
+                                ▼
+                    ┌────────────────────────┐
+                    │ Context Assembly       │
+                    │ who / to whom / why    │
+                    └───────────┬────────────┘
+                                ▼
+                    ┌────────────────────────┐
+                    │ Dialogue Generation    │
+                    │ semantic → persona     │
+                    └───────────┬────────────┘
+                                ▼
+                    ┌────────────────────────┐
+                    │ QA / Repair Loop       │
+                    └───────────┬────────────┘
+                                ▼
+                    ┌────────────────────────┐
+                    │ Render Contract        │
+                    └───────────┬────────────┘
+                                ▼
+                         Runtime Render-only
+```
+
+这里 OCR 和 Vision 是两个并行感知流：
+
+- **OCR/runtime 是主文本和几何权威**：`source_text`、`bbox`、`reading_order`、mask/render 区域来自 runtime artifact。
+- **Vision enrichment 是画面理解层**：补充 `box_type`、`provisional_speaker`、`voice_hint`、`visual_footnotes`、`scene_summary`，不得覆盖 OCR 文本，也不得把临时说话人直接写成正式角色归属。
+
+智能工作区不是单条链，而是围绕同一 `PageArtifact` 并行读写的 DAG：speaker、memory、relation、culture、scene、term、QA 都是可独立演化和审查的能力节点。
+
+### 4.3 能力矩阵：职责边界而非执行顺序
+
+| 能力层 | 职责 | 主要输出 |
+|--------|------|----------|
+| OCR Capability | 读取主文本、提供几何和嵌字约束 | `OCRSpine` |
+| Vision Capability | 理解画面、补足语境、临时说话人与语气线索 | `VisionLayer` |
+| Memory Capability | 检索角色历史、声线证据、近期翻译 | `CharacterContext` |
+| Relation Capability | 判断谁对谁说、关系强度、敬语/称呼约束 | `RelationshipContext` |
+| Culture Capability | 术语、作者造词、拟声词、文化策略 | `CulturalConstraints` |
+| Translation Capability | 做语义忠实转换，不承担完整人格表演 | `SemanticTranslation` |
+| Persona Capability | 根据角色、关系、场景把语义渲染成对白 | `PersonaRenderedDialogue` |
+| QA Capability | 审查事实、人设、关系、情绪、版面适配 | `ReviewDecision` / `RepairDecision` |
+| Render Capability | 把最终文本和脚注写回 runtime payload | `RenderContract` |
+
+### 4.4 Dialogue Generation：语义翻译与人格渲染解耦
+
+对白生成拆成两个概念节点：
+
+1. **SemanticTranslator**
+   - 输入：`OCRSpine`、术语/文化约束、必要上下文。
+   - 输出：语义忠实、信息完整、尽量去人格化的 `SemanticTranslation`。
+   - 目标：回答“这句话是什么意思”。
+
+2. **PersonaRenderer**
+   - 输入：`SemanticTranslation`、正式或候选 speaker、关系图谱、角色记忆、Vision 语气提示、场景状态。
+   - 输出：符合角色人格、关系层级和画面情绪的 `PersonaRenderedDialogue`。
+   - 目标：回答“这个角色此刻会怎么说”。
+
+示例：
+
+```json
+{
+  "source_text": "氷室——！！誰か、誰か呼んでくれ！！",
+  "semantic_translation": {
+    "text": "冰室！！谁来叫人！",
+    "speech_act": "urgent_call_for_help",
+    "emotion": "panic",
+    "must_preserve": ["氷室"]
+  },
+  "persona_render": {
+    "speaker": "amamiya_akari",
+    "listener": "public_unknown",
+    "scene": "himuro_injured",
+    "rendered_text": "冰室——！！来人啊，快叫人来！！",
+    "persona_moves": ["礼貌层级崩塌", "短句化", "重复呼救"]
+  }
+}
+```
+
+人格渲染只能在许可空间内改写：允许调整语气、句式、句尾、敬语层级、节奏和口癖；不能改变事实、指代、事件逻辑、专名术语和关键信息。
+
+### 4.5 QA / Repair：审查层也是反馈回路
+
+QA 不只是末端校对，而是能把问题路由回正确节点的 repair loop：
+
+- **Semantic QA**：检查误译、漏译、幻觉、术语不一致。
+- **Persona QA**：检查人设崩坏、关系层级错位、语气漂移、语言演化断裂。
+- **Layout QA**：检查文本长度、气泡适配、脚注/JSON 噪声、可嵌字性。
+
+`RepairPlanner` 根据问题类型决定：
+
+- 回到 `SemanticTranslator` 重译语义。
+- 回到 `PersonaRenderer` 重做人格渲染。
+- 只写 QA report，等待人工审查。
+- 通过人工修改形成 memory / decision patch。
+
+### 4.6 当前线性执行器只是 v0 实现细节
+
+当前代码仍使用顺序 `PipelineOrchestrator`，但它应被理解为 Translation Graph 的 v0 线性执行器：
+
+| 当前实现 | Translation Graph 中的语义 |
+|----------|----------------------------|
+| `FormatStage` | `InputAdapter` / page skeleton |
+| `OCRArtifactStage` | `OCRSpineBuilder` |
+| `VisionEnrichmentStage` | `VisionEnricher` |
+| `SpeakerAttributionStage` | `SpeakerResolver v0` |
+| `CharacterAttributionStage` | `MemoryRetriever + CultureAnalyzer v0` |
+| `TranslationStage` | `SemanticTranslator + PersonaRenderer` 的混合体 |
+| `QAStage` | `ReviewLayer v0` |
+| `RenderStage` | `RenderContractBuilder + RuntimeRenderOnly` |
+| `OutputStage` | `OutputAdapter` |
+
+下一步演化路线：先在当前 `TranslationStage` 内部拆出 semantic/persona 两步并写出 artifact trace；验证有效后，再把它们升格为独立 graph nodes，最终用 artifact dependency 取代固定 `order` 调度。
 
 ---
 
 ## 5. 数据结构
 
-### 5.1 Page JSON（Stage 1 输出）
+### 5.1 Page JSON（runtime OCR + Vision enrichment 后）
 
 ```json
 {
@@ -550,12 +696,13 @@ class TranslatedPage:
       ],
       "bubbles": [
         {
-          "bubble_id": "p1_b1",
+          "bubble_id": "region-0008-0001",
           "bbox": [50, 30, 300, 120],
-          "speaker_hint": "char_1",
-          "bubble_type": "shout",
+          "source_text": "氷室——！！誰か、誰か呼んでくれ！！",
+          "box_type": "dialogue",
+          "provisional_speaker": "深蓝短发少年",
+          "voice_hint": "第一次失去冷静，急促呼救",
           "script_type": "standard_jp",
-          "text_jp": "氷室——！！誰か、誰か呼んでくれ！！",
           "text_context": "灯发现冰室重伤，第一次失去冷静",
           "needs_translation": true
         }
@@ -571,6 +718,17 @@ class TranslatedPage:
         }
       ]
     }
+  ],
+  "visual_footnotes": [
+    {
+      "source_text": "保健室",
+      "translation_hint": "医务室",
+      "kind": "sign",
+      "bbox": [420, 80, 80, 24]
+    }
+  ],
+  "voice_hints": [
+    "深蓝短发少年此页语气急促，礼貌程度下降"
   ],
   "coined_terms": [
     {
@@ -833,25 +991,28 @@ Graph = {
 
 ## 6. 全局提示词设计
 
-### 6.1 Vision Stage
+### 6.1 Vision Enrichment Stage
 
 ```
-你是一位资深漫画编辑兼视觉叙事分析师。
+你是一位资深漫画编辑兼视觉叙事分析师，工作在 OCR-first 漫画翻译管线中。
 
-必须：识别所有分镜格、对话气泡、旁白框；提取原文；判断说话人、
-气泡类型、情绪状态；识别拟声词及其视觉角色；识别虚构文字；
-输出叙事摘要和情绪基调。
+你会收到已经由 OCR/runtime 生成的气泡文本与 bbox。OCR/runtime 是主文本
+和嵌字几何的权威来源。
 
-必须先以“整页视觉理解”为主，再回到气泡级提取：
-- 先读整页构图、角色站位、镜头关系、动作变化、视觉焦点
-- 再把每个气泡放回对应分镜和画面语境中解释
-- 如果气泡文字本身不足以判断语义，必须依赖画面而不是只读文本
-- 不得把 Vision Stage 退化成“气泡 OCR + 文本转写”
+必须：
+- 不覆盖、不重写、不纠正 OCR 主文本
+- 为已有 OCR bubble 补充文本框类型：dialogue / narration / sfx / sign / letter / graffiti / other
+- 输出临时说话人提示 provisional_speaker；它只供翻译语气参考，不是正式角色归属
+- 输出语言风格提示 voice_hint，例如敬语程度、语气、口癖、情绪强度
+- 识别 OCR 漏检的作者绘制文字、招牌、信件、涂鸦、艺术字，并作为 visual_footnotes 输出
 
-不能：编造不存在的文字；猜测模糊文字（标 text_unclear）；
-将拟声词误认为对话。
+不能：
+- 把 Vision 当作主力 OCR
+- 把 OCR 漏检的绘制文字直接塞回可嵌字 bubble
+- 把 provisional_speaker 写成最终 speaker_id
+- 编造看不见的文字
 
-输出：严格遵循 Page JSON schema。
+输出：bubbles enrichment + visual_footnotes + voice_hints + scene_summary。
 ```
 
 ### 6.2 Translation Stage
@@ -862,7 +1023,10 @@ Graph = {
 原则：忠实优先但可本地化；角色语言一致性；情绪匹配；
 长度适配气泡大小；文化适配（敬语、拟声词、双关语）。
 
-你会收到：原文、说话人档案、画面描述、角色前几页翻译样本、前后文。
+你会收到：OCR 原文、可用的说话人档案、Vision 补充提示、文化上下文、关系上下文。
+
+Vision 补充提示只能影响语气、文本框处理和脚注判断；不能替代 OCR 文本，
+不能当作正式角色归属。
 
 不能：编造对话、添加解释文字、无依据改变语言风格。
 
@@ -1069,7 +1233,7 @@ repo `docs/` 中的 `characters/`、`scenes/`、`terms/`、`decisions/`、`index
 
 ### 8.4 作者造词自动发现
 
-Vision Stage 增加 `coined_terms` 和 `cultural_terms` 输出字段。
+作者造词发现属于 cultural / learning layer，不属于 Vision enrichment 的主职责。Vision 可以把图中文字、招牌、手写字和视觉语境作为脚注或提示传给后续阶段，但不能替代 OCR/runtime 主文本，也不能独自维护术语库。
 
 自动发现逻辑：
 - **反复出现的复合名词** → 可能是造词（频率检测）
@@ -1171,7 +1335,7 @@ Vision Stage 增加 `coined_terms` 和 `cultural_terms` 输出字段。
 │      bubble_id,                                          │
 │      original_jp: "硝子子継ぎ——繋ぎ直し！！",                  │
 │      translated_zh: "硝子接合——重新接合！！",                │
-│      speaker_hint: "粉色头发少年",                         │
+│      provisional_speaker: "粉色头发少年",                   │
 │      bubble_type: "shout",                               │
 │      translation_strategy_used: "literal"                 │
 │    }, ...]                                               │
@@ -1279,11 +1443,11 @@ Vision Stage 增加 `coined_terms` 和 `cultural_terms` 输出字段。
                     热启动                    冷启动
                  （有已有翻译）              （无已有翻译）
                     
-角色档案      学习引擎自动生成            Vision 自动发现
-              质量高（基于实际翻译）        质量中（基于推理）
+角色档案      学习引擎自动生成            默认无正式角色档案
+              质量高（基于实际翻译）        需后续角色推理或人工绑定
               
-术语库        从翻译对中提取              从 Vision 中识别
-              完整度高                    需要多话积累
+术语库        从翻译对中提取              从 OCR 文本 + cultural layer 发现
+              完整度高                    需要多话积累和人工确认
               
 翻译风格      从已有翻译中总结            使用默认风格
               与已有翻译一致              用户可配置
@@ -1387,8 +1551,10 @@ has_mapping = true
 
 | 失败场景 | 降级策略 |
 |---------|---------|
-| Vision API 超时 | 重试 2 次 → OCR fallback |
-| 角色无法识别 | 标注 unknown_speaker |
+| runtime OCR artifact 导出失败 | 退回 LLM vision-only degraded JSON；不保证嵌字图 |
+| Vision enrichment 超时 | 跳过 enrichment，继续使用 OCR/runtime 文本翻译与嵌字 |
+| 临时说话人不可判断 | 不填 provisional_speaker；不得写入 speaker_id |
+| 正式角色无法归属 | 保持无 speaker_id，等待后续角色推理或人工绑定 |
 | 翻译 confidence < 0.5 | 保留原文，标需人工翻译 |
 | 擦除效果差 | 原图叠加标记 |
 | 虚构文字无对照表 | 保留原图 |
@@ -1400,13 +1566,14 @@ has_mapping = true
 
 ## 12. 实现路线图
 
-### Phase 1: CLI MVP（核心 pipeline）
+### Phase 1: CLI MVP（Translation Graph v0）
 
-- [ ] external runtime core 宿主接入
-- [ ] artifact / report / review 归一化
-- [ ] `manga-translate input/ -o output/` 默认 external-core
-- [ ] legacy internal pipeline 迁入 research 命名空间
-- [ ] 建立可审查的运行产物合同，为后续角色一致性系统打底
+- [x] external runtime core 宿主接入
+- [x] OCR artifact + render-only 两阶段主链接入
+- [x] `manga-translate input/ -o output/` 默认进入 MGA Translation Graph v0 线性执行器
+- [x] Vision enrichment 接线，不覆盖 OCR 文本
+- [ ] artifact / report / review 归一化继续收敛
+- [ ] legacy compatibility CLI 与产品主链边界继续清理
 
 ### Phase 2: 格式扩展
 
@@ -1427,13 +1594,15 @@ has_mapping = true
 - [ ] 自动生成：character_profiles/ + terminology/ + style_guide.toml + character_graph.json
 - [ ] `--learn-only` 模式：只学习不翻译
 - [ ] 增量学习：翻译过程中持续更新档案
+- [x] 翻译过程中按页更新正式 speaker 的 `CharacterState`，并把更新后的风格上下文注入后续页
 - [ ] 将 `--learn-from` 明确定义为人格校准入口，而不只是术语热启动
 
 ### Phase 4: 角色系统
 
 - [ ] 角色档案 RAG（TOML 创建/加载/热启动自动填充）
-- [ ] 角色归属（自动识别说话人）
-- [ ] 角色一致性翻译（注入档案）
+- [ ] 角色归属推理（不由 Vision enrichment 直接承担）
+- [x] 最小角色一致性翻译闭环（人工 `speaker_id`，轻量启发式风格记忆，`character_memory` trace）
+- [ ] 成熟角色一致性翻译（稳定声线摘要、关系对象差异、真实 LLM 集成验收）
 - [ ] QA Stage（事实 + 角色一致性）
 - [ ] 正式进入“角色一致性对白生成”能力，而不再只是上下文增强翻译
 

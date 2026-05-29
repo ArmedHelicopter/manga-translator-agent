@@ -82,6 +82,7 @@ class MangaTranslatorLocal(MangaTranslator):
         self.batch_size = params.get('batch_size', 1)
         self.disable_memory_optimization = params.get('disable_memory_optimization', False)
         self.export_artifact_dir = params.get('export_artifact', None)
+        self.payload_dir = params.get('payload_dir', None)
         self.render_only_dir = params.get('render_only', None)
 
     async def translate_path(self, path: str, dest: str = None, params: dict[str, Union[int, str]] = None):
@@ -234,6 +235,8 @@ class MangaTranslatorLocal(MangaTranslator):
 
         if self.export_artifact_dir:
             self._export_artifact_dir = self.export_artifact_dir
+        if self.payload_dir:
+            self._payload_dir = self.payload_dir
 
         # Turn dict to context to make values also accessible through params.<property>
         params = params or {}

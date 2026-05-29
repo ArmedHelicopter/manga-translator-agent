@@ -29,6 +29,36 @@ def _resolve_provider(cfg, stage: str = "vision"):
     return name, cfg.provider_settings.get(name, {})
 
 
+def _resolve_translation_provider(cfg) -> tuple[str, dict]:
+    """Resolve provider/settings for translation stage with compatibility keys."""
+    route = cfg.provider_routes.get("translation") or cfg.provider_routes.get("translate")
+    if route and route.primary.provider:
+        name = route.primary.provider
+        settings = dict(cfg.provider_settings.get(name, {}))
+        if route.primary.model and "model" not in settings:
+            settings["model"] = route.primary.model
+        return name, settings
+    return "openai", dict(cfg.provider_settings.get("openai", {}))
+
+
+def _check_translation_provider_connectivity(cfg) -> None:
+    """Run a lightweight provider connectivity check before starting pipeline."""
+    from mga.providers import get_provider
+
+    provider_name, provider_settings = _resolve_translation_provider(cfg)
+    provider = get_provider(provider_name, **provider_settings)
+    try:
+        provider.chat(
+            [{"role": "user", "content": "Reply with OK."}],
+            temperature=0.0,
+            max_tokens=8,
+        )
+    except Exception as exc:
+        raise click.ClickException(
+            f"Provider pre-check failed ({provider_name}): {exc}"
+        ) from exc
+
+
 _NOVEL_EXTENSIONS = {".epub", ".txt", ".mobi"}
 
 
@@ -61,7 +91,16 @@ def _detect_mode(input_path: str, mode: str | None) -> tuple[str, str]:
 @click.option("--save-json", is_flag=True, help="Save full translation report and debug artifacts.")
 @click.option("--bilingual", is_flag=True, help="Output bilingual PDF (original + translation side-by-side).")
 @click.option("--dry-run", is_flag=True)
-def translate(input_path, output_path, provider, output_format, mode, learn_from, learn_only, lang, config_path, save_json, bilingual, dry_run):
+@click.option(
+    "--artifact-payload-dir",
+    default=None,
+    type=click.Path(exists=True),
+    help="Reuse an existing runtime payload directory and skip Pass 1 export.",
+)
+def translate(
+    input_path, output_path, provider, output_format, mode, learn_from, learn_only,
+    lang, config_path, save_json, bilingual, dry_run, artifact_payload_dir,
+):
     """Run the translation pipeline on INPUT_PATH."""
     from mga.config.loader import build_project_config
     from mga.pipeline.orchestrator import PipelineOrchestrator
@@ -101,18 +140,26 @@ def translate(input_path, output_path, provider, output_format, mode, learn_from
     # Two-pass mode: export artifact from runtime, then run intelligence pipeline
     pipeline_metadata: dict = {}
     if pipeline_mode == "manga":
-        try:
-            from mga.runtime_bridge.external import run_export_artifact
-            payload_dir = Path(output_path) / ".mga-payload"
-            click.echo(f"Pass 1: Exporting runtime artifact to {payload_dir}")
-            run_export_artifact(
-                input_dir=Path(input_path),
-                payload_dir=payload_dir,
-            )
+        click.echo("Provider pre-check: testing translation provider connectivity...")
+        _check_translation_provider_connectivity(cfg)
+        click.echo("Provider pre-check: OK")
+        if artifact_payload_dir:
+            payload_dir = Path(artifact_payload_dir).resolve()
             pipeline_metadata["artifact_payload_dir"] = str(payload_dir)
-            click.echo("Pass 1 complete. Running intelligence pipeline...")
-        except Exception as e:
-            click.echo(f"Runtime export unavailable ({e}), falling back to LLM vision.", err=True)
+            click.echo(f"Pass 1 skipped. Reusing runtime payload: {payload_dir}")
+        else:
+            try:
+                from mga.runtime_bridge.external import run_export_artifact
+                payload_dir = Path(output_path) / ".mga-payload"
+                click.echo(f"Pass 1: Exporting runtime artifact to {payload_dir}")
+                run_export_artifact(
+                    input_dir=Path(input_path),
+                    payload_dir=payload_dir,
+                )
+                pipeline_metadata["artifact_payload_dir"] = str(payload_dir)
+                click.echo("Pass 1 complete. Running intelligence pipeline...")
+            except Exception as e:
+                click.echo(f"Runtime export unavailable ({e}), falling back to LLM vision.", err=True)
 
     ctx = PipelineOrchestrator(config=cfg).run(input_path, output_path, cfg, metadata=pipeline_metadata)
     out = Path(output_path)
@@ -125,6 +172,11 @@ def translate(input_path, output_path, provider, output_format, mode, learn_from
     click.echo(f"Done. run.json -> {run_dir / 'run.json'}")
     for err in ctx.errors:
         click.echo(f"  [!] {err['stage']}: {err['error']}", err=True)
+    if ctx.errors:
+        first_error = ctx.errors[0]
+        raise click.ClickException(
+            f"Pipeline aborted at stage '{first_error['stage']}': {first_error['error']}"
+        )
 
 
 @click.group()

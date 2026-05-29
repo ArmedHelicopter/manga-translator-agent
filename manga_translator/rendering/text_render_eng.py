@@ -155,6 +155,94 @@ def seg_eng(text: str) -> List[str]:
         words.append(word)
     return words
 
+def fit_font_size_to_ballon(
+    initial_font_size: int,
+    min_font_size: int,
+    max_font_size: int,
+    ballon_mask: np.ndarray,
+    words: List[str],
+    delimiter: str = ' ',
+    stroke_width: float = 0.1,
+    line_spacing: int = 0.01,
+) -> int:
+    """Find the largest font size that can be laid out inside the balloon mask."""
+    if ballon_mask is None or ballon_mask.size == 0 or not words:
+        return max(int(initial_font_size), int(min_font_size), 1)
+
+    nonzero = cv2.findNonZero((ballon_mask > 0).astype(np.uint8))
+    if nonzero is None:
+        return max(int(initial_font_size), int(min_font_size), 1)
+
+    lo = max(1, int(min_font_size))
+    hi = max(lo, int(max_font_size))
+    best = max(lo, min(int(initial_font_size), hi))
+    best_fill = -1.0
+    mask_area = float(max(1, np.count_nonzero(ballon_mask)))
+
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        sw = int(mid * stroke_width)
+        line_height = max(1, int(mid * 0.8))
+        delimiter_glyph = get_char_glyph(delimiter, mid, 0)
+        delimiter_len = delimiter_glyph.advance.x >> 6
+        word_lengths = []
+        valid = True
+        for word in words:
+            word_length = 0
+            for cdpt in word:
+                glyph = get_char_glyph(cdpt, mid, 0)
+                if glyph is None:
+                    valid = False
+                    break
+                word_length += glyph.metrics.horiAdvance >> 6
+            if not valid:
+                break
+            word_lengths.append(max(1, word_length))
+        if not valid or not word_lengths:
+            hi = mid - 1
+            continue
+
+        try:
+            textlines = layout_lines_aligncenter(
+                ballon_mask,
+                words,
+                word_lengths,
+                delimiter_len,
+                line_height,
+                delimiter=delimiter,
+            )
+        except Exception:
+            hi = mid - 1
+            continue
+
+        lines_map = np.zeros_like(ballon_mask, dtype=np.uint8)
+        for line in textlines:
+            x1 = line.pos_x - sw
+            y1 = line.pos_y
+            x2 = line.pos_x + line.length + sw
+            y2 = line.pos_y + line_height
+            if x1 < 0 or y1 < 0 or x2 >= ballon_mask.shape[1] or y2 >= ballon_mask.shape[0]:
+                valid = False
+                break
+            cv2.rectangle(lines_map, (x1, y1), (x2, y2), 255, -1)
+        if not valid:
+            hi = mid - 1
+            continue
+
+        line_area = int(np.count_nonzero(lines_map))
+        outside_area = line_area - int(np.count_nonzero(cv2.bitwise_and(lines_map, (ballon_mask > 0).astype(np.uint8) * 255)))
+        if outside_area > max(4, line_area * 0.01):
+            hi = mid - 1
+            continue
+
+        fill = float(line_area) / mask_area
+        if fill > best_fill or (abs(fill - best_fill) < 1e-6 and mid > best):
+            best_fill = fill
+            best = mid
+        lo = mid + 1
+
+    return max(best, int(min_font_size), 1)
+
 def layout_lines_aligncenter(
     mask: np.ndarray, 
     words: List[str], 
@@ -420,7 +508,17 @@ def render_textblock_list_eng(
         if not words:
             continue
 
-        font_size, sw, line_height, delimiter_len, base_length, word_lengths = calculate_font_values(region.font_size, words)
+        font_size = fit_font_size_to_ballon(
+            int(region.font_size),
+            max(1, int(region.font_size * downscale_constraint)),
+            max(int(region.font_size), max(ballon_mask.shape[:2]) * 2),
+            ballon_mask,
+            words,
+            delimiter=delimiter,
+            stroke_width=stroke_width,
+            line_spacing=line_spacing,
+        )
+        font_size, sw, line_height, delimiter_len, base_length, word_lengths = calculate_font_values(font_size, words)
 
         # non-dl textballon segmentation
         # Extract ballon region

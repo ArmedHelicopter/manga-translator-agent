@@ -12,6 +12,23 @@ import numpy as np
 from ..utils import Quadrilateral, TextBlock
 
 
+def _normalize_runtime_lang_code(lang: str | None) -> str:
+    """Map generic language tags to runtime-specific codes used by rendering."""
+    if not lang:
+        return ""
+    normalized = str(lang).strip()
+    lowered = normalized.lower()
+    if lowered in {"zh", "zh-cn", "zh-hans", "chs"}:
+        return "CHS"
+    if lowered in {"zh-tw", "zh-hk", "zh-hant", "cht"}:
+        return "CHT"
+    if lowered in {"ja", "jp", "jpn"}:
+        return "JPN"
+    if lowered in {"en", "en-us", "en-gb", "eng"}:
+        return "ENG"
+    return normalized.upper()
+
+
 @dataclass(frozen=True)
 class OCRLineSnapshot:
     index: int
@@ -105,7 +122,7 @@ def _textblock_to_dict(region: TextBlock, index: int) -> Dict[str, Any]:
         "fg_color": list(region.fg_colors) if hasattr(region, 'fg_colors') else [0, 0, 0],
         "bg_color": list(region.bg_colors) if hasattr(region, 'bg_colors') else [255, 255, 255],
         "source_lang": getattr(region, '_source_lang', ''),
-        "target_lang": region.target_lang,
+        "target_lang": _normalize_runtime_lang_code(region.target_lang),
         "line_spacing": region.line_spacing,
         "letter_spacing": region.letter_spacing,
         "bold": region.bold,
@@ -154,7 +171,7 @@ def serialize_render_payload(ctx, config, payload_dir: str, page_index: int = 0)
     ]
 
     render_config = {
-        "renderer": str(getattr(config.render, 'renderer', 'default')),
+        "renderer": getattr(getattr(config.render, 'renderer', 'default'), 'value', getattr(config.render, 'renderer', 'default')),
         "font_size": getattr(config.render, 'font_size', None),
         "font_size_offset": getattr(config.render, 'font_size_offset', 0),
         "font_size_minimum": getattr(config.render, 'font_size_minimum', -1),

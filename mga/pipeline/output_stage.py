@@ -35,21 +35,29 @@ class OutputStage(PipelineStage):
         store = ArtifactStore(output_dir)
         self._write_manifest(output_dir, context, cfg)
         self._write_run_summary(store, context, cfg)
-        self._write_qa_report(store, context)
-        self._write_translation_report(store, context)
+        if cfg.save_artifacts:
+            self._write_qa_report(store, context)
+            self._write_translation_report(store, context)
 
         # Format conversion: repack rendered images into target format
         output_format = cfg.output_format or "images"
         if output_format != "images":
             self._repack_to_format(output_dir, context, cfg, output_format)
 
+        files_written = [
+            "manifest.json",
+            "run.json",
+        ]
+        if cfg.save_artifacts:
+            files_written.extend([
+                "qa_report.json",
+                "translation-report.json",
+            ])
+
         context.artifacts[self.name] = {
             "output_dir": str(output_dir),
             "output_format": output_format,
-            "files_written": [
-                "manifest.json", "run.json", "qa_report.json",
-                "translation-report.json",
-            ],
+            "files_written": files_written,
         }
         return context
 
@@ -93,8 +101,9 @@ class OutputStage(PipelineStage):
         from mga.artifacts.store import ArtifactStore
         store = ArtifactStore(output_dir)
         self._write_run_summary(store, context, cfg)
-        self._write_qa_report(store, context)
-        self._write_translation_report(store, context)
+        if cfg.save_artifacts:
+            self._write_qa_report(store, context)
+            self._write_translation_report(store, context)
         return context
 
     def _write_manifest(self, output_dir: Path, ctx: PipelineContext, cfg: ProjectConfig) -> None:

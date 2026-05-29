@@ -1,0 +1,9 @@
+bubble_mask_prior = true
+bubble_mask_mode = "expand_text"
+bubble_mask_enlarge_ratio = 5.0
+bubble_mask_min_area_ratio = 0.30
+bubble_mask_max_area_ratio = 10.0
+
+[translator]
+translator = "chatgpt"
+target_lang = "CHS"

@@ -79,10 +79,27 @@ def test_run_summary_schema():
         "timestamp", "pipeline_mode", "source_lang", "target_lang", "provider",
         "input_path", "output_path", "input_format", "output_format",
         "page_count", "translation_count", "stages_completed", "stage_timings",
-        "total_duration", "error_count", "errors", "status",
+        "total_duration", "error_count", "errors", "status", "graph_mode",
     ]
     for field in required:
         assert field in d, f"Missing field: {field}"
+
+
+def test_run_summary_sets_graph_mode_for_dialogue_realization():
+    ctx = _make_context(
+        artifacts={
+            "translation": {
+                "dialogue_realization": {
+                    "version": "translation_graph_v0_a",
+                    "entries": [],
+                }
+            }
+        }
+    )
+    cfg = _make_config()
+    summary = build_run_summary(ctx, cfg)
+
+    assert summary.graph_mode == "translation_graph_v0_linear"
 
 
 def test_write_run_summary(tmp_path):

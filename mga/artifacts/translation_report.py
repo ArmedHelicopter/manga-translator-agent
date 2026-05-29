@@ -20,6 +20,11 @@ class TranslationEntry:
     qa_findings: list[dict[str, Any]] = field(default_factory=list)
     cultural_strategy: str | None = None
     needs_human_review: bool = False
+    speaker_id: str | None = None
+    semantic_text: str | None = None
+    semantic_rationale: str | None = None
+    persona_moves: list[str] = field(default_factory=list)
+    persona_rationale: str | None = None
 
 
 @dataclass
@@ -58,10 +63,21 @@ def _qa_findings_by_bubble(ctx: PipelineContext) -> dict[str, list[dict]]:
     return result
 
 
+def _dialogue_realization_by_bubble(ctx: PipelineContext) -> dict[str, dict]:
+    trace = ctx.artifacts.get("translation", {}).get("dialogue_realization", {})
+    entries = trace.get("entries", []) if isinstance(trace, dict) else []
+    return {
+        entry.get("bubble_id", ""): entry
+        for entry in entries
+        if isinstance(entry, dict) and entry.get("bubble_id")
+    }
+
+
 def build_translation_report(ctx: PipelineContext) -> TranslationReport:
     """Build a translation report from PipelineContext."""
     b2p = _bubble_to_page_map(ctx)
     qa_by_bubble = _qa_findings_by_bubble(ctx)
+    realization_by_bubble = _dialogue_realization_by_bubble(ctx)
 
     entries: list[TranslationEntry] = []
     for t in ctx.translations:
@@ -70,6 +86,9 @@ def build_translation_report(ctx: PipelineContext) -> TranslationReport:
         needs_review = t.confidence < 0.7 or any(
             f.get("severity") == "critical" for f in qa
         )
+        realization = realization_by_bubble.get(t.bubble_id, {})
+        semantic = realization.get("semantic", {}) if isinstance(realization, dict) else {}
+        persona = realization.get("persona", {}) if isinstance(realization, dict) else {}
         entries.append(TranslationEntry(
             bubble_id=t.bubble_id,
             page_id=page_id,
@@ -79,6 +98,11 @@ def build_translation_report(ctx: PipelineContext) -> TranslationReport:
             rationale=t.rationale,
             qa_findings=qa,
             needs_human_review=needs_review,
+            speaker_id=realization.get("speaker_id") if isinstance(realization, dict) else None,
+            semantic_text=semantic.get("text") if isinstance(semantic, dict) else None,
+            semantic_rationale=semantic.get("rationale") if isinstance(semantic, dict) else None,
+            persona_moves=persona.get("persona_moves", []) if isinstance(persona, dict) else [],
+            persona_rationale=persona.get("rationale") if isinstance(persona, dict) else None,
         ))
 
     # Fill source_text from pages

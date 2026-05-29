@@ -1,0 +1,314 @@
+[manga-translator.local] Log file created: /home/exusiai/_dev/manga-translator-agent/result/log_20260523203637.txt
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0000.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0000.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0001.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0001.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0002.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0002.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0003.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0003.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0004.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0004.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0005.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0005.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0006.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0006.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0007.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0007.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0008.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0008.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0009.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/artifact-0009.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/inpainted-0000.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/inpainted-0000.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/inpainted-0001.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/inpainted-0001.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/inpainted-0002.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9234017729759216 10 fg: (5, 9, 2) bg: (5, 9, 2)
+[manga-translator.Model48pxOCR] prob: 0.5705609917640686 INARIZUSHI fg: (244, 246, 244) bg: (244, 246, 244)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 10
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: INARIZUSHI
+[manga-translator.local] Reason: Text language matches the target language and no_text_lang_skip is False.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[33mWARNING:[39m [manga-translator.local] Text translator returned empty queries
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/inpainted-0002.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/inpainted-0003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9602863788604736 11 fg: (4, 9, 2) bg: (4, 9, 2)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 11
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[33mWARNING:[39m [manga-translator.local] Text translator returned empty queries
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/inpainted-0003.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/inpainted-0004.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/inpainted-0004.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/inpainted-0005.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9981821179389954 13 fg: (5, 15, 3) bg: (5, 15, 3)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 13
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[33mWARNING:[39m [manga-translator.local] Text translator returned empty queries
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/inpainted-0005.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/inpainted-0006.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9967188835144043 14 fg: (1, 8, 1) bg: (1, 8, 1)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 14
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[33mWARNING:[39m [manga-translator.local] Text translator returned empty queries
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/inpainted-0006.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/inpainted-0007.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/inpainted-0007.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/inpainted-0008.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9972780346870422 16 fg: (0, 3, 0) bg: (0, 3, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 16
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[33mWARNING:[39m [manga-translator.local] Text translator returned empty queries
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/inpainted-0008.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/inpainted-0009.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[33mWARNING:[39m [manga-translator.local] No text regions with text! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/inpainted-0009.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/mask-0000.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/mask-0000.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/mask-0001.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/mask-0001.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/mask-0002.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/mask-0002.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/mask-0003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/mask-0003.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/mask-0004.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/mask-0004.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/mask-0005.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/mask-0005.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/mask-0006.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/mask-0006.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/mask-0007.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/mask-0007.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/mask-0008.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/mask-0008.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/mask-0009.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/mask-0009.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/page-010.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/page-010.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/page-011.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/page-011.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/page-012.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9234017729759216 10 fg: (5, 9, 2) bg: (5, 9, 2)
+[manga-translator.Model48pxOCR] prob: 0.5705609917640686 INARIZUSHI fg: (244, 246, 244) bg: (244, 246, 244)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 10
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: INARIZUSHI
+[manga-translator.local] Reason: Text language matches the target language and no_text_lang_skip is False.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[33mWARNING:[39m [manga-translator.local] Text translator returned empty queries
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/page-012.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/page-013.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9602863788604736 11 fg: (4, 9, 2) bg: (4, 9, 2)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 11
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[33mWARNING:[39m [manga-translator.local] Text translator returned empty queries
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/page-013.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/page-014.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/page-014.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/page-015.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9981821179389954 13 fg: (5, 15, 3) bg: (5, 15, 3)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 13
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[33mWARNING:[39m [manga-translator.local] Text translator returned empty queries
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/page-015.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/page-016.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9967188835144043 14 fg: (1, 8, 1) bg: (1, 8, 1)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 14
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[33mWARNING:[39m [manga-translator.local] Text translator returned empty queries
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/page-016.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/page-017.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/page-017.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/page-018.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9972780346870422 16 fg: (0, 3, 0) bg: (0, 3, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 16
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[33mWARNING:[39m [manga-translator.local] Text translator returned empty queries
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/page-018.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/page-019.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[33mWARNING:[39m [manga-translator.local] No text regions with text! - Skipping
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck/page-019.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/pages.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/pages.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0000.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0000.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0001.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0001.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0002.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0002.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0003.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0003.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0004.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0004.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0005.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0005.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0006.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0006.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0007.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0007.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0008.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0008.json
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0009.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514/.mga-payload/translations-0009.json
+[manga-translator.local] Done. Translated 30 images in 1.7 minutes
+[manga-translator.local] Results saved to: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-local-maskcheck"
+

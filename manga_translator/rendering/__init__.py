@@ -45,7 +45,104 @@ def count_text_length(text: str) -> float:
             length += 1.0
     return length
 
-def resize_regions_to_font_size(img: np.ndarray, text_regions: List['TextBlock'], font_size_fixed: int, font_size_offset: int, font_size_minimum: int):  
+
+def _nonzero_bbox_size(alpha: np.ndarray) -> tuple[int, int]:
+    ys, xs = np.where(alpha > 0)
+    if len(xs) == 0 or len(ys) == 0:
+        return 0, 0
+    return int(xs.max() - xs.min() + 1), int(ys.max() - ys.min() + 1)
+
+
+def _render_probe_text(
+    region: "TextBlock",
+    font_size: int,
+    target_w: int,
+    target_h: int,
+    hyphenate: bool,
+    line_spacing: int,
+) -> np.ndarray | None:
+    fg, bg = fg_bg_compare(*region.get_font_colors())
+    forced_direction = region._direction if hasattr(region, "_direction") else region.direction
+    render_horizontally = region.horizontal if forced_direction == "auto" else forced_direction in ["horizontal", "h"]
+    try:
+        if render_horizontally:
+            return text_render.put_text_horizontal(
+                font_size,
+                region.get_translation_for_rendering(),
+                max(1, int(target_w)),
+                max(1, int(target_h)),
+                region.alignment,
+                region.direction == 'hl',
+                fg,
+                bg,
+                region.target_lang,
+                hyphenate,
+                line_spacing,
+            )
+        return text_render.put_text_vertical(
+            font_size,
+            region.get_translation_for_rendering(),
+            max(1, int(target_h)),
+            region.alignment,
+            fg,
+            bg,
+            line_spacing,
+        )
+    except Exception:
+        return None
+
+
+def _fit_font_size_to_region(
+    region: "TextBlock",
+    initial_size: int,
+    min_size: int,
+    target_w: int,
+    target_h: int,
+    hyphenate: bool,
+    line_spacing: int,
+) -> int:
+    """Find the largest font size that still fits target area.
+
+    This optimizes for "fill as much area as possible" rather than short-text heuristics.
+    """
+    lo = max(1, int(min_size))
+    hi = max(lo, int(max(target_w, target_h) * 2))
+    best_size = max(lo, int(initial_size))
+    best_fill = -1.0
+    fit_w_limit = max(1, int(target_w)) * 1.02
+    fit_h_limit = max(1, int(target_h)) * 1.02
+
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        probe = _render_probe_text(region, mid, target_w, target_h, hyphenate, line_spacing)
+        if probe is None or probe.ndim != 3 or probe.shape[2] < 4:
+            hi = mid - 1
+            continue
+
+        ph, pw = probe.shape[:2]
+        fits = pw <= fit_w_limit and ph <= fit_h_limit
+        alpha_w, alpha_h = _nonzero_bbox_size(probe[:, :, 3])
+        fill = float(alpha_w * alpha_h) / float(max(1, target_w * target_h))
+
+        if fits:
+            if fill > best_fill or (abs(fill - best_fill) < 1e-6 and mid > best_size):
+                best_fill = fill
+                best_size = mid
+            lo = mid + 1
+        else:
+            hi = mid - 1
+
+    return max(lo - 1, best_size, min_size, 1)
+
+def resize_regions_to_font_size(
+    img: np.ndarray,
+    text_regions: List['TextBlock'],
+    font_size_fixed: int,
+    font_size_offset: int,
+    font_size_minimum: int,
+    hyphenate: bool = True,
+    line_spacing: int = None,
+):  
     """
     Adjust text region size to accommodate font size and translated text length.
     
@@ -82,7 +179,21 @@ def resize_regions_to_font_size(img: np.ndarray, text_regions: List['TextBlock']
         else:  
             target_font_size = current_base_font_size + font_size_offset  
 
-        target_font_size = max(target_font_size, font_size_minimum, 1)  
+        target_font_size = max(target_font_size, font_size_minimum, 1)
+
+        # Fit text to use as much region area as possible.
+        if font_size_fixed is None:
+            target_w = max(1, int(round(region.unrotated_size[0])))
+            target_h = max(1, int(round(region.unrotated_size[1])))
+            target_font_size = _fit_font_size_to_region(
+                region,
+                target_font_size,
+                font_size_minimum,
+                target_w,
+                target_h,
+                hyphenate,
+                line_spacing,
+            )
         # print("-" * 50)
         # logger.debug(f"Calculated target font size: {target_font_size} for text '{region.translation}'")  
 
@@ -172,7 +283,7 @@ def resize_regions_to_font_size(img: np.ndarray, text_regions: List['TextBlock']
                 # Shrink font when translation is longer to fit within the region
                 font_shrink_ratio = 1 / (1 + increase_percentage * 0.5)
                 font_shrink_ratio = max(0.6, min(1.0, font_shrink_ratio))
-                target_font_size = int(target_font_size * font_shrink_ratio)
+                target_font_size = max(font_size_minimum, int(target_font_size * font_shrink_ratio))
                 target_scale = 1.0  # Do not expand bounding box
             # Short text box expansion is quite aggressive, in many cases short text boxes don't need expansion
             # elif char_count_orig > 0 and char_count_trans < char_count_orig:
@@ -242,16 +353,69 @@ async def dispatch(
     disable_font_border: bool = False
     ) -> np.ndarray:
 
+    def _has_effective_alpha(temp_img: np.ndarray, min_pixels: int = 64) -> bool:
+        if temp_img is None or temp_img.ndim != 3 or temp_img.shape[2] < 4:
+            return False
+        return int(np.count_nonzero(temp_img[:, :, 3])) >= min_pixels
+
+    def _render_temp(region_obj, horiz: bool, norm_h0: float, norm_v0: float):
+        if horiz:
+            return text_render.put_text_horizontal(
+                region_obj.font_size,
+                region_obj.get_translation_for_rendering(),
+                round(norm_h0),
+                round(norm_v0),
+                region_obj.alignment,
+                region_obj.direction == 'hl',
+                *fg_bg_compare(*region_obj.get_font_colors()),
+                region_obj.target_lang,
+                hyphenate,
+                line_spacing,
+            )
+        return text_render.put_text_vertical(
+            region_obj.font_size,
+            region_obj.get_translation_for_rendering(),
+            round(norm_v0),
+            region_obj.alignment,
+            *fg_bg_compare(*region_obj.get_font_colors()),
+            line_spacing,
+        )
+
     text_render.set_font(font_path)
     text_regions = list(filter(lambda region: region.translation, text_regions))
 
     # Resize regions that are too small
-    dst_points_list = resize_regions_to_font_size(img, text_regions, font_size_fixed, font_size_offset, font_size_minimum)
+    dst_points_list = resize_regions_to_font_size(
+        img,
+        text_regions,
+        font_size_fixed,
+        font_size_offset,
+        font_size_minimum,
+        hyphenate=hyphenate,
+        line_spacing=line_spacing,
+    )
 
     # TODO: Maybe remove intersections
 
     # Render text
     for region, dst_points in tqdm(zip(text_regions, dst_points_list), '[render]', total=len(text_regions)):
+        # Preflight: if current font path yields effectively empty glyph alpha,
+        # switch to internal fallback fonts for this region.
+        try:
+            middle_pts = (dst_points[:, [1, 2, 3, 0]] + dst_points) / 2
+            norm_h = np.linalg.norm(middle_pts[:, 1] - middle_pts[:, 3], axis=1)
+            norm_v = np.linalg.norm(middle_pts[:, 2] - middle_pts[:, 0], axis=1)
+            forced_direction = region._direction if hasattr(region, "_direction") else region.direction
+            if forced_direction != "auto":
+                render_h = forced_direction in ["horizontal", "h"]
+            else:
+                render_h = region.horizontal
+            probe = _render_temp(region, render_h, norm_h[0], norm_v[0])
+            if not _has_effective_alpha(probe):
+                text_render.set_font('')
+        except Exception:
+            pass
+
         if render_mask is not None:
             # set render_mask to 1 for the region that is inside dst_points
             cv2.fillConvexPoly(render_mask, dst_points.astype(np.int32), 1)

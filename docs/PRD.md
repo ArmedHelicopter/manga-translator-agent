@@ -14,7 +14,7 @@
 
 ### 1.2 一句话描述
 
-`mga` 是一个 external-first 的漫画翻译 Agent：以成熟 runtime 负责检测、OCR、擦字和嵌字，以 `mga` 自己的 artifacts、benchmark、角色一致性 intelligence 负责可审查性与长期差异化。
+`mga` 是一个 external-first 的漫画翻译 Agent：以成熟 runtime 负责检测、OCR、擦字和嵌字，以 `mga` 自己的 artifacts、benchmark、OCR-aware translation、Vision enrichment、QA 与 memory/wiki 基础设施负责可审查性与长期差异化。
 
 ### 1.2.1 From Translation Engine to Character Simulation Agent
 
@@ -33,7 +33,7 @@
 原因很直接：
 
 - 检测、OCR、擦字、嵌字这些 runtime 能力已经有成熟开源底盘
-- 当前最稀缺的不是又一个 runtime，而是可审查 artifacts、统一 benchmark、角色一致性翻译与 QA 审查
+- 当前最稀缺的不是又一个 runtime，而是可审查 artifacts、统一 benchmark、OCR/runtime 中间层、角色一致性翻译与 QA 审查
 - 先改造成熟 external runtime，能更快验证用户价值，也能避免把大量时间耗在低差异化基础设施上
 
 因此本项目近期采用：
@@ -57,7 +57,7 @@
 2. **关系约束**：称呼、敬语、语气和情绪推进受人物关系与场景约束
 3. **翻译学习**：从已有汉化学习的不只是词汇映射，更是角色在中文中的人格质感
 4. **QA 审查**：不仅查事实错漏，也查人设崩坏、关系层级错位和语气漂移
-5. **Vision-first**：保留画面与叙事上下文，作为人格模拟所需的感知基础
+5. **OCR + Vision 分工**：OCR/runtime 提供可嵌字文本与几何，Vision 只补充框类型、视觉脚注和语言风格提示
 6. **External-first delivery path**：短期优先借力成熟 runtime 交付结果，而不是重复造轮子
 7. **文化适配**：造词、敬语、拟声词、文化概念分级处理
 8. **供应商自由**：云端/本地模型随意切换，无锁定
@@ -71,7 +71,7 @@
 
 | 痛点 | 现状 | 我们的方案 |
 |------|------|-----------|
-| OCR 降维丢失信息 | 图片→文本→翻译，错误级联 | Vision 一次拿全部信息 |
+| OCR 降维丢失信息 | 图片→文本→翻译，视觉上下文丢失 | OCR 负责主文本，Vision enrichment 补充画面语境 |
 | 角色语言无差异 | 所有角色同一翻译腔调 | 角色档案 + RAG |
 | 缺少人格概念 | 只能优化句子，无法优化角色一致性 | 角色记忆 + 关系约束 + 连续章节校准 |
 | 嵌字效果差 | 擦除留痕、排版生硬 | 智能擦除 + 气泡适配嵌字 |
@@ -105,12 +105,13 @@
 | **图片格式支持** | 输入/输出 JPG/PNG | 批量处理目录下所有图片 |
 | **CLI 入口** | 命令行工具 | `manga-translate input/ -o output/` 默认走 external-core |
 | **provider 桥接** | 先桥接 OpenAI 配置到 external runtime | `mga` 能统一管理 base_url / model / key |
+| **Vision enrichment** | OCR 成功后仍运行 Vision，补充文本框类型、作者绘制文字脚注、临时说话人和语言风格提示 | Vision 不覆盖 OCR 文本；漏检绘制文字只作为页级脚注 |
 
 ### 3.2 P1 — 应该有（核心差异化）
 
 | 功能 | 描述 | 验收标准 |
 |------|------|---------|
-| **角色档案 RAG** | 每个角色独立的语言档案 | 翻译时注入角色口癖/称呼/语气 |
+| **角色档案 RAG** | 每个角色独立的语言档案 | 翻译时注入角色口癖/称呼/语气；依赖可靠角色归属或人工绑定 |
 | **QA 校对层** | 独立 LLM 校对翻译结果 | 每条建议带理由 + 置信度，并可指出人设漂移 |
 | **格式扩展** | PDF/EPUB/CBR/CBZ 输入输出 | 能处理并保留原始格式 |
 | **术语库** | per-work 作者造词/文化词库 | 术语统一翻译，并服务角色语域稳定 |
@@ -146,22 +147,53 @@
 
 ### 4.1 整体架构
 
+`mga` 的产品形态不是传统线性翻译 pipeline，而是一个以 artifact 为中心的 **Translation Graph**：external runtime 负责可交付底座，`mga` 负责围绕 `PageArtifact` / `BubbleArtifact` 构建 OCR/Vision 双感知流、智能工作区、对白生成和 QA/repair 闭环。
+
 ```
 external runtime layer
-  → 检测 / OCR / 擦字 / 嵌字 / 页级翻译底盘
+  → 检测 / OCR / 擦字 / 嵌字 / render-only 交付底盘
 
-mga orchestration layer
-  → artifacts / benchmark / review / provider routing / run control
+mga artifact spine
+  → PageArtifact / BubbleArtifact / RunManifest / RenderContract
 
-mga intelligence layer
-  → 角色一致性翻译 / learn-from / QA / 关系约束
+mga intelligence graph
+  → OCR-aware understanding / Vision enrichment / memory / relation / culture / QA / learning
+
+mga dialogue realization
+  → semantic translation → persona rendering → review / repair
 ```
 
-近期推荐执行顺序：
+核心结构：
 
-1. 用 external runtime 跑通可交付链路
-2. 用 `mga` orchestration 固化 artifacts 与 benchmark
-3. 逐步把 translation brain、QA、角色系统插入 runtime 中间层
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Delivery Shell                        │
+│  format adapter / runtime bridge / render-only / output  │
+│                                                         │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │                Artifact Spine                      │  │
+│  │  PageArtifact / BubbleArtifact / RunManifest       │  │
+│  │                                                   │  │
+│  │  ┌─────────────────────────────────────────────┐  │  │
+│  │  │             Intelligence Core                │  │  │
+│  │  │ memory / relation / culture / QA / learning  │  │  │
+│  │  │                                             │  │  │
+│  │  │  ┌───────────────────────────────────────┐  │  │  │
+│  │  │  │        Dialogue Realization            │  │  │  │
+│  │  │  │ semantic meaning → persona rendering   │  │  │  │
+│  │  │  └───────────────────────────────────────┘  │  │  │
+│  │  └─────────────────────────────────────────────┘  │  │
+│  └───────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+```
+
+近期推荐落地顺序：
+
+1. 用 external runtime 跑通可交付链路，并保持 runtime artifact 作为主文本与几何权威。
+2. 用 `mga` artifact spine 固化可审查的 page/bubble/run/render contract。
+3. 明确 OCR 与 Vision 是并行感知流：OCR/runtime 提供 `source_text` 与 `bbox`；Vision 只补充框类型、视觉脚注、临时说话人、语气和场景提示。
+4. 先在当前线性执行器中模拟 Translation Graph：把现有 translation brain 内部拆成 semantic translation 与 persona rendering，并写出 trace。
+5. 等效果验证后，再把 semantic/persona/QA repair 升格为独立 graph nodes，逐步用 artifact dependency 替代固定 stage order。
 
 当前正式产品语义：
 
@@ -182,8 +214,22 @@ LLMProvider (抽象基类)
 
 每个 Stage 可独立选择供应商。
 配置文件：providers.toml
-CLI 参数可覆盖：--vision-provider, --translate-provider, --local
+CLI 当前可用覆盖：--provider / --config；stage-level 路由来自 providers.toml
 ```
+
+### 4.2.1 当前实现状态
+
+| 能力 | 当前状态 |
+|------|---------|
+| OCR/runtime 主文本 | 已接线；runtime artifact 是气泡文本和几何的权威来源 |
+| Vision enrichment | 已接线；补充框类型、视觉脚注、临时说话人和语言风格提示 |
+| Translation brain | 已接线；当前仍是 semantic translation 与 persona rendering 的混合体；下一步先在内部拆分两步并写出 trace |
+| Dialogue realization | 设计目标：语义层只负责忠实转换，人格层再根据角色、关系、场景和 Vision hints 渲染对白 |
+| QA | 已接线；当前是 review layer v0，后续拆成 semantic QA / persona QA / layout QA，并由 repair planner 路由回对应节点 |
+| 角色归属 | 已有保守最小实现；只把与既有角色档案强匹配的 hint 提升为正式 `speaker_id`，模糊 provisional_speaker 只写 trace |
+| 角色 RAG / 关系图谱 | 角色记忆已有最小闭环：已有正式 `speaker_id` 时，同次多页运行会更新角色记忆并注入后续页；关系图谱与自动归属仍需补强 |
+| Learning engine | 模块与 mock 测试存在；真实漫画热启动闭环仍需端到端验证 |
+| legacy compatibility CLI | `manga_translate.cli` 仍保留 external-core 兼容路径，不代表 `manga-translate` 产品主链 |
 
 ### 4.3 数据流
 
@@ -233,8 +279,9 @@ CLI 参数可覆盖：--vision-provider, --translate-provider, --local
 | 指标 | 目标 |
 |------|------|
 | 气泡检测准确率 | > 95% |
-| OCR/Vision 文字提取准确率 | > 98%（标准日文） |
-| 角色归属准确率 | > 90% |
+| OCR 文字提取准确率 | > 98%（标准日文；以 runtime OCR 为准） |
+| Vision enrichment 命中率 | > 80%（框类型、视觉脚注、语言风格提示的人工抽样有效率） |
+| 角色推理准确率 | 后续角色推理阶段指标；不作为 Vision enrichment 验收项 |
 | QA 校对有效建议率 | > 70%（人工评估） |
 | 角色一致性可感知 | 同一角色跨页语言风格稳定 |
 | 关系语气稳定性 | 对不同对象的称呼/敬语切换符合预期 |
@@ -271,12 +318,11 @@ manga-translate input.cbr --format cbz -o output.cbz
 manga-translate new_ch/ --learn-from existing_translated/ -o output/
 
 # 纯学习模式
-manga-translate --learn-only existing/ --output-profiles profiles/
+manga-translate existing/ --learn-only --learn-from existing/ -o output/
 
 # 供应商选择
 manga-translate input/ --provider openai
-manga-translate input/ --provider ollama --local
-manga-translate input/ --vision-provider gemini --translate-provider deepseek
+manga-translate input/ --provider openai --config configs/providers.toml
 
 # 双语对照
 manga-translate input/ --format bilingual -o bilingual.pdf
@@ -287,9 +333,7 @@ manga-translate input/ --lang ko-zh        # 韩→中
 manga-translate input/ --lang en-zh        # 英→中
 
 # 项目管理
-manga-translate init my_project            # 初始化项目目录
 manga-translate profile list               # 查看角色档案
-manga-translate profile edit <name>        # 编辑角色档案
 manga-translate term list                  # 查看术语库
 
 # 调试与详细输出
@@ -305,11 +349,11 @@ manga-translate legacy benchmark-extraction input/ -o output/
 
 | Phase | 内容 | 交付物 |
 |-------|------|--------|
-| **Phase 1** | 图片目录 MVP | 可审查 page contract、基础 vision-first pipeline、图片 I/O |
+| **Phase 1** | 图片目录 MVP | 可审查 page contract、OCR/runtime 主文本、Vision enrichment、图片 I/O |
 | **Phase 1.5** | external-first 交付链路 | 把 `manga-image-translator` 固定为默认 runtime，完成 `benchmark-external`、same-page review、连续 5 页 smoke |
 | **Phase 2** | external runtime 魔改 | 在 external runtime 上插入 `mga` 的 prompt-orchestrated generation |
 | **Phase 3** | 翻译学习引擎 | `--learn-from` + 人格校准；作为 intelligence layer 热启动入口 |
-| **Phase 4** | 角色系统 + QA | 角色档案 RAG、关系约束、角色一致性翻译、QA |
+| **Phase 4** | 角色系统 + QA | 角色档案 RAG、角色归属推理、关系约束、角色一致性翻译、QA |
 | **Phase 5** | 文化适配与格式扩展 | 术语库、造词发现、敬语补偿、更多格式支持 |
 | **Phase 6** | 对 external runtime 的更深改造 | 在已有宿主上继续强化 QA、memory、渲染与审计能力 |
 
@@ -338,11 +382,11 @@ manga-translate legacy benchmark-extraction input/ -o output/
 
 | 维度 | manga-image-translator | BallonsTranslator | 本项目 |
 |------|----------------------|-------------------|--------|
-| 架构 | OCR pipeline | OCR pipeline (GUI) | Vision-first |
-| 角色系统 | ❌ | ❌ | ✅ RAG + 图谱 |
-| 文化适配 | ❌ | ❌ | ✅ 术语库 + 分级 |
-| 热启动 | ❌ | ❌ | ✅ 学习引擎 |
-| 校对层 | ❌ | ❌ | ✅ 独立 QA |
+| 架构 | OCR pipeline | OCR pipeline (GUI) | OCR/runtime-first + Vision enrichment |
+| 角色系统 | △ | △ | 人工 `speaker_id` 下已有 page-sequential 记忆闭环；自动角色归属与成熟角色声线建模仍未完成 |
+| 文化适配 | ❌ | ❌ | 术语库/分级模块存在，默认主链仍需真实作品验证 |
+| 热启动 | ❌ | ❌ | 学习引擎模块存在，真实漫画闭环待验证 |
+| 校对层 | ❌ | ❌ | 独立 QA stage 已接线 |
 | 供应商 | 多但绑定 | 同左 | 自由切换 |
 | 格式 | 图片目录 | 图片目录 | 全格式 |
 | 嵌字 | ⭐⭐⭐ | ⭐⭐⭐⭐ | Phase 2 优化 |
@@ -355,7 +399,7 @@ manga-translate legacy benchmark-extraction input/ -o output/
 |------|------|------|
 | Vision 模型成本高 | 长篇连载费用大 | 支持本地模型 + 缓存机制 |
 | 嵌字质量不达预期 | 用户体验差 | Phase 2 专项优化，支持手动调整 |
-| 角色归属不准 | 翻译一致性差 | 人工校正接口 + 渐进学习 |
+| 角色推理不准 | 翻译一致性差 | 后续角色归属阶段引入人工校正接口 + 渐进学习；Vision enrichment 不承担最终归属 |
 | 虚构文字无对照表 | 部分作品翻译不完整 | 社区共建数据库 |
 | MOBI 格式依赖 Calibre | 用户安装门槛 | 优雅降级，提示安装 |
 
@@ -365,7 +409,8 @@ manga-translate legacy benchmark-extraction input/ -o output/
 
 | 术语 | 含义 |
 |------|------|
-| Vision-first | 以多模态视觉模型为主干，不走 OCR 流水线 |
+| Vision enrichment | 多模态视觉模型补充画面理解、脚注和语言风格提示，不替代 OCR 主文本 |
+| OCR-aware translation | 翻译阶段以 OCR/runtime 文本为主输入，同时消费 Vision/memory/cultural hints |
 | RAG | Retrieval-Augmented Generation，检索增强生成 |
 | 热启动 | 从已有翻译中学习模式后开始翻译 |
 | 冷启动 | 无已有翻译，从零建立档案 |

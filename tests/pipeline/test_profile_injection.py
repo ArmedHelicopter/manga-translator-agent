@@ -1,6 +1,11 @@
 """Tests for mga.pipeline.translation_stage — _build_translation_prompt."""
 
-from mga.pipeline.translation_stage import _build_translation_prompt
+from mga.models.translation import SemanticTranslation
+from mga.pipeline.translation_stage import (
+    _build_persona_render_prompt,
+    _build_semantic_translation_prompt,
+    _build_translation_prompt,
+)
 
 
 # ── Full profile ───────────────────────────────────────────────
@@ -99,3 +104,60 @@ def test_prompt_structure():
     # Verify it asks for text and rationale keys
     assert "'text'" in result
     assert "'rationale'" in result
+
+
+def test_semantic_prompt_excludes_character_profile():
+    memory_ctx = {
+        "name_jp": "太郎",
+        "tone_spectrum": {"observed_style": "粗鲁、直接、句尾偏口语"},
+    }
+
+    result = _build_semantic_translation_prompt(
+        "よろしく",
+        {"translation_context": "固定术语：契约 → 契约。"},
+        "zh-CN",
+        vision_ctx={"box_type": "dialogue", "provisional_speaker": "boy"},
+    )
+
+    assert "## Semantic Translation" in result
+    assert "角色档案" not in result
+    assert "太郎" not in result
+    assert "粗鲁、直接、句尾偏口语" not in result
+    assert "临时说话人" not in result
+    assert "文本框类型：dialogue" in result
+    assert "固定术语：契约 → 契约。" in result
+    assert "Source: よろしく" in result
+    assert memory_ctx["name_jp"] == "太郎"
+
+
+def test_persona_prompt_includes_profile_and_semantic_draft():
+    semantic = SemanticTranslation(
+        bubble_id="b1",
+        text="拜托了。",
+        must_preserve=["契约"],
+        rationale="semantic only",
+        confidence=0.8,
+    )
+    memory_ctx = {
+        "name_jp": "太郎",
+        "name_zh": "太郎",
+        "tone_spectrum": {"observed_style": "粗鲁、直接、句尾偏口语"},
+    }
+
+    result = _build_persona_render_prompt(
+        "よろしく",
+        semantic,
+        memory_ctx,
+        "zh-CN",
+        vision_ctx={"provisional_speaker": "boy", "voice_hint": "forceful"},
+    )
+
+    assert "## Persona Rendering" in result
+    assert "## Semantic Translation" in result
+    assert "拜托了。" in result
+    assert "契约" in result
+    assert "角色档案" in result
+    assert "太郎" in result
+    assert "粗鲁、直接、句尾偏口语" in result
+    assert "临时说话人：boy" in result
+    assert "forceful" in result

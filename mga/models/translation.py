@@ -27,3 +27,39 @@ class TranslationCandidate(BaseModel):
     rationale: str = ""
     confidence: float = 0.0
     footnotes: List[FootnoteEntry] = Field(default_factory=list)
+
+
+class SemanticTranslation(BaseModel):
+    bubble_id: str = ""
+    text: str = ""
+    speech_act: Optional[str] = None
+    emotion: Optional[str] = None
+    must_preserve: List[str] = Field(default_factory=list)
+    footnotes: List[FootnoteEntry] = Field(default_factory=list)
+    rationale: str = ""
+    confidence: float = 0.0
+
+
+class PersonaRenderTrace(BaseModel):
+    bubble_id: str = ""
+    speaker_id: Optional[str] = None
+    listener_id: Optional[str] = None
+    semantic_text: str = ""
+    rendered_text: str = ""
+    persona_moves: List[str] = Field(default_factory=list)
+    relationship_context_used: bool = False
+    memory_context_used: bool = False
+    vision_context_used: bool = False
+    rationale: str = ""
+    confidence: float = 0.0
+
+
+class DialogueRealizationTrace(BaseModel):
+    page_id: str = ""
+    bubble_id: str = ""
+    source_text: str = ""
+    speaker_id: Optional[str] = None
+    provisional_speaker: Optional[str] = None
+    semantic: SemanticTranslation = Field(default_factory=SemanticTranslation)
+    persona: PersonaRenderTrace = Field(default_factory=PersonaRenderTrace)
+    final_text: str = ""

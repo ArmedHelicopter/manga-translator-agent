@@ -1,0 +1,12 @@
+[manga-translator.local] Log file created: /home/exusiai/_dev/manga-translator-agent/result/log_20260523153243.txt
+[manga-translator.local] Rendered page 1 -> /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523/page-001.png
+[manga-translator.local] Rendered page 2 -> /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523/page-002.png
+[manga-translator.local] Rendered page 3 -> /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523/page-003.png
+[manga-translator.local] Rendered page 4 -> /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523/page-004.png
+[manga-translator.local] Rendered page 5 -> /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523/page-005.png
+[manga-translator.local] Rendered page 6 -> /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523/page-006.png
+[manga-translator.local] Rendered page 7 -> /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523/page-007.png
+[manga-translator.local] Rendered page 8 -> /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523/page-008.png
+[manga-translator.local] Rendered page 9 -> /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523/page-009.png
+[manga-translator.local] Rendered page 10 -> /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523/page-010.png
+[manga-translator.local] Render-only complete. Output in: /home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523

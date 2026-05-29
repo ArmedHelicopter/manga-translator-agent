@@ -123,6 +123,7 @@ parser_batch.add_argument('--prep-manual', action='store_true', help='Prepare fo
 parser_batch.add_argument('--save-quality', default=100, type=int, help='Quality of saved JPEG image, range from 0 to 100 with 100 being best')
 parser_batch.add_argument('--config-file', default=None, type=str, help='path to the config file')
 parser_batch.add_argument('--export-artifact', default=None, type=str, help='Export render payload (artifact.json + inpainted.png) to this directory after inpainting, then stop.')
+parser_batch.add_argument('--payload-dir', default=None, type=str, help='Save render payload to this directory while continuing normal rendering.')
 parser_batch.add_argument('--render-only', default=None, type=str, help='Load render payload + translations.json from this directory and run rendering only.')
 
 # WebSocket mode

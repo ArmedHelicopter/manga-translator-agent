@@ -1,0 +1,343 @@
+[manga-translator.local] Log file created: /home/exusiai/_dev/manga-translator-agent/result/log_20260523161516.txt
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/pdf-test-10page-0523-160514/page-010.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9985839128494263 うん fg: (3, 2, 1) bg: (3, 2, 1)
+[manga-translator.Model48pxOCR] prob: 0.9611933827400208 あー fg: (2, 5, 1) bg: (2, 5, 1)
+[manga-translator.Model48pxOCR] prob: 0.9758418202400208 あー fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9988216161727905 うん fg: (3, 3, 0) bg: (3, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.7596768736839294 お昼… fg: (4, 3, 2) bg: (4, 3, 2)
+[manga-translator.Model48pxOCR] prob: 0.9992765188217163 って… fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9968756437301636 ねぇ… fg: (2, 4, 1) bg: (2, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9998986721038818 もうすぐ fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9994704723358154 お昼だから fg: (4, 3, 1) bg: (4, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9927520155906677 えっと… fg: (2, 3, 1) bg: (2, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9958930015563965 …美胡ちゃん fg: (4, 5, 1) bg: (4, 5, 1)
+[manga-translator.Model48pxOCR] prob: 0.9923691749572754 なんだっけ？ fg: (1, 3, 1) bg: (1, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999470710754395 ごめんごめん fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.999927282333374 しちゃってた fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9997771382331848 どうしようかな fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9981521964073181 ちょっとボーっと fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: あーごめんごめん => Oh, I'm sorry. Sorry!
+[manga-translator.SugoiTranslator] 1: ちょっとボーっとしちゃってた => I was a little out of it
+[manga-translator.SugoiTranslator] 2: えっと…なんだっけ？ => Um... What was it again?
+[manga-translator.SugoiTranslator] 3: うん => Yeah.
+[manga-translator.SugoiTranslator] 4: もうすぐお昼だからどうしようかなって… => It's almost lunchtime, so I was wondering what to do...
+[manga-translator.SugoiTranslator] 5: あーうん => Ah, yeah
+[manga-translator.SugoiTranslator] 6: お昼…ねぇ… => Lunch... huh?
+[manga-translator.SugoiTranslator] 7: …美胡ちゃん => ...Miko-chan.
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Starting page-level target language check with 8 regions...
+[manga-translator.local] Page-level target language ratio check passed
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-mimo/.mga-payload/page-010.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/pdf-test-10page-0523-160514/page-011.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9949701428413391 何が？ fg: (3, 5, 2) bg: (3, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.993882417678833 大丈夫？ fg: (3, 3, 0) bg: (3, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999856948852539 元気がない fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.99629807472229 …ちょっと fg: (3, 4, 1) bg: (3, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999855756759644 みたいだから fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: 大丈夫？ => Are you okay?
+[manga-translator.SugoiTranslator] 1: 何が？ => What do you mean?
+[manga-translator.SugoiTranslator] 2: …ちょっと => ...Wait a minute.
+[manga-translator.SugoiTranslator] 3: 元気がないみたいだから => You don't seem to be doing well.
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 4 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-mimo/.mga-payload/page-011.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/pdf-test-10page-0523-160514/page-012.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9724252820014954 え fg: (8, 7, 6) bg: (8, 7, 6)
+[manga-translator.Model48pxOCR] prob: 0.9258295297622681 10 fg: (5, 9, 2) bg: (5, 9, 2)
+[manga-translator.Model48pxOCR] prob: 0.9995553493499756 あの fg: (2, 4, 1) bg: (2, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9793840050697327 ね！ fg: (1, 5, 2) bg: (1, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.8448718190193176 あ… fg: (2, 4, 2) bg: (2, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9900158643722534 お昼ご飯 fg: (4, 4, 3) bg: (4, 4, 3)
+[manga-translator.Model48pxOCR] prob: 0.9916988015174866 いやー課題 fg: (1, 4, 1) bg: (1, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9898676872253418 あははは！ fg: (3, 3, 1) bg: (3, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.7907384037971497 INARIZUSHII fg: (245, 246, 244) bg: (245, 246, 244)
+[manga-translator.Model48pxOCR] prob: 0.9999138116836548 見てると眠く fg: (3, 4, 1) bg: (3, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9997586607933044 眠気覚ましに fg: (2, 4, 2) bg: (2, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9621779322624207 なっちゃって！ fg: (2, 4, 1) bg: (2, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9770506024360657 行ってくるよ！ fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9981693029403687 あたしがコンビニ fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 10
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: INARIZUSHII
+[manga-translator.local] Reason: Text language matches the target language and no_text_lang_skip is False.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: あ…あははは！ => Ah... Aha ha!
+[manga-translator.SugoiTranslator] 1: いやー課題見てると眠くなっちゃって！ => Man, just looking at my homework makes me sleepy!
+[manga-translator.SugoiTranslator] 2: お昼ご飯ね！ => Lunch time!
+[manga-translator.SugoiTranslator] 3: 眠気覚ましにあたしがコンビニ行ってくるよ！ => I'll go to the convenience store as a wake-up call!
+[manga-translator.SugoiTranslator] 4: え => Huh?
+[manga-translator.SugoiTranslator] 5: あの => Um...
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Starting page-level target language check with 6 regions...
+[manga-translator.local] Page-level target language ratio check passed
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-mimo/.mga-payload/page-012.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/pdf-test-10page-0523-160514/page-013.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.952792227268219 11 fg: (6, 7, 1) bg: (6, 7, 1)
+[manga-translator.Model48pxOCR] prob: 0.9993540048599243 騒がしい fg: (1, 2, 1) bg: (1, 2, 1)
+[manga-translator.Model48pxOCR] prob: 0.9996531009674072 子ですね fg: (2, 3, 1) bg: (2, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999690055847168 相変わらず fg: (3, 3, 1) bg: (3, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9380488991737366 美胡ちゃん… fg: (3, 2, 1) bg: (3, 2, 1)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 11
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: 美胡ちゃん… => Miko-chan...
+[manga-translator.SugoiTranslator] 1: 相変わらず => As usual
+[manga-translator.SugoiTranslator] 2: 騒がしい子ですね => What a noisy girl
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 3 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-mimo/.mga-payload/page-013.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/pdf-test-10page-0523-160514/page-014.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9972316026687622 旅行 fg: (3, 3, 3) bg: (3, 3, 3)
+[manga-translator.Model48pxOCR] prob: 0.9999637603759766 最近の fg: (3, 3, 2) bg: (3, 3, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999760389328003 前から fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9978891611099243 する… fg: (1, 4, 2) bg: (1, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999821186065674 変な気が fg: (2, 3, 1) bg: (2, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9988071322441101 …なんか fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999303817749023 変だよね fg: (3, 3, 0) bg: (3, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9997962117195129 ちょっと fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999736547470093 ないですか fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998664855957031 美胡ちゃん fg: (3, 3, 1) bg: (3, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9998894929885864 変な子じゃ fg: (2, 2, 1) bg: (2, 2, 1)
+[manga-translator.Model48pxOCR] prob: 0.9961309432983398 …この間の fg: (1, 3, 1) bg: (1, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.999954342842102 その帰りから fg: (3, 4, 0) bg: (3, 4, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: …なんか変だよね => ...Something's not right.
+[manga-translator.SugoiTranslator] 1: 最近の美胡ちゃん => Miko-chan these days.
+[manga-translator.SugoiTranslator] 2: 前から変な子じゃないですか => You've always been a strange girl.
+[manga-translator.SugoiTranslator] 3: …この間の旅行 => ...the trip the other day
+[manga-translator.SugoiTranslator] 4: その帰りからちょっと => After that, I...
+[manga-translator.SugoiTranslator] 5: 変な気がする… => I feel weird...
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Starting page-level target language check with 6 regions...
+[manga-translator.local] Page-level target language ratio check passed
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-mimo/.mga-payload/page-014.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/pdf-test-10page-0523-160514/page-015.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9976757168769836 13 fg: (5, 10, 4) bg: (5, 10, 4)
+[manga-translator.Model48pxOCR] prob: 0.9998883008956909 そうかも fg: (4, 4, 1) bg: (4, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.999883770942688 あの狐の fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.8066027164459229 ですねー fg: (4, 5, 2) bg: (4, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.99994957447052 君の元気も fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.99796462059021 …そんなの fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998893737792969 ですよねぇ fg: (4, 5, 2) bg: (4, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999560117721558 元気がないと fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9997616410255432 当たり前だよ fg: (3, 4, 1) bg: (3, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.999482274055481 そう言われると fg: (4, 4, 1) bg: (4, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9998934268951416 どうしたものか fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9991128444671631 なくなっちゃうん fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 13
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: そう言われるとそうかもですねー => Now that you mention it, I guess so.
+[manga-translator.SugoiTranslator] 1: あの狐の元気がないと => If that fox doesn't look well...
+[manga-translator.SugoiTranslator] 2: どうしたものか君の元気もなくなっちゃうんですよねぇ => I don't know what to do, but you lose your energy.
+[manga-translator.SugoiTranslator] 3: …そんなの当たり前だよ => ...That's only natural.
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 4 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-mimo/.mga-payload/page-015.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/pdf-test-10page-0523-160514/page-016.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9951872229576111 14 fg: (6, 9, 2) bg: (6, 9, 2)
+[manga-translator.Model48pxOCR] prob: 0.9997525811195374 大切な fg: (3, 3, 3) bg: (3, 3, 3)
+[manga-translator.Model48pxOCR] prob: 0.9999802112579346 元気が fg: (2, 6, 2) bg: (2, 6, 2)
+[manga-translator.Model48pxOCR] prob: 0.9998565912246704 友達だもん fg: (5, 5, 2) bg: (5, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999330043792725 なかったら fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999774694442749 それじゃあ fg: (0, 3, 0) bg: (0, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999785423278809 気になるよ fg: (1, 3, 1) bg: (1, 3, 1)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 14
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: 大切な友達だもん => She's my precious friend.
+[manga-translator.SugoiTranslator] 1: 元気がなかったら気になるよ => If you're not feeling well, it bothers me.
+[manga-translator.SugoiTranslator] 2: それじゃあ => I'll see you later.
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 3 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-mimo/.mga-payload/page-016.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/pdf-test-10page-0523-160514/page-017.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9998210668563843 ある fg: (3, 5, 1) bg: (3, 5, 1)
+[manga-translator.Model48pxOCR] prob: 0.9998542070388794 失礼な fg: (3, 4, 2) bg: (3, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999202489852905 褒めて fg: (1, 2, 1) bg: (1, 2, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999127388000488 喜んで fg: (3, 4, 2) bg: (3, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9952895641326904 …下心が fg: (5, 7, 3) bg: (5, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.9998918771743774 純粋に君に fg: (4, 3, 1) bg: (4, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.999922513961792 狐が元気に fg: (1, 2, 1) bg: (1, 2, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999536275863647 ないですか fg: (2, 4, 0) bg: (2, 4, 0)
+[manga-translator.Model48pxOCR] prob: 0.9920493960380554 くれます？ fg: (2, 4, 1) bg: (2, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.999950647354126 なるように fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999411106109619 元気を出して fg: (3, 3, 1) bg: (3, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9939771294593811 くれますか？ fg: (2, 3, 1) bg: (2, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.999901533126831 欲しいだけじゃ fg: (1, 3, 1) bg: (1, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999518394470215 私が頑張ったら fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: 狐が元気になるように私が頑張ったら => If I do my best to make the fox feel better
+[manga-translator.SugoiTranslator] 1: 喜んでくれます？ => Are you happy?
+[manga-translator.SugoiTranslator] 2: 褒めてくれますか？ => Will you praise me?
+[manga-translator.SugoiTranslator] 3: …下心がある => ...I have an ulterior motive.
+[manga-translator.SugoiTranslator] 4: 失礼な => How rude.
+[manga-translator.SugoiTranslator] 5: 純粋に君に元気を出して欲しいだけじゃないですか => I just want you to cheer up, that's all.
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Starting page-level target language check with 6 regions...
+[manga-translator.local] Page-level target language ratio check passed
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-mimo/.mga-payload/page-017.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/pdf-test-10page-0523-160514/page-018.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9969034790992737 16 fg: (4, 8, 2) bg: (4, 8, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999778270721436 本当に fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9997841715812683 美胡ちゃん fg: (4, 4, 1) bg: (4, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999779462814331 元気出して fg: (1, 2, 1) bg: (1, 2, 1)
+[manga-translator.Model48pxOCR] prob: 0.9996594190597534 大丈夫かな fg: (2, 0, 0) bg: (2, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998259544372559 美胡ちゃんに fg: (2, 2, 1) bg: (2, 2, 1)
+[manga-translator.Model48pxOCR] prob: 0.9981173276901245 …私じゃなくて fg: (2, 2, 0) bg: (2, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.999854564666748 欲しいんだけど fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 16
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: …私じゃなくて美胡ちゃんに元気出して欲しいんだけど => ...I want Miko-chan to cheer up, not me.
+[manga-translator.SugoiTranslator] 1: 美胡ちゃん => Miko-chan.
+[manga-translator.SugoiTranslator] 2: 本当に大丈夫かな => I wonder if he's really okay.
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 3 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-mimo/.mga-payload/page-018.png"
+[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/pdf-test-10page-0523-160514/page-019.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1536x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.8590477705001831 あ！ fg: (1, 6, 0) bg: (1, 6, 0)
+[manga-translator.Model48pxOCR] prob: 0.9494669437408447 なんて… fg: (55, 56, 52) bg: (233, 231, 220)
+[manga-translator.Model48pxOCR] prob: 0.9758261442184448 自己分析 fg: (8, 7, 3) bg: (63, 60, 56)
+[manga-translator.Model48pxOCR] prob: 0.6955720782279968 かはちゃう fg: (5, 6, 3) bg: (87, 92, 80)
+[manga-translator.Model48pxOCR] prob: 0.6035968661308289 できる孤… fg: (3, 3, 1) bg: (3, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9944747090339661 しなきゃ… fg: (4, 4, 2) bg: (4, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.589491069316864 比名子に心配 fg: (2, 2, 1) bg: (2, 2, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999426603317261 みこちゃんだ fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9997602105140686 気を使わせない fg: (2, 3, 2) bg: (2, 3, 2)
+[manga-translator.Model48pxOCR] prob: 0.9994880557060242 ようにしっかり fg: (3, 3, 1) bg: (3, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.8575854301452637 あたしとしたことが fg: (2, 5, 2) bg: (47, 50, 46)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.SugoiTranslator] Translating into English
+[manga-translator.SugoiTranslator] 0: あたしとしたことが比名子に心配かはちゃうなんて… => To think that I'd be worried about Hinako...
+[manga-translator.SugoiTranslator] 1: 自己分析 => Self-analysis
+[manga-translator.SugoiTranslator] 2: できる孤… => Loneliness...
+[manga-translator.SugoiTranslator] 3: 気を使わせないようにしっかりしなきゃ… => I need to keep it together so she doesn't worry about me...
+[manga-translator.SugoiTranslator] 4: あ！みこちゃんだ => Ah! It's mikochan.
+[manga-translator.local] No post-translation replacements made.
+[manga-translator.local] Starting post-translation check...
+[manga-translator.local] Skipping page-level target language check: only 5 regions (threshold: 5)
+[manga-translator.local] All translation regions passed post-translation check.
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-mimo/.mga-payload/page-019.png"
+[manga-translator.local] Done. Translated 10 images in 4.5 minutes
+[manga-translator.local] Results saved to: "/home/exusiai/_dev/manga-translator-agent/data/output/pdf-test-10page-0523-160514-mimo/.mga-payload"
+
