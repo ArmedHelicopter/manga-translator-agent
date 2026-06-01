@@ -6,6 +6,7 @@ from .translation import (
     PersonaRenderTrace,
     SemanticTranslation,
     TranslationCandidate,
+    TranslationProviderTrace,
     Utterance,
 )
 from .project import ProjectConfig, ProviderRoute, StageProviderConfig
@@ -21,6 +22,7 @@ __all__ = [
     "PersonaRenderTrace",
     "SemanticTranslation",
     "TranslationCandidate",
+    "TranslationProviderTrace",
     "Utterance",
     "ProjectConfig",
     "ProviderRoute",

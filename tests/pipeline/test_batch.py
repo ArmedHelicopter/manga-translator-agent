@@ -129,6 +129,20 @@ class TestSequentialProcessing:
         assert mock_process.call_count == 2
 
     @patch.object(BatchProcessor, "_process_single")
+    def test_process_does_not_overwrite_incremental_progress_with_stale_snapshot(
+        self, mock_process, processor
+    ):
+        mock_process.return_value = {"status": "completed", "translations": 5, "errors": 0}
+        processor._save_progress({"c1": _completed_result("c1")})
+
+        chapters = [_make_chapter("c1"), _make_chapter("c2")]
+        processor.process(chapters, resume=True)
+
+        progress = processor._load_progress()
+        assert progress["c1"]["status"] == "completed"
+        assert progress["c2"]["status"] == "completed"
+
+    @patch.object(BatchProcessor, "_process_single")
     def test_failed_chapter_recorded_in_parallel(self, mock_process, processor):
         """Exception handling only exists in the parallel (max_workers>1) path."""
         processor.max_workers = 2

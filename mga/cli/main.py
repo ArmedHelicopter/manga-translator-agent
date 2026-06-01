@@ -11,11 +11,16 @@ import click
 logger = logging.getLogger("mga.cli")
 
 
-def _seed_memory(learn_dir: Path, project_dir: Path, mode: str = "auto") -> None:
+def _seed_memory(
+    learn_dir: Path,
+    project_dir: Path,
+    mode: str = "auto",
+    provider=None,
+) -> None:
     """Run the LearningEngine to extract and seed memory from *learn_dir*."""
     from mga.learning.engine import LearningEngine
 
-    engine = LearningEngine(project_dir)
+    engine = LearningEngine(project_dir, provider=provider)
     result = engine.learn(learn_dir, mode=mode)
     click.echo(
         f"Learning complete: {len(result.characters)} characters, "
@@ -41,22 +46,35 @@ def _resolve_translation_provider(cfg) -> tuple[str, dict]:
     return "openai", dict(cfg.provider_settings.get("openai", {}))
 
 
-def _check_translation_provider_connectivity(cfg) -> None:
-    """Run a lightweight provider connectivity check before starting pipeline."""
+def _resolve_learning_provider(cfg):
+    from mga.providers import ProviderCascade
+
+    stage = "vision" if cfg.pipeline_mode == "manga" else "translation"
+    cascade = ProviderCascade(cfg, stage)
+    if not cascade.candidates:
+        return None
+    candidate = cascade.candidates[0]
     from mga.providers import get_provider
 
-    provider_name, provider_settings = _resolve_translation_provider(cfg)
-    provider = get_provider(provider_name, **provider_settings)
+    return get_provider(candidate.provider, **(candidate.settings or {}))
+
+
+def _check_translation_provider_connectivity(cfg) -> None:
+    """Run a lightweight provider connectivity check before starting pipeline."""
+    from mga.providers import ProviderCascade
+
+    cascade = ProviderCascade(cfg, "translation")
     try:
-        provider.chat(
+        _raw, candidate = cascade.call_chat(
             [{"role": "user", "content": "Reply with OK."}],
             temperature=0.0,
             max_tokens=8,
         )
     except Exception as exc:
         raise click.ClickException(
-            f"Provider pre-check failed ({provider_name}): {exc}"
+            f"Provider pre-check failed: {exc}; cascade_errors={cascade.errors}"
         ) from exc
+    logger.info("Provider pre-check succeeded with %s", candidate.provider)
 
 
 _NOVEL_EXTENSIONS = {".epub", ".txt", ".mobi"}
@@ -126,7 +144,12 @@ def translate(
         cfg.output_format = "bilingual"
 
     if learn_from:
-        _seed_memory(Path(learn_from), Path(cfg.working_dir), mode=pipeline_mode)
+        _seed_memory(
+            Path(learn_from),
+            Path(cfg.working_dir),
+            mode=pipeline_mode,
+            provider=_resolve_learning_provider(cfg),
+        )
         if learn_only:
             click.echo("Memory seeded. --learn-only set, skipping translation.")
             return

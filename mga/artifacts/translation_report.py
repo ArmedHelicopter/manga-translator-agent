@@ -25,6 +25,8 @@ class TranslationEntry:
     semantic_rationale: str | None = None
     persona_moves: list[str] = field(default_factory=list)
     persona_rationale: str | None = None
+    provider_trace: dict[str, Any] = field(default_factory=dict)
+    provider_cascade_errors: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -73,11 +75,24 @@ def _dialogue_realization_by_bubble(ctx: PipelineContext) -> dict[str, dict]:
     }
 
 
+def _provider_errors_by_bubble(ctx: PipelineContext) -> dict[str, list[dict]]:
+    result: dict[str, list[dict]] = {}
+    errors = ctx.artifacts.get("translation", {}).get("provider_cascade_errors", [])
+    for error in errors if isinstance(errors, list) else []:
+        if not isinstance(error, dict):
+            continue
+        bubble_id = error.get("bubble_id")
+        if bubble_id:
+            result.setdefault(str(bubble_id), []).append(error)
+    return result
+
+
 def build_translation_report(ctx: PipelineContext) -> TranslationReport:
     """Build a translation report from PipelineContext."""
     b2p = _bubble_to_page_map(ctx)
     qa_by_bubble = _qa_findings_by_bubble(ctx)
     realization_by_bubble = _dialogue_realization_by_bubble(ctx)
+    provider_errors_by_bubble = _provider_errors_by_bubble(ctx)
 
     entries: list[TranslationEntry] = []
     for t in ctx.translations:
@@ -103,6 +118,8 @@ def build_translation_report(ctx: PipelineContext) -> TranslationReport:
             semantic_rationale=semantic.get("rationale") if isinstance(semantic, dict) else None,
             persona_moves=persona.get("persona_moves", []) if isinstance(persona, dict) else [],
             persona_rationale=persona.get("rationale") if isinstance(persona, dict) else None,
+            provider_trace=realization.get("provider", {}) if isinstance(realization, dict) else {},
+            provider_cascade_errors=provider_errors_by_bubble.get(t.bubble_id, []),
         ))
 
     # Fill source_text from pages
@@ -115,13 +132,16 @@ def build_translation_report(ctx: PipelineContext) -> TranslationReport:
     # Summary stats
     total = len(entries)
     avg_conf = sum(e.confidence for e in entries) / total if total else 0.0
-    review_count = sum(1 for e in entries if e.needs_human_review)
+    review_pages = {e.page_id for e in entries if e.needs_human_review and e.page_id}
+    provider_error_count = sum(len(e.provider_cascade_errors) for e in entries)
 
     summary = {
         "total_translations": total,
         "avg_confidence": round(avg_conf, 3),
-        "pages_needing_human_review": review_count,
+        "pages_needing_human_review": len(review_pages),
+        "entries_needing_human_review": sum(1 for e in entries if e.needs_human_review),
         "qa_findings_total": sum(len(e.qa_findings) for e in entries),
+        "provider_cascade_errors_total": provider_error_count,
     }
 
     return TranslationReport(entries=entries, summary=summary)

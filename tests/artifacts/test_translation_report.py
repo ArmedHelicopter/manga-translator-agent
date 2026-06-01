@@ -44,6 +44,8 @@ def test_build_translation_report_basic():
 
     assert len(report.entries) == 2
     assert report.summary["total_translations"] == 2
+    assert report.summary["pages_needing_human_review"] == 0
+    assert report.summary["entries_needing_human_review"] == 0
     assert 0.8 < report.summary["avg_confidence"] < 1.0
 
     # Verify page_id association
@@ -94,6 +96,64 @@ def test_translation_entry_includes_dialogue_realization_trace():
     assert entry.persona_rationale == "rendered as Ren"
 
 
+def test_translation_entry_exposes_provider_trace_and_cascade_errors():
+    pages = [
+        Page(page_id="p1", page_index=0, bubbles=[
+            Bubble(bubble_id="b1", source_text="よろしく"),
+        ]),
+    ]
+    translations = [
+        TranslationCandidate(bubble_id="b1", text="拜托啦。", confidence=0.9),
+    ]
+    semantic_trace = {
+        "operation": "semantic_translation",
+        "role": "fallback",
+        "provider": "fallback-llm",
+        "model": "fallback-model",
+    }
+    persona_trace = {
+        "operation": "persona_rendering",
+        "role": "fallback",
+        "provider": "fallback-llm",
+        "model": "fallback-model",
+    }
+    cascade_error = {
+        "bubble_id": "b1",
+        "operation": "semantic_translation",
+        "role": "primary",
+        "provider": "primary-llm",
+        "error": "primary down",
+        "type": "RuntimeError",
+    }
+    artifacts = {
+        "translation": {
+            "dialogue_realization": {
+                "entries": [
+                    {
+                        "bubble_id": "b1",
+                        "provider": {
+                            "semantic": semantic_trace,
+                            "persona": persona_trace,
+                        },
+                    }
+                ]
+            },
+            "provider_cascade_errors": [cascade_error],
+        }
+    }
+
+    ctx = _make_context(pages=pages, translations=translations, artifacts=artifacts)
+    report = build_translation_report(ctx)
+
+    entry = report.entries[0]
+    assert entry.provider_trace == {
+        "semantic": semantic_trace,
+        "persona": persona_trace,
+    }
+    assert entry.provider_cascade_errors == [cascade_error]
+    assert report.summary["provider_cascade_errors_total"] == 1
+
+
 def test_translation_entry_qa_findings_association():
     pages = [
         Page(page_id="p1", page_index=0, bubbles=[
@@ -115,6 +175,8 @@ def test_translation_entry_qa_findings_association():
     entry = report.entries[0]
     assert len(entry.qa_findings) == 2
     assert entry.needs_human_review is True  # confidence < 0.7
+    assert report.summary["pages_needing_human_review"] == 1
+    assert report.summary["entries_needing_human_review"] == 1
 
 
 def test_translation_entry_needs_review_critical():

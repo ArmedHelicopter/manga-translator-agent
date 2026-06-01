@@ -16,8 +16,9 @@ from mga.models.translation import (
     FootnoteEntry,
     PersonaRenderTrace,
     SemanticTranslation,
+    TranslationProviderTrace,
 )
-from mga.providers import get_provider
+from mga.providers import ProviderCascade
 
 from .stages import PipelineContext, PipelineStage
 
@@ -94,7 +95,7 @@ def _build_semantic_translation_prompt(
         f"Translate the manga text to {target_lang} as a meaning-faithful semantic draft.",
         "## 语义层规则",
         "- 只负责原文意思、事实、术语、拟声词和脚注，不做人格化表演",
-        "- 不使用角色档案、口癖、关系语气或临时说话人来改写声线",
+        "- 不使用人物声线、关系语气或画面推测身份来改写表达",
         "- 所有文字必须翻译为中文，画面中不得出现日文（包括片假名）",
         "- 人名按中文习惯翻译或音译，不写入 footnotes",
         "- 片假名外来语和拟声词需翻译为中文，并在 footnotes 中注明原文",
@@ -196,7 +197,7 @@ class TranslationStage(PipelineStage):
 
     def execute(self, context: PipelineContext) -> PipelineContext:
         cfg: ProjectConfig = context.project_config
-        provider = self._get_provider(cfg)
+        provider_cascade = ProviderCascade(cfg, "translation")
         project_dir = Path(cfg.working_dir) if cfg.working_dir else Path(".")
         cultural_adapter = CulturalAdapter(project_dir)
         memory_updater = CharacterMemoryUpdater(project_dir)
@@ -220,7 +221,7 @@ class TranslationStage(PipelineStage):
         realization_traces: list[DialogueRealizationTrace] = []
         for page_index, page in enumerate(context.pages):
             page_translations, page_traces = self._translate_page(
-                provider, page, context, cfg, cultural_adapter, graph_retrieval, name_glossary,
+                provider_cascade, page, context, cfg, cultural_adapter, graph_retrieval, name_glossary,
                 memory_updater=memory_updater,
                 memory_trace=character_memory_trace,
             )
@@ -242,22 +243,12 @@ class TranslationStage(PipelineStage):
                 "persona_count": len(realization_traces),
                 "entries": [trace.model_dump() for trace in realization_traces],
             },
+            "provider_cascade_errors": provider_cascade.errors,
         }
         return context
 
-    def _get_provider(self, cfg: ProjectConfig) -> object:
-        route = cfg.provider_routes.get("translation")
-        if route and route.primary.provider:
-            name = route.primary.provider
-            settings = cfg.provider_settings.get(name, {})
-            if route.primary.model and "model" not in settings:
-                settings["model"] = route.primary.model
-            return get_provider(name, **settings)
-        settings = cfg.provider_settings.get("openai", {})
-        return get_provider("openai", **settings)
-
     def _translate_page(
-        self, provider: object, page: object,
+        self, provider_cascade: ProviderCascade, page: object,
         context: PipelineContext, cfg: ProjectConfig,
         cultural_adapter: CulturalAdapter,
         graph_retrieval: object | None = None,
@@ -285,7 +276,11 @@ class TranslationStage(PipelineStage):
                 bubble.source_text, cult_page, cfg.target_lang,
                 vision_ctx=vision_ctx,
             )
-            semantic = self._call_semantic_llm(provider, bubble.bubble_id, semantic_prompt)
+            semantic, semantic_provider = self._call_semantic_llm(
+                provider_cascade,
+                bubble.bubble_id,
+                semantic_prompt,
+            )
             semantic.footnotes = self._ensure_katakana_footnotes(
                 source_text=bubble.source_text,
                 translated_text=semantic.text,
@@ -302,8 +297,8 @@ class TranslationStage(PipelineStage):
                 listener_id=listener,
                 scene_summary=getattr(page, "scene_summary", "") or "",
             )
-            candidate, persona = self._call_persona_llm(
-                provider=provider,
+            candidate, persona, persona_provider = self._call_persona_llm(
+                provider_cascade=provider_cascade,
                 bubble_id=bubble.bubble_id,
                 prompt=persona_prompt,
                 semantic=semantic,
@@ -341,6 +336,10 @@ class TranslationStage(PipelineStage):
                 provisional_speaker=getattr(bubble, "provisional_speaker", None),
                 semantic=semantic,
                 persona=persona,
+                provider=TranslationProviderTrace(
+                    semantic=semantic_provider.trace("semantic_translation"),
+                    persona=persona_provider.trace("persona_render"),
+                ),
                 final_text=candidate.text,
             ))
             if speaker and memory_updater is not None:
@@ -406,21 +405,20 @@ class TranslationStage(PipelineStage):
         listener = other_speakers[0]
         return graph_retrieval.get_translation_context(speaker, listener), listener
 
-    def _call_llm(self, provider: object, bubble_id: str, prompt: str) -> TranslationCandidate:
+    def _call_semantic_llm(
+        self,
+        provider_cascade: ProviderCascade,
+        bubble_id: str,
+        prompt: str,
+    ) -> tuple[SemanticTranslation, object]:
         messages = [{"role": "user", "content": prompt}]
         try:
-            raw = provider.chat(messages)
-            return self._parse_translation_response(bubble_id, raw)
-        except Exception as exc:
-            raise StageExecutionError(
-                f"Translation provider failed for bubble '{bubble_id}': {exc}"
-            ) from exc
-
-    def _call_semantic_llm(self, provider: object, bubble_id: str, prompt: str) -> SemanticTranslation:
-        messages = [{"role": "user", "content": prompt}]
-        try:
-            raw = provider.chat(messages)
-            return self._parse_semantic_response(bubble_id, raw)
+            raw, candidate = provider_cascade.call_chat(
+                messages,
+                operation="semantic_translation",
+                trace_context={"bubble_id": bubble_id},
+            )
+            return self._parse_semantic_response(bubble_id, raw), candidate
         except Exception as exc:
             raise StageExecutionError(
                 f"Semantic translation provider failed for bubble '{bubble_id}': {exc}"
@@ -429,7 +427,7 @@ class TranslationStage(PipelineStage):
     def _call_persona_llm(
         self,
         *,
-        provider: object,
+        provider_cascade: ProviderCascade,
         bubble_id: str,
         prompt: str,
         semantic: SemanticTranslation,
@@ -438,11 +436,15 @@ class TranslationStage(PipelineStage):
         relationship_context_used: bool,
         memory_context_used: bool,
         vision_context_used: bool,
-    ) -> tuple[TranslationCandidate, PersonaRenderTrace]:
+    ) -> tuple[TranslationCandidate, PersonaRenderTrace, object]:
         messages = [{"role": "user", "content": prompt}]
         try:
-            raw = provider.chat(messages)
-            return self._parse_persona_response(
+            raw, candidate = provider_cascade.call_chat(
+                messages,
+                operation="persona_render",
+                trace_context={"bubble_id": bubble_id},
+            )
+            translation, trace = self._parse_persona_response(
                 bubble_id=bubble_id,
                 raw=raw,
                 semantic=semantic,
@@ -452,6 +454,7 @@ class TranslationStage(PipelineStage):
                 memory_context_used=memory_context_used,
                 vision_context_used=vision_context_used,
             )
+            return translation, trace, candidate
         except Exception as exc:
             raise StageExecutionError(
                 f"Persona rendering provider failed for bubble '{bubble_id}': {exc}"

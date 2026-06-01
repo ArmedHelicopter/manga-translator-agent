@@ -41,9 +41,18 @@ class TestEngineLearnMock:
             ]
             mock_extract.return_value = LearningResult(
                 characters=[{"character_id": "taro", "name_jp": "太郎", "name_zh": "太郎"}],
-                terms=[{"term_id": "bushido", "term_jp": "武士道", "term_zh": "武士道"}],
+                terms=[{
+                    "term_id": "bushido",
+                    "term_jp": "武士道",
+                    "term_zh": "武士道",
+                    "strategy": "直译",
+                    "context": "价值观",
+                }],
                 style_guide={"literal_vs_free": 0.5},
-                character_graph={"nodes": [], "edges": []},
+                character_graph={
+                    "nodes": [{"id": "taro", "label": "太郎"}],
+                    "edges": [],
+                },
                 pages_processed=1,
             )
             mock_validate.return_value = {
@@ -80,6 +89,8 @@ class TestEngineLearnMock:
             assert (output_dir / "quality_report.json").exists()
             assert (output_dir / "character_graph.json").exists()
             assert (output_dir / "style_guide.toml").exists()
+            assert (tmp_path / "style_guide.toml").exists()
+            assert (tmp_path / "terminology" / "learned.toml").exists()
 
             # Verify character profile file
             chars_dir = output_dir / "character_profiles"
@@ -94,6 +105,10 @@ class TestEngineLearnMock:
             assert (terms_dir / "bushido.json").exists()
             term_data = json.loads((terms_dir / "bushido.json").read_text(encoding="utf-8"))
             assert term_data["term_jp"] == "武士道"
+            learned_terms = (tmp_path / "terminology" / "learned.toml").read_text(encoding="utf-8")
+            assert "武士道" in learned_terms
+            assert 'term_target = "武士道"' in learned_terms
+            assert (tmp_path / "memory" / "state" / "character_graph.json").exists()
 
             # Verify combined learning result
             lr = json.loads((output_dir / "learning_result.json").read_text(encoding="utf-8"))

@@ -72,7 +72,8 @@ class BatchProcessor:
                 cid = ch.get("chapter_id", ch.get("input_path", ""))
                 result = self._process_single(ch)
                 results[cid] = result
-                self._update_progress(cid, result)
+                progress[cid] = result
+                self._save_progress(progress)
         else:
             # Parallel processing
             with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
@@ -86,11 +87,13 @@ class BatchProcessor:
                     try:
                         result = future.result()
                         results[cid] = result
-                        self._update_progress(cid, result)
+                        progress[cid] = result
+                        self._save_progress(progress)
                     except Exception as e:
                         error_result = {"status": "failed", "error": str(e)}
                         results[cid] = error_result
-                        self._update_progress(cid, error_result)
+                        progress[cid] = error_result
+                        self._save_progress(progress)
                         logger.error("Chapter %s failed: %s", cid, e)
 
         summary = self._build_summary(results)

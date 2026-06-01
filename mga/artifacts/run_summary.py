@@ -31,6 +31,18 @@ class RunSummary:
     errors: list[dict[str, Any]] = field(default_factory=list)
     status: str = "completed"
     graph_mode: str = ""
+    provider_cascade_errors: list[dict[str, Any]] = field(default_factory=list)
+
+
+def _collect_provider_cascade_errors(ctx: PipelineContext) -> list[dict[str, Any]]:
+    errors: list[dict[str, Any]] = []
+    for stage, artifact in ctx.artifacts.items():
+        if not isinstance(artifact, dict):
+            continue
+        for error in artifact.get("provider_cascade_errors", []) or []:
+            if isinstance(error, dict):
+                errors.append({"stage": stage, **error})
+    return errors
 
 
 def build_run_summary(ctx: PipelineContext, cfg: ProjectConfig) -> RunSummary:
@@ -73,6 +85,7 @@ def build_run_summary(ctx: PipelineContext, cfg: ProjectConfig) -> RunSummary:
         errors=ctx.errors,
         status=status,
         graph_mode=graph_mode,
+        provider_cascade_errors=_collect_provider_cascade_errors(ctx),
     )
 
 

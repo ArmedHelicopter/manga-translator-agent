@@ -47,7 +47,7 @@ class RecordingTranslationProvider:
 def test_translation_stage_updates_memory_between_pages(tmp_path, monkeypatch):
     provider = RecordingTranslationProvider()
     monkeypatch.setattr(
-        "mga.pipeline.translation_stage.get_provider",
+        "mga.providers.cascade.get_provider",
         lambda name, **settings: provider,
     )
 
@@ -165,3 +165,52 @@ def test_translation_stage_updates_memory_between_pages(tmp_path, monkeypatch):
     assert result.memory_context["page_profiles"]["p002"]["ren"]["tone_spectrum"][
         "observed_style"
     ] == "粗鲁、直接、句尾偏口语"
+
+
+def test_translation_stage_falls_back_to_secondary_provider(tmp_path, monkeypatch):
+    class BrokenProvider:
+        def chat(self, messages, **kwargs):
+            raise RuntimeError("primary down")
+
+    provider = RecordingTranslationProvider()
+
+    def fake_get_provider(name, **settings):
+        if name == "primary":
+            return BrokenProvider()
+        return provider
+
+    monkeypatch.setattr("mga.providers.cascade.get_provider", fake_get_provider)
+
+    from mga.models import ProviderRoute, StageProviderConfig
+
+    context = PipelineContext(
+        project_config=ProjectConfig(
+            working_dir=str(tmp_path),
+            target_lang="zh-CN",
+            provider_routes={
+                "translation": StageProviderConfig(
+                    primary=ProviderRoute(provider="primary"),
+                    fallback=ProviderRoute(provider="fallback"),
+                )
+            },
+        ),
+        pages=[
+            Page(
+                page_id="p001",
+                bubbles=[
+                    Bubble(
+                        bubble_id="p001-b001",
+                        source_text="おはようございます。",
+                        speaker_id="akari",
+                    ),
+                ],
+            ),
+        ],
+        memory_context={"character_profiles": {}, "page_profiles": {}},
+    )
+
+    result = TranslationStage().execute(context)
+
+    assert result.translations[0].text == "好的。"
+    assert result.artifacts["translation"]["provider_cascade_errors"]
+    assert result.artifacts["translation"]["provider_cascade_errors"][0]["provider"] == "primary"

@@ -174,8 +174,14 @@ def _aggregate_pages(pages: list[AlignedPageData]) -> dict:
     all_terms: dict[str, dict] = {}
     speech_samples: dict[str, list[str]] = {}
     style_notes: list[str] = []
+    bubble_pairs: list[dict] = []
 
     for page in pages:
+        bubble_pairs.extend([
+            {"page_id": page.page_id, **pair}
+            for pair in getattr(page, "bubble_pairs", [])
+            if isinstance(pair, dict)
+        ])
         for char in page.characters:
             key = char.get("name_jp", "")
             if not key:
@@ -216,6 +222,7 @@ def _aggregate_pages(pages: list[AlignedPageData]) -> dict:
         "characters": list(all_characters.values()),
         "terms": list(all_terms.values()),
         "speech_samples": speech_samples,
+        "bubble_pairs": bubble_pairs,
         "style_notes": style_notes,
         "total_pages": len(pages),
     }

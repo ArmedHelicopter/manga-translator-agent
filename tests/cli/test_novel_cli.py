@@ -23,6 +23,19 @@ def _setup_config(tmp_path: Path, monkeypatch) -> Path:
     return config_path
 
 
+def _setup_multi_provider_config(tmp_path: Path, monkeypatch) -> Path:
+    config_path = tmp_path / "providers.toml"
+    config_path.write_text(
+        '[stages.vision]\nprimary = "openai"\n\n'
+        '[stages.translation]\nprimary = "openai"\n\n'
+        '[providers.openai]\napi_key = "test-key"\nvision_model = "gpt-4o"\ntext_model = "gpt-4o-mini"\n\n'
+        '[providers.gemini]\napi_key = "gemini-key"\nvision_model = "gemini-vision"\ntext_model = "gemini-text"\n',
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("MANGA_TRANSLATE_CONFIG", str(config_path))
+    return config_path
+
+
 def test_detect_mode_auto_txt():
     mode, fmt = _detect_mode("chapter.txt", None)
     assert mode == "novel"
@@ -89,6 +102,87 @@ def test_translate_auto_detect_novel_dry_run(tmp_path, monkeypatch):
     ])
     assert result.exit_code == 0, result.output
     assert "novel" in result.output.lower() or "Dry run" in result.output
+
+
+def test_translate_provider_override_accepts_any_configured_provider(tmp_path, monkeypatch):
+    _setup_multi_provider_config(tmp_path, monkeypatch)
+    txt = tmp_path / "chapter.txt"
+    txt.write_text("Hello world", encoding="utf-8")
+    output = tmp_path / "out.txt"
+
+    runner = CliRunner()
+    result = runner.invoke(translate, [
+        str(txt), "-o", str(output),
+        "--mode", "novel", "--dry-run", "--provider", "gemini",
+    ])
+
+    assert result.exit_code == 0, result.output
+    assert '"provider": "gemini"' in result.output
+    assert '"model": "gemini-text"' in result.output
+
+
+def test_translate_learn_only_seeds_memory_with_configured_learning_provider(tmp_path, monkeypatch):
+    """--learn-only should seed memory with the configured provider and skip translation."""
+    config_path = tmp_path / "providers.toml"
+    config_path.write_text(
+        '[stages.vision]\nprimary = "openai"\n\n'
+        '[stages.translation]\nprimary = "gemini"\n\n'
+        '[providers.openai]\napi_key = "vision-key"\nvision_model = "gpt-4o"\ntext_model = "gpt-4o-mini"\n\n'
+        '[providers.gemini]\napi_key = "learning-key"\nvision_model = "gemini-vision"\ntext_model = "gemini-text"\n',
+        encoding="utf-8",
+    )
+    txt = tmp_path / "chapter.txt"
+    txt.write_text("Hello world", encoding="utf-8")
+    learn_dir = tmp_path / "learned_examples"
+    learn_dir.mkdir()
+    output = tmp_path / "out.txt"
+    provider_instance = object()
+    captured = {}
+
+    def fake_get_provider(name, **settings):
+        captured["provider_name"] = name
+        captured["provider_settings"] = settings
+        return provider_instance
+
+    class FakeLearningResult:
+        characters = []
+        terms = []
+
+    class FakeLearningEngine:
+        def __init__(self, project_dir, provider=None):
+            captured["learning_project_dir"] = project_dir
+            captured["learning_provider"] = provider
+
+        def learn(self, learn_from, mode="auto"):
+            captured["learn_from"] = learn_from
+            captured["learn_mode"] = mode
+            return FakeLearningResult()
+
+    class FailingOrchestrator:
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("PipelineOrchestrator should not be instantiated")
+
+    monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
+    monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
+
+    runner = CliRunner()
+    result = runner.invoke(translate, [
+        str(txt), "-o", str(output),
+        "--config", str(config_path),
+        "--learn-from", str(learn_dir),
+        "--learn-only",
+        "--lang", "ja-zh",
+    ])
+
+    assert result.exit_code == 0, result.output
+    assert captured["provider_name"] == "gemini"
+    assert captured["provider_settings"]["api_key"] == "learning-key"
+    assert captured["provider_settings"]["text_model"] == "gemini-text"
+    assert captured["learning_provider"] is provider_instance
+    assert captured["learn_from"] == learn_dir
+    assert captured["learn_mode"] == "novel"
+    assert "Memory seeded. --learn-only set, skipping translation." in result.output
 
 
 def test_translate_manga_runs_intelligence_pipeline_after_runtime_export(tmp_path, monkeypatch):

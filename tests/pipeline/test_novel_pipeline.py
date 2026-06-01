@@ -63,13 +63,8 @@ def test_novel_pipeline_end_to_end(tmp_path, monkeypatch):
         "花子は家で本を読んだ。": "花子在家看书。",
     })
 
-    # Patch get_provider in modules that import it at module level
     monkeypatch.setattr(
-        "mga.pipeline.translation_stage.get_provider",
-        lambda name, **kwargs: fake,
-    )
-    monkeypatch.setattr(
-        "mga.pipeline.qa_stage.get_provider",
+        "mga.providers.cascade.get_provider",
         lambda name, **kwargs: fake,
     )
 

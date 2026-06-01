@@ -1,12 +1,16 @@
 """Provider architecture for LLM integrations."""
 
 from .base import LLMProvider
+from .cascade import ProviderCandidate, ProviderCascade, resolve_provider_candidates
 from .legacy import LLMProvider as LegacyLLMProvider
 
 __all__ = [
     "LLMProvider",
     "LegacyLLMProvider",
+    "ProviderCandidate",
+    "ProviderCascade",
     "get_provider",
+    "resolve_provider_candidates",
     "select_provider",
     "OpenAIProvider",
     "AnthropicProvider",

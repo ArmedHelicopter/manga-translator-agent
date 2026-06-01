@@ -5,7 +5,14 @@ from dataclasses import asdict
 
 from mga.artifacts.run_summary import RunSummary, build_run_summary, write_run_summary
 from mga.artifacts.store import ArtifactStore
-from mga.models import ProjectConfig, TranslationCandidate, Bubble, Page
+from mga.models import (
+    Bubble,
+    Page,
+    ProjectConfig,
+    ProviderRoute,
+    StageProviderConfig,
+    TranslationCandidate,
+)
 from mga.pipeline.stages import PipelineContext
 
 
@@ -70,6 +77,50 @@ def test_build_run_summary_status_failed():
     cfg = _make_config()
     summary = build_run_summary(ctx, cfg)
     assert summary.status == "failed"
+
+
+def test_build_run_summary_exposes_provider_cascade_errors_without_failing_run():
+    cascade_errors = [
+        {
+            "operation": "semantic_translation",
+            "role": "primary",
+            "provider": "primary-llm",
+            "error": "primary down",
+            "type": "RuntimeError",
+        },
+        {
+            "operation": "persona_rendering",
+            "role": "primary",
+            "provider": "primary-llm",
+            "error": "primary still down",
+            "type": "RuntimeError",
+        },
+    ]
+    ctx = _make_context(
+        artifacts={
+            "translation": {
+                "provider_cascade_errors": cascade_errors,
+            }
+        }
+    )
+    cfg = _make_config(
+        provider_routes={
+            "translation": StageProviderConfig(
+                primary=ProviderRoute(provider="primary-llm"),
+                fallback=ProviderRoute(provider="fallback-llm"),
+            )
+        }
+    )
+
+    summary = build_run_summary(ctx, cfg)
+    payload = asdict(summary)
+
+    assert payload["status"] == "completed"
+    assert payload["error_count"] == 0
+    assert payload["provider_cascade_errors"] == [
+        {"stage": "translation", **error}
+        for error in cascade_errors
+    ]
 
 
 def test_run_summary_schema():

@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from mga.models import BoundingBox, Bubble, ProjectConfig, VisualFootnote
-from mga.providers import get_provider
+from mga.providers import ProviderCascade
 
 from .stages import PipelineContext, PipelineStage
 
@@ -132,18 +132,26 @@ class VisionEnrichmentStage(PipelineStage):
 
     def _execute_from_llm(self, context: PipelineContext, cfg: ProjectConfig) -> PipelineContext:
         """Original LLM vision extraction path."""
-        provider = self._get_provider(cfg)
+        provider_cascade = ProviderCascade(cfg, "vision")
 
         extractions: list[dict] = []
+        provider_errors: list[dict] = []
+        provider_calls: list[dict] = []
         for page in context.pages:
-            result = self._extract_page(provider, page, cfg)
+            result = self._extract_page(provider_cascade, page, cfg)
             extractions.append(result)
             self._apply_to_page(page, result)
+            provider_errors.extend(provider_cascade.errors)
+            provider_cascade.errors.clear()
+            provider_calls.extend(provider_cascade.calls)
+            provider_cascade.calls.clear()
 
         context.artifacts[self.name] = {
             "source": "llm",
             "mode": "vision-only-degraded",
             "extractions": extractions,
+            "provider_cascade_errors": provider_errors,
+            "provider_cascade_calls": provider_calls,
         }
         return context
 
@@ -154,14 +162,20 @@ class VisionEnrichmentStage(PipelineStage):
         *,
         source: str,
     ) -> PipelineContext:
-        provider = self._get_provider(cfg)
+        provider_cascade = ProviderCascade(cfg, "vision")
         enrichments: list[dict] = []
         errors: list[dict] = []
+        provider_errors: list[dict] = []
+        provider_calls: list[dict] = []
         for page in context.pages:
             try:
-                result = self._extract_page(provider, page, cfg)
+                result = self._extract_page(provider_cascade, page, cfg)
                 enrichments.append({"page_id": page.page_id, "result": result})
                 self._apply_enrichment_to_page(page, result)
+                provider_errors.extend(provider_cascade.errors)
+                provider_cascade.errors.clear()
+                provider_calls.extend(provider_cascade.calls)
+                provider_cascade.calls.clear()
             except Exception as exc:
                 errors.append({"page_id": page.page_id, "error": str(exc)})
 
@@ -173,21 +187,14 @@ class VisionEnrichmentStage(PipelineStage):
         })
         if errors:
             existing["enrichment_errors"] = errors
+        if provider_errors:
+            existing["provider_cascade_errors"] = provider_errors
+        if provider_calls:
+            existing["provider_cascade_calls"] = provider_calls
         context.artifacts[self.name] = existing
         return context
 
-    def _get_provider(self, cfg: ProjectConfig) -> object:
-        route = cfg.provider_routes.get("vision")
-        if route and route.primary.provider:
-            name = route.primary.provider
-            settings = cfg.provider_settings.get(name, {})
-            if route.primary.model and "model" not in settings:
-                settings["model"] = route.primary.model
-            return get_provider(name, **settings)
-        settings = cfg.provider_settings.get("openai", {})
-        return get_provider("openai", **settings)
-
-    def _extract_page(self, provider: object, page: object, cfg: ProjectConfig) -> dict:
+    def _extract_page(self, provider_cascade: ProviderCascade, page: object, cfg: ProjectConfig) -> dict:
         img_path = Path(page.image.path)
         if not img_path.exists():
             return {"bubbles": [], "scene_summary": ""}
@@ -195,8 +202,8 @@ class VisionEnrichmentStage(PipelineStage):
         image_bytes = img_path.read_bytes()
         prompt = _build_vision_prompt()
 
-        if hasattr(provider, "vision_structured"):
-            return provider.vision_structured(
+        try:
+            result, _candidate = provider_cascade.call_vision_structured(
                 messages=[{"role": "user", "content": prompt}],
                 images=[image_bytes],
                 schema={
@@ -208,11 +215,17 @@ class VisionEnrichmentStage(PipelineStage):
                         "scene_summary": {"type": "string"},
                     },
                 },
+                operation="vision_structured",
+                trace_context={"page_id": getattr(page, "page_id", "")},
             )
-        raw = provider.vision(
-            messages=[{"role": "user", "content": prompt}],
-            images=[image_bytes],
-        )
+            return result
+        except Exception:
+            raw, _candidate = provider_cascade.call_vision(
+                messages=[{"role": "user", "content": prompt}],
+                images=[image_bytes],
+                operation="vision_text_fallback",
+                trace_context={"page_id": getattr(page, "page_id", "")},
+            )
         return {"raw": raw, "bubbles": [], "scene_summary": ""}
 
     def _apply_to_page(self, page: object, result: dict) -> None:

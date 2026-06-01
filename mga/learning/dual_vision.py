@@ -19,17 +19,18 @@ _VISION_PROMPT = """\
 
 1. **source_text**: 每个气泡中的日文原文，按阅读顺序排列，用换行分隔
 2. **translated_text**: 每个气泡中的中文译文，按阅读顺序排列，用换行分隔
-3. **characters**: 识别出的角色列表，每个角色包含：
+3. **bubble_pairs**: 按阅读顺序输出气泡级原译对齐，每项包含 bubble_id, source_text, translated_text, speaker_hint, speech_style
+4. **characters**: 识别出的角色列表，每个角色包含：
    - name_jp: 日文名
    - name_zh: 中文名
    - appearance: 外貌描述
    - speech_style: 说话风格
-4. **terminology**: 提取的术语列表，每个术语包含：
+5. **terminology**: 提取的术语列表，每个术语包含：
    - term_jp: 日文原词
    - term_zh: 中文译词
    - context: 使用语境
-5. **speech_patterns**: 每个角色的语言模式（自称、口癖、敬语使用等）
-6. **style_notes**: 整体翻译风格描述（直译/意译偏好、语气处理等）
+6. **speech_patterns**: 每个角色的语言模式（自称、口癖、敬语使用等）
+7. **style_notes**: 整体翻译风格描述（直译/意译偏好、语气处理等）
 
 只返回 JSON，不要包含其他文字。"""
 
@@ -40,7 +41,8 @@ _NOVEL_PROMPT = """\
 
 1. **source_text**: 日文原文
 2. **translated_text**: 中文译文
-3. **characters**: 文中出现的角色，每个角色包含：
+3. **bubble_pairs**: 对白/段落级原译对齐，每项包含 bubble_id, source_text, translated_text, speaker_hint, speech_style
+4. **characters**: 文中出现的角色，每个角色包含：
    - name_jp: 日文名
    - name_zh: 中文名
    - speech_style: 说话风格
@@ -69,6 +71,19 @@ _SCHEMA = {
                     "speech_style": {"type": "string"},
                 },
                 "required": ["name_jp", "name_zh"],
+            },
+        },
+        "bubble_pairs": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "bubble_id": {"type": "string"},
+                    "source_text": {"type": "string"},
+                    "translated_text": {"type": "string"},
+                    "speaker_hint": {"type": "string"},
+                    "speech_style": {"type": "string"},
+                },
             },
         },
         "terminology": {
@@ -136,6 +151,7 @@ def analyze_manga_pair(
         terminology=raw.get("terminology", []),
         speech_patterns=raw.get("speech_patterns", {}),
         style_notes=raw.get("style_notes", ""),
+        bubble_pairs=raw.get("bubble_pairs", []),
     )
 
 
@@ -179,6 +195,7 @@ def analyze_novel_pair(
         terminology=raw.get("terminology", []),
         speech_patterns=raw.get("speech_patterns", {}),
         style_notes=raw.get("style_notes", ""),
+        bubble_pairs=raw.get("bubble_pairs", []),
     )
 
 

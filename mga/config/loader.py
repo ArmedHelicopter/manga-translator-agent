@@ -12,10 +12,11 @@ from ..exceptions import ConfigError
 from ..models import ProjectConfig, ProviderRoute, StageProviderConfig
 
 DEFAULT_CONFIG_PATH = Path("configs/providers.toml")
-SUPPORTED_STAGE_NAMES = ("vision", "translate")
+SUPPORTED_STAGE_NAMES = ("vision", "translation", "qa")
 STAGE_CONFIG_KEYS = {
     "vision": "vision",
-    "translate": "translation",
+    "translation": "translation",
+    "qa": "qa",
 }
 CONFIG_ENV_VAR = "MANGA_TRANSLATE_CONFIG"
 
@@ -54,7 +55,22 @@ def load_provider_settings(config_path: str | None = None) -> dict:
             "Start from configs/providers.toml.example and keep at least "
             "[stages.vision], [stages.translation], and [providers.openai]."
         )
+    data["providers"] = {
+        name: _resolve_env_placeholders(settings)
+        for name, settings in data.get("providers", {}).items()
+    }
     return data
+
+
+def _resolve_env_placeholders(value):
+    if isinstance(value, dict):
+        return {k: _resolve_env_placeholders(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_resolve_env_placeholders(v) for v in value]
+    if isinstance(value, str) and value.startswith("${") and value.endswith("}"):
+        env_name = value[2:-1]
+        return os.getenv(env_name, "")
+    return value
 
 
 def _build_stage_route(stage_name: str, stage_data: dict, providers_data: dict) -> StageProviderConfig:
@@ -99,6 +115,14 @@ def _build_stage_route(stage_name: str, stage_data: dict, providers_data: dict) 
     )
 
 
+def _stage_data_for(stages_data: dict, stage_name: str) -> dict:
+    if stage_name == "translation":
+        return stages_data.get("translation") or stages_data.get("translate") or {}
+    if stage_name == "qa":
+        return stages_data.get("qa") or _stage_data_for(stages_data, "translation")
+    return stages_data.get(STAGE_CONFIG_KEYS[stage_name], {})
+
+
 def build_project_config(
     *,
     input_path: str,
@@ -117,23 +141,26 @@ def build_project_config(
     provider_routes = {
         stage_name: _build_stage_route(
             stage_name,
-            stages_data.get(STAGE_CONFIG_KEYS[stage_name], {}),
+            _stage_data_for(stages_data, stage_name),
             providers_data,
         )
         for stage_name in SUPPORTED_STAGE_NAMES
     }
 
     if provider_override:
-        if provider_override != "openai":
-            raise ConfigError("Phase 1 only supports the 'openai' provider override.")
         if provider_override not in providers_data:
-            raise ConfigError("The provider override 'openai' is not configured in providers.toml.")
+            raise ConfigError(f"The provider override '{provider_override}' is not configured in providers.toml.")
         for stage_name, route in provider_routes.items():
             model_key = "vision_model" if stage_name == "vision" else "text_model"
+            provider_model = providers_data[provider_override].get(model_key) or providers_data[provider_override].get("model")
+            if not provider_model:
+                raise ConfigError(
+                    f"Provider override '{provider_override}' is missing '{model_key}' or 'model'."
+                )
             provider_routes[stage_name] = StageProviderConfig(
                 primary=ProviderRoute(
-                    provider="openai",
-                    model=providers_data["openai"].get(model_key) or providers_data["openai"].get("model"),
+                    provider=provider_override,
+                    model=provider_model,
                 ),
                 fallback=route.fallback,
                 local=route.local,

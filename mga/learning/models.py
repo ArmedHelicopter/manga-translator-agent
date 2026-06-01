@@ -21,6 +21,7 @@ class AlignedPageData:
     terminology: list[dict]   # Term extraction
     speech_patterns: dict     # Language patterns per character
     style_notes: str          # Translation style description
+    bubble_pairs: list[dict] = field(default_factory=list)
 
 
 @dataclass

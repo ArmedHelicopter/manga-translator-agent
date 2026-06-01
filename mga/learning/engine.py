@@ -114,6 +114,14 @@ class LearningEngine:
             encoding="utf-8",
         )
 
+        # Write product-facing memory/config artifacts consumed by the main pipeline.
+        (self.project_dir / "style_guide.toml").write_text(
+            tomli_w.dumps(style_guide),
+            encoding="utf-8",
+        )
+        self._write_terminology_toml(result)
+        self._write_character_graph_state(result)
+
         # Write quality report
         (output_dir / "quality_report.json").write_text(
             json.dumps(quality_report, ensure_ascii=False, indent=2) + "\n",
@@ -134,6 +142,57 @@ class LearningEngine:
 
         logger.info("Wrote learning outputs to %s", output_dir)
 
+    def _write_terminology_toml(self, result: LearningResult) -> None:
+        term_dir = self.project_dir / "terminology"
+        term_dir.mkdir(parents=True, exist_ok=True)
+        payload = {"terms": {}}
+        for term in result.terms:
+            key = term.get("term_jp") or term.get("term_id") or "unknown"
+            payload["terms"][key] = {
+                "term_jp": term.get("term_jp", key),
+                "term_target": term.get("term_zh", ""),
+                "strategy": term.get("strategy", ""),
+                "notes": term.get("context", ""),
+                "confirmed": True,
+            }
+        (term_dir / "learned.toml").write_text(
+            tomli_w.dumps(payload),
+            encoding="utf-8",
+        )
+
+    def _write_character_graph_state(self, result: LearningResult) -> None:
+        try:
+            from mga.memory.graph import CharacterGraph
+        except ImportError:
+            return
+
+        graph_data = result.character_graph or {"nodes": [], "edges": []}
+        graph = CharacterGraph()
+        for node in graph_data.get("nodes", []):
+            node_id = node.get("id") or node.get("character_id") or node.get("label")
+            if node_id:
+                graph.add_character(str(node_id), **{k: v for k, v in node.items() if k != "id"})
+        for edge in graph_data.get("edges", []):
+            source = edge.get("source")
+            target = edge.get("target")
+            if not source or not target:
+                continue
+            attrs = {
+                k: v
+                for k, v in edge.items()
+                if k not in {"source", "target", "relationship", "formality", "honorific", "notes"}
+            }
+            graph.add_relationship(
+                str(source),
+                str(target),
+                relationship=edge.get("relationship", ""),
+                formality=edge.get("formality", "casual") or "casual",
+                honorific=edge.get("honorific", ""),
+                notes=edge.get("notes", ""),
+                **attrs,
+            )
+        graph.save(self.project_dir)
+
     def _seed_memory(self, result: LearningResult) -> None:
         """Seed memory state with learned character profiles and terminology."""
         try:
@@ -153,6 +212,7 @@ class LearningEngine:
                 catchphrases=char_data.get("catchphrases", []),
                 tone_spectrum=char_data.get("tone_spectrum", {}),
                 translation_notes=char_data.get("translation_notes", {}),
+                provenance={"source": "learning_engine"},
             )
             StateManager.upsert_character(self.project_dir, char_state)
 

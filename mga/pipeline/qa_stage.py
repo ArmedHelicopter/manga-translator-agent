@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from mga.models import ProjectConfig, TranslationCandidate
-from mga.providers import get_provider
+from mga.providers import ProviderCascade
 from mga.qa import QAOrchestrator
 from mga.qa.base import QAFeedbackType
 
@@ -25,6 +25,8 @@ class QAStage(PipelineStage):
         orchestrator = QAOrchestrator()
         all_findings: list[dict] = []
         per_page: dict[str, list[dict]] = {}
+        provider_calls: list[dict] = []
+        provider_errors: list[dict] = []
 
         for page in context.pages:
             page_translations = self._translations_for_page(page, context)
@@ -44,13 +46,20 @@ class QAStage(PipelineStage):
                 if any(f.feedback_type == QAFeedbackType.ERROR for f in fbs)
             }
             if error_bubbles:
-                self._attempt_retranslate(context, page, error_bubbles)
+                calls, errors = self._attempt_retranslate(context, page, error_bubbles)
+                provider_calls.extend(calls)
+                provider_errors.extend(errors)
 
         context.qa_report = {
             "passed": len(all_findings) == 0,
             "total_findings": len(all_findings),
+            "findings": all_findings,
             "per_page": per_page,
         }
+        if provider_calls:
+            context.qa_report["provider_cascade_calls"] = provider_calls
+        if provider_errors:
+            context.qa_report["provider_cascade_errors"] = provider_errors
         context.artifacts[self.name] = context.qa_report
         return context
 
@@ -66,32 +75,37 @@ class QAStage(PipelineStage):
     def _attempt_retranslate(
         self, context: PipelineContext, page: object,
         error_bubbles: dict[str, list],
-    ) -> None:
+    ) -> tuple[list[dict], list[dict]]:
         cfg: ProjectConfig = context.project_config
-        route = cfg.provider_routes.get("translation")
-        if route and route.primary.provider:
-            provider = get_provider(route.primary.provider, model=route.primary.model)
-        else:
-            provider = get_provider("openai")
+        provider_cascade = ProviderCascade(cfg, "qa")
 
         translation_by_id = {t.bubble_id: t for t in context.translations}
+        bubble_by_id = {b.bubble_id: b for b in page.bubbles}
 
         for bubble_id, feedbacks in error_bubbles.items():
             candidate = translation_by_id.get(bubble_id)
             if candidate is None:
                 continue
+            bubble = bubble_by_id.get(bubble_id)
+            source_text = getattr(bubble, "source_text", "") or candidate.text
 
             feedback_summary = "; ".join(f.message for f in feedbacks)
             retranslate_prompt = (
                 f"Re-translate the following manga dialogue. "
                 f"Previous translation had issues: {feedback_summary}\n"
-                f"Source: {candidate.text}\n"
+                f"Source: {source_text}\n"
+                f"Previous translation: {candidate.text}\n"
                 f"Return corrected Simplified Chinese translation."
             )
             try:
-                raw = provider.chat([{"role": "user", "content": retranslate_prompt}])
+                raw, _candidate = provider_cascade.call_chat(
+                    [{"role": "user", "content": retranslate_prompt}],
+                    operation="qa_retranslate",
+                    trace_context={"bubble_id": bubble_id},
+                )
                 if raw and raw.strip():
                     candidate.text = raw.strip()
                     candidate.rationale = f"QA re-translated: {feedback_summary}"
             except Exception:
                 pass
+        return provider_cascade.calls, provider_cascade.errors

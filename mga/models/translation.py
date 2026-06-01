@@ -54,6 +54,11 @@ class PersonaRenderTrace(BaseModel):
     confidence: float = 0.0
 
 
+class TranslationProviderTrace(BaseModel):
+    semantic: dict = Field(default_factory=dict)
+    persona: dict = Field(default_factory=dict)
+
+
 class DialogueRealizationTrace(BaseModel):
     page_id: str = ""
     bubble_id: str = ""
@@ -62,4 +67,5 @@ class DialogueRealizationTrace(BaseModel):
     provisional_speaker: Optional[str] = None
     semantic: SemanticTranslation = Field(default_factory=SemanticTranslation)
     persona: PersonaRenderTrace = Field(default_factory=PersonaRenderTrace)
+    provider: TranslationProviderTrace = Field(default_factory=TranslationProviderTrace)
     final_text: str = ""

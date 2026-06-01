@@ -119,7 +119,7 @@ def test_speaker_attribution_preserves_existing_speaker_id(tmp_path):
 def test_translation_stage_does_not_persist_bare_speaker_name(tmp_path, monkeypatch):
     provider = FakeTranslationProvider()
     monkeypatch.setattr(
-        "mga.pipeline.translation_stage.get_provider",
+        "mga.providers.cascade.get_provider",
         lambda name, **settings: provider,
     )
     ctx = PipelineContext(

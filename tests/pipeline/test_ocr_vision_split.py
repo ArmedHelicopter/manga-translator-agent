@@ -71,7 +71,7 @@ def test_ocr_artifact_text_remains_authoritative_with_vision_enrichment(tmp_path
 
     ctx = OCRArtifactStage().execute(ctx)
     monkeypatch.setattr(
-        "mga.pipeline.vision_stage.get_provider",
+        "mga.providers.cascade.get_provider",
         lambda name, **settings: FakeVisionProvider(),
     )
     ctx = VisionEnrichmentStage().execute(ctx)
