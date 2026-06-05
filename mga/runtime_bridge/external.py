@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 from typing import Any
@@ -53,6 +54,36 @@ def _collect_rendered_images(output_dir: Path) -> list[str]:
         for path in output_dir.rglob("*")
         if path.is_file() and path.suffix.lower() in exts
     )
+
+
+def _prepare_runtime_image_input(input_path: Path, payload_dir: Path) -> Path:
+    """Return an image file/folder input accepted by the external runtime."""
+
+    input_path = input_path.resolve()
+    if input_path.is_dir():
+        return input_path
+
+    image_extensions = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
+    if input_path.suffix.lower() in image_extensions:
+        return input_path
+
+    from mga.format import get_adapter
+
+    adapter = get_adapter(input_path.suffix.lstrip(".").lower())
+    runtime_input_dir = payload_dir / ".runtime-input"
+    if runtime_input_dir.exists():
+        shutil.rmtree(runtime_input_dir)
+    runtime_input_dir.mkdir(parents=True, exist_ok=True)
+
+    for page_ref in adapter.extract(input_path):
+        source = Path(page_ref.image_path)
+        suffix = source.suffix or ".png"
+        target = runtime_input_dir / f"page-{page_ref.index:04d}{suffix}"
+        shutil.copy2(source, target)
+
+    if not discover_image_paths(runtime_input_dir):
+        raise RuntimeError(f"Input adapter did not produce image pages for {input_path}")
+    return runtime_input_dir
 
 
 def _build_external_child_env() -> dict[str, str]:
@@ -398,11 +429,12 @@ def run_export_artifact(
         external_python = (Path.cwd() / external_python).absolute()
 
     payload_dir.mkdir(parents=True, exist_ok=True)
+    runtime_input = _prepare_runtime_image_input(input_dir, payload_dir)
 
     command = [
         str(external_python),
         "-m", "manga_translator", "local",
-        "-i", str(input_dir.resolve()),
+        "-i", str(runtime_input.resolve()),
         "-o", str(payload_dir.resolve()),
         "--overwrite",
         "--export-artifact", str(payload_dir.resolve()),

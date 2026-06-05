@@ -187,6 +187,9 @@ class VisionEnrichmentStage(PipelineStage):
         })
         if errors:
             existing["enrichment_errors"] = errors
+            if not enrichments:
+                existing["enrichment"] = "skipped"
+                existing["note"] = "Vision enrichment unavailable; continuing with OCR artifact text."
         if provider_errors:
             existing["provider_cascade_errors"] = provider_errors
         if provider_calls:
