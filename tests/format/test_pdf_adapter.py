@@ -32,7 +32,7 @@ def _fake_fitz_module():
             self.index = index
 
         def get_pixmap(self, matrix, alpha: bool):
-            assert matrix == ("matrix", 144 / 72.0, 144 / 72.0)
+            assert matrix == ("matrix", 200 / 72.0, 200 / 72.0)
             assert alpha is False
             return FakePixmap(self.index)
 
@@ -125,7 +125,7 @@ def test_pdf_adapter_extract_uses_fitz_and_preserves_metadata(tmp_path, monkeypa
     assert pages[0].metadata == {
         "source_pdf": str(pdf_path),
         "page_number": 0,
-        "dpi": 144,
+        "dpi": 200,
     }
 
 

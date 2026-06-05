@@ -10,7 +10,7 @@ from ..models.format import PageRef, TranslatedPage
 from .base import FormatAdapter
 
 # Render settings
-_RENDER_DPI = 144
+_RENDER_DPI = 200
 
 
 def _get_fitz():  # noqa: D401 – lazy import wrapper
@@ -28,7 +28,7 @@ def _get_fitz():  # noqa: D401 – lazy import wrapper
 class PDFAdapter(FormatAdapter):
     """Adapter for PDF files.
 
-    Extract renders every page to a temporary PNG at 300 DPI and returns a
+    Extract renders every page to a temporary PNG and returns a
     ``PageRef`` for each one.  Repack assembles translated PNGs into a new
     PDF at the same DPI.
     """

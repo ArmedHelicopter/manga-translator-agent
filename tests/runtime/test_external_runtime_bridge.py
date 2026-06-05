@@ -37,6 +37,10 @@ def test_prepare_runtime_image_input_expands_file_adapter_pages(tmp_path, monkey
         "page-0000.png",
         "page-0001.png",
     ]
+    manifest = json.loads((payload_dir / "runtime-input-manifest.json").read_text(encoding="utf-8"))
+    assert manifest["input_suffix"] == ".pdf"
+    assert manifest["pdf_render_dpi"] == 200
+    assert manifest["page_count"] == 2
 
 
 def test_run_export_artifact_writes_fast_export_config(tmp_path, monkeypatch):
@@ -89,6 +93,36 @@ def test_run_export_artifact_fills_empty_page_when_runtime_skips_text(tmp_path, 
             "inpainted": "inpainted-0000.png",
         }
     ]
+
+
+def test_run_export_artifact_clears_stale_artifacts_when_input_signature_changes(tmp_path, monkeypatch):
+    first = tmp_path / "first.png"
+    second = tmp_path / "second.png"
+    Image.new("RGB", (8, 6), "white").save(first)
+    Image.new("RGB", (9, 7), "white").save(second)
+    payload_dir = tmp_path / "payload"
+    payload_dir.mkdir()
+    (payload_dir / "runtime-input-manifest.json").write_text(
+        json.dumps({"input_path": str(first.resolve())}) + "\n",
+        encoding="utf-8",
+    )
+    (payload_dir / "artifact-0000.json").write_text('{"text_regions":[{"text":"stale"}]}', encoding="utf-8")
+    (payload_dir / "inpainted-0000.png").write_bytes(b"stale")
+
+    class Completed:
+        returncode = 0
+        stdout = ""
+        stderr = ""
+
+    monkeypatch.setattr("mga.runtime_bridge.external.subprocess.run", lambda *args, **kwargs: Completed())
+
+    run_export_artifact(input_dir=second, payload_dir=payload_dir)
+
+    artifact = json.loads((payload_dir / "artifact-0000.json").read_text(encoding="utf-8"))
+    manifest = json.loads((payload_dir / "runtime-input-manifest.json").read_text(encoding="utf-8"))
+    assert artifact["text_regions"] == []
+    assert artifact["image_shape"] == [7, 9, 3]
+    assert manifest["input_path"] == str(second.resolve())
 
 
 def test_resolve_runtime_openai_settings_supports_compatible_provider_env(monkeypatch):

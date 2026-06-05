@@ -57,15 +57,69 @@ def _collect_rendered_images(output_dir: Path) -> list[str]:
     )
 
 
+def _input_signature(input_path: Path) -> dict[str, Any]:
+    stat = input_path.stat()
+    signature: dict[str, Any] = {
+        "input_path": str(input_path.resolve()),
+        "input_size": stat.st_size,
+        "input_mtime_ns": stat.st_mtime_ns,
+        "input_suffix": input_path.suffix.lower(),
+    }
+    if input_path.suffix.lower() == ".pdf":
+        from mga.format.pdf_adapter import _RENDER_DPI
+
+        signature["pdf_render_dpi"] = _RENDER_DPI
+    return signature
+
+
+def _write_runtime_input_manifest(
+    payload_dir: Path,
+    input_path: Path,
+    runtime_input: Path,
+) -> None:
+    image_paths = [runtime_input] if runtime_input.is_file() else discover_image_paths(runtime_input)
+    manifest = {
+        **_input_signature(input_path),
+        "runtime_input": str(runtime_input.resolve()),
+        "page_count": len(image_paths),
+        "pages": [
+            {
+                "index": index,
+                "name": image_path.name,
+                "size": image_path.stat().st_size,
+            }
+            for index, image_path in enumerate(image_paths)
+        ],
+    }
+    (payload_dir / "runtime-input-manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _has_matching_runtime_input_manifest(payload_dir: Path, input_path: Path) -> bool:
+    manifest_path = payload_dir / "runtime-input-manifest.json"
+    if not manifest_path.exists():
+        return False
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return False
+    expected = _input_signature(input_path.resolve())
+    return all(manifest.get(key) == value for key, value in expected.items())
+
+
 def _prepare_runtime_image_input(input_path: Path, payload_dir: Path) -> Path:
     """Return an image file/folder input accepted by the external runtime."""
 
     input_path = input_path.resolve()
     if input_path.is_dir():
+        _write_runtime_input_manifest(payload_dir, input_path, input_path)
         return input_path
 
     image_extensions = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
     if input_path.suffix.lower() in image_extensions:
+        _write_runtime_input_manifest(payload_dir, input_path, input_path)
         return input_path
 
     from mga.format import get_adapter
@@ -84,6 +138,7 @@ def _prepare_runtime_image_input(input_path: Path, payload_dir: Path) -> Path:
 
     if not discover_image_paths(runtime_input_dir):
         raise RuntimeError(f"Input adapter did not produce image pages for {input_path}")
+    _write_runtime_input_manifest(payload_dir, input_path, runtime_input_dir)
     return runtime_input_dir
 
 
@@ -506,6 +561,19 @@ def run_export_artifact(
         external_python = (Path.cwd() / external_python).absolute()
 
     payload_dir.mkdir(parents=True, exist_ok=True)
+    input_path = input_dir.resolve()
+    if not _has_matching_runtime_input_manifest(payload_dir, input_path):
+        for pattern in (
+            "artifact*.json",
+            "inpainted*.png",
+            "mask*.png",
+            "pages.json",
+            "translations-*.json",
+            "runtime-export-config.json",
+        ):
+            for path in payload_dir.glob(pattern):
+                if path.is_file():
+                    path.unlink()
     runtime_input = _prepare_runtime_image_input(input_dir, payload_dir)
     export_config_path = payload_dir / "runtime-export-config.json"
     export_config_path.write_text(
