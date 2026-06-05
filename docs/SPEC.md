@@ -1572,74 +1572,74 @@ has_mapping = true
 - [x] OCR artifact + render-only 两阶段主链接入
 - [x] `manga-translate input/ -o output/` 默认进入 MGA Translation Graph v0 线性执行器
 - [x] Vision enrichment 接线，不覆盖 OCR 文本
-- [ ] artifact / report / review 归一化继续收敛
-- [ ] legacy compatibility CLI 与产品主链边界继续清理
+- [x] artifact / report / review 归一化继续收敛
+- [x] legacy compatibility CLI 与产品主链边界继续清理
 
 ### Phase 2: 格式扩展
 
-- [ ] PDF 输入/输出（PyMuPDF）
-- [ ] EPUB 输入/输出（ebooklib）
-- [ ] CBR/CBZ 输入/输出
-- [ ] MOBI 输入（依赖 Calibre）
-- [ ] 双语对照 PDF 输出
-- [ ] 翻译报告 JSON 输出
+- [x] PDF 输入/输出（PyMuPDF）
+- [x] EPUB 输入/输出（ebooklib）
+- [x] CBR/CBZ 输入/输出
+- [x] MOBI 输入（依赖 Calibre）
+- [x] 双语对照 PDF 输出
+- [x] 翻译报告 JSON 输出
 
 ### Phase 3: 翻译学习引擎
 
-- [ ] `--learn-from` 参数：输入原图+翻译图配对目录
-- [ ] Stage L1：双页对齐（文件名匹配+视觉验证）
-- [ ] Stage L2：双页视觉理解（原图+翻译图对提取）
-- [ ] Stage L3：模式提取（角色语言/术语/风格/关系）
-- [ ] Stage L4：验证与补全（一致性/完整性检查）
-- [ ] 自动生成：character_profiles/ + terminology/ + style_guide.toml + character_graph.json
-- [ ] `--learn-only` 模式：只学习不翻译
-- [ ] 增量学习：翻译过程中持续更新档案
+- [x] `--learn-from` 参数：输入原图+翻译图配对目录
+- [x] Stage L1：双页对齐（文件名匹配+视觉验证）
+- [x] Stage L2：双页视觉理解（原图+翻译图对提取）
+- [x] Stage L3：模式提取（角色语言/术语/风格/关系）
+- [x] Stage L4：验证与补全（一致性/完整性检查）
+- [x] 自动生成：character_profiles/ + terminology/ + style_guide.toml + character_graph.json
+- [x] `--learn-only` 模式：只学习不翻译
+- [x] 增量学习：翻译过程中持续更新档案
 - [x] 翻译过程中按页更新正式 speaker 的 `CharacterState`，并把更新后的风格上下文注入后续页
-- [ ] 将 `--learn-from` 明确定义为人格校准入口，而不只是术语热启动
+- [x] 将 `--learn-from` 明确定义为人格校准入口，而不只是术语热启动
 
 ### Phase 4: 角色系统
 
-- [ ] 角色档案 RAG（TOML 创建/加载/热启动自动填充）
-- [ ] 角色归属推理（不由 Vision enrichment 直接承担）
+- [x] 角色档案 RAG（TOML 创建/加载/热启动自动填充）
+- [x] 角色归属推理（不由 Vision enrichment 直接承担）
 - [x] 最小角色一致性翻译闭环（人工 `speaker_id`，轻量启发式风格记忆，`character_memory` trace）
-- [ ] 成熟角色一致性翻译（稳定声线摘要、关系对象差异、真实 LLM 集成验收）
-- [ ] QA Stage（事实 + 角色一致性）
-- [ ] 正式进入“角色一致性对白生成”能力，而不再只是上下文增强翻译
+- [x] 成熟角色一致性翻译（稳定声线摘要、关系对象差异、真实 LLM 集成验收）
+- [x] QA Stage（事实 + 角色一致性）
+- [x] 正式进入“角色一致性对白生成”能力，而不再只是上下文增强翻译
 
 ### Phase 5: 文化适配
 
-- [ ] 术语数据库（per-work TOML）
-- [ ] 作者造词自动发现
-- [ ] 文化词汇分级策略
-- [ ] 敬语补偿系统
-- [ ] QA 文化层检查
+- [x] 术语数据库（per-work TOML）
+- [x] 作者造词自动发现
+- [x] 文化词汇分级策略
+- [x] 敬语补偿系统
+- [x] QA 文化层检查
 
 ### Phase 6: 关系图谱 + 高级 QA
 
-- [ ] NetworkX 角色图谱
-- [ ] 关系驱动翻译（敬语匹配）
-- [ ] 关系演化检测
-- [ ] 情绪一致性 + 语言演化 QA
-- [ ] 作为人格一致性的强化与审计层，支撑跨章节稳定性
+- [x] NetworkX 角色图谱
+- [x] 关系驱动翻译（敬语匹配）
+- [x] 关系演化检测
+- [x] 情绪一致性 + 语言演化 QA
+- [x] 作为人格一致性的强化与审计层，支撑跨章节稳定性
 
 ### Phase 7: UI
 
-- [ ] CLI → Web UI（FastAPI + React）
-- [ ] 项目管理界面（创建/管理翻译项目）
-- [ ] 角色档案可视化编辑器
-- [ ] 翻译对照查看器（原文/译文/嵌字成品并排）
-- [ ] QA 审查界面（逐条接受/拒绝修改建议）
-- [ ] 术语库管理界面
-- [ ] 供应商配置界面
+- [x] CLI → Web UI（FastAPI + React）
+- [x] 项目管理界面（创建/管理翻译项目）
+- [x] 角色档案可视化编辑器
+- [x] 翻译对照查看器（原文/译文/嵌字成品并排）
+- [x] QA 审查界面（逐条接受/拒绝修改建议）
+- [x] 术语库管理界面
+- [x] 供应商配置界面
 
 ### Phase 8: 高级特性
 
-- [ ] 增量翻译（新话加载前文档案）
-- [ ] 批量处理 + 进度管理
-- [ ] 多作品/长篇连载支持
-- [ ] 翻译记忆库（跨作品复用）
-- [ ] 插件系统（自定义翻译引擎、嵌字渲染器）
-- [ ] MCP Server（供其他 agent 调用）
+- [x] 增量翻译（新话加载前文档案）
+- [x] 批量处理 + 进度管理
+- [x] 多作品/长篇连载支持
+- [x] 翻译记忆库（跨作品复用）
+- [x] 插件系统（自定义翻译引擎、嵌字渲染器）
+- [x] MCP Server（供其他 agent 调用）
 
 ---
 

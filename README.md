@@ -91,7 +91,7 @@ Current implementation status:
 - The compatibility shim `manga_translate.cli` is legacy external-core plumbing kept for older tests/imports; it is not the source of truth for the product pipeline.
 - The intelligent layer now has a minimum page-sequential memory loop for formal `speaker_id`: translated bubbles update `CharacterState`, later pages can read the updated style context, and `context.artifacts["character_memory"]` records the trace. The current style model is still a lightweight heuristic, not a mature character voice model.
 - Vision provisional speakers are prompt hints only. `SpeakerAttributionStage` may conservatively promote exact matches against existing character profiles into formal `speaker_id`; unmatched or generic hints are traced but not written to character memory.
-- Provider routing is stage-aware in config, but automatic primary → fallback → local cascade is not yet fully implemented across every stage.
+- Provider routing is stage-aware in config, with primary → fallback → local runtime cascade coverage for pipeline stages, learning, benchmarks, the compatibility shim, and the public provider API.
 
 ## CLI Reference
 
