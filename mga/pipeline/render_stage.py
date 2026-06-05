@@ -61,6 +61,31 @@ class RenderStage(PipelineStage):
 
         # Single subprocess call renders all pages
         try:
+            renderer_plugin = self._renderer_plugin_config(cfg)
+            if renderer_plugin:
+                from mga.plugins import instantiate_plugin_from_config
+
+                renderer = instantiate_plugin_from_config(renderer_plugin)
+                if not hasattr(renderer, "render"):
+                    raise TypeError("Renderer plugin must define a render(context, payload_dir, output_dir) method.")
+                plugin_result = renderer.render(
+                    context=context,
+                    payload_dir=payload_path,
+                    output_dir=output_dir,
+                )
+                if plugin_result is None:
+                    plugin_result = {}
+                if not isinstance(plugin_result, dict):
+                    raise TypeError("Renderer plugin render() must return a dict or None.")
+                context.artifacts[self.name] = {
+                    "mode": "plugin-renderer",
+                    "output_dir": str(output_dir),
+                    "pages_rendered": len(pages_list),
+                    "plugin": renderer_plugin.get("class") or renderer_plugin.get("class_path") or renderer_plugin.get("plugin"),
+                    **plugin_result,
+                }
+                return context
+
             from mga.runtime_bridge.external import run_render_only
             result = run_render_only(
                 payload_dir=payload_path,
@@ -81,6 +106,19 @@ class RenderStage(PipelineStage):
             context.errors.append({"stage": self.name, "error": str(e)})
 
         return context
+
+    @staticmethod
+    def _renderer_plugin_config(cfg: ProjectConfig) -> dict | None:
+        plugins = cfg.plugins or {}
+        renderer = plugins.get("renderer")
+        if isinstance(renderer, dict) and renderer:
+            return renderer
+        renderers = plugins.get("renderers")
+        if isinstance(renderers, dict):
+            default_renderer = renderers.get("default") or renderers.get("primary")
+            if isinstance(default_renderer, dict) and default_renderer:
+                return default_renderer
+        return None
 
     def _write_page_translations(
         self, payload_path: Path, context: PipelineContext, cfg: ProjectConfig, page_idx: int

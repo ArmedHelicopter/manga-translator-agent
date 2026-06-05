@@ -37,3 +37,7 @@ class ProjectConfig(BaseModel):
         default_factory=dict,
         description="Per-provider kwargs (api_key, base_url, model, ...) for get_provider().",
     )
+    plugins: Dict[str, dict] = Field(
+        default_factory=dict,
+        description="Project-local plugin configuration for extension points.",
+    )
