@@ -434,6 +434,9 @@ def run_export_artifact(
     export_config_path.write_text(
         json.dumps(
             {
+                "inpainter": {
+                    "inpainter": "none",
+                },
                 "translator": {
                     "translator": "none",
                     "target_lang": "CHS",

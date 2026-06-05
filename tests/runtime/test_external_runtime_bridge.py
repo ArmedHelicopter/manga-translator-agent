@@ -1,9 +1,10 @@
+import json
 from pathlib import Path
 
 from PIL import Image
 
 from mga.models.format import PageRef
-from mga.runtime_bridge.external import _prepare_runtime_image_input
+from mga.runtime_bridge.external import _prepare_runtime_image_input, run_export_artifact
 
 
 def test_prepare_runtime_image_input_expands_file_adapter_pages(tmp_path, monkeypatch):
@@ -31,3 +32,26 @@ def test_prepare_runtime_image_input_expands_file_adapter_pages(tmp_path, monkey
         "page-0000.png",
         "page-0001.png",
     ]
+
+
+def test_run_export_artifact_writes_fast_export_config(tmp_path, monkeypatch):
+    image = tmp_path / "page.png"
+    Image.new("RGB", (8, 8), "white").save(image)
+    payload_dir = tmp_path / "payload"
+
+    class Completed:
+        returncode = 0
+        stdout = ""
+        stderr = ""
+
+    def fake_run(command, **kwargs):
+        payload_dir.joinpath("artifact.json").write_text("{}", encoding="utf-8")
+        return Completed()
+
+    monkeypatch.setattr("mga.runtime_bridge.external.subprocess.run", fake_run)
+
+    run_export_artifact(input_dir=image, payload_dir=payload_dir)
+
+    export_config = json.loads((payload_dir / "runtime-export-config.json").read_text(encoding="utf-8"))
+    assert export_config["translator"]["translator"] == "none"
+    assert export_config["inpainter"]["inpainter"] == "none"
