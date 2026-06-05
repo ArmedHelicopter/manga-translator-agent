@@ -185,13 +185,14 @@ def build_project_config(
                 local=route.local,
             )
 
-    input_dir = Path(input_path).resolve()
+    resolved_input = Path(input_path).resolve()
     output_dir = Path(output_path).resolve()
+    working_dir = resolved_input if resolved_input.is_dir() else output_dir / ".mga-project"
     project_config = ProjectConfig(
-        project_name=input_dir.name or "manga-project",
+        project_name=resolved_input.stem if resolved_input.is_file() else (resolved_input.name or "manga-project"),
         source_lang="ja",
         target_lang="zh-CN",
-        working_dir=str(input_dir),
+        working_dir=str(working_dir),
         output_dir=str(output_dir),
         artifact_dir=str(output_dir),
         input_format="images",

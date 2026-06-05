@@ -89,6 +89,31 @@ def test_build_project_config_allows_mimo_builtin_defaults(tmp_path):
     assert cfg.provider_routes["qa"].primary.provider == "mimo"
 
 
+def test_build_project_config_uses_project_working_dir_for_file_inputs(tmp_path):
+    config_path = tmp_path / "providers.toml"
+    config_path.write_text(
+        '[stages.vision]\nprimary = "mimo"\n\n'
+        '[stages.translation]\nprimary = "mimo"\n\n'
+        '[providers.mimo]\n',
+        encoding="utf-8",
+    )
+    input_path = tmp_path / "book.pdf"
+    input_path.write_bytes(b"%PDF")
+    output_path = tmp_path / "out"
+
+    cfg, _raw = build_project_config(
+        input_path=str(input_path),
+        output_path=str(output_path),
+        provider_override="mimo",
+        save_json=False,
+        dry_run=False,
+        config_path=str(config_path),
+    )
+
+    assert cfg.project_name == "book"
+    assert cfg.working_dir == str(output_path / ".mga-project")
+
+
 def test_build_project_config_preserves_plugin_configuration(tmp_path):
     config_path = tmp_path / "providers.toml"
     config_path.write_text(
