@@ -65,10 +65,16 @@ def complete_mask_fill(text_lines: List[Tuple[int, int, int, int]]):
         final_mask = cv2.rectangle(final_mask, (x, y), (x + w, y + h), (255), -1)
     return final_mask
 
-from pydensecrf.utils import compute_unary, unary_from_softmax
-import pydensecrf.densecrf as dcrf
+try:
+    from pydensecrf.utils import unary_from_softmax
+    import pydensecrf.densecrf as dcrf
+except ImportError:  # pragma: no cover - exercised on Windows without pydensecrf wheels.
+    unary_from_softmax = None
+    dcrf = None
 
 def refine_mask(rgbimg, rawmask):
+    if unary_from_softmax is None or dcrf is None:
+        return rawmask
     if len(rawmask.shape) == 2:
         rawmask = rawmask[:, :, None]
     mask_softmax = np.concatenate([cv2.bitwise_not(rawmask)[:, :, None], rawmask], axis=2)

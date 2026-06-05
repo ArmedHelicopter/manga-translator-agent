@@ -7,57 +7,97 @@ from .baidu import BaiduTranslator
 from .deepseek import DeepseekTranslator
 # from .google import GoogleTranslator
 from .youdao import YoudaoTranslator
-from .deepl import DeeplTranslator
 from .papago import PapagoTranslator
 from .caiyun import CaiyunTranslator
 from .chatgpt import OpenAITranslator
 from .chatgpt_2stage import ChatGPT2StageTranslator
 from .nllb import NLLBTranslator, NLLBBigTranslator
-from .sugoi import JparacrawlTranslator, JparacrawlBigTranslator, SugoiTranslator
-from .m2m100 import M2M100Translator, M2M100BigTranslator
 from .mbart50 import MBart50Translator
-from .selective import SelectiveOfflineTranslator, prepare as prepare_selective_translator
 from .none import NoneTranslator
 from .original import OriginalTranslator
 from .sakura import SakuraTranslator
 from .qwen2 import Qwen2Translator, Qwen2BigTranslator
-from .groq import GroqTranslator
-from .gemini import GeminiTranslator
-from .gemini_2stage import Gemini2StageTranslator
 from .custom_openai import CustomOpenAiTranslator
 from ..config import Translator, TranslatorConfig, TranslatorChain
 from ..utils import Context
 
+try:
+    from .deepl import DeeplTranslator
+except ImportError:
+    DeeplTranslator = None
+
+try:
+    from .sugoi import JparacrawlTranslator, JparacrawlBigTranslator, SugoiTranslator
+except ImportError:
+    JparacrawlTranslator = None
+    JparacrawlBigTranslator = None
+    SugoiTranslator = None
+
+try:
+    from .m2m100 import M2M100Translator, M2M100BigTranslator
+except ImportError:
+    M2M100Translator = None
+    M2M100BigTranslator = None
+
+try:
+    from .selective import SelectiveOfflineTranslator, prepare as prepare_selective_translator
+except ImportError:
+    SelectiveOfflineTranslator = None
+    prepare_selective_translator = None
+
+try:
+    from .groq import GroqTranslator
+except ImportError:
+    GroqTranslator = None
+
+try:
+    from .gemini import GeminiTranslator
+except ImportError:
+    GeminiTranslator = None
+
+try:
+    from .gemini_2stage import Gemini2StageTranslator
+except ImportError:
+    Gemini2StageTranslator = None
+
 OFFLINE_TRANSLATORS = {
-    Translator.offline: SelectiveOfflineTranslator,
     Translator.nllb: NLLBTranslator,
     Translator.nllb_big: NLLBBigTranslator,
-    Translator.sugoi: SugoiTranslator,
-    Translator.jparacrawl: JparacrawlTranslator,
-    Translator.jparacrawl_big: JparacrawlBigTranslator,
-    Translator.m2m100: M2M100Translator,
-    Translator.m2m100_big: M2M100BigTranslator,
     Translator.mbart50: MBart50Translator,
     Translator.qwen2: Qwen2Translator,
     Translator.qwen2_big: Qwen2BigTranslator,
 }
+if SelectiveOfflineTranslator is not None:
+    OFFLINE_TRANSLATORS[Translator.offline] = SelectiveOfflineTranslator
+if SugoiTranslator is not None:
+    OFFLINE_TRANSLATORS[Translator.sugoi] = SugoiTranslator
+if JparacrawlTranslator is not None:
+    OFFLINE_TRANSLATORS[Translator.jparacrawl] = JparacrawlTranslator
+if JparacrawlBigTranslator is not None:
+    OFFLINE_TRANSLATORS[Translator.jparacrawl_big] = JparacrawlBigTranslator
+if M2M100Translator is not None:
+    OFFLINE_TRANSLATORS[Translator.m2m100] = M2M100Translator
+if M2M100BigTranslator is not None:
+    OFFLINE_TRANSLATORS[Translator.m2m100_big] = M2M100BigTranslator
 
 GPT_TRANSLATORS = {
     Translator.chatgpt: OpenAITranslator,
     Translator.chatgpt_2stage: ChatGPT2StageTranslator,
     Translator.deepseek: DeepseekTranslator,
-    Translator.groq:GroqTranslator,
     Translator.custom_openai: CustomOpenAiTranslator,
-    Translator.gemini: GeminiTranslator,
-    Translator.gemini_2stage: Gemini2StageTranslator,
 }
+if GroqTranslator is not None:
+    GPT_TRANSLATORS[Translator.groq] = GroqTranslator
+if GeminiTranslator is not None:
+    GPT_TRANSLATORS[Translator.gemini] = GeminiTranslator
+if Gemini2StageTranslator is not None:
+    GPT_TRANSLATORS[Translator.gemini_2stage] = Gemini2StageTranslator
 
 
 TRANSLATORS = {
     # 'google': GoogleTranslator,
     Translator.youdao: YoudaoTranslator,
     Translator.baidu: BaiduTranslator,
-    Translator.deepl: DeeplTranslator,
     Translator.papago: PapagoTranslator,
     Translator.caiyun: CaiyunTranslator,
     Translator.none: NoneTranslator,
@@ -66,6 +106,8 @@ TRANSLATORS = {
     **GPT_TRANSLATORS,
     **OFFLINE_TRANSLATORS,
 }
+if DeeplTranslator is not None:
+    TRANSLATORS[Translator.deepl] = DeeplTranslator
 translator_cache = {}
 
 def get_translator(key: Translator, *args, **kwargs) -> CommonTranslator:
@@ -76,7 +118,8 @@ def get_translator(key: Translator, *args, **kwargs) -> CommonTranslator:
         translator_cache[key] = translator(*args, **kwargs)
     return translator_cache[key]
 
-prepare_selective_translator(get_translator)
+if prepare_selective_translator is not None:
+    prepare_selective_translator(get_translator)
 
 async def prepare(chain: TranslatorChain):
     for key, tgt_lang in chain.chain:
