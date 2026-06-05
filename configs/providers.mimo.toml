@@ -1,0 +1,10 @@
+[stages.vision]
+primary = "mimo"
+
+[stages.translation]
+primary = "mimo"
+
+[stages.qa]
+primary = "mimo"
+
+[providers.mimo]
