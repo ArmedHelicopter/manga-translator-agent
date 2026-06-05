@@ -13,6 +13,7 @@ from typing import Any
 from ..artifacts import ArtifactStore
 from ..format.manifest import build_manifest_payload, discover_image_paths, load_image_metadata
 from ..models import Page, PageImage, ProjectConfig
+from ..providers.registry import resolve_provider_settings
 
 DEFAULT_EXTERNAL_RUNTIME_CANDIDATES = (
     Path("external/manga-image-translator"),
@@ -181,6 +182,28 @@ def _build_external_child_env() -> dict[str, str]:
     return child_env
 
 
+def _resolve_runtime_openai_settings(project_config: ProjectConfig, raw_config: dict[str, Any]) -> dict[str, Any]:
+    """Resolve the translation provider settings needed by the OpenAI-based runtime."""
+
+    providers = raw_config.get("providers", {})
+    route = project_config.provider_routes.get("translation") or project_config.provider_routes.get("translate")
+    provider_name = route.primary.provider if route and route.primary.provider else "openai"
+    provider_type, settings = resolve_provider_settings(provider_name, providers.get(provider_name, {}))
+    if provider_type != "openai":
+        return {}
+
+    if route and route.primary.model and "model" not in settings and "text_model" not in settings:
+        settings["model"] = route.primary.model
+
+    api_key_env = settings.pop("api_key_env", None)
+    base_url_env = settings.pop("base_url_env", None)
+    if not settings.get("api_key") and api_key_env:
+        settings["api_key"] = os.getenv(str(api_key_env), "")
+    if not settings.get("base_url") and base_url_env:
+        settings["base_url"] = os.getenv(str(base_url_env), "")
+    return settings
+
+
 def _parse_saved_text_blocks(raw_text: str) -> list[dict[str, Any]]:
     blocks: list[dict[str, Any]] = []
     current: dict[str, Any] | None = None
@@ -336,7 +359,7 @@ def run_external_translation_runtime(
     output_dir = Path(project_config.output_dir).resolve()
     resolved_repo = resolve_external_runtime_repo(repo_dir)
 
-    openai_settings = raw_config.get("providers", {}).get("openai", {})
+    openai_settings = _resolve_runtime_openai_settings(project_config, raw_config)
     image_inputs = discover_image_paths(input_dir)
     if not image_inputs:
         raise RuntimeError(f"No image files found in {input_dir}")

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from types import SimpleNamespace
 from typing import Any
 
 from ..exceptions import ProviderError
@@ -18,8 +17,44 @@ _PROVIDER_MAP: dict[str, tuple[str, str]] = {
     "vllm": (".vllm_provider", "VLLMProvider"),
     "openrouter": (".openrouter_provider", "OpenRouterProvider"),
     "llamacpp": (".llamacpp_provider", "LlamaCppProvider"),
-    "mimo": (".mimo_provider", "MiMoProvider"),
 }
+
+_PROVIDER_PROFILES: dict[str, dict[str, Any]] = {
+    "mimo": {
+        "provider_type": "openai",
+        "api_key_env": "MIMO_API_KEY",
+        "base_url_env": "MIMO_BASE_URL",
+        "base_url": "https://token-plan-cn.xiaomimimo.com/v1",
+        "vision_model": "mimo-v2.5-pro",
+        "text_model": "mimo-v2.5-pro",
+    },
+}
+
+
+def get_provider_model_default(name: str, stage: str | None = None) -> str:
+    """Return a non-secret default model for built-in compatible provider profiles."""
+
+    profile = _PROVIDER_PROFILES.get(name.lower(), {})
+    if stage == "vision":
+        return str(profile.get("vision_model") or profile.get("model") or "")
+    if stage in {"translation", "translate", "qa"}:
+        return str(profile.get("text_model") or profile.get("translate_model") or profile.get("model") or "")
+    return str(profile.get("model") or profile.get("vision_model") or profile.get("text_model") or "")
+
+
+def resolve_provider_settings(name: str, settings: dict[str, Any] | None = None) -> tuple[str, dict[str, Any]]:
+    """Resolve a configured provider name into a concrete provider type and kwargs."""
+
+    provider_name = name.lower()
+    resolved = dict(settings or {})
+    profile = _PROVIDER_PROFILES.get(provider_name)
+    if profile:
+        merged = dict(profile)
+        merged.update(resolved)
+        resolved = merged
+
+    provider_type = str(resolved.pop("provider_type", provider_name)).lower()
+    return provider_type, resolved
 
 
 def _load_provider_class(name: str) -> type[LLMProvider]:
@@ -34,13 +69,15 @@ def _load_provider_class(name: str) -> type[LLMProvider]:
 
 def get_provider(name: str, **kwargs: Any) -> LLMProvider:
     """Instantiate a provider by name."""
-    if name.lower() not in _PROVIDER_MAP:
+    provider_name, settings = resolve_provider_settings(name, kwargs)
+
+    if provider_name not in _PROVIDER_MAP:
         from mga.plugins import has_plugin_class, instantiate_plugin_from_settings
 
-        if has_plugin_class(kwargs):
-            return instantiate_plugin_from_settings(kwargs)
-    cls = _load_provider_class(name)
-    return cls(**kwargs)
+        if has_plugin_class(settings):
+            return instantiate_plugin_from_settings(settings)
+    cls = _load_provider_class(provider_name)
+    return cls(**settings)
 
 
 def select_provider(
@@ -105,7 +142,13 @@ def select_provider(
     if len(resolved) == 1:
         return resolved[0][1]
     if resolved:
-        cascade = SimpleNamespace(stage=stage, errors=errors, calls=[])
+        class _SelectionCascade:
+            def __init__(self) -> None:
+                self.stage = stage
+                self.errors = errors
+                self.calls = []
+
+        cascade = _SelectionCascade()
         return ProviderCascadeAdapter(cascade, resolved)
 
     raise ProviderError(f"No provider available for stage {stage!r}")

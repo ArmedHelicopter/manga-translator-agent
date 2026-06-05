@@ -20,7 +20,6 @@ def test_registry_exposes_documented_provider_map():
         "vllm": (".vllm_provider", "VLLMProvider"),
         "openrouter": (".openrouter_provider", "OpenRouterProvider"),
         "llamacpp": (".llamacpp_provider", "LlamaCppProvider"),
-        "mimo": (".mimo_provider", "MiMoProvider"),
     }
 
 
@@ -42,10 +41,36 @@ def test_get_provider_mimo_uses_openai_compatible_defaults(monkeypatch):
 
     provider = get_provider("mimo")
 
-    assert provider.__class__.__name__ == "MiMoProvider"
+    assert provider.__class__.__name__ == "OpenAIProvider"
     assert provider.model_name == "mimo-v2.5-pro"
     assert captured["api_key"] == "mimo-key"
     assert str(captured["base_url"]) == "https://token-plan-cn.xiaomimimo.com/v1"
+
+
+def test_get_provider_uses_openai_compatible_provider_type(monkeypatch):
+    captured = {}
+
+    class FakeOpenAI:
+        def __init__(self, **kwargs):
+            captured.update(kwargs)
+
+    monkeypatch.setenv("COMPAT_KEY", "compat-key")
+    monkeypatch.setattr("mga.providers.openai_provider.openai.OpenAI", FakeOpenAI)
+
+    provider = get_provider(
+        "custom_compatible",
+        provider_type="openai",
+        api_key_env="COMPAT_KEY",
+        base_url="https://compatible.example/v1",
+        vision_model="vision-model",
+        text_model="text-model",
+    )
+
+    assert provider.__class__.__name__ == "OpenAIProvider"
+    assert provider.model_name == "vision-model"
+    assert provider._translate_model == "text-model"
+    assert captured["api_key"] == "compat-key"
+    assert str(captured["base_url"]) == "https://compatible.example/v1"
 
 
 def test_get_provider_anthropic():

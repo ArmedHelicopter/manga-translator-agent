@@ -89,6 +89,36 @@ def test_build_project_config_allows_mimo_builtin_defaults(tmp_path):
     assert cfg.provider_routes["qa"].primary.provider == "mimo"
 
 
+def test_build_project_config_allows_openai_compatible_provider_type(tmp_path):
+    config_path = tmp_path / "providers.toml"
+    config_path.write_text(
+        '[stages.vision]\nprimary = "compatible"\n\n'
+        '[stages.translation]\nprimary = "compatible"\n\n'
+        '[providers.compatible]\n'
+        'provider_type = "openai"\n'
+        'api_key_env = "COMPATIBLE_API_KEY"\n'
+        'base_url = "https://compatible.example/v1"\n'
+        'vision_model = "compatible-vision"\n'
+        'text_model = "compatible-text"\n',
+        encoding="utf-8",
+    )
+    input_path = tmp_path / "input"
+    input_path.mkdir()
+
+    cfg, raw = build_project_config(
+        input_path=str(input_path),
+        output_path=str(tmp_path / "out"),
+        provider_override="compatible",
+        save_json=False,
+        dry_run=False,
+        config_path=str(config_path),
+    )
+
+    assert raw["providers"]["compatible"]["provider_type"] == "openai"
+    assert cfg.provider_routes["vision"].primary.model == "compatible-vision"
+    assert cfg.provider_routes["translation"].primary.model == "compatible-text"
+
+
 def test_build_project_config_uses_project_working_dir_for_file_inputs(tmp_path):
     config_path = tmp_path / "providers.toml"
     config_path.write_text(

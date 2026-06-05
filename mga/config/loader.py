@@ -10,6 +10,7 @@ from toml import TomlDecodeError
 
 from ..exceptions import ConfigError
 from ..models import ProjectConfig, ProviderRoute, StageProviderConfig
+from ..providers.registry import get_provider_model_default
 
 DEFAULT_CONFIG_PATH = Path("configs/providers.toml")
 SUPPORTED_STAGE_NAMES = ("vision", "translation", "qa")
@@ -19,10 +20,6 @@ STAGE_CONFIG_KEYS = {
     "qa": "qa",
 }
 CONFIG_ENV_VAR = "MANGA_TRANSLATE_CONFIG"
-DEFAULT_PROVIDER_MODELS = {
-    "mimo": "mimo-v2.5-pro",
-}
-
 
 def _resolve_config_path(config_path: str | None = None) -> Path:
     if config_path:
@@ -88,7 +85,7 @@ def _build_stage_route(stage_name: str, stage_data: dict, providers_data: dict) 
     primary_model = (
         primary_settings.get(model_key)
         or primary_settings.get("model")
-        or DEFAULT_PROVIDER_MODELS.get(primary_name)
+        or get_provider_model_default(primary_name, stage_name)
     )
     if not primary_model:
         raise ConfigError(f"Provider '{primary_name}' is missing '{model_key}' for stage '{stage_name}'.")
@@ -106,7 +103,7 @@ def _build_stage_route(stage_name: str, stage_data: dict, providers_data: dict) 
             model=(
                 fallback_settings.get(model_key)
                 or fallback_settings.get("model")
-                or DEFAULT_PROVIDER_MODELS.get(fallback_name)
+                or get_provider_model_default(fallback_name, stage_name)
             ),
         )
 
@@ -119,7 +116,7 @@ def _build_stage_route(stage_name: str, stage_data: dict, providers_data: dict) 
             model=(
                 local_settings.get(model_key)
                 or local_settings.get("model")
-                or DEFAULT_PROVIDER_MODELS.get(local_name)
+                or get_provider_model_default(local_name, stage_name)
             ),
         )
 
@@ -170,7 +167,7 @@ def build_project_config(
             provider_model = (
                 providers_data[provider_override].get(model_key)
                 or providers_data[provider_override].get("model")
-                or DEFAULT_PROVIDER_MODELS.get(provider_override)
+                or get_provider_model_default(provider_override, stage_name)
             )
             if not provider_model:
                 raise ConfigError(

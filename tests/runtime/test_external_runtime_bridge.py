@@ -4,7 +4,12 @@ from pathlib import Path
 from PIL import Image
 
 from mga.models.format import PageRef
-from mga.runtime_bridge.external import _prepare_runtime_image_input, run_export_artifact
+from mga.models import ProjectConfig, ProviderRoute, StageProviderConfig
+from mga.runtime_bridge.external import (
+    _prepare_runtime_image_input,
+    _resolve_runtime_openai_settings,
+    run_export_artifact,
+)
 
 
 def test_prepare_runtime_image_input_expands_file_adapter_pages(tmp_path, monkeypatch):
@@ -84,3 +89,46 @@ def test_run_export_artifact_fills_empty_page_when_runtime_skips_text(tmp_path, 
             "inpainted": "inpainted-0000.png",
         }
     ]
+
+
+def test_resolve_runtime_openai_settings_supports_compatible_provider_env(monkeypatch):
+    monkeypatch.setenv("COMPATIBLE_API_KEY", "runtime-key")
+    cfg = ProjectConfig(
+        provider_routes={
+            "translation": StageProviderConfig(
+                primary=ProviderRoute(provider="compatible", model="route-model")
+            )
+        }
+    )
+    raw_config = {
+        "providers": {
+            "compatible": {
+                "provider_type": "openai",
+                "api_key_env": "COMPATIBLE_API_KEY",
+                "base_url": "https://compatible.example/v1",
+                "text_model": "compatible-text",
+            }
+        }
+    }
+
+    settings = _resolve_runtime_openai_settings(cfg, raw_config)
+
+    assert settings["api_key"] == "runtime-key"
+    assert settings["base_url"] == "https://compatible.example/v1"
+    assert settings["text_model"] == "compatible-text"
+    assert "api_key_env" not in settings
+
+
+def test_resolve_runtime_openai_settings_uses_mimo_builtin_profile(monkeypatch):
+    monkeypatch.setenv("MIMO_API_KEY", "runtime-mimo-key")
+    cfg = ProjectConfig(
+        provider_routes={
+            "translation": StageProviderConfig(primary=ProviderRoute(provider="mimo"))
+        }
+    )
+
+    settings = _resolve_runtime_openai_settings(cfg, {"providers": {"mimo": {}}})
+
+    assert settings["api_key"] == "runtime-mimo-key"
+    assert settings["base_url"] == "https://token-plan-cn.xiaomimimo.com/v1"
+    assert settings["text_model"] == "mimo-v2.5-pro"

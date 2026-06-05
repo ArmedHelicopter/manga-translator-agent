@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -120,16 +121,32 @@ class OpenAIProvider(LLMProvider):
         self,
         *,
         api_key: str | None = None,
+        api_key_env: str | None = None,
         base_url: str | None = None,
+        base_url_env: str | None = None,
         model: str | None = None,
+        vision_model: str | None = None,
+        text_model: str | None = None,
         translate_model: str | None = None,
         temperature: float = 0.2,
         max_retries: int = 2,
     ) -> None:
-        self._model = model or VISION_MODEL
-        self._translate_model = translate_model or TRANSLATE_MODEL
+        resolved_api_key = api_key
+        if resolved_api_key is None and api_key_env:
+            resolved_api_key = os.getenv(api_key_env)
+
+        resolved_base_url = base_url
+        if resolved_base_url is None and base_url_env:
+            resolved_base_url = os.getenv(base_url_env)
+
+        self._model = vision_model or model or VISION_MODEL
+        self._translate_model = translate_model or text_model or model or TRANSLATE_MODEL
         self._temperature = temperature
-        self._client = openai.OpenAI(api_key=api_key, base_url=base_url, max_retries=max_retries)
+        self._client = openai.OpenAI(
+            api_key=resolved_api_key,
+            base_url=resolved_base_url,
+            max_retries=max_retries,
+        )
 
     # -- abstract properties ------------------------------------------------
 
