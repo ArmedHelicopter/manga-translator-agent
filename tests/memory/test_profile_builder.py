@@ -135,3 +135,65 @@ def test_build_and_save_profile_e2e(tmp_path):
 
     # Speech patterns should have been extracted
     assert len(loaded.speech_patterns) > 0
+    assert (tmp_path / "character_profiles" / "e2e_char.toml").exists()
+
+
+def test_save_profile_writes_toml_asset(tmp_path):
+    profile = CharacterState(
+        character_id="akari",
+        name_jp="Akari",
+        name_zh="Deng",
+        archetype="protagonist",
+        speech_patterns={"default": "polite"},
+        catchphrases=["I understand"],
+        tone_spectrum={"default": "quiet"},
+        translation_notes={"addressing": "uses surnames"},
+    )
+
+    save_profile(tmp_path, profile)
+
+    profile_toml = (tmp_path / "character_profiles" / "akari.toml").read_text(
+        encoding="utf-8"
+    )
+    assert 'character_id = "akari"' in profile_toml
+    assert 'name_jp = "Akari"' in profile_toml
+    assert 'archetype = "protagonist"' in profile_toml
+    assert 'default = "polite"' in profile_toml
+    assert '"I understand"' in profile_toml
+
+
+def test_save_profile_writes_relationship_speech_toml_asset(tmp_path):
+    relationship_speech = {
+        "ren": {
+            "honorific_level": "polite",
+            "self_ref": "boku",
+            "required_terms": ["Sensei"],
+            "forbidden_terms": ["boss"],
+        }
+    }
+    profile = CharacterState(
+        character_id="akari",
+        name_jp="Akari",
+        name_zh="Deng",
+        relationship_speech=relationship_speech,
+    )
+
+    save_profile(tmp_path, profile)
+
+    profile_toml = (tmp_path / "character_profiles" / "akari.toml").read_text(
+        encoding="utf-8"
+    )
+    assert "[relationship_speech.ren]" in profile_toml
+    assert 'honorific_level = "polite"' in profile_toml
+    assert "required_terms" in profile_toml
+    assert '"Sensei"' in profile_toml
+
+    fallback_project = tmp_path / "fallback"
+    fallback_profiles = fallback_project / "character_profiles"
+    fallback_profiles.mkdir(parents=True)
+    (fallback_profiles / "akari.toml").write_text(profile_toml, encoding="utf-8")
+
+    loaded = load_character_profile(fallback_project, "akari")
+
+    assert loaded is not None
+    assert loaded.relationship_speech == relationship_speech

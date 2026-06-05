@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import tomllib
 import tomli_w
 from datetime import datetime
 from pathlib import Path
@@ -14,18 +15,24 @@ from .state import StateManager
 logger = logging.getLogger(__name__)
 
 
+def _toml_safe_change(change: dict[str, Any]) -> dict[str, Any]:
+    return {key: ("" if value is None else value) for key, value in change.items()}
+
+
 class EvolutionTracker:
     """Track and record character voice changes over time."""
 
     def __init__(self, project_dir: Path) -> None:
         self.project_dir = project_dir
         self._changelog_path = project_dir / "memory" / "learned" / "voice_changelog.toml"
+        self._project_changelog_path = project_dir / "voice_changelog.toml"
 
     def detect_changes(
         self,
         character_id: str,
         new_speech_patterns: dict[str, str],
         new_tone: dict[str, str] | None = None,
+        new_relationship_speech: dict[str, dict[str, Any]] | None = None,
         chapter: int = 0,
         page: int = 0,
     ) -> list[dict[str, Any]]:
@@ -92,6 +99,50 @@ class EvolutionTracker:
                         "timestamp": datetime.now().isoformat(),
                     })
 
+        # Check relationship-specific speech changes
+        if new_relationship_speech:
+            for listener_id, rule in new_relationship_speech.items():
+                if not isinstance(rule, dict):
+                    continue
+                existing_rule = profile.relationship_speech.get(listener_id)
+                if not isinstance(existing_rule, dict):
+                    changes.append({
+                        "type": "relationship_speech_new",
+                        "character_id": character_id,
+                        "field": f"relationship_speech.{listener_id}",
+                        "old_value": None,
+                        "new_value": rule,
+                        "chapter": chapter,
+                        "page": page,
+                        "timestamp": datetime.now().isoformat(),
+                    })
+                    continue
+
+                for key, value in rule.items():
+                    existing = existing_rule.get(key)
+                    if existing is None:
+                        changes.append({
+                            "type": "relationship_speech_field_new",
+                            "character_id": character_id,
+                            "field": f"relationship_speech.{listener_id}.{key}",
+                            "old_value": None,
+                            "new_value": value,
+                            "chapter": chapter,
+                            "page": page,
+                            "timestamp": datetime.now().isoformat(),
+                        })
+                    elif existing != value:
+                        changes.append({
+                            "type": "relationship_speech_changed",
+                            "character_id": character_id,
+                            "field": f"relationship_speech.{listener_id}.{key}",
+                            "old_value": existing,
+                            "new_value": value,
+                            "chapter": chapter,
+                            "page": page,
+                            "timestamp": datetime.now().isoformat(),
+                        })
+
         return changes
 
     def record_changes(self, changes: list[dict[str, Any]]) -> None:
@@ -105,21 +156,19 @@ class EvolutionTracker:
         existing: list[dict[str, Any]] = []
         if self._changelog_path.exists():
             try:
-                import tomli
                 with open(self._changelog_path, "rb") as f:
-                    data = tomli.load(f)
+                    data = tomllib.load(f)
                 existing = data.get("changes", [])
             except Exception:
                 existing = []
 
-        existing.extend(changes)
+        existing.extend(_toml_safe_change(change) for change in changes)
 
-        # Write back
+        # Write back to the learned-memory path and the documented project asset.
         data = {"changes": existing}
-        self._changelog_path.write_text(
-            tomli_w.dumps(data),
-            encoding="utf-8",
-        )
+        payload = tomli_w.dumps(data)
+        self._changelog_path.write_text(payload, encoding="utf-8")
+        self._project_changelog_path.write_text(payload, encoding="utf-8")
         logger.info("Recorded %d voice changes to %s", len(changes), self._changelog_path)
 
     def update_profile(
@@ -144,6 +193,15 @@ class EvolutionTracker:
                 key = field.split(".", 1)[1]
                 if new_value is not None:
                     profile.tone_spectrum[key] = new_value
+            elif field.startswith("relationship_speech."):
+                parts = field.split(".")
+                if len(parts) == 2 and isinstance(new_value, dict):
+                    profile.relationship_speech[parts[1]] = dict(new_value)
+                elif len(parts) >= 3 and new_value is not None:
+                    listener_id = parts[1]
+                    key = ".".join(parts[2:])
+                    rule = profile.relationship_speech.setdefault(listener_id, {})
+                    rule[key] = new_value
 
         # Add to voice_evolutions
         profile.voice_evolutions.append({
@@ -161,13 +219,17 @@ class EvolutionTracker:
 
     def get_changelog(self) -> list[dict[str, Any]]:
         """Read the full changelog."""
-        if not self._changelog_path.exists():
+        changelog_path = (
+            self._changelog_path
+            if self._changelog_path.exists()
+            else self._project_changelog_path
+        )
+        if not changelog_path.exists():
             return []
 
         try:
-            import tomli
-            with open(self._changelog_path, "rb") as f:
-                data = tomli.load(f)
+            with open(changelog_path, "rb") as f:
+                data = tomllib.load(f)
             return data.get("changes", [])
         except Exception:
             return []

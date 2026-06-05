@@ -26,6 +26,13 @@ def _setup_character(project_dir: Path, character_id: str = "tanaka") -> None:
             "battle": "激昂",
             "casual": "轻松",
         },
+        relationship_speech={
+            "ren": {
+                "honorific_level": "sensei",
+                "address": "Ren-sensei",
+                "tone": "respectful",
+            },
+        },
     ))
 
 
@@ -111,6 +118,38 @@ def test_detect_changes_unknown_character(tmp_path: Path):
     assert changes == []
 
 
+def test_detect_changes_relationship_speech_changed(tmp_path: Path):
+    _setup_character(tmp_path)
+    tracker = EvolutionTracker(tmp_path)
+
+    changes = tracker.detect_changes(
+        "tanaka",
+        new_speech_patterns={},
+        new_relationship_speech={
+            "ren": {
+                "honorific_level": "san",
+                "address": "Ren-san",
+            },
+            "hina": {
+                "honorific_level": "casual",
+                "address": "Hina",
+            },
+        },
+        chapter=8,
+        page=3,
+    )
+
+    fields = {change["field"]: change for change in changes}
+    assert fields["relationship_speech.ren.honorific_level"]["type"] == (
+        "relationship_speech_changed"
+    )
+    assert fields["relationship_speech.ren.honorific_level"]["old_value"] == "sensei"
+    assert fields["relationship_speech.ren.honorific_level"]["new_value"] == "san"
+    assert fields["relationship_speech.ren.address"]["new_value"] == "Ren-san"
+    assert fields["relationship_speech.hina"]["type"] == "relationship_speech_new"
+    assert fields["relationship_speech.hina"]["chapter"] == 8
+
+
 # ---------------------------------------------------------------------------
 # record_changes
 # ---------------------------------------------------------------------------
@@ -130,6 +169,8 @@ def test_record_changes(tmp_path: Path):
     changelog = tracker.get_changelog()
     assert len(changelog) == 1
     assert changelog[0]["character_id"] == "tanaka"
+    assert tracker._changelog_path.exists()
+    assert (tmp_path / "voice_changelog.toml").exists()
 
 
 def test_record_changes_appends(tmp_path: Path):
@@ -188,6 +229,35 @@ def test_update_profile_unknown_character(tmp_path: Path):
     assert result is None
 
 
+def test_update_profile_relationship_speech_changes(tmp_path: Path):
+    _setup_character(tmp_path)
+    tracker = EvolutionTracker(tmp_path)
+
+    changes = tracker.detect_changes(
+        "tanaka",
+        new_speech_patterns={},
+        new_relationship_speech={
+            "ren": {"honorific_level": "san", "tone": "restrained"},
+            "hina": {"honorific_level": "casual", "address": "Hina"},
+        },
+        chapter=8,
+        page=3,
+    )
+    tracker.record_changes(changes)
+
+    profile = tracker.update_profile("tanaka", changes)
+
+    assert profile is not None
+    assert profile.relationship_speech["ren"]["honorific_level"] == "san"
+    assert profile.relationship_speech["ren"]["tone"] == "restrained"
+    assert profile.relationship_speech["hina"]["address"] == "Hina"
+    assert profile.voice_evolutions[-1]["chapter"] == 8
+    assert any(
+        item["field"] == "relationship_speech.ren.honorific_level"
+        for item in tracker.get_changelog()
+    )
+
+
 # ---------------------------------------------------------------------------
 # get_changelog / get_changes_for_character
 # ---------------------------------------------------------------------------
@@ -204,6 +274,31 @@ def test_get_changelog(tmp_path: Path):
                 "chapter": 2, "page": 0, "timestamp": "2026-01-01T00:00:00"}]
     tracker.record_changes(changes)
     assert len(tracker.get_changelog()) == 1
+
+
+def test_get_changelog_reads_root_project_asset_when_learned_path_missing(tmp_path: Path):
+    _setup_character(tmp_path)
+    tracker = EvolutionTracker(tmp_path)
+    root_changelog = tmp_path / "voice_changelog.toml"
+    root_changelog.write_text(
+        """
+[[changes]]
+type = "tone_new"
+character_id = "tanaka"
+field = "tone_spectrum.formal"
+new_value = "reserved"
+chapter = 3
+page = 4
+timestamp = "2026-01-01T00:00:00"
+""".strip(),
+        encoding="utf-8",
+    )
+
+    changelog = tracker.get_changelog()
+
+    assert len(changelog) == 1
+    assert changelog[0]["character_id"] == "tanaka"
+    assert changelog[0]["field"] == "tone_spectrum.formal"
 
 
 def test_get_changes_for_character(tmp_path: Path):

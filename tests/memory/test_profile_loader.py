@@ -52,6 +52,90 @@ def test_load_character_profile_not_found(tmp_path):
     assert result is None
 
 
+def test_load_character_profile_from_toml_fallback(tmp_path):
+    profile_dir = tmp_path / "character_profiles" / "glass_and_blade"
+    profile_dir.mkdir(parents=True)
+    (profile_dir / "akari.toml").write_text(
+        """
+[meta]
+character_id = "akari"
+name_jp = "Akari"
+name_zh = "Deng"
+archetype = "protagonist"
+
+[speech_patterns]
+self_reference = ["boku", "watashi"]
+
+[catchphrases]
+patterns = ["I understand"]
+
+[tone_spectrum]
+default = "quiet"
+
+[translation_notes]
+addressing = "uses surnames"
+
+[relationship_speech.ren]
+honorific_level = "polite"
+self_ref = "boku"
+address = "Sensei"
+sentence_style = "short polite sentences"
+required_terms = ["Sensei"]
+forbidden_terms = ["boss"]
+""".strip(),
+        encoding="utf-8",
+    )
+
+    result = load_character_profile(tmp_path, "akari")
+
+    assert result is not None
+    assert result.character_id == "akari"
+    assert result.name_jp == "Akari"
+    assert result.name_zh == "Deng"
+    assert result.archetype == "protagonist"
+    assert result.speech_patterns == {"self_reference": "boku, watashi"}
+    assert result.catchphrases == ["I understand"]
+    assert result.tone_spectrum == {"default": "quiet"}
+    assert result.translation_notes == {"addressing": "uses surnames"}
+    assert result.relationship_speech == {
+        "ren": {
+            "honorific_level": "polite",
+            "self_ref": "boku",
+            "address": "Sensei",
+            "sentence_style": "short polite sentences",
+            "required_terms": ["Sensei"],
+            "forbidden_terms": ["boss"],
+        }
+    }
+
+
+def test_load_character_profile_preserves_review_metadata(tmp_path):
+    profile_dir = tmp_path / "character_profiles"
+    profile_dir.mkdir()
+    (profile_dir / "akari.toml").write_text(
+        """
+[meta]
+character_id = "akari"
+name_jp = "Akari"
+last_reviewed_by = "human_editor_A"
+last_reviewed_at = "2026-05-06T14:00:00Z"
+last_reviewed_chapter = 1
+confidence = 0.42
+staleness_threshold = 10
+""".strip(),
+        encoding="utf-8",
+    )
+
+    result = load_character_profile(tmp_path, "akari")
+
+    assert result is not None
+    assert result.provenance["last_reviewed_by"] == "human_editor_A"
+    assert result.provenance["last_reviewed_at"] == "2026-05-06T14:00:00Z"
+    assert result.provenance["last_reviewed_chapter"] == 1
+    assert result.provenance["confidence"] == 0.42
+    assert result.provenance["staleness_threshold"] == 10
+
+
 # ── load_all_profiles ──────────────────────────────────────────
 
 
@@ -74,6 +158,37 @@ def test_load_all_profiles_empty(tmp_path):
     """Empty directory returns empty dict."""
     profiles = load_all_profiles(tmp_path)
     assert profiles == {}
+
+
+def test_load_all_profiles_merges_toml_and_state_with_state_precedence(tmp_path):
+    profile_dir = tmp_path / "character_profiles"
+    profile_dir.mkdir()
+    (profile_dir / "akari.toml").write_text(
+        """
+[meta]
+character_id = "akari"
+name_jp = "Akari TOML"
+name_zh = "Deng TOML"
+""".strip(),
+        encoding="utf-8",
+    )
+    (profile_dir / "ren.toml").write_text(
+        """
+[meta]
+character_id = "ren"
+name_jp = "Ren"
+name_zh = "Ren"
+""".strip(),
+        encoding="utf-8",
+    )
+    _save_character(tmp_path, "akari", name_jp="Akari State", name_zh="Deng State")
+
+    profiles = load_all_profiles(tmp_path)
+
+    assert set(profiles) == {"akari", "ren"}
+    assert profiles["akari"].name_jp == "Akari State"
+    assert profiles["akari"].name_zh == "Deng State"
+    assert profiles["ren"].name_jp == "Ren"
 
 
 # ── format_profile_for_prompt ──────────────────────────────────
@@ -174,6 +289,7 @@ def test_get_profile_as_dict(tmp_path):
         "catchphrases",
         "tone_spectrum",
         "translation_notes",
+        "relationship_speech",
     }
     assert set(result.keys()) == expected_keys
     assert result["character_id"] == "dict_test"
@@ -184,3 +300,11 @@ def test_get_profile_as_dict(tmp_path):
     assert result["catchphrases"] == ["やった"]
     assert result["tone_spectrum"] == {"cool": "冷静"}
     assert result["translation_notes"] == {"note": "value"}
+
+
+def test_get_profile_as_dict_includes_empty_relationship_speech():
+    profile = CharacterState(character_id="akari")
+
+    result = get_profile_as_dict(profile)
+
+    assert result["relationship_speech"] == {}

@@ -1,5 +1,6 @@
 """Tests for mga.memory.graph — CharacterGraph."""
 
+import json
 from pathlib import Path
 
 from mga.memory.graph import CharacterGraph, FORMALITY_LEVELS
@@ -195,6 +196,68 @@ def test_load_missing_file(tmp_path: Path):
     """Loading from a directory with no graph file returns empty graph."""
     loaded = CharacterGraph.load(tmp_path)
     assert loaded.graph.number_of_nodes() == 0
+
+
+def test_load_falls_back_to_root_learning_graph_asset(tmp_path: Path):
+    root_graph = {
+        "nodes": [
+            {"id": "akari", "label": "Akari"},
+            {"id": "ren", "label": "Ren"},
+        ],
+        "edges": [
+            {
+                "source": "akari",
+                "target": "ren",
+                "relationship": "senpai",
+                "formality": "polite",
+                "honorific": "san",
+            }
+        ],
+    }
+    (tmp_path / "character_graph.json").write_text(
+        json.dumps(root_graph),
+        encoding="utf-8",
+    )
+
+    loaded = CharacterGraph.load(tmp_path)
+
+    assert loaded.get_relationship("akari", "ren")["relationship"] == "senpai"
+    assert loaded.get_formality("akari", "ren") == "polite"
+    assert loaded.get_honorific("akari", "ren") == "san"
+
+
+def test_load_prefers_runtime_state_graph_over_root_asset(tmp_path: Path):
+    root_graph = {
+        "nodes": [{"id": "akari"}, {"id": "ren"}],
+        "edges": [
+            {
+                "source": "akari",
+                "target": "ren",
+                "relationship": "root_asset",
+                "formality": "polite",
+            }
+        ],
+    }
+    (tmp_path / "character_graph.json").write_text(
+        json.dumps(root_graph),
+        encoding="utf-8",
+    )
+
+    state_graph = CharacterGraph()
+    state_graph.add_character("akari")
+    state_graph.add_character("ren")
+    state_graph.add_relationship(
+        "akari",
+        "ren",
+        relationship="runtime_state",
+        formality="casual",
+    )
+    state_graph.save(tmp_path)
+
+    loaded = CharacterGraph.load(tmp_path)
+
+    assert loaded.get_relationship("akari", "ren")["relationship"] == "runtime_state"
+    assert loaded.get_formality("akari", "ren") == "casual"
 
 
 def test_empty_graph_queries():

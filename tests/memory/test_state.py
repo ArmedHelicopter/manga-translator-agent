@@ -59,14 +59,44 @@ def test_upsert_and_get_term(tmp_path):
     assert got.frequency == 5
 
 
+def test_upsert_and_get_term_review_fields(tmp_path):
+    proj = _proj(tmp_path)
+    t = TermState(
+        term_id="glass_join",
+        term_jp="glass join",
+        term_zh="glass join",
+        candidate_translations=["glass mending", "crystal join"],
+        accepted_reason="Matches the established ritual term.",
+        rejected_reasons={"crystal join": "Sounds like a material name."},
+        applicability_scope="Use for the named repair art only.",
+    )
+    StateManager.upsert_term(proj, t)
+
+    got = StateManager.get_term(proj, "glass_join")
+    assert got is not None
+    assert got.candidate_translations == ["glass mending", "crystal join"]
+    assert got.accepted_reason == "Matches the established ritual term."
+    assert got.rejected_reasons == {"crystal join": "Sounds like a material name."}
+    assert got.applicability_scope == "Use for the named repair art only."
+
+
 def test_upsert_and_get_decision(tmp_path):
     proj = _proj(tmp_path)
-    d = DecisionState(stage="translate", decision="use calque", confidence=0.8)
+    d = DecisionState(
+        stage="translate",
+        decision="use calque",
+        confidence=0.8,
+        metadata={"bubble_id": "b1", "suggested_text": "keep honorific"},
+    )
     StateManager.upsert_decision(proj, d)
 
     decisions = StateManager.list_decisions(proj)
     assert len(decisions) == 1
     assert decisions[0].decision == "use calque"
+    assert decisions[0].metadata == {
+        "bubble_id": "b1",
+        "suggested_text": "keep honorific",
+    }
 
 
 def test_get_nonexistent_returns_none(tmp_path):

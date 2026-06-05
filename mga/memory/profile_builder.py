@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+import tomli_w
 
 from mga.memory.entities import CharacterState
 from mga.memory.state import StateManager
@@ -102,6 +103,36 @@ def update_catchphrases(
 def save_profile(project_dir: Path, profile: CharacterState) -> None:
     """Save a character profile to memory state."""
     StateManager.upsert_character(project_dir, profile)
+    _write_profile_toml(project_dir, profile)
+
+
+def _write_profile_toml(project_dir: Path, profile: CharacterState) -> Path | None:
+    if not profile.character_id:
+        return None
+    out_dir = project_dir / "character_profiles"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    meta = {
+        "character_id": profile.character_id,
+        "name_jp": profile.name_jp,
+        "name_zh": profile.name_zh,
+        "archetype": profile.archetype,
+    }
+    if profile.provenance:
+        meta["provenance"] = profile.provenance
+    payload = {
+        "meta": meta,
+        "speech_patterns": profile.speech_patterns,
+        "catchphrases": {"patterns": profile.catchphrases},
+        "tone_spectrum": profile.tone_spectrum,
+        "translation_notes": profile.translation_notes,
+    }
+    if profile.relationship_speech:
+        payload["relationship_speech"] = profile.relationship_speech
+    if profile.voice_evolutions:
+        payload["voice_evolution"] = profile.voice_evolutions
+    out_path = out_dir / f"{profile.character_id}.toml"
+    out_path.write_text(tomli_w.dumps(payload), encoding="utf-8")
+    return out_path
 
 
 def build_and_save_profile(

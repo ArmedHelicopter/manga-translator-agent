@@ -150,16 +150,46 @@ class CharacterGraph:
     def load(cls, project_dir: Path) -> CharacterGraph:
         """Load graph from JSON."""
         graph_path = project_dir / "memory" / "state" / "character_graph.json"
+        project_graph_path = project_dir / "character_graph.json"
         instance = cls()
 
-        if graph_path.exists():
+        for candidate_path in (graph_path, project_graph_path):
+            if not candidate_path.exists():
+                continue
             try:
-                data = json.loads(graph_path.read_text(encoding="utf-8"))
-                instance._graph = nx.node_link_graph(data, directed=True)
+                data = json.loads(candidate_path.read_text(encoding="utf-8"))
+                instance._graph = cls._graph_from_data(data)
+                return instance
             except Exception as e:
-                logger.warning("Failed to load character graph: %s", e)
+                logger.warning("Failed to load character graph from %s: %s", candidate_path, e)
 
         return instance
+
+    @staticmethod
+    def _graph_from_data(data: dict[str, Any]) -> nx.DiGraph:
+        if (
+            "edges" in data
+            and "nodes" in data
+            and not {"directed", "multigraph", "graph"}.issubset(data.keys())
+        ):
+            graph = nx.DiGraph()
+            for node in data.get("nodes", []):
+                if not isinstance(node, dict):
+                    continue
+                node_id = node.get("id") or node.get("character_id") or node.get("label")
+                if node_id:
+                    graph.add_node(str(node_id), **{k: v for k, v in node.items() if k != "id"})
+            for edge in data.get("edges", []):
+                if not isinstance(edge, dict):
+                    continue
+                source = edge.get("source")
+                target = edge.get("target")
+                if source and target:
+                    graph.add_edge(str(source), str(target), **{
+                        k: v for k, v in edge.items() if k not in {"source", "target"}
+                    })
+            return graph
+        return nx.node_link_graph(data, directed=True)
 
     def to_dict(self) -> dict[str, Any]:
         """Export graph as a dict for serialization."""

@@ -19,6 +19,7 @@ class CharacterState(BaseModel):
     catchphrases: list[str] = Field(default_factory=list)
     tone_spectrum: dict[str, str] = Field(default_factory=dict)
     translation_notes: dict[str, str] = Field(default_factory=dict)
+    relationship_speech: dict[str, dict[str, Any]] = Field(default_factory=dict)
     voice_evolutions: list[dict[str, Any]] = Field(default_factory=list)
     provenance: dict[str, Any] = Field(default_factory=dict)
 
@@ -33,6 +34,9 @@ class SceneState(BaseModel):
     characters: list[str] = Field(default_factory=list)
     mood: str = ""
     narrative_summary: str = ""
+    relationship_changes: list[str] = Field(default_factory=list)
+    key_dialogue: list[str] = Field(default_factory=list)
+    future_impact: str = ""
 
 
 class TermState(BaseModel):
@@ -41,9 +45,15 @@ class TermState(BaseModel):
     term_id: str = ""
     term_jp: str = ""
     term_zh: str = ""
+    candidate_translations: list[str] = Field(default_factory=list)
     context: str = ""
     cultural_weight: str = ""
     strategy: str = ""
+    accepted_reason: str = ""
+    rejected_reasons: dict[str, str] = Field(default_factory=dict)
+    applicability_scope: str = ""
+    provenance: dict[str, Any] = Field(default_factory=dict)
+    pending_human_review: bool = False
     frequency: int = 0
 
 
@@ -56,6 +66,7 @@ class DecisionState(BaseModel):
     decision: str = ""
     rationale: str = ""
     confidence: float = 0.0
+    metadata: dict[str, Any] = Field(default_factory=dict)
     timestamp: str = Field(
         default_factory=lambda: datetime.now().isoformat()
     )
