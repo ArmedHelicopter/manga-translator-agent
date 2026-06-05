@@ -55,3 +55,32 @@ def test_run_export_artifact_writes_fast_export_config(tmp_path, monkeypatch):
     export_config = json.loads((payload_dir / "runtime-export-config.json").read_text(encoding="utf-8"))
     assert export_config["translator"]["translator"] == "none"
     assert export_config["inpainter"]["inpainter"] == "none"
+    assert export_config["inpainter"]["inpainting_size"] == 1024
+    assert export_config["detector"]["detection_size"] == 1024
+
+
+def test_run_export_artifact_fills_empty_page_when_runtime_skips_text(tmp_path, monkeypatch):
+    image = tmp_path / "blank.png"
+    Image.new("RGB", (8, 6), "white").save(image)
+    payload_dir = tmp_path / "payload"
+
+    class Completed:
+        returncode = 0
+        stdout = ""
+        stderr = ""
+
+    monkeypatch.setattr("mga.runtime_bridge.external.subprocess.run", lambda *args, **kwargs: Completed())
+
+    run_export_artifact(input_dir=image, payload_dir=payload_dir)
+
+    artifact = json.loads((payload_dir / "artifact-0000.json").read_text(encoding="utf-8"))
+    assert artifact["text_regions"] == []
+    assert artifact["image_shape"] == [6, 8, 3]
+    assert (payload_dir / "inpainted-0000.png").exists()
+    assert json.loads((payload_dir / "pages.json").read_text(encoding="utf-8")) == [
+        {
+            "page_index": 0,
+            "artifact": "artifact-0000.json",
+            "inpainted": "inpainted-0000.png",
+        }
+    ]

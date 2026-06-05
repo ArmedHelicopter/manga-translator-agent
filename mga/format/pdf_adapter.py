@@ -10,7 +10,7 @@ from ..models.format import PageRef, TranslatedPage
 from .base import FormatAdapter
 
 # Render settings
-_RENDER_DPI = 300
+_RENDER_DPI = 144
 
 
 def _get_fitz():  # noqa: D401 – lazy import wrapper

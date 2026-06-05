@@ -86,6 +86,60 @@ def _prepare_runtime_image_input(input_path: Path, payload_dir: Path) -> Path:
     return runtime_input_dir
 
 
+def _write_empty_runtime_artifact(payload_dir: Path, image_path: Path, page_index: int) -> None:
+    from PIL import Image
+
+    payload_dir.mkdir(parents=True, exist_ok=True)
+    with Image.open(image_path) as image:
+        rgb = image.convert("RGB")
+        width, height = rgb.size
+        suffix = f"-{page_index:04d}"
+        rgb.save(payload_dir / f"inpainted{suffix}.png")
+
+    artifact = {
+        "version": 1,
+        "page_index": page_index,
+        "text_regions": [],
+        "render_config": {},
+        "image_shape": [height, width, 3],
+    }
+    suffix = f"-{page_index:04d}"
+    (payload_dir / f"artifact{suffix}.json").write_text(
+        json.dumps(artifact, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _complete_runtime_artifacts(payload_dir: Path, runtime_input: Path) -> bool:
+    """Fill empty-page artifacts and return whether any artifact exists."""
+
+    if runtime_input.is_file():
+        image_paths = [runtime_input]
+    else:
+        image_paths = discover_image_paths(runtime_input)
+    if not image_paths:
+        return False
+
+    pages_list: list[dict[str, Any]] = []
+    for index, image_path in enumerate(image_paths):
+        suffix = f"-{index:04d}"
+        artifact_path = payload_dir / f"artifact{suffix}.json"
+        inpainted_path = payload_dir / f"inpainted{suffix}.png"
+        if not artifact_path.exists() or not inpainted_path.exists():
+            _write_empty_runtime_artifact(payload_dir, image_path, index)
+        pages_list.append({
+            "page_index": index,
+            "artifact": f"artifact{suffix}.json",
+            "inpainted": f"inpainted{suffix}.png",
+        })
+
+    (payload_dir / "pages.json").write_text(
+        json.dumps(pages_list, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return bool(pages_list)
+
+
 def _build_external_child_env() -> dict[str, str]:
     """Build a tighter child environment for external subprocesses."""
 
@@ -434,8 +488,12 @@ def run_export_artifact(
     export_config_path.write_text(
         json.dumps(
             {
+                "detector": {
+                    "detection_size": 1024,
+                },
                 "inpainter": {
                     "inpainter": "none",
+                    "inpainting_size": 1024,
                 },
                 "translator": {
                     "translator": "none",
@@ -478,8 +536,9 @@ def run_export_artifact(
             f"stderr: {completed.stderr[-2000:]}"
         )
 
-    # Check for either per-page or single-file artifact format
-    has_artifact = (
+    # Check for either per-page or single-file artifact format. Fill empty pages
+    # that the runtime skips when no text was detected.
+    has_artifact = _complete_runtime_artifacts(payload_dir, runtime_input) or (
         (payload_dir / "pages.json").exists()
         or (payload_dir / "artifact.json").exists()
         or (payload_dir / "artifact-0000.json").exists()
