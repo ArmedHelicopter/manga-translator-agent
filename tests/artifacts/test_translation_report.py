@@ -19,12 +19,14 @@ def _make_context(
     translations: list[TranslationCandidate] | None = None,
     qa_report: dict | None = None,
     artifacts: dict | None = None,
+    cultural_context: dict | None = None,
 ) -> PipelineContext:
     ctx = PipelineContext()
     ctx.pages = pages or []
     ctx.translations = translations or []
     ctx.qa_report = qa_report or {}
     ctx.artifacts = artifacts or {}
+    ctx.cultural_context = cultural_context or {}
     return ctx
 
 
@@ -179,6 +181,82 @@ def test_translation_entry_qa_findings_association():
     assert report.summary["entries_needing_human_review"] == 1
 
 
+def test_translation_entry_includes_cultural_strategy_from_context():
+    pages = [
+        Page(page_id="p1", page_index=0, bubbles=[
+            Bubble(bubble_id="b1", source_text="src1"),
+            Bubble(bubble_id="b2", source_text="src2"),
+        ]),
+    ]
+    translations = [
+        TranslationCandidate(bubble_id="b1", text="tgt1", confidence=0.9),
+        TranslationCandidate(bubble_id="b2", text="tgt2", confidence=0.9),
+    ]
+    cultural_context = {
+        "p1": {
+            "analysis": {
+                "b1": [
+                    {"term": "src1", "strategy": "adapt"},
+                    {"term": "src1b", "strategy": "preserve"},
+                    {"term": "src1c", "strategy": "adapt"},
+                ]
+            }
+        }
+    }
+
+    ctx = _make_context(
+        pages=pages,
+        translations=translations,
+        cultural_context=cultural_context,
+    )
+    report = build_translation_report(ctx)
+
+    by_bubble = {entry.bubble_id: entry for entry in report.entries}
+    assert by_bubble["b1"].cultural_strategy == "adapt, preserve"
+    assert by_bubble["b2"].cultural_strategy is None
+
+
+def test_translation_entry_includes_qa_repair_plan_routes():
+    pages = [
+        Page(page_id="p1", page_index=0, bubbles=[
+            Bubble(bubble_id="b1", source_text="src1"),
+            Bubble(bubble_id="b2", source_text="src2"),
+        ]),
+    ]
+    translations = [
+        TranslationCandidate(bubble_id="b1", text="tgt1", confidence=0.9),
+        TranslationCandidate(bubble_id="b2", text="tgt2", confidence=0.9),
+    ]
+    qa_report = {
+        "findings": [
+            {"bubble_id": "b1", "severity": "warning", "message": "voice drift"},
+            {"bubble_id": "b2", "severity": "warning", "message": "term drift"},
+        ],
+        "repair_plan": [
+            {
+                "bubble_id": "b1",
+                "category": "character.voice",
+                "target": "persona",
+                "action": "repair_persona_rendering",
+            },
+            {
+                "bubble_id": "b2",
+                "category": "terminology",
+                "target": "semantic",
+                "action": "repair_semantic_translation",
+            },
+        ],
+    }
+    ctx = _make_context(pages=pages, translations=translations, qa_report=qa_report)
+    report = build_translation_report(ctx)
+
+    by_bubble = {entry.bubble_id: entry for entry in report.entries}
+    assert by_bubble["b1"].repair_plan == [qa_report["repair_plan"][0]]
+    assert by_bubble["b2"].repair_plan == [qa_report["repair_plan"][1]]
+    assert report.summary["repair_plan_total"] == 2
+    assert report.summary["repair_targets"] == {"persona": 1, "semantic": 1}
+
+
 def test_translation_entry_needs_review_critical():
     pages = [
         Page(page_id="p1", page_index=0, bubbles=[
@@ -198,6 +276,53 @@ def test_translation_entry_needs_review_critical():
 
     entry = report.entries[0]
     assert entry.needs_human_review is True  # critical severity
+
+
+def test_translation_entry_needs_review_for_qa_feedback_type_error():
+    pages = [
+        Page(page_id="p1", page_index=0, bubbles=[
+            Bubble(bubble_id="b1", source_text="src"),
+        ]),
+    ]
+    translations = [
+        TranslationCandidate(bubble_id="b1", text="tgt", confidence=0.95),
+    ]
+    qa_report = {
+        "findings": [
+            {
+                "bubble_id": "b1",
+                "feedback_type": "error",
+                "category": "fact.number_missing",
+                "message": "wrong translation",
+            },
+        ],
+    }
+    ctx = _make_context(pages=pages, translations=translations, qa_report=qa_report)
+    report = build_translation_report(ctx)
+
+    entry = report.entries[0]
+    assert entry.needs_human_review is True
+    assert report.summary["pages_needing_human_review"] == 1
+    assert report.summary["entries_needing_human_review"] == 1
+
+
+def test_translation_entry_needs_review_without_valid_bubble_anchor():
+    pages = [
+        Page(page_id="p1", page_index=0, bubbles=[
+            Bubble(bubble_id="known", source_text="src"),
+        ]),
+    ]
+    translations = [
+        TranslationCandidate(bubble_id="", text="empty anchor", confidence=0.95),
+        TranslationCandidate(bubble_id="missing", text="missing anchor", confidence=0.95),
+    ]
+    ctx = _make_context(pages=pages, translations=translations)
+
+    report = build_translation_report(ctx)
+
+    assert [entry.needs_human_review for entry in report.entries] == [True, True]
+    assert report.summary["entries_needing_human_review"] == 2
+    assert report.summary["pages_needing_human_review"] == 0
 
 
 def test_translation_report_summary():

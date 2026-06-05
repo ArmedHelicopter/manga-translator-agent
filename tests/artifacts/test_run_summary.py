@@ -123,6 +123,57 @@ def test_build_run_summary_exposes_provider_cascade_errors_without_failing_run()
     ]
 
 
+def test_build_run_summary_exposes_provider_cascade_calls():
+    vision_call = {
+        "page_id": "p1",
+        "operation": "vision_structured",
+        "role": "fallback",
+        "provider": "vision-fallback",
+        "model": "vision-model",
+    }
+    semantic_trace = {
+        "operation": "semantic_translation",
+        "role": "fallback",
+        "provider": "text-fallback",
+        "model": "text-model",
+    }
+    persona_trace = {
+        "operation": "persona_render",
+        "role": "local",
+        "provider": "local-llm",
+        "model": "local-model",
+    }
+    ctx = _make_context(
+        artifacts={
+            "vision": {
+                "provider_cascade_calls": [vision_call],
+            },
+            "translation": {
+                "dialogue_realization": {
+                    "entries": [
+                        {
+                            "bubble_id": "b1",
+                            "provider": {
+                                "semantic": semantic_trace,
+                                "persona": persona_trace,
+                            },
+                        }
+                    ],
+                }
+            },
+        }
+    )
+    cfg = _make_config()
+
+    payload = asdict(build_run_summary(ctx, cfg))
+
+    assert payload["provider_cascade_calls"] == [
+        {"stage": "vision", **vision_call},
+        {"stage": "translation", "bubble_id": "b1", **semantic_trace},
+        {"stage": "translation", "bubble_id": "b1", **persona_trace},
+    ]
+
+
 def test_run_summary_schema():
     summary = RunSummary()
     d = asdict(summary)
@@ -131,9 +182,69 @@ def test_run_summary_schema():
         "input_path", "output_path", "input_format", "output_format",
         "page_count", "translation_count", "stages_completed", "stage_timings",
         "total_duration", "error_count", "errors", "status", "graph_mode",
+        "provider_routes", "runtime", "provider_cascade_calls",
     ]
     for field in required:
         assert field in d, f"Missing field: {field}"
+
+
+def test_build_run_summary_exposes_provider_routes_without_settings():
+    ctx = _make_context()
+    cfg = _make_config(
+        provider_routes={
+            "translation": StageProviderConfig(
+                primary=ProviderRoute(provider="openai", model="gpt-4o-mini"),
+                fallback=ProviderRoute(provider="deepseek", model="deepseek-chat"),
+            ),
+            "vision": StageProviderConfig(
+                primary=ProviderRoute(provider="gemini", model="gemini-1.5-pro"),
+            ),
+        },
+        provider_settings={
+            "openai": {"api_key": "secret", "base_url": "https://example.test"},
+        },
+    )
+
+    payload = asdict(build_run_summary(ctx, cfg))
+
+    assert payload["provider"] == "openai"
+    assert payload["provider_routes"] == {
+        "translation": {
+            "primary": {"provider": "openai", "model": "gpt-4o-mini"},
+            "fallback": {"provider": "deepseek", "model": "deepseek-chat"},
+        },
+        "vision": {
+            "primary": {"provider": "gemini", "model": "gemini-1.5-pro"},
+        },
+    }
+    assert "provider_settings" not in payload
+    assert "secret" not in json.dumps(payload, ensure_ascii=False)
+
+
+def test_build_run_summary_exposes_runtime_details():
+    ctx = _make_context(
+        metadata={"artifact_payload_dir": "/work/out/.mga-payload"},
+        artifacts={
+            "render": {
+                "mode": "render-only",
+                "output_dir": "/work/out",
+                "pages_rendered": 2,
+                "rendered_images": ["page-0001.png", "page-0002.png"],
+            }
+        },
+    )
+    cfg = _make_config()
+
+    payload = asdict(build_run_summary(ctx, cfg))
+
+    assert payload["runtime"] == {
+        "type": "external-two-pass",
+        "artifact_payload_dir": "/work/out/.mga-payload",
+        "render_mode": "render-only",
+        "render_output_dir": "/work/out",
+        "pages_rendered": 2,
+        "rendered_images": ["page-0001.png", "page-0002.png"],
+    }
 
 
 def test_run_summary_sets_graph_mode_for_dialogue_realization():

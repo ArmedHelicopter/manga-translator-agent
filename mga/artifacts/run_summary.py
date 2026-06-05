@@ -31,7 +31,10 @@ class RunSummary:
     errors: list[dict[str, Any]] = field(default_factory=list)
     status: str = "completed"
     graph_mode: str = ""
+    provider_routes: dict[str, dict[str, Any]] = field(default_factory=dict)
+    runtime: dict[str, Any] = field(default_factory=dict)
     provider_cascade_errors: list[dict[str, Any]] = field(default_factory=list)
+    provider_cascade_calls: list[dict[str, Any]] = field(default_factory=list)
 
 
 def _collect_provider_cascade_errors(ctx: PipelineContext) -> list[dict[str, Any]]:
@@ -43,6 +46,82 @@ def _collect_provider_cascade_errors(ctx: PipelineContext) -> list[dict[str, Any
             if isinstance(error, dict):
                 errors.append({"stage": stage, **error})
     return errors
+
+
+def _collect_provider_cascade_calls(ctx: PipelineContext) -> list[dict[str, Any]]:
+    calls: list[dict[str, Any]] = []
+    for stage, artifact in ctx.artifacts.items():
+        if not isinstance(artifact, dict):
+            continue
+        for call in artifact.get("provider_cascade_calls", []) or []:
+            if isinstance(call, dict):
+                calls.append({"stage": stage, **call})
+
+        if stage != "translation":
+            continue
+        dialogue_realization = artifact.get("dialogue_realization", {})
+        entries = (
+            dialogue_realization.get("entries", [])
+            if isinstance(dialogue_realization, dict)
+            else []
+        )
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            provider_trace = entry.get("provider", {})
+            if not isinstance(provider_trace, dict):
+                continue
+            for trace_name in ("semantic", "persona"):
+                trace = provider_trace.get(trace_name, {})
+                if isinstance(trace, dict) and trace:
+                    calls.append({
+                        "stage": "translation",
+                        "bubble_id": entry.get("bubble_id", ""),
+                        **trace,
+                    })
+    return calls
+
+
+def _collect_provider_routes(cfg: ProjectConfig) -> dict[str, dict[str, Any]]:
+    routes: dict[str, dict[str, Any]] = {}
+    for stage, route in cfg.provider_routes.items():
+        stage_route: dict[str, Any] = {}
+        for role in ("primary", "fallback", "local"):
+            provider_route = getattr(route, role)
+            if provider_route is None:
+                continue
+            payload = provider_route.model_dump(exclude_none=True)
+            if payload.get("provider") or payload.get("model"):
+                stage_route[role] = payload
+        if stage_route:
+            routes[stage] = stage_route
+    return routes
+
+
+def _collect_runtime_details(ctx: PipelineContext) -> dict[str, Any]:
+    payload_dir = ctx.metadata.get("artifact_payload_dir", "")
+    render_artifact = ctx.artifacts.get("render", {})
+    runtime: dict[str, Any] = {
+        "type": "external-two-pass" if payload_dir else "none",
+    }
+    if payload_dir:
+        runtime["artifact_payload_dir"] = str(payload_dir)
+
+    if isinstance(render_artifact, dict) and render_artifact:
+        mode = render_artifact.get("mode", "")
+        runtime["render_mode"] = mode
+        if "output_dir" in render_artifact:
+            runtime["render_output_dir"] = render_artifact["output_dir"]
+        if "pages_rendered" in render_artifact:
+            runtime["pages_rendered"] = render_artifact["pages_rendered"]
+        if "rendered_images" in render_artifact:
+            runtime["rendered_images"] = render_artifact["rendered_images"]
+        if "error" in render_artifact:
+            runtime["render_error"] = render_artifact["error"]
+        if mode == "skipped" and not payload_dir:
+            runtime["type"] = "artifact-only"
+
+    return runtime
 
 
 def build_run_summary(ctx: PipelineContext, cfg: ProjectConfig) -> RunSummary:
@@ -85,7 +164,10 @@ def build_run_summary(ctx: PipelineContext, cfg: ProjectConfig) -> RunSummary:
         errors=ctx.errors,
         status=status,
         graph_mode=graph_mode,
+        provider_routes=_collect_provider_routes(cfg),
+        runtime=_collect_runtime_details(ctx),
         provider_cascade_errors=_collect_provider_cascade_errors(ctx),
+        provider_cascade_calls=_collect_provider_cascade_calls(ctx),
     )
 
 
