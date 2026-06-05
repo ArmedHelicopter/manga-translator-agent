@@ -177,6 +177,24 @@ def test_vision_enrichment_uses_fallback_provider_and_records_trace(tmp_path, mo
     ]
 
 
+def test_vision_skips_llm_fallback_when_runtime_payload_has_no_text(tmp_path, monkeypatch):
+    def fail_get_provider(name, **settings):
+        raise AssertionError("vision provider should not be loaded")
+
+    monkeypatch.setattr("mga.providers.cascade.get_provider", fail_get_provider)
+
+    ctx = PipelineContext(
+        project_config=ProjectConfig(),
+        pages=[Page(page_id="p1", image=PageImage(path=__file__))],
+        metadata={"artifact_payload_dir": str(tmp_path / "payload")},
+    )
+
+    result = VisionEnrichmentStage().execute(ctx)
+
+    assert result.artifacts["vision"]["enrichment"] == "skipped"
+    assert "no text regions" in result.artifacts["vision"]["note"]
+
+
 def test_vision_enrichment_preserves_existing_page_level_metadata(monkeypatch):
     class PageLevelVisionProvider:
         def vision_structured(self, messages, images, schema):
