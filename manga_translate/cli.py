@@ -45,8 +45,75 @@ def run_external_translation_benchmark(**kwargs):
     return _impl(**kwargs)
 
 
-def build_legacy_provider(raw_config, primary_provider):
-    return primary_provider
+def _raw_provider_candidates(raw_config: dict, stage: str):
+    stages = raw_config.get("stages", {}) if isinstance(raw_config, dict) else {}
+    providers = raw_config.get("providers", {}) if isinstance(raw_config, dict) else {}
+    stage_config = stages.get(stage, {})
+    if stage == "translation" and not stage_config:
+        stage_config = stages.get("translate", {})
+
+    routes = []
+    if stage_config:
+        routes.extend([
+            ("primary", stage_config.get("primary")),
+            ("fallback", stage_config.get("fallback")),
+            ("local", stage_config.get("local")),
+        ])
+    else:
+        routes.append(("primary", "openai"))
+
+    seen = set()
+    for role, name in routes:
+        if not name or name in seen:
+            continue
+        seen.add(name)
+        yield role, name, dict(providers.get(name, {}))
+
+
+def build_legacy_provider(raw_config, primary_provider, stage: str = "vision"):
+    if primary_provider is not None and hasattr(primary_provider, "vision_extract"):
+        return primary_provider
+
+    from types import SimpleNamespace
+
+    from mga.providers import ProviderCascadeAdapter, ProviderCandidate, get_provider
+
+    errors = []
+    providers = []
+    for role, name, settings in _raw_provider_candidates(raw_config, stage):
+        if primary_provider and name == "openai" and not settings:
+            settings = dict(primary_provider)
+        try:
+            providers.append((
+                ProviderCandidate(
+                    role=role,
+                    provider=name,
+                    model=str(settings.get("model", "")),
+                    settings=settings,
+                ),
+                get_provider(name, **settings),
+            ))
+        except Exception as exc:  # noqa: BLE001 - legacy benchmark should try fallback routes.
+            errors.append({
+                "role": role,
+                "provider": name,
+                "error": str(exc),
+                "type": type(exc).__name__,
+            })
+    if len(providers) == 1:
+        return providers[0][1]
+    if providers:
+        cascade = SimpleNamespace(stage=stage, errors=errors, calls=[])
+        return ProviderCascadeAdapter(cascade, providers)
+    raise click.ClickException(f"Legacy provider unavailable for stage '{stage}': {errors}")
+
+
+def _build_legacy_provider_for_stage(raw_config, primary_provider, stage: str):
+    import inspect
+
+    if "stage" in inspect.signature(build_legacy_provider).parameters:
+        return build_legacy_provider(raw_config, primary_provider, stage=stage)
+    return build_legacy_provider(raw_config, primary_provider)
 
 
 def ingest_pages(project_config, store):
@@ -175,7 +242,7 @@ def benchmark_external(input_path, output_path, no_compare_with_internal, verbos
             if pages:
                 internal_report = run_translation_benchmark(
                     pages=pages,
-                    provider=build_legacy_provider(raw_config, None),
+                    provider=_build_legacy_provider_for_stage(raw_config, None, "translation"),
                     store=ArtifactStore(output_dir),
                     vision_modes=["structured", "direct"],
                 )
@@ -206,6 +273,31 @@ def benchmark_external(input_path, output_path, no_compare_with_internal, verbos
         raise RuntimeError(run_payload["error"])
 
     click.echo(f"Benchmark completed. Output: {benchmark_dir}")
+
+
+@main.group()
+def review():
+    """Review and diff translation artifacts."""
+
+
+@review.command("diff")
+@click.argument("original_json", type=click.Path(exists=True, dir_okay=False))
+@click.argument("revised_json", type=click.Path(exists=True, dir_okay=False))
+@click.option("-o", "--output-path", required=True, type=click.Path(file_okay=False))
+def review_diff(original_json, revised_json, output_path):
+    """Compare two translation JSON artifacts."""
+    from mga.review import write_translation_diff
+
+    artifact_path, payload = write_translation_diff(
+        original_json,
+        revised_json,
+        output_path,
+    )
+    click.echo(
+        "Review diff complete: "
+        f"{payload['changed_bubbles']}/{payload['total_bubbles']} bubbles changed. "
+        f"{artifact_path}"
+    )
 
 
 @main.group()
@@ -240,12 +332,17 @@ def benchmark_extraction(input_path, output_path, verbose):
         store = ArtifactStore(output_dir)
         pages, _ = ingest_pages(project_config, store)
 
-        provider = build_legacy_provider(raw_config, raw_config.get("providers", {}).get("openai", {}))
+        provider = _build_legacy_provider_for_stage(
+            raw_config,
+            raw_config.get("providers", {}).get("openai", {}),
+            "vision",
+        )
 
         run_extraction_benchmark(
             pages=pages,
             provider=provider,
             store=store,
+            ocr_specs=["tesseract_jpn"],
         )
 
     except Exception as exc:

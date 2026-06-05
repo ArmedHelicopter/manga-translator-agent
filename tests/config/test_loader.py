@@ -59,3 +59,32 @@ def test_build_project_config_defaults_qa_to_translation_route(tmp_path):
 
     assert cfg.provider_routes["qa"].primary.provider == "gemini"
     assert cfg.provider_routes["qa"].primary.model == "gemini-text"
+
+
+def test_build_project_config_preserves_plugin_configuration(tmp_path):
+    config_path = tmp_path / "providers.toml"
+    config_path.write_text(
+        '[stages.vision]\nprimary = "openai"\n\n'
+        '[stages.translation]\nprimary = "gemini"\n\n'
+        '[providers.openai]\napi_key = "openai-key"\nvision_model = "gpt-4o"\ntext_model = "gpt-4o-mini"\n\n'
+        '[providers.gemini]\napi_key = "gemini-key"\nvision_model = "gemini-vision"\ntext_model = "gemini-text"\n\n'
+        '[plugins.renderer]\nclass = "custom_renderers:Renderer"\nmarker = "project-renderer"\n',
+        encoding="utf-8",
+    )
+    input_path = tmp_path / "input"
+    input_path.mkdir()
+
+    cfg, raw = build_project_config(
+        input_path=str(input_path),
+        output_path=str(tmp_path / "out"),
+        provider_override=None,
+        save_json=False,
+        dry_run=False,
+        config_path=str(config_path),
+    )
+
+    assert raw["plugins"]["renderer"]["class"] == "custom_renderers:Renderer"
+    assert cfg.plugins["renderer"] == {
+        "class": "custom_renderers:Renderer",
+        "marker": "project-renderer",
+    }

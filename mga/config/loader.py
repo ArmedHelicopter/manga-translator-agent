@@ -183,5 +183,6 @@ def build_project_config(
         save_debug_json=save_json or dry_run,
         provider_routes=provider_routes,
         provider_settings=dict(providers_data),
+        plugins=dict(raw_config.get("plugins", {})),
     )
     return project_config, raw_config

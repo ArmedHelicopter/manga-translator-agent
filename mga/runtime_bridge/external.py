@@ -19,6 +19,14 @@ DEFAULT_EXTERNAL_RUNTIME_CANDIDATES = (
 )
 
 
+def _split_path_list(value: str) -> tuple[list[str], str]:
+    if ";" in value:
+        return value.split(";"), ";"
+    if ":" in value and not (len(value) >= 3 and value[1] == ":" and value[2] in "\\/"):
+        return value.split(":"), ":"
+    return ([value] if value else []), os.pathsep
+
+
 def resolve_external_runtime_repo(repo_dir: Path | None = None) -> Path:
     """Resolve the local external runtime checkout."""
 
@@ -58,34 +66,33 @@ def _build_external_child_env() -> dict[str, str]:
     child_env.pop("PYTHONHOME", None)
     child_env.pop("PYTHONPATH", None)
 
-    path_entries = child_env.get("PATH", "").split(os.pathsep)
+    path_entries, path_separator = _split_path_list(child_env.get("PATH", ""))
     filtered_path = [
         entry
         for entry in path_entries
         if entry and "anaconda" not in entry.lower() and "conda" not in entry.lower()
     ]
-    child_env["PATH"] = os.pathsep.join(filtered_path)
+    child_env["PATH"] = path_separator.join(filtered_path)
 
     system_libstdcpp = "/usr/lib/x86_64-linux-gnu/libstdc++.so.6"
     ld_library_entries = ["/usr/lib/x86_64-linux-gnu"]
+    raw_ld_library_path = child_env.get("LD_LIBRARY_PATH", "")
+    ld_path_entries, _ = _split_path_list(raw_ld_library_path)
     ld_library_entries.extend(
         entry
-        for entry in child_env.get("LD_LIBRARY_PATH", "").split(os.pathsep)
+        for entry in ld_path_entries
         if entry and "anaconda" not in entry.lower() and "conda" not in entry.lower()
     )
-    child_env["LD_LIBRARY_PATH"] = os.pathsep.join(dict.fromkeys(ld_library_entries))
-    child_env["LD_PRELOAD"] = os.pathsep.join(
+    child_env["LD_LIBRARY_PATH"] = ":".join(dict.fromkeys(ld_library_entries)) + ":"
+    ld_preload_entries, _ = _split_path_list(child_env.get("LD_PRELOAD", ""))
+    child_env["LD_PRELOAD"] = ":".join(
         dict.fromkeys(
             [
                 system_libstdcpp,
-                *[
-                    entry
-                    for entry in child_env.get("LD_PRELOAD", "").split(os.pathsep)
-                    if entry
-                ],
+                *[entry for entry in ld_preload_entries if entry],
             ]
         )
-    )
+    ) + ":"
     return child_env
 
 

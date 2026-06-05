@@ -186,6 +186,10 @@ def _aggregate_scores(score_map: dict[str, list[float]]) -> dict:
     return aggregate
 
 
+def _artifact_path(path: Path, root: Path) -> str:
+    return path.relative_to(root).as_posix()
+
+
 def run_extraction_benchmark(
     *,
     pages: list[Page],
@@ -245,7 +249,7 @@ def run_extraction_benchmark(
                 "line_count": result.line_count,
                 "character_count": result.character_count,
                 "joined_text": result.text,
-                "artifact": str(Path(result.raw_path).relative_to(store.root)),
+                "artifact": _artifact_path(Path(result.raw_path), store.root),
                 "score": score,
                 "error": None,
             }
@@ -256,7 +260,7 @@ def run_extraction_benchmark(
                 "image_path": page.image.path,
                 "reference_text": reference_text,
                 "vision_structured": {
-                    "artifact": str(vision_path.relative_to(store.root)),
+                    "artifact": _artifact_path(vision_path, store.root),
                     "bubble_count": metrics["bubble_count"],
                     "non_empty_bubble_count": metrics["non_empty_bubble_count"],
                     "line_count": metrics["line_count"],
@@ -289,7 +293,7 @@ def run_extraction_benchmark(
     summary = {
         "page_count": len(comparisons),
         "ocr_specs": ocr_specs,
-        "annotation_template": str(template_path.relative_to(store.root)),
+        "annotation_template": _artifact_path(template_path, store.root),
         "aggregate": _aggregate_scores(aggregate_scores),
         "comparisons": comparisons,
     }
@@ -356,7 +360,7 @@ def run_translation_benchmark(
                 encoding="utf-8",
             )
             results[mode] = {
-                "artifact": str(out_path.relative_to(store.root)),
+                "artifact": _artifact_path(out_path, store.root),
                 "unit_count": metrics["unit_count"],
                 "non_empty_unit_count": metrics["non_empty_unit_count"],
                 "line_count": metrics["line_count"],
@@ -395,7 +399,7 @@ def run_translation_benchmark(
     summary = {
         "page_count": len(comparisons),
         "vision_modes": vision_modes,
-        "annotation_template": str(template_path.relative_to(store.root)),
+        "annotation_template": _artifact_path(template_path, store.root),
         "aggregate": _aggregate_scores(aggregate_scores),
         "comparisons": comparisons,
     }

@@ -36,7 +36,7 @@ dependencies = [
     "py3langid==0.2.2",
     "pyclipper",
     "pydantic==2.5.0",
-    "pydensecrf @ https://github.com/lucasb-eyer/pydensecrf/archive/refs/heads/master.zip",
+    "pydensecrf @ https://github.com/lucasb-eyer/pydensecrf/archive/refs/heads/master.zip ; platform_system != 'Windows'",
     "pyhyphen",
     "python-dotenv",
     "python-multipart",

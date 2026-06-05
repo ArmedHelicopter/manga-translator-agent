@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import Any
 
 from ..exceptions import ProviderError
@@ -32,6 +33,11 @@ def _load_provider_class(name: str) -> type[LLMProvider]:
 
 def get_provider(name: str, **kwargs: Any) -> LLMProvider:
     """Instantiate a provider by name."""
+    if name.lower() not in _PROVIDER_MAP:
+        from mga.plugins import has_plugin_class, instantiate_plugin_from_settings
+
+        if has_plugin_class(kwargs):
+            return instantiate_plugin_from_settings(kwargs)
     cls = _load_provider_class(name)
     return cls(**kwargs)
 
@@ -60,12 +66,45 @@ def select_provider(
             raise ProviderError(f"No local provider configured for stage {stage!r}")
         return get_provider(name, **providers.get(name, {}))
 
+    from .cascade import ProviderCandidate, ProviderCascadeAdapter
+
+    errors = []
+    resolved = []
     for key in ("primary", "fallback", "local"):
         name = stage_config.get(key)
         if name:
+            settings = dict(providers.get(name, {}))
             try:
-                return get_provider(name, **providers.get(name, {}))
-            except Exception:
+                provider = get_provider(name, **settings)
+                candidate = (
+                    ProviderCandidate(
+                        role=key,
+                        provider=name,
+                        model=str(settings.get("model", "")),
+                        settings=settings,
+                    ),
+                    provider,
+                )
+            except Exception as exc:  # noqa: BLE001 - selection should continue through fallback routes.
+                errors.append({
+                    "role": key,
+                    "provider": name,
+                    "error": str(exc),
+                    "type": type(exc).__name__,
+                })
+                if resolved:
+                    break
                 continue
+            if errors:
+                return provider
+            resolved.append(candidate)
+
+    if errors and resolved:
+        return resolved[0][1]
+    if len(resolved) == 1:
+        return resolved[0][1]
+    if resolved:
+        cascade = SimpleNamespace(stage=stage, errors=errors, calls=[])
+        return ProviderCascadeAdapter(cascade, resolved)
 
     raise ProviderError(f"No provider available for stage {stage!r}")
