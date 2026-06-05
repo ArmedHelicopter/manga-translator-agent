@@ -26,11 +26,12 @@ _ADDRESS_TEMPLATES: dict[tuple[HonorificLevel, str], str] = {
     (HonorificLevel.TEINEIGO, "en"): "you",
     (HonorificLevel.TAMEGUCHI, "zh-CN"): "你",
     (HonorificLevel.TAMEGUCHI, "en"): "you",
-    (HonorificLevel.DANNAI, "zh-CN"): "你/咱们",
+    (HonorificLevel.DANNAI, "zh-CN"): "你",
     (HonorificLevel.DANNAI, "en"): "we/you",
 }
 
 _ZH_YOU_RE = re.compile(r"^(你|您|妳)")
+_ZH_SELF_RE = re.compile(r"^(我|吾|俺)")
 _EN_YOU_RE = re.compile(r"^(you|You)\b")
 
 
@@ -76,6 +77,15 @@ class HonorificCompensator:
 
     def compensate(self, source_text: str, level: HonorificLevel, target_lang: str) -> str:
         """Adjust target-language text to reflect the detected honorific level."""
+        if target_lang == "zh-CN" and level == HonorificLevel.KENJOUGO:
+            humbled = self._compensate_zh_humble(source_text)
+            if humbled != source_text:
+                return humbled
+        if target_lang == "zh-CN" and level == HonorificLevel.DANNAI:
+            in_group = self._compensate_zh_in_group(source_text)
+            if in_group != source_text:
+                return in_group
+
         address = _ADDRESS_TEMPLATES.get((level, target_lang), "")
         if not address:
             return source_text
@@ -85,7 +95,34 @@ class HonorificCompensator:
         if pattern is not None:
             match = pattern.match(source_text)
             if match:
-                return address + source_text[match.end():]
+                compensated = address + source_text[match.end():]
+                if target_lang == "zh-CN" and level == HonorificLevel.SONKEIGO:
+                    return self._compensate_zh_respectful_request(compensated)
+                return compensated
+        return source_text
+
+    def _compensate_zh_humble(self, source_text: str) -> str:
+        match = _ZH_SELF_RE.match(source_text)
+        if not match:
+            return source_text
+
+        rest = source_text[match.end():]
+        return "让我" + rest
+
+    def _compensate_zh_respectful_request(self, source_text: str) -> str:
+        if not source_text.startswith("您来"):
+            return source_text
+
+        compensated = source_text
+        if not compensated.startswith(("请", "麻烦", "劳烦")):
+            compensated = "请" + compensated
+        if compensated.endswith(("！", "!")):
+            compensated = compensated[:-1] + "。"
+        return compensated
+
+    def _compensate_zh_in_group(self, source_text: str) -> str:
+        if source_text.startswith("你们"):
+            return "咱们" + source_text[len("你们"):]
         return source_text
 
     def get_form_of_address(self, character_name: str, target: str, relationship: dict) -> str:

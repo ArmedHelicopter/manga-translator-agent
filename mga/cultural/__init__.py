@@ -19,6 +19,7 @@ __all__ = [
     "CoinageDetector",
     "TermGrade",
     "classify_term",
+    "load_fictional_script_context",
 ]
 
 
@@ -29,4 +30,7 @@ def __getattr__(name: str):
     if name in ("TermGrade", "classify_term", "classify_batch"):
         from .term_classifier import TermGrade, classify_term, classify_batch
         return {"TermGrade": TermGrade, "classify_term": classify_term, "classify_batch": classify_batch}[name]
+    if name in ("load_fictional_script_context",):
+        from .fictional_scripts import load_fictional_script_context
+        return load_fictional_script_context
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

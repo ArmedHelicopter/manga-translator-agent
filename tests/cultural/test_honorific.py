@@ -39,6 +39,43 @@ def test_compensate_zh_sonkeigo():
     assert result.startswith("您")
 
 
+def test_compensate_zh_sonkeigo_request_style():
+    h = HonorificCompensator()
+    result = h.compensate("你来一下！", HonorificLevel.SONKEIGO, "zh-CN")
+    assert result == "请您来一下。"
+
+
+def test_compensate_zh_sonkeigo_statement_does_not_add_request_marker():
+    h = HonorificCompensator()
+    result = h.compensate("你是谁", HonorificLevel.SONKEIGO, "zh-CN")
+    assert result == "您是谁"
+
+
+def test_compensate_zh_kenjougo_humble_action():
+    h = HonorificCompensator()
+    result = h.compensate("我来处理。", HonorificLevel.KENJOUGO, "zh-CN")
+    assert result == "让我来处理。"
+
+
+def test_compensate_zh_kenjougo_plain_first_person():
+    h = HonorificCompensator()
+    result = h.compensate("我处理。", HonorificLevel.KENJOUGO, "zh-CN")
+    assert result == "让我处理。"
+
+
+def test_compensate_zh_dannai_plural_uses_in_group_pronoun():
+    h = HonorificCompensator()
+    result = h.compensate("你们走吧", HonorificLevel.DANNAI, "zh-CN")
+    assert result == "咱们走吧"
+
+
+def test_compensate_zh_dannai_singular_does_not_emit_template_slash():
+    h = HonorificCompensator()
+    result = h.compensate("你先走吧", HonorificLevel.DANNAI, "zh-CN")
+    assert result == "你先走吧"
+    assert "/" not in result
+
+
 def test_compensate_en_tameguchi():
     h = HonorificCompensator()
     result = h.compensate("you are here", HonorificLevel.TAMEGUCHI, "en")

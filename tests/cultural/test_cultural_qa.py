@@ -95,3 +95,69 @@ def test_no_context():
     ])
     feedbacks = reader.proofread(page, translations, context=None)
     assert isinstance(feedbacks, list)
+
+
+def test_strategy_consistency_flags_missing_preserved_term():
+    """Preserve-style strategy analysis should be visible in the translation."""
+    reader = CulturalQAProofreader()
+    page = _make_page([
+        {"bubble_id": "b1", "source_text": "GLASSJOIN activates"},
+    ])
+    translations = _make_translations([
+        {"bubble_id": "b1", "text": "The repair art activates"},
+    ])
+
+    feedbacks = reader.proofread(
+        page,
+        translations,
+        context={
+            "cultural_analysis": {
+                "b1": [
+                    {
+                        "term": "GLASSJOIN",
+                        "strategy": "preserve",
+                    }
+                ]
+            }
+        },
+    )
+
+    assert any(f.category == "cultural.strategy_inconsistent" for f in feedbacks)
+
+
+def test_strategy_consistency_accepts_term_footnote():
+    """Footnotes count as visible handling for preserve-style strategy terms."""
+    reader = CulturalQAProofreader()
+    page = _make_page([
+        {"bubble_id": "b1", "source_text": "GLASSJOIN activates"},
+    ])
+    translations = _make_translations([
+        {
+            "bubble_id": "b1",
+            "text": "The repair art activates",
+            "footnotes": [
+                {
+                    "original": "GLASSJOIN",
+                    "translation": "glass joining",
+                    "type": "loanword",
+                }
+            ],
+        },
+    ])
+
+    feedbacks = reader.proofread(
+        page,
+        translations,
+        context={
+            "cultural_analysis": {
+                "b1": [
+                    {
+                        "term": "GLASSJOIN",
+                        "strategy": "preserve",
+                    }
+                ]
+            }
+        },
+    )
+
+    assert not any(f.category == "cultural.strategy_inconsistent" for f in feedbacks)

@@ -19,6 +19,25 @@ def test_detect_katakana_coinage(tmp_path):
     assert found.count >= 1
     assert "katakana_coinage" in found.problem_types
 
+    from mga.cultural.terminology_db import TerminologyDB
+
+    term = TerminologyDB.load(tmp_path).lookup(found.term_jp)
+    assert term is not None
+    assert term.confirmed is False
+    assert term.pending_human_review is True
+
+    from mga.memory.state import StateManager
+
+    memory_term = StateManager.get_term(
+        tmp_path,
+        found.term_jp.lower().replace(" ", "_"),
+    )
+    assert memory_term is not None
+    assert memory_term.pending_human_review is True
+    assert memory_term.frequency == found.count
+    assert memory_term.provenance["source"] == "coinage_detector"
+    assert memory_term.provenance["trigger"] == "auto_detected_coinage"
+
 
 def test_detect_mixed_script(tmp_path):
     """Mixed kanji+katakana token should be detected.
@@ -93,7 +112,20 @@ def test_confirm(tmp_path):
     term = db.lookup("スーパーフォース")
     assert term is not None
     assert term.confirmed is True
+    assert term.pending_human_review is False
     assert term.term_target == "Super Force"
+
+    from mga.memory.state import StateManager
+
+    memory_term = StateManager.get_term(
+        tmp_path,
+        candidate.term_jp.lower().replace(" ", "_"),
+    )
+    assert memory_term is not None
+    assert memory_term.term_zh == "Super Force"
+    assert memory_term.pending_human_review is False
+    assert memory_term.accepted_reason == "Confirmed auto-detected coinage."
+    assert memory_term.provenance["trigger"] == "confirmed_auto_detected_coinage"
 
 
 def test_reject(tmp_path):

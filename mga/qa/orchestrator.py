@@ -17,22 +17,26 @@ from .hallucination_guard import HallucinationGuardProofreader
 from .language_evolution import LanguageEvolutionProofreader
 from .style_polish import StylePolishProofreader
 
-try:
-    from mga.cultural.qa_check import CulturalQAProofreader
-except ImportError:
-    CulturalQAProofreader = None
-
-_DEFAULT_PROOFREADERS: list[QAProofreader] = [
-    FactCheckProofreader(),
-    HallucinationGuardProofreader(),
-    CharacterConsistencyProofreader(),
-    FictionalScriptProofreader(),
-    DialogHierarchyProofreader(),
-    *([CulturalQAProofreader()] if CulturalQAProofreader else []),
-    EmotionConsistencyProofreader(),
-    LanguageEvolutionProofreader(),
-    StylePolishProofreader(),
-]
+def _default_proofreaders() -> list[QAProofreader]:
+    readers: list[QAProofreader] = [
+        FactCheckProofreader(),
+        HallucinationGuardProofreader(),
+        CharacterConsistencyProofreader(),
+        FictionalScriptProofreader(),
+        DialogHierarchyProofreader(),
+    ]
+    try:
+        from mga.cultural.qa_check import CulturalQAProofreader
+    except ImportError:
+        CulturalQAProofreader = None
+    if CulturalQAProofreader is not None:
+        readers.append(CulturalQAProofreader())
+    readers.extend([
+        EmotionConsistencyProofreader(),
+        LanguageEvolutionProofreader(),
+        StylePolishProofreader(),
+    ])
+    return readers
 
 
 class QAOrchestrator:
@@ -42,7 +46,7 @@ class QAOrchestrator:
         self,
         proofreaders: Optional[List[QAProofreader]] = None,
     ) -> None:
-        readers = proofreaders if proofreaders is not None else _DEFAULT_PROOFREADERS
+        readers = proofreaders if proofreaders is not None else _default_proofreaders()
         self._proofreaders = sorted(readers, key=lambda r: r.priority)
 
     @property

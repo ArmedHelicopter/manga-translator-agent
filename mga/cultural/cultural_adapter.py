@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -43,10 +44,20 @@ class CulturalAdapter:
                 term = entry.get("term", "")
                 if term and term not in all_terms:
                     all_terms.append(term)
+        for bubble in page_json.get("bubbles", []):
+            source = bubble.get("source_text", "")
+            for term in self._extract_known_terms(source):
+                if term not in all_terms:
+                    all_terms.append(term)
         db_ctx = self.terminology_db.get_injection_context(all_terms)
         parts: list[str] = []
         if db_ctx:
             parts.append(db_ctx.rstrip())
+        style_block = self._format_style_guide()
+        if style_block:
+            if parts:
+                parts.append("")
+            parts.append(style_block)
         strat_block = self._format_strategies(analysis)
         if strat_block:
             if parts:
@@ -129,3 +140,39 @@ class CulturalAdapter:
                         desc = ""
                     lines.append(f"- **{sv}**: {desc}")
         return "" if len(lines) <= 2 else "\n".join(lines) + "\n"
+
+    def _format_style_guide(self) -> str:
+        """Format learned project style guide for translation prompts."""
+        style_guide = self._load_style_guide()
+        if not style_guide:
+            return ""
+
+        lines = ["## Style Guide", ""]
+        for key, value in style_guide.items():
+            if key == "raw_notes":
+                continue
+            lines.append(f"- {key}: {self._format_style_value(value)}")
+        return "" if len(lines) <= 2 else "\n".join(lines) + "\n"
+
+    def _load_style_guide(self) -> dict[str, Any]:
+        for path in (
+            self._project_dir / "style_guide.toml",
+            self._project_dir / "memory" / "learned" / "style_guide.toml",
+        ):
+            if not path.exists():
+                continue
+            try:
+                with path.open("rb") as handle:
+                    data = tomllib.load(handle)
+            except (OSError, tomllib.TOMLDecodeError):
+                continue
+            if isinstance(data, dict):
+                return data
+        return {}
+
+    def _format_style_value(self, value: object) -> str:
+        if isinstance(value, list):
+            return ", ".join(str(item) for item in value)
+        if isinstance(value, dict):
+            return "; ".join(f"{key}={item}" for key, item in value.items())
+        return str(value)

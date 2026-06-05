@@ -84,6 +84,7 @@ class CoinageDetector:
                 self._candidates[token].count += 1
                 if page_id and page_id not in self._candidates[token].contexts:
                     self._candidates[token].contexts.append(page_id)
+                self._persist_pending_candidate(self._candidates[token])
             else:
                 candidate = CoinageCandidate(
                     term_jp=token,
@@ -92,6 +93,7 @@ class CoinageDetector:
                     problem_types=problem_types,
                 )
                 self._candidates[token] = candidate
+                self._persist_pending_candidate(candidate)
                 candidates.append(candidate)
 
         return candidates
@@ -133,6 +135,7 @@ class CoinageDetector:
             strategy=strategy,
             notes=f"Auto-detected coinage (count={candidate.count})",
             confirmed=True,
+            pending_human_review=False,
         )
         db = TerminologyDB.load(self.project_dir)
         db.register(term)
@@ -159,6 +162,52 @@ class CoinageDetector:
         except Exception:
             return None
 
+    def _persist_pending_candidate(self, candidate: CoinageCandidate) -> None:
+        """Write an unconfirmed proposal to the terminology DB for review."""
+        try:
+            db = TerminologyDB.load(self.project_dir)
+            existing = db.lookup(candidate.term_jp)
+            if existing and existing.confirmed:
+                return
+            db.register(TermState(
+                term_jp=candidate.term_jp,
+                problem_types=candidate.problem_types,
+                strategy=candidate.suggested_strategy,
+                notes=f"Auto-detected coinage proposal (count={candidate.count})",
+                confirmed=False,
+                pending_human_review=True,
+            ))
+            db.export(self.project_dir)
+            self._register_pending_in_memory(candidate)
+        except Exception as exc:
+            logger.warning("Failed to persist pending coinage: %s", exc)
+
+    def _register_pending_in_memory(self, candidate: CoinageCandidate) -> None:
+        """Register a pending coinage proposal in memory state."""
+        try:
+            from mga.memory.entities import TermState as MemoryTermState
+            from mga.memory.state import StateManager
+
+            term_id = candidate.term_jp.lower().replace(" ", "_")
+            mem_term = MemoryTermState(
+                term_id=term_id,
+                term_jp=candidate.term_jp,
+                context="; ".join(candidate.contexts[:5]),
+                cultural_weight="coined",
+                strategy=candidate.suggested_strategy,
+                applicability_scope="Pending human review before work-wide reuse.",
+                provenance={
+                    "source": "coinage_detector",
+                    "contexts": candidate.contexts,
+                    "trigger": "auto_detected_coinage",
+                },
+                pending_human_review=True,
+                frequency=candidate.count,
+            )
+            StateManager.upsert_term(self.project_dir, mem_term)
+        except Exception as e:
+            logger.warning("Failed to register pending coinage in memory: %s", e)
+
     def _register_in_memory(
         self,
         term_jp: str,
@@ -179,6 +228,14 @@ class CoinageDetector:
                 context="; ".join(candidate.contexts[:5]),
                 cultural_weight="coined",
                 strategy=strategy,
+                accepted_reason="Confirmed auto-detected coinage.",
+                applicability_scope="Use for this work unless superseded by human review.",
+                provenance={
+                    "source": "coinage_detector",
+                    "contexts": candidate.contexts,
+                    "trigger": "confirmed_auto_detected_coinage",
+                },
+                pending_human_review=False,
                 frequency=candidate.count,
             )
             StateManager.upsert_term(self.project_dir, mem_term)

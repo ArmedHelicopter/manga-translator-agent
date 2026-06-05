@@ -81,3 +81,28 @@ def test_clean_no_symbols():
     ])
     feedbacks = reader.proofread(page, translations)
     assert feedbacks == []
+
+
+def test_known_fictional_script_mapping_missing():
+    reader = FictionalScriptProofreader()
+    page = _make_page([
+        {"bubble_id": "b1", "source_text": "spell *"},
+    ])
+    translations = _make_translations([
+        {"bubble_id": "b1", "text": "spell"},
+    ])
+
+    feedbacks = reader.proofread(
+        page,
+        translations,
+        context={
+            "fictional_scripts": {
+                "abyss": {
+                    "name": "Abyss Script",
+                    "mapping": {"*": "a"},
+                }
+            }
+        },
+    )
+
+    assert any(f.category == "fictional_script.mapping_missing" for f in feedbacks)

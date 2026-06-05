@@ -40,6 +40,41 @@ def test_get_translation_context_empty():
     assert ctx == ""
 
 
+def test_get_translation_context_includes_project_style_guide(tmp_path):
+    (tmp_path / "style_guide.toml").write_text(
+        """
+literal_vs_free = 0.7
+honorific_handling = "keep honorific nuance"
+key_decisions = ["short bubbles", "formal narration"]
+raw_notes = ["internal only"]
+""".strip(),
+        encoding="utf-8",
+    )
+    adapter = CulturalAdapter(tmp_path)
+
+    ctx = adapter.get_translation_context({"bubbles": []})
+
+    assert "## Style Guide" in ctx
+    assert "- literal_vs_free: 0.7" in ctx
+    assert "- honorific_handling: keep honorific nuance" in ctx
+    assert "- key_decisions: short bubbles, formal narration" in ctx
+    assert "raw_notes" not in ctx
+
+
+def test_get_translation_context_uses_learned_style_guide_fallback(tmp_path):
+    learned_dir = tmp_path / "memory" / "learned"
+    learned_dir.mkdir(parents=True)
+    (learned_dir / "style_guide.toml").write_text(
+        'dialog_style = "casual"\n',
+        encoding="utf-8",
+    )
+    adapter = CulturalAdapter(tmp_path)
+
+    ctx = adapter.get_translation_context({"bubbles": []})
+
+    assert "- dialog_style: casual" in ctx
+
+
 def test_get_translation_context_with_terms():
     adapter = CulturalAdapter(Path("/tmp/nonexistent_project"))
     ctx = adapter.get_translation_context({
@@ -47,3 +82,25 @@ def test_get_translation_context_with_terms():
     })
     # Should contain strategy notes or be empty if no cultural terms found
     assert isinstance(ctx, str)
+
+
+def test_get_translation_context_includes_known_db_terms(tmp_path):
+    term_dir = tmp_path / "terminology"
+    term_dir.mkdir()
+    (term_dir / "terms.toml").write_text(
+        '[terms]\n'
+        'glass_join = { term_jp = "glass_join", term_target = "glass mending", '
+        'strategy = "literal", notes = "recurring repair art" }\n',
+        encoding="utf-8",
+    )
+    adapter = CulturalAdapter(tmp_path)
+
+    ctx = adapter.get_translation_context({
+        "bubbles": [{"bubble_id": "b1", "source_text": "The glass_join ritual begins"}],
+    })
+
+    assert "## Terminology Context" in ctx
+    assert "**glass_join**" in ctx
+    assert "-> glass mending" in ctx
+    assert "[literal]" in ctx
+    assert "recurring repair art" in ctx

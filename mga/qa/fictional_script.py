@@ -50,6 +50,9 @@ class FictionalScriptProofreader(QAProofreader):
             # Check source for fictional scripts
             source_symbols = _SYMBOL_RANGES.findall(bubble.source_text)
             trans_symbols = _SYMBOL_RANGES.findall(candidate.text)
+            feedbacks.extend(
+                self._check_known_mappings(bubble, candidate, context)
+            )
 
             # Flag if source has symbols that translation doesn't preserve
             if source_symbols and not trans_symbols:
@@ -86,4 +89,40 @@ class FictionalScriptProofreader(QAProofreader):
                             confidence=0.3,
                         ))
 
+        return feedbacks
+
+    def _check_known_mappings(
+        self,
+        bubble: Bubble,
+        candidate: TranslationCandidate,
+        context: dict[str, Any],
+    ) -> list[QAFeedback]:
+        feedbacks: list[QAFeedback] = []
+        scripts = context.get("fictional_scripts", {})
+        if not isinstance(scripts, dict):
+            return feedbacks
+
+        for script in scripts.values():
+            if not isinstance(script, dict):
+                continue
+            mapping = script.get("mapping", {})
+            if not isinstance(mapping, dict):
+                continue
+            script_name = str(script.get("name", "fictional script"))
+            for source_glyph, target_text in mapping.items():
+                source_glyph = str(source_glyph)
+                target_text = str(target_text)
+                if not source_glyph or not target_text:
+                    continue
+                if source_glyph in bubble.source_text and target_text not in candidate.text:
+                    feedbacks.append(QAFeedback(
+                        bubble_id=candidate.bubble_id,
+                        feedback_type=QAFeedbackType.WARNING,
+                        category="fictional_script.mapping_missing",
+                        message=(
+                            f"Known {script_name} glyph '{source_glyph}' "
+                            f"should map to '{target_text}'"
+                        ),
+                        confidence=0.7,
+                    ))
         return feedbacks

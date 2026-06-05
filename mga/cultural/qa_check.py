@@ -12,6 +12,14 @@ from mga.qa.base import QAFeedback, QAFeedbackType, QAProofreader
 logger = logging.getLogger(__name__)
 
 
+_VISIBLE_STRATEGIES = {
+    "preserve",
+    "preserve_original",
+    "coined",
+    "transliterate",
+}
+
+
 class CulturalQAProofreader(QAProofreader):
     """Check terminology consistency and strategy adherence."""
 
@@ -35,6 +43,7 @@ class CulturalQAProofreader(QAProofreader):
         # Load terminology DB
         terminology = context.get("terminology", {})
         project_dir = context.get("project_dir", "")
+        cultural_analysis = self._get_cultural_analysis(context)
 
         for candidate in translations:
             bubble = self._get_bubble(page, candidate.bubble_id)
@@ -49,6 +58,15 @@ class CulturalQAProofreader(QAProofreader):
 
             # Check 3: Honorific presence
             feedbacks.extend(self._check_honorifics(bubble, candidate))
+
+            # Check 4: Strategy consistency
+            feedbacks.extend(
+                self._check_strategy_consistency(
+                    bubble,
+                    candidate,
+                    cultural_analysis.get(candidate.bubble_id, []),
+                )
+            )
 
         return feedbacks
 
@@ -78,6 +96,53 @@ class CulturalQAProofreader(QAProofreader):
                     message=f"Confirmed term '{jp_term}' (->'{zh_term}') not used in translation",
                     confidence=0.7,
                 ))
+
+        return feedbacks
+
+    def _check_strategy_consistency(
+        self,
+        bubble: Bubble,
+        candidate: TranslationCandidate,
+        analysis_entries: list[dict],
+    ) -> list[QAFeedback]:
+        """Check that visible-handling strategies leave a trace in output."""
+        feedbacks = []
+        if not analysis_entries:
+            return feedbacks
+
+        visible_text = candidate.text or ""
+        visible_footnote_terms = {
+            term
+            for footnote in candidate.footnotes
+            for term in (footnote.original, footnote.translation)
+            if term
+        }
+
+        for entry in analysis_entries:
+            if not isinstance(entry, dict):
+                continue
+            term = str(entry.get("term", "")).strip()
+            strategy = str(entry.get("strategy", "")).strip()
+            if not term or strategy not in _VISIBLE_STRATEGIES:
+                continue
+            if term not in bubble.source_text:
+                continue
+            if term in visible_text or term in visible_footnote_terms:
+                continue
+
+            feedbacks.append(QAFeedback(
+                bubble_id=candidate.bubble_id,
+                feedback_type=QAFeedbackType.WARNING,
+                category="cultural.strategy_inconsistent",
+                message=(
+                    f"Cultural strategy '{strategy}' for term '{term}' "
+                    "is not visible in translation or footnotes"
+                ),
+                confidence=0.7,
+                original_text=term,
+                suggested_text=term,
+                rationale=f"Strategy '{strategy}' requires visible handling of the source term.",
+            ))
 
         return feedbacks
 
@@ -124,3 +189,21 @@ class CulturalQAProofreader(QAProofreader):
                 ))
 
         return feedbacks
+
+    def _get_cultural_analysis(self, context: dict[str, Any]) -> dict[str, list[dict]]:
+        """Return per-bubble cultural analysis from direct or page-scoped context."""
+        analysis = context.get("cultural_analysis")
+        if not isinstance(analysis, dict):
+            cultural_context = context.get("cultural_context", {})
+            if isinstance(cultural_context, dict):
+                analysis = cultural_context.get("analysis", {})
+        if not isinstance(analysis, dict):
+            return {}
+
+        normalized: dict[str, list[dict]] = {}
+        for bubble_id, entries in analysis.items():
+            if isinstance(entries, list):
+                normalized[str(bubble_id)] = [
+                    entry for entry in entries if isinstance(entry, dict)
+                ]
+        return normalized

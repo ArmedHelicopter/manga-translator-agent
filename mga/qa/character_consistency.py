@@ -45,6 +45,7 @@ class CharacterConsistencyProofreader(QAProofreader):
             profile = profiles[speaker]
             feedbacks.extend(self._check_catchphrases(bubble, candidate, profile))
             feedbacks.extend(self._check_tone(bubble, candidate, profile))
+            feedbacks.extend(self._check_relationship_speech(bubble, candidate, profile, context))
             feedbacks.extend(self._check_voice_stability(candidate, speaker, recent))
         return feedbacks
 
@@ -109,3 +110,75 @@ class CharacterConsistencyProofreader(QAProofreader):
                 rationale="Large style shift may indicate voice drift",
             )]
         return []
+
+    def _check_relationship_speech(
+        self,
+        bubble: Any,
+        candidate: TranslationCandidate,
+        profile: Dict[str, Any],
+        context: Dict[str, Any],
+    ) -> List[QAFeedback]:
+        listener = context.get("active_listeners", {}).get(candidate.bubble_id)
+        if not listener:
+            listener = context.get("current_interlocutor", "")
+        if not listener:
+            return []
+        rules = profile.get("relationship_speech", {})
+        if not isinstance(rules, dict):
+            return []
+        rule = rules.get(listener)
+        if not isinstance(rule, dict):
+            for value in rules.values():
+                if isinstance(value, dict) and str(value.get("listener_id", "")) == str(listener):
+                    rule = value
+                    break
+        if not isinstance(rule, dict):
+            return []
+
+        required_terms: list[str] = []
+        address = rule.get("address")
+        if address:
+            required_terms.append(str(address))
+        for term in rule.get("required_terms", []) or []:
+            required_terms.append(str(term))
+
+        feedbacks: List[QAFeedback] = []
+        missing = [
+            term for term in required_terms
+            if term and term.lower() not in candidate.text.lower()
+        ]
+        if missing:
+            feedbacks.append(QAFeedback(
+                bubble_id=candidate.bubble_id,
+                feedback_type=QAFeedbackType.WARNING,
+                category="character.relationship_speech_missing",
+                message=(
+                    f"Missing relationship-specific speech marker(s) for "
+                    f"{listener}: {', '.join(missing)}"
+                ),
+                confidence=0.7,
+                original_text=bubble.source_text,
+                suggested_text=candidate.text,
+                rationale="Character voice should follow per-listener speech rules",
+            ))
+
+        forbidden = [
+            str(term) for term in rule.get("forbidden_terms", []) or []
+            if str(term) and str(term).lower() in candidate.text.lower()
+        ]
+        if forbidden:
+            feedbacks.append(QAFeedback(
+                bubble_id=candidate.bubble_id,
+                feedback_type=QAFeedbackType.WARNING,
+                category="character.relationship_speech_forbidden",
+                message=(
+                    f"Forbidden relationship-specific speech marker(s) for "
+                    f"{listener}: {', '.join(forbidden)}"
+                ),
+                confidence=0.7,
+                original_text=bubble.source_text,
+                suggested_text=candidate.text,
+                rationale="Character voice should avoid disallowed per-listener speech markers",
+            ))
+
+        return feedbacks
