@@ -61,6 +61,34 @@ def test_build_project_config_defaults_qa_to_translation_route(tmp_path):
     assert cfg.provider_routes["qa"].primary.model == "gemini-text"
 
 
+def test_build_project_config_allows_mimo_builtin_defaults(tmp_path):
+    config_path = tmp_path / "providers.toml"
+    config_path.write_text(
+        '[stages.vision]\nprimary = "mimo"\n\n'
+        '[stages.translation]\nprimary = "mimo"\n\n'
+        '[providers.mimo]\n',
+        encoding="utf-8",
+    )
+    input_path = tmp_path / "input"
+    input_path.mkdir()
+
+    cfg, raw = build_project_config(
+        input_path=str(input_path),
+        output_path=str(tmp_path / "out"),
+        provider_override="mimo",
+        save_json=False,
+        dry_run=False,
+        config_path=str(config_path),
+    )
+
+    assert raw["providers"]["mimo"] == {}
+    assert cfg.provider_routes["vision"].primary.provider == "mimo"
+    assert cfg.provider_routes["vision"].primary.model == "mimo-v2.5-pro"
+    assert cfg.provider_routes["translation"].primary.provider == "mimo"
+    assert cfg.provider_routes["translation"].primary.model == "mimo-v2.5-pro"
+    assert cfg.provider_routes["qa"].primary.provider == "mimo"
+
+
 def test_build_project_config_preserves_plugin_configuration(tmp_path):
     config_path = tmp_path / "providers.toml"
     config_path.write_text(

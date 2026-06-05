@@ -18,6 +18,7 @@ _PROVIDER_MAP: dict[str, tuple[str, str]] = {
     "vllm": (".vllm_provider", "VLLMProvider"),
     "openrouter": (".openrouter_provider", "OpenRouterProvider"),
     "llamacpp": (".llamacpp_provider", "LlamaCppProvider"),
+    "mimo": (".mimo_provider", "MiMoProvider"),
 }
 
 

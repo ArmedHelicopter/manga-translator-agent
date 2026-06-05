@@ -20,6 +20,7 @@ def test_registry_exposes_documented_provider_map():
         "vllm": (".vllm_provider", "VLLMProvider"),
         "openrouter": (".openrouter_provider", "OpenRouterProvider"),
         "llamacpp": (".llamacpp_provider", "LlamaCppProvider"),
+        "mimo": (".mimo_provider", "MiMoProvider"),
     }
 
 
@@ -27,6 +28,24 @@ def test_get_provider_openai():
     provider = get_provider("openai", api_key="test-key")
     assert provider is not None
     assert provider.__class__.__name__ == "OpenAIProvider"
+
+
+def test_get_provider_mimo_uses_openai_compatible_defaults(monkeypatch):
+    captured = {}
+
+    class FakeOpenAI:
+        def __init__(self, **kwargs):
+            captured.update(kwargs)
+
+    monkeypatch.setenv("MIMO_API_KEY", "mimo-key")
+    monkeypatch.setattr("mga.providers.openai_provider.openai.OpenAI", FakeOpenAI)
+
+    provider = get_provider("mimo")
+
+    assert provider.__class__.__name__ == "MiMoProvider"
+    assert provider.model_name == "mimo-v2.5-pro"
+    assert captured["api_key"] == "mimo-key"
+    assert str(captured["base_url"]) == "https://token-plan-cn.xiaomimimo.com/v1"
 
 
 def test_get_provider_anthropic():

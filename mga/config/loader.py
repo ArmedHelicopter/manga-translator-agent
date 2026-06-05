@@ -19,6 +19,9 @@ STAGE_CONFIG_KEYS = {
     "qa": "qa",
 }
 CONFIG_ENV_VAR = "MANGA_TRANSLATE_CONFIG"
+DEFAULT_PROVIDER_MODELS = {
+    "mimo": "mimo-v2.5-pro",
+}
 
 
 def _resolve_config_path(config_path: str | None = None) -> Path:
@@ -82,7 +85,11 @@ def _build_stage_route(stage_name: str, stage_data: dict, providers_data: dict) 
 
     model_key = "vision_model" if stage_name == "vision" else "text_model"
     primary_settings = providers_data[primary_name]
-    primary_model = primary_settings.get(model_key) or primary_settings.get("model")
+    primary_model = (
+        primary_settings.get(model_key)
+        or primary_settings.get("model")
+        or DEFAULT_PROVIDER_MODELS.get(primary_name)
+    )
     if not primary_model:
         raise ConfigError(f"Provider '{primary_name}' is missing '{model_key}' for stage '{stage_name}'.")
 
@@ -96,7 +103,11 @@ def _build_stage_route(stage_name: str, stage_data: dict, providers_data: dict) 
         fallback_settings = providers_data[fallback_name]
         fallback_route = ProviderRoute(
             provider=fallback_name,
-            model=fallback_settings.get(model_key) or fallback_settings.get("model"),
+            model=(
+                fallback_settings.get(model_key)
+                or fallback_settings.get("model")
+                or DEFAULT_PROVIDER_MODELS.get(fallback_name)
+            ),
         )
 
     local_route = None
@@ -105,7 +116,11 @@ def _build_stage_route(stage_name: str, stage_data: dict, providers_data: dict) 
         local_settings = providers_data[local_name]
         local_route = ProviderRoute(
             provider=local_name,
-            model=local_settings.get(model_key) or local_settings.get("model"),
+            model=(
+                local_settings.get(model_key)
+                or local_settings.get("model")
+                or DEFAULT_PROVIDER_MODELS.get(local_name)
+            ),
         )
 
     return StageProviderConfig(
@@ -152,7 +167,11 @@ def build_project_config(
             raise ConfigError(f"The provider override '{provider_override}' is not configured in providers.toml.")
         for stage_name, route in provider_routes.items():
             model_key = "vision_model" if stage_name == "vision" else "text_model"
-            provider_model = providers_data[provider_override].get(model_key) or providers_data[provider_override].get("model")
+            provider_model = (
+                providers_data[provider_override].get(model_key)
+                or providers_data[provider_override].get("model")
+                or DEFAULT_PROVIDER_MODELS.get(provider_override)
+            )
             if not provider_model:
                 raise ConfigError(
                     f"Provider override '{provider_override}' is missing '{model_key}' or 'model'."
