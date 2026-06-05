@@ -2,6 +2,7 @@
 
 import pytest
 from pathlib import Path
+import struct
 
 from mga.learning.aligner import align, align_from_flat_dirs
 from mga.learning.models import PagePair
@@ -17,6 +18,15 @@ def _make_dirs(learn_dir: Path, orig_names: list[str], trans_names: list[str]):
         (orig / name).write_text("")
     for name in trans_names:
         (trans / name).write_text("")
+
+
+def _write_png_header(path: Path, width: int, height: int) -> None:
+    path.write_bytes(
+        b"\x89PNG\r\n\x1a\n"
+        + b"\x00\x00\x00\rIHDR"
+        + struct.pack(">II", width, height)
+        + b"\x08\x02\x00\x00\x00"
+    )
 
 
 class TestAlignMangaPairs:
@@ -139,3 +149,31 @@ class TestAlignMangaPairs:
         pairs = align_from_flat_dirs(orig_dir, trans_dir)
 
         assert pairs == []
+
+    def test_align_manga_pair_marks_matching_image_dimensions_verified(self, tmp_path: Path):
+        learn_dir = tmp_path / "learn"
+        orig = learn_dir / "originals"
+        trans = learn_dir / "translations"
+        orig.mkdir(parents=True)
+        trans.mkdir(parents=True)
+        _write_png_header(orig / "page001.png", 800, 1200)
+        _write_png_header(trans / "page001.png", 800, 1200)
+
+        pairs = align(tmp_path, learn_dir)
+
+        assert pairs[0].alignment_status == "visual-verified"
+        assert pairs[0].alignment_score == 1.0
+
+    def test_align_manga_pair_marks_dimension_mismatch_warning(self, tmp_path: Path):
+        learn_dir = tmp_path / "learn"
+        orig = learn_dir / "originals"
+        trans = learn_dir / "translations"
+        orig.mkdir(parents=True)
+        trans.mkdir(parents=True)
+        _write_png_header(orig / "page001.png", 800, 1200)
+        _write_png_header(trans / "page001.png", 900, 1200)
+
+        pairs = align(tmp_path, learn_dir)
+
+        assert pairs[0].alignment_status == "visual-warning"
+        assert pairs[0].alignment_score == 0.5

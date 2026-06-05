@@ -187,3 +187,91 @@ def test_validate_stats_populated():
     assert stats["has_style_guide"] is True
     assert stats["has_character_graph"] is True
     assert stats["pages_processed"] == 5
+
+
+def test_validate_warns_on_weak_alignment_summary():
+    result = LearningResult(
+        alignment_summary={
+            "filename-only": 2,
+            "visual-warning": 1,
+            "visual-verified": 3,
+        },
+    )
+
+    report = validate(result)
+
+    assert report["passed"] is True
+    assert report["warnings"] == 2
+    assert report["stats"]["alignment_summary"] == {
+        "filename-only": 2,
+        "visual-warning": 1,
+        "visual-verified": 3,
+    }
+    messages = [issue["message"] for issue in report["issues"]]
+    assert "Page pairs without visual verification: 2" in messages
+    assert "Page pairs with visual alignment warnings: 1" in messages
+
+
+def test_validate_counts_valid_relationship_speech_rules():
+    result = LearningResult(
+        characters=[
+            {
+                "character_id": "akari",
+                "name_jp": "Akari",
+                "name_zh": "Deng",
+                "speech_patterns": {"default": "polite"},
+                "relationship_speech": {
+                    "ren": {
+                        "honorific_level": "polite",
+                        "self_ref": "boku",
+                    },
+                },
+            },
+        ],
+    )
+
+    report = validate(result)
+
+    assert report["passed"] is True
+    assert report["stats"]["relationship_speech_rules"] == 1
+    assert not any("relationship_speech" in issue["message"] for issue in report["issues"])
+
+
+def test_validate_warns_on_malformed_relationship_speech_payload():
+    result = LearningResult(
+        characters=[
+            {
+                "character_id": "akari",
+                "name_jp": "Akari",
+                "name_zh": "Deng",
+                "relationship_speech": "ren: polite",
+            },
+        ],
+    )
+
+    report = validate(result)
+
+    assert report["passed"] is True
+    assert report["warnings"] >= 1
+    messages = [issue["message"] for issue in report["issues"]]
+    assert "relationship_speech must be an object" in messages
+
+
+def test_validate_warns_on_empty_relationship_speech_rule():
+    result = LearningResult(
+        characters=[
+            {
+                "character_id": "akari",
+                "name_jp": "Akari",
+                "name_zh": "Deng",
+                "relationship_speech": {"ren": {}},
+            },
+        ],
+    )
+
+    report = validate(result)
+
+    assert report["passed"] is True
+    assert report["stats"]["relationship_speech_rules"] == 1
+    messages = [issue["message"] for issue in report["issues"]]
+    assert any("has no actionable speech fields" in message for message in messages)

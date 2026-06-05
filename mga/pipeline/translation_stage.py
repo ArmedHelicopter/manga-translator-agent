@@ -9,6 +9,7 @@ from typing import Any
 
 from mga.cultural import CulturalAdapter
 from mga.exceptions import StageExecutionError
+from mga.memory import MemoryRetrieval
 from mga.memory.character_memory_updater import CharacterMemoryUpdater
 from mga.models import ProjectConfig, TranslationCandidate
 from mga.models.translation import (
@@ -89,6 +90,7 @@ def _build_semantic_translation_prompt(
     cultural_ctx: dict,
     target_lang: str,
     vision_ctx: dict | None = None,
+    translation_memory: list[dict[str, Any]] | None = None,
 ) -> str:
     parts = [
         "## Semantic Translation",
@@ -105,6 +107,9 @@ def _build_semantic_translation_prompt(
     if cultural_ctx.get("translation_context"):
         parts.append("## 文化与术语约束")
         parts.append(cultural_ctx["translation_context"])
+    memory_block = MemoryRetrieval.format_translation_memory_context(translation_memory or [])
+    if memory_block:
+        parts.append(memory_block)
     parts.append(f"Source: {source_text}")
     parts.append(
         "Return a JSON object with keys:\n"
@@ -119,6 +124,90 @@ def _build_semantic_translation_prompt(
     return "\n".join(parts)
 
 
+def _relationship_speech_rule(
+    memory_ctx: dict,
+    listener_id: str | None,
+) -> tuple[str, dict[str, Any]] | None:
+    if not listener_id:
+        return None
+    rules = memory_ctx.get("relationship_speech", {})
+    if not isinstance(rules, dict):
+        return None
+    rule = rules.get(listener_id)
+    if isinstance(rule, dict):
+        return listener_id, rule
+    for key, value in rules.items():
+        if isinstance(value, dict) and str(value.get("listener_id", "")) == listener_id:
+            return str(key), value
+    return None
+
+
+def _format_relationship_speech_rule(
+    memory_ctx: dict,
+    listener_id: str | None,
+) -> str:
+    selected = _relationship_speech_rule(memory_ctx, listener_id)
+    if selected is None:
+        return ""
+    label, rule = selected
+    parts = [
+        "## Relationship-specific speech rules",
+        f"- listener_id: {listener_id}",
+        f"- rule: {label}",
+    ]
+    for key, value in rule.items():
+        if isinstance(value, list):
+            value = ", ".join(str(item) for item in value)
+        parts.append(f"- {key}: {value}")
+    return "\n".join(parts)
+
+
+def _format_scene_memory(scene_context: dict[str, Any]) -> str:
+    if not scene_context:
+        return ""
+
+    parts = ["## Scene Memory"]
+    scalar_fields = [
+        ("scene_id", "scene_id"),
+        ("mood", "mood"),
+        ("scene_description", "scene_description"),
+        ("narrative_summary", "narrative_summary"),
+        ("future_impact", "future_impact"),
+    ]
+    for key, label in scalar_fields:
+        value = scene_context.get(key)
+        if value:
+            parts.append(f"- {label}: {value}")
+
+    list_fields = [
+        ("relationship_changes", "relationship_changes"),
+        ("key_dialogue", "key_dialogue"),
+    ]
+    for key, label in list_fields:
+        values = scene_context.get(key) or []
+        if values:
+            parts.append(f"- {label}:")
+            parts.extend(f"  - {item}" for item in values)
+
+    characters = scene_context.get("characters") or []
+    if characters:
+        parts.append("- characters:")
+        for character in characters:
+            if not isinstance(character, dict):
+                parts.append(f"  - {character}")
+                continue
+            bits = [
+                str(character.get("character_id", "")),
+                str(character.get("name_jp", "")),
+                str(character.get("name_zh", "")),
+            ]
+            label = " / ".join(bit for bit in bits if bit)
+            if label:
+                parts.append(f"  - {label}")
+
+    return "\n".join(parts)
+
+
 def _build_persona_render_prompt(
     source_text: str,
     semantic: SemanticTranslation,
@@ -128,6 +217,7 @@ def _build_persona_render_prompt(
     vision_ctx: dict | None = None,
     listener_id: str | None = None,
     scene_summary: str = "",
+    scene_context: dict[str, Any] | None = None,
 ) -> str:
     parts = [
         "## Persona Rendering",
@@ -162,6 +252,9 @@ def _build_persona_render_prompt(
             parts.append(f"- 翻译注意：{notes}")
     if relationship_ctx:
         parts.append(relationship_ctx)
+    relationship_speech = _format_relationship_speech_rule(memory_ctx, listener_id)
+    if relationship_speech:
+        parts.append(relationship_speech)
     if listener_id:
         parts.append(f"- listener_id: {listener_id}")
     if scene_summary:
@@ -174,6 +267,9 @@ def _build_persona_render_prompt(
             parts.append(f"- 语言风格：{vision_ctx['voice_hint']}")
         if vision_ctx.get("page_voice_hints"):
             parts.append(f"- 页级语言观察：{'; '.join(vision_ctx['page_voice_hints'])}")
+    scene_memory = _format_scene_memory(scene_context or {})
+    if scene_memory:
+        parts.append(scene_memory)
     parts.append(
         "Return a JSON object with keys:\n"
         "- 'text': final Chinese bubble text\n"
@@ -260,6 +356,8 @@ class TranslationStage(PipelineStage):
         traces: list[DialogueRealizationTrace] = []
         page_profiles = context.memory_context.get("page_profiles", {})
         mem_page = page_profiles.get(page.page_id, {})
+        scene_contexts = context.memory_context.get("scene_contexts", {})
+        scene_context = scene_contexts.get(page.page_id, {})
         cult_page = context.cultural_context.get(page.page_id, {})
 
         for bubble in page.bubbles:
@@ -268,13 +366,20 @@ class TranslationStage(PipelineStage):
             vision_ctx = self._build_vision_context(page, bubble)
             relationship_ctx, listener = self._build_relationship_context(
                 page=page,
+                bubble=bubble,
                 speaker=speaker,
                 graph_retrieval=graph_retrieval,
+            )
+            translation_memory = MemoryRetrieval.search_translation_memory(
+                Path(cfg.working_dir) if cfg.working_dir else Path("."),
+                bubble.source_text,
+                limit=3,
             )
 
             semantic_prompt = _build_semantic_translation_prompt(
                 bubble.source_text, cult_page, cfg.target_lang,
                 vision_ctx=vision_ctx,
+                translation_memory=translation_memory,
             )
             semantic, semantic_provider = self._call_semantic_llm(
                 provider_cascade,
@@ -296,6 +401,7 @@ class TranslationStage(PipelineStage):
                 vision_ctx=vision_ctx,
                 listener_id=listener,
                 scene_summary=getattr(page, "scene_summary", "") or "",
+                scene_context=scene_context,
             )
             candidate, persona, persona_provider = self._call_persona_llm(
                 provider_cascade=provider_cascade,
@@ -305,14 +411,32 @@ class TranslationStage(PipelineStage):
                 speaker_id=speaker or None,
                 listener_id=listener,
                 relationship_context_used=bool(relationship_ctx),
-                memory_context_used=bool(char_mem),
+                memory_context_used=bool(char_mem or scene_context or translation_memory),
                 vision_context_used=bool(vision_ctx),
             )
 
             # Apply cultural terminology substitutions
+            cultural_processing_ctx = {
+                "translation": candidate.text,
+                "target_lang": cfg.target_lang,
+            }
+            if speaker and listener:
+                cultural_processing_ctx.update({
+                    "speaker": char_mem,
+                    "listener": self._listener_memory_context(
+                        listener=listener,
+                        page_memory=mem_page,
+                        global_memory=context.memory_context.get("character_profiles", {}),
+                    ),
+                    "relationship": self._cultural_relationship_context(
+                        speaker=speaker,
+                        listener=listener,
+                        graph_retrieval=graph_retrieval,
+                    ),
+                })
             processed = cultural_adapter.process_translation(
                 bubble.bubble_id, bubble.source_text,
-                {"translation": candidate.text, "target_lang": cfg.target_lang},
+                cultural_processing_ctx,
             )
             candidate.text = processed.get("translation", candidate.text)
             candidate.footnotes = self._merge_footnotes(semantic.footnotes, candidate.footnotes)
@@ -326,6 +450,9 @@ class TranslationStage(PipelineStage):
                 translated_text=candidate.text,
                 glossary=name_glossary if name_glossary is not None else {},
             )
+            requires_human_translation = self._requires_human_translation(candidate)
+            if requires_human_translation:
+                self._mark_human_translation_required(candidate, persona, bubble.source_text)
             persona.rendered_text = candidate.text
             results.append(candidate)
             traces.append(DialogueRealizationTrace(
@@ -342,7 +469,7 @@ class TranslationStage(PipelineStage):
                 ),
                 final_text=candidate.text,
             ))
-            if speaker and memory_updater is not None:
+            if speaker and memory_updater is not None and not requires_human_translation:
                 update = memory_updater.update_from_translation(
                     speaker=speaker,
                     bubble=bubble,
@@ -356,6 +483,25 @@ class TranslationStage(PipelineStage):
                     memory_trace.append(update.trace_item)
 
         return results, traces
+
+    def _requires_human_translation(self, candidate: TranslationCandidate) -> bool:
+        return candidate.confidence < 0.5
+
+    def _mark_human_translation_required(
+        self,
+        candidate: TranslationCandidate,
+        persona: PersonaRenderTrace,
+        source_text: str,
+    ) -> None:
+        candidate.text = source_text
+        marker = "low confidence; human translation required"
+        if candidate.rationale:
+            candidate.rationale = f"{candidate.rationale}; {marker}"
+        else:
+            candidate.rationale = marker
+        if "human_translation_required" not in persona.persona_moves:
+            persona.persona_moves.append("human_translation_required")
+        persona.rationale = candidate.rationale
 
     def _refresh_page_profiles_after_memory_update(
         self,
@@ -390,20 +536,99 @@ class TranslationStage(PipelineStage):
         self,
         *,
         page: object,
+        bubble: object,
         speaker: str,
         graph_retrieval: object | None,
     ) -> tuple[str, str | None]:
         if not graph_retrieval or not speaker:
             return "", None
-        other_speakers = [
-            b.speaker_id
-            for b in page.bubbles
-            if b.speaker_id and b.speaker_id != speaker
-        ]
-        if not other_speakers:
+        listener = self._nearest_other_speaker(page, bubble, speaker)
+        if not listener:
             return "", None
-        listener = other_speakers[0]
         return graph_retrieval.get_translation_context(speaker, listener), listener
+
+    def _nearest_other_speaker(
+        self,
+        page: object,
+        bubble: object,
+        speaker: str,
+    ) -> str | None:
+        bubbles = list(getattr(page, "bubbles", []))
+        try:
+            current_index = bubbles.index(bubble)
+        except ValueError:
+            current_index = 0
+        current_order = self._bubble_order(bubble, current_index)
+
+        candidates: list[tuple[int, int, int, str]] = []
+        for index, other_bubble in enumerate(bubbles):
+            other_speaker = getattr(other_bubble, "speaker_id", None)
+            if not other_speaker or other_speaker == speaker:
+                continue
+            order = self._bubble_order(other_bubble, index)
+            candidates.append((
+                abs(order - current_order),
+                abs(index - current_index),
+                index,
+                other_speaker,
+            ))
+        if not candidates:
+            return None
+        candidates.sort()
+        return candidates[0][3]
+
+    @staticmethod
+    def _bubble_order(bubble: object, fallback: int) -> int:
+        try:
+            return int(getattr(bubble, "reading_order", fallback))
+        except (TypeError, ValueError):
+            return fallback
+
+    def _listener_memory_context(
+        self,
+        *,
+        listener: str,
+        page_memory: dict,
+        global_memory: dict,
+    ) -> dict:
+        listener_ctx = page_memory.get(listener)
+        if isinstance(listener_ctx, dict):
+            return listener_ctx
+        global_ctx = global_memory.get(listener)
+        if isinstance(global_ctx, dict):
+            return global_ctx
+        return {}
+
+    def _cultural_relationship_context(
+        self,
+        *,
+        speaker: str,
+        listener: str,
+        graph_retrieval: object | None,
+    ) -> dict:
+        if graph_retrieval is None or not hasattr(graph_retrieval, "get_addressing"):
+            return {}
+        try:
+            addressing = graph_retrieval.get_addressing(speaker, listener)
+        except Exception:
+            return {}
+        if not isinstance(addressing, dict):
+            return {}
+
+        formality = str(addressing.get("formality", ""))
+        relationship = {
+            "formality": formality,
+            "honorific": str(addressing.get("honorific", "")),
+            "relationship": str(addressing.get("relationship", "")),
+        }
+        relationship["distance"] = (
+            "formal" if formality in {"polite", "formal", "honorific"} else "casual"
+        )
+        relationship["familiarity"] = {
+            "intimate": "intimate",
+            "casual": "close",
+        }.get(formality, "acquaintance")
+        return relationship
 
     def _call_semantic_llm(
         self,

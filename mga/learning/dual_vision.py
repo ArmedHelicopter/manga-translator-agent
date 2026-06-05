@@ -152,6 +152,8 @@ def analyze_manga_pair(
         speech_patterns=raw.get("speech_patterns", {}),
         style_notes=raw.get("style_notes", ""),
         bubble_pairs=raw.get("bubble_pairs", []),
+        alignment_status=pair.alignment_status,
+        alignment_score=pair.alignment_score,
     )
 
 
@@ -196,6 +198,8 @@ def analyze_novel_pair(
         speech_patterns=raw.get("speech_patterns", {}),
         style_notes=raw.get("style_notes", ""),
         bubble_pairs=raw.get("bubble_pairs", []),
+        alignment_status=pair.alignment_status,
+        alignment_score=pair.alignment_score,
     )
 
 

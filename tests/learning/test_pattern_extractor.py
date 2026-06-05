@@ -15,6 +15,8 @@ def _make_aligned_page(
     terminology: list | None = None,
     speech_patterns: dict | None = None,
     style_notes: str = "",
+    alignment_status: str = "filename-only",
+    alignment_score: float = 0.0,
 ) -> AlignedPageData:
     return AlignedPageData(
         page_id=page_id,
@@ -24,6 +26,8 @@ def _make_aligned_page(
         terminology=terminology or [],
         speech_patterns=speech_patterns or {},
         style_notes=style_notes,
+        alignment_status=alignment_status,
+        alignment_score=alignment_score,
     )
 
 
@@ -116,6 +120,95 @@ class TestExtractPatternsMockProvider:
 
         assert result.pages_processed == 5
 
+    def test_extract_patterns_preserves_alignment_summary_on_result(self):
+        provider = MagicMock()
+        provider.chat_structured.return_value = {
+            "characters": [],
+            "terms": [],
+            "style_guide": {},
+            "character_graph": {"nodes": [], "edges": []},
+        }
+
+        result = extract_patterns(
+            provider,
+            [
+                _make_aligned_page(
+                    page_id="p1",
+                    alignment_status="visual-verified",
+                    alignment_score=1.0,
+                ),
+                _make_aligned_page(
+                    page_id="p2",
+                    alignment_status="filename-only",
+                    alignment_score=0.0,
+                ),
+            ],
+        )
+
+        assert result.alignment_summary == {"visual-verified": 1, "filename-only": 1}
+        assert result.alignment == [
+            {"page_id": "p1", "status": "visual-verified", "score": 1.0},
+            {"page_id": "p2", "status": "filename-only", "score": 0.0},
+        ]
+
+    def test_extract_patterns_schema_allows_relationship_speech(self):
+        provider = MagicMock()
+        provider.chat_structured.return_value = {
+            "characters": [
+                {
+                    "character_id": "akari",
+                    "name_jp": "Akari",
+                    "name_zh": "Deng",
+                    "relationship_speech": {
+                        "ren": {
+                            "honorific_level": "polite",
+                            "self_ref": "boku",
+                        },
+                    },
+                },
+            ],
+            "terms": [],
+            "style_guide": {},
+            "character_graph": {"nodes": [], "edges": []},
+        }
+
+        result = extract_patterns(provider, [_make_aligned_page(page_id="p001")])
+
+        schema = provider.chat_structured.call_args.kwargs["schema"]
+        character_props = schema["properties"]["characters"]["items"]["properties"]
+        assert "relationship_speech" in character_props
+        assert result.characters[0]["relationship_speech"]["ren"]["self_ref"] == "boku"
+
+    def test_extract_patterns_prompt_includes_alignment_summary(self):
+        provider = MagicMock()
+        provider.chat_structured.return_value = {
+            "characters": [],
+            "terms": [],
+            "style_guide": {},
+            "character_graph": {"nodes": [], "edges": []},
+        }
+
+        extract_patterns(
+            provider,
+            [
+                _make_aligned_page(
+                    page_id="p1",
+                    alignment_status="visual-verified",
+                    alignment_score=1.0,
+                ),
+                _make_aligned_page(
+                    page_id="p2",
+                    alignment_status="visual-warning",
+                    alignment_score=0.5,
+                ),
+            ],
+        )
+
+        content = provider.chat_structured.call_args.kwargs["messages"][0]["content"]
+        assert '"alignment_summary"' in content
+        assert '"visual-verified": 1' in content
+        assert '"visual-warning": 1' in content
+
 
 class TestExtractPatternsHeuristicFallback:
     def test_extract_patterns_heuristic_fallback(self):
@@ -167,6 +260,26 @@ class TestExtractPatternsHeuristicFallback:
         assert "Formal narration" in result.style_guide["raw_notes"]
         # Pages processed
         assert result.pages_processed == 2
+
+    def test_extract_patterns_heuristic_preserves_alignment_summary(self):
+        provider = MagicMock()
+        provider.chat_structured.side_effect = RuntimeError("LLM unavailable")
+
+        result = extract_patterns(
+            provider,
+            [
+                _make_aligned_page(
+                    page_id="p1",
+                    alignment_status="visual-warning",
+                    alignment_score=0.5,
+                ),
+            ],
+        )
+
+        assert result.alignment_summary == {"visual-warning": 1}
+        assert result.alignment == [
+            {"page_id": "p1", "status": "visual-warning", "score": 0.5}
+        ]
 
     def test_extract_patterns_heuristic_deduplicates_style_notes(self):
         provider = MagicMock()

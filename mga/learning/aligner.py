@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from pathlib import Path
+import struct
 
 from .models import PagePair
 
@@ -11,6 +12,61 @@ _IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
 
 # Supported text extensions for novel mode
 _TEXT_EXTS = {".txt", ".xhtml", ".html", ".epub"}
+
+
+def _image_dimensions(path: Path) -> tuple[int, int] | None:
+    data = path.read_bytes()
+    if data.startswith(b"\x89PNG\r\n\x1a\n") and len(data) >= 24:
+        return struct.unpack(">II", data[16:24])
+    if data.startswith(b"\xff\xd8"):
+        idx = 2
+        while idx + 9 < len(data):
+            if data[idx] != 0xFF:
+                idx += 1
+                continue
+            marker = data[idx + 1]
+            idx += 2
+            if marker in {0xD8, 0xD9}:
+                continue
+            if idx + 2 > len(data):
+                break
+            segment_len = int.from_bytes(data[idx:idx + 2], "big")
+            if segment_len < 2:
+                break
+            if marker in range(0xC0, 0xC4) or marker in range(0xC5, 0xC8) or marker in range(0xC9, 0xCC) or marker in range(0xCD, 0xD0):
+                if idx + 7 <= len(data):
+                    height = int.from_bytes(data[idx + 3:idx + 5], "big")
+                    width = int.from_bytes(data[idx + 5:idx + 7], "big")
+                    return width, height
+                break
+            idx += segment_len
+    return None
+
+
+def _alignment_metadata(original_path: Path, translated_path: Path, ext: str) -> tuple[str, float]:
+    if ext not in _IMAGE_EXTS:
+        return "filename-only", 0.0
+    try:
+        original_dims = _image_dimensions(original_path)
+        translated_dims = _image_dimensions(translated_path)
+    except OSError:
+        return "filename-only", 0.0
+    if not original_dims or not translated_dims:
+        return "filename-only", 0.0
+    if original_dims == translated_dims:
+        return "visual-verified", 1.0
+    return "visual-warning", 0.5
+
+
+def _make_page_pair(original_path: Path, translated_path: Path, page_id: str, ext: str) -> PagePair:
+    status, score = _alignment_metadata(original_path, translated_path, ext)
+    return PagePair(
+        original_path=str(original_path),
+        translated_path=str(translated_path),
+        page_id=page_id,
+        alignment_status=status,
+        alignment_score=score,
+    )
 
 
 def align(project_dir: Path, learn_dir: str | Path) -> list[PagePair]:
@@ -47,11 +103,7 @@ def align(project_dir: Path, learn_dir: str | Path) -> list[PagePair]:
             continue
         # Generate page_id from filename without extension
         page_id = Path(name).stem
-        pairs.append(PagePair(
-            original_path=str(orig_path),
-            translated_path=str(trans_files[name]),
-            page_id=page_id,
-        ))
+        pairs.append(_make_page_pair(orig_path, trans_files[name], page_id, ext))
 
     return pairs
 
@@ -69,10 +121,6 @@ def align_from_flat_dirs(orig_dir: Path, trans_dir: Path) -> list[PagePair]:
         if ext not in _IMAGE_EXTS and ext not in _TEXT_EXTS:
             continue
         page_id = Path(name).stem
-        pairs.append(PagePair(
-            original_path=str(orig_path),
-            translated_path=str(trans_files[name]),
-            page_id=page_id,
-        ))
+        pairs.append(_make_page_pair(orig_path, trans_files[name], page_id, ext))
 
     return pairs

@@ -9,6 +9,8 @@ class PagePair:
     original_path: str
     translated_path: str
     page_id: str
+    alignment_status: str = "filename-only"
+    alignment_score: float = 0.0
 
 
 @dataclass
@@ -22,6 +24,8 @@ class AlignedPageData:
     speech_patterns: dict     # Language patterns per character
     style_notes: str          # Translation style description
     bubble_pairs: list[dict] = field(default_factory=list)
+    alignment_status: str = "filename-only"
+    alignment_score: float = 0.0
 
 
 @dataclass
@@ -31,5 +35,7 @@ class LearningResult:
     terms: list[dict] = field(default_factory=list)
     style_guide: dict = field(default_factory=dict)
     character_graph: dict = field(default_factory=dict)
+    alignment: list[dict] = field(default_factory=list)
+    alignment_summary: dict[str, int] = field(default_factory=dict)
     quality_report: dict = field(default_factory=dict)
     pages_processed: int = 0

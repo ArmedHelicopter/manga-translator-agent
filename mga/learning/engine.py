@@ -109,8 +109,9 @@ class LearningEngine:
         )
 
         # Write character graph as JSON
+        character_graph_json = json.dumps(result.character_graph, ensure_ascii=False, indent=2) + "\n"
         (output_dir / "character_graph.json").write_text(
-            json.dumps(result.character_graph, ensure_ascii=False, indent=2) + "\n",
+            character_graph_json,
             encoding="utf-8",
         )
 
@@ -119,6 +120,11 @@ class LearningEngine:
             tomli_w.dumps(style_guide),
             encoding="utf-8",
         )
+        (self.project_dir / "character_graph.json").write_text(
+            character_graph_json,
+            encoding="utf-8",
+        )
+        self._write_character_profiles_toml(result)
         self._write_terminology_toml(result)
         self._write_character_graph_state(result)
 
@@ -142,19 +148,97 @@ class LearningEngine:
 
         logger.info("Wrote learning outputs to %s", output_dir)
 
+    def _write_character_profiles_toml(self, result: LearningResult) -> None:
+        profiles_dir = self.project_dir / "character_profiles"
+        profiles_dir.mkdir(parents=True, exist_ok=True)
+        for char in result.characters:
+            char_id = str(char.get("character_id") or "unknown")
+            provenance = char.get("provenance", {})
+            if not isinstance(provenance, dict):
+                provenance = {}
+            if "confidence" not in provenance and char.get("confidence") is not None:
+                provenance["confidence"] = char["confidence"]
+            provenance = {"source": "learning_engine", **provenance}
+            payload = {
+                "meta": {
+                    "character_id": char_id,
+                    "name_jp": str(char.get("name_jp", "")),
+                    "name_zh": str(char.get("name_zh", "")),
+                    "archetype": str(char.get("archetype", "")),
+                    "provenance": provenance,
+                },
+                "speech_patterns": self._stringify_mapping(char.get("speech_patterns", {})),
+                "catchphrases": {
+                    "patterns": [str(item) for item in char.get("catchphrases", [])],
+                },
+                "tone_spectrum": self._stringify_mapping(char.get("tone_spectrum", {})),
+                "translation_notes": self._stringify_mapping(
+                    char.get("translation_notes", {})
+                ),
+            }
+            relationship_speech = self._relationship_speech(char.get("relationship_speech", {}))
+            if relationship_speech:
+                payload["relationship_speech"] = relationship_speech
+            voice_evolution = char.get("voice_evolution", char.get("voice_evolutions", []))
+            if isinstance(voice_evolution, list) and voice_evolution:
+                payload["voice_evolution"] = voice_evolution
+            (profiles_dir / f"{char_id}.toml").write_text(
+                tomli_w.dumps(payload),
+                encoding="utf-8",
+            )
+
+    def _stringify_mapping(self, raw: object) -> dict[str, str]:
+        if not isinstance(raw, dict):
+            return {}
+        result: dict[str, str] = {}
+        for key, value in raw.items():
+            if isinstance(value, list):
+                result[str(key)] = ", ".join(str(item) for item in value)
+            else:
+                result[str(key)] = str(value)
+        return result
+
+    def _relationship_speech(self, raw: object) -> dict[str, dict[str, Any]]:
+        if not isinstance(raw, dict):
+            return {}
+        result: dict[str, dict[str, Any]] = {}
+        for listener, value in raw.items():
+            if not isinstance(value, dict):
+                continue
+            result[str(listener)] = {
+                str(key): [str(part) for part in item] if isinstance(item, list) else str(item)
+                for key, item in value.items()
+            }
+        return result
+
     def _write_terminology_toml(self, result: LearningResult) -> None:
         term_dir = self.project_dir / "terminology"
         term_dir.mkdir(parents=True, exist_ok=True)
         payload = {"terms": {}}
         for term in result.terms:
             key = term.get("term_jp") or term.get("term_id") or "unknown"
-            payload["terms"][key] = {
+            term_payload = {
                 "term_jp": term.get("term_jp", key),
                 "term_target": term.get("term_zh", ""),
                 "strategy": term.get("strategy", ""),
                 "notes": term.get("context", ""),
-                "confirmed": True,
+                "confirmed": False,
+                "pending_human_review": True,
             }
+            if term.get("candidate_translations"):
+                term_payload["candidate_translations"] = [
+                    str(item) for item in term.get("candidate_translations", [])
+                ]
+            if term.get("accepted_reason"):
+                term_payload["accepted_reason"] = str(term["accepted_reason"])
+            if isinstance(term.get("rejected_reasons"), dict) and term["rejected_reasons"]:
+                term_payload["rejected_reasons"] = {
+                    str(candidate): str(reason)
+                    for candidate, reason in term["rejected_reasons"].items()
+                }
+            if term.get("applicability_scope"):
+                term_payload["applicability_scope"] = str(term["applicability_scope"])
+            payload["terms"][key] = term_payload
         (term_dir / "learned.toml").write_text(
             tomli_w.dumps(payload),
             encoding="utf-8",
@@ -203,6 +287,12 @@ class LearningEngine:
             return
 
         for char_data in result.characters:
+            provenance = char_data.get("provenance", {})
+            if not isinstance(provenance, dict):
+                provenance = {}
+            if "confidence" not in provenance and char_data.get("confidence") is not None:
+                provenance["confidence"] = char_data["confidence"]
+            provenance = {"source": "learning_engine", **provenance}
             char_state = CharacterState(
                 character_id=char_data.get("character_id", ""),
                 name_jp=char_data.get("name_jp", ""),
@@ -212,18 +302,36 @@ class LearningEngine:
                 catchphrases=char_data.get("catchphrases", []),
                 tone_spectrum=char_data.get("tone_spectrum", {}),
                 translation_notes=char_data.get("translation_notes", {}),
-                provenance={"source": "learning_engine"},
+                relationship_speech=self._relationship_speech(
+                    char_data.get("relationship_speech", {})
+                ),
+                provenance=provenance,
             )
             StateManager.upsert_character(self.project_dir, char_state)
 
         for term_data in result.terms:
+            provenance = term_data.get("provenance", {})
+            if not isinstance(provenance, dict):
+                provenance = {}
+            provenance = {"source": "learning_engine", **provenance}
             term_state = TermState(
                 term_id=term_data.get("term_id", ""),
                 term_jp=term_data.get("term_jp", ""),
                 term_zh=term_data.get("term_zh", ""),
+                candidate_translations=[
+                    str(item) for item in term_data.get("candidate_translations", [])
+                ],
                 context=term_data.get("context", ""),
                 cultural_weight=term_data.get("cultural_weight", ""),
                 strategy=term_data.get("strategy", ""),
+                accepted_reason=str(term_data.get("accepted_reason", "")),
+                rejected_reasons={
+                    str(candidate): str(reason)
+                    for candidate, reason in term_data.get("rejected_reasons", {}).items()
+                } if isinstance(term_data.get("rejected_reasons"), dict) else {},
+                applicability_scope=str(term_data.get("applicability_scope", "")),
+                provenance=provenance,
+                pending_human_review=True,
                 frequency=term_data.get("frequency", 0),
             )
             StateManager.upsert_term(self.project_dir, term_state)

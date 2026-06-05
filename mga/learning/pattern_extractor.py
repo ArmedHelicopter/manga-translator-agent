@@ -74,6 +74,7 @@ _SCHEMA = {
                     "catchphrases": {"type": "array", "items": {"type": "string"}},
                     "tone_spectrum": {"type": "object"},
                     "translation_notes": {"type": "object"},
+                    "relationship_speech": {"type": "object"},
                 },
                 "required": ["character_id", "name_jp", "name_zh"],
             },
@@ -161,6 +162,8 @@ def extract_patterns(
             terms=raw.get("terms", []),
             style_guide=raw.get("style_guide", {}),
             character_graph=raw.get("character_graph", {"nodes": [], "edges": []}),
+            alignment=aggregated.get("alignment", []),
+            alignment_summary=aggregated.get("alignment_summary", {}),
             pages_processed=len(aligned_pages),
         )
     except Exception as e:
@@ -175,8 +178,17 @@ def _aggregate_pages(pages: list[AlignedPageData]) -> dict:
     speech_samples: dict[str, list[str]] = {}
     style_notes: list[str] = []
     bubble_pairs: list[dict] = []
+    alignment: list[dict] = []
+    alignment_summary: dict[str, int] = {}
 
     for page in pages:
+        status = getattr(page, "alignment_status", "filename-only")
+        alignment.append({
+            "page_id": page.page_id,
+            "status": status,
+            "score": getattr(page, "alignment_score", 0.0),
+        })
+        alignment_summary[status] = alignment_summary.get(status, 0) + 1
         bubble_pairs.extend([
             {"page_id": page.page_id, **pair}
             for pair in getattr(page, "bubble_pairs", [])
@@ -223,6 +235,8 @@ def _aggregate_pages(pages: list[AlignedPageData]) -> dict:
         "terms": list(all_terms.values()),
         "speech_samples": speech_samples,
         "bubble_pairs": bubble_pairs,
+        "alignment": alignment,
+        "alignment_summary": alignment_summary,
         "style_notes": style_notes,
         "total_pages": len(pages),
     }
@@ -230,6 +244,7 @@ def _aggregate_pages(pages: list[AlignedPageData]) -> dict:
 
 def _heuristic_extract(pages: list[AlignedPageData]) -> LearningResult:
     """Fallback heuristic extraction when LLM is unavailable."""
+    aggregated = _aggregate_pages(pages)
     character_map: dict[str, dict] = {}
     term_map: dict[str, dict] = {}
     style_notes: list[str] = []
@@ -289,5 +304,7 @@ def _heuristic_extract(pages: list[AlignedPageData]) -> LearningResult:
             "raw_notes": unique_notes,
         },
         character_graph={"nodes": [], "edges": []},
+        alignment=aggregated.get("alignment", []),
+        alignment_summary=aggregated.get("alignment_summary", {}),
         pages_processed=len(pages),
     )

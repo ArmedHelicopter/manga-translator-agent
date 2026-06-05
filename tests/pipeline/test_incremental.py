@@ -100,6 +100,50 @@ class TestTranslateChapter:
         translator.translate_chapter(in_p, out_p, "ch1")
 
         MockOrchestrator.return_value.run.assert_called_once_with(
+            str(in_p), str(out_p), None, metadata={"chapter_id": "ch1"},
+        )
+
+    @patch("mga.pipeline.incremental.PipelineOrchestrator")
+    def test_constructs_orchestrator_with_active_config(self, MockOrchestrator, project_dir):
+        cfg = object()
+        translator = IncrementalTranslator(project_dir, config=cfg)
+        ctx = _make_context()
+        MockOrchestrator.return_value.run.return_value = ctx
+
+        translator.translate_chapter(project_dir / "input", project_dir / "output", "ch1")
+
+        MockOrchestrator.assert_called_once_with(config=cfg)
+
+    @patch("mga.pipeline.incremental.PipelineOrchestrator")
+    def test_passes_runtime_metadata_when_available(self, MockOrchestrator, translator, project_dir):
+        ctx = _make_context()
+        MockOrchestrator.return_value.run.return_value = ctx
+        metadata = {"artifact_payload_dir": str(project_dir / ".mga-payload")}
+
+        in_p = project_dir / "input"
+        out_p = project_dir / "output"
+        translator.translate_chapter(in_p, out_p, "ch1", metadata=metadata)
+
+        MockOrchestrator.return_value.run.assert_called_once_with(
+            str(in_p),
+            str(out_p),
+            None,
+            metadata={
+                "artifact_payload_dir": str(project_dir / ".mga-payload"),
+                "chapter_id": "ch1",
+            },
+        )
+
+    @patch("mga.pipeline.incremental.PipelineOrchestrator")
+    def test_keeps_simple_orchestrator_call_without_metadata_or_chapter(self, MockOrchestrator, translator, project_dir):
+        ctx = _make_context()
+        MockOrchestrator.return_value.run.return_value = ctx
+
+        in_p = project_dir / "input"
+        out_p = project_dir / "output"
+        translator.translate_chapter(in_p, out_p)
+
+        MockOrchestrator.return_value.run.assert_called_once_with(
             str(in_p), str(out_p), None,
         )
 
@@ -147,13 +191,15 @@ class TestUpdateProfiles:
         tracker_instance = MockTracker.return_value
         tracker_instance.detect_changes.return_value = None
 
-        translator._update_profiles(ctx, "ch1")
+        translator._update_profiles(ctx, "ch12")
 
         mock_builder.assert_called_once_with(
             project_dir,
             character_id="tanaka",
             name_jp="tanaka",
         )
+        tracker_instance.detect_changes.assert_called_once()
+        assert tracker_instance.detect_changes.call_args.kwargs["chapter"] == 12
 
     @patch("mga.memory.evolution_tracker.EvolutionTracker")
     @patch("mga.memory.profile_builder.build_and_save_profile")

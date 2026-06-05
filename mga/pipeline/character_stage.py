@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
-from mga.cultural import CulturalAdapter
+from mga.cultural import CulturalAdapter, load_fictional_script_context
 from mga.memory import MemoryRetrieval
 from mga.memory.seeding import seed_memory_from_external_output
 from mga.memory.state import StateManager
@@ -57,19 +58,47 @@ class CharacterAttributionStage(PipelineStage):
         cultural_adapter = CulturalAdapter(str(project_dir))
         all_memory: dict[str, dict] = {}
         all_cultural: dict[str, dict] = {}
+        all_scene_contexts: dict[str, dict] = {}
+        speaker_ids: set[str] = set()
         all_profiles: dict[str, dict] = {}  # global speaker → profile
+        current_chapter = _current_chapter(context.metadata)
 
         for page in context.pages:
-            page_mem = self._build_memory_context(project_dir, page)
+            page_mem = self._build_memory_context(
+                project_dir,
+                page,
+                current_chapter=current_chapter,
+            )
             page_cult = self._build_cultural_context(cultural_adapter, page)
+            page_scene = self._build_scene_context(
+                project_dir,
+                page,
+                current_chapter=current_chapter,
+            )
             all_memory[page.page_id] = page_mem
             all_cultural[page.page_id] = page_cult
+            if page_scene:
+                all_scene_contexts[page.page_id] = page_scene
             # Accumulate global profiles for QA access
             all_profiles.update(page_mem)
+            speaker_ids.update(page_mem.keys())
 
         context.memory_context = {
             "character_profiles": all_profiles,
             "page_profiles": all_memory,
+            "scene_contexts": all_scene_contexts,
+            "recent_translations": MemoryRetrieval.get_recent_translations(
+                project_dir,
+                speakers=sorted(speaker_ids),
+            ),
+            "profile_warnings": MemoryRetrieval.get_profile_warnings(
+                project_dir,
+                speakers=sorted(speaker_ids),
+                current_chapter=current_chapter,
+            ),
+            "voice_evolutions": self._voice_evolution_context(all_profiles),
+            "chapter_number": current_chapter or 0,
+            "fictional_scripts": load_fictional_script_context(project_dir),
         }
         context.cultural_context = all_cultural
         context.artifacts[self.name] = {
@@ -77,15 +106,44 @@ class CharacterAttributionStage(PipelineStage):
         }
         return context
 
-    def _build_memory_context(self, project_dir: Path, page: object) -> dict:
+    def _build_memory_context(
+        self,
+        project_dir: Path,
+        page: object,
+        *,
+        current_chapter: int | None = None,
+    ) -> dict:
         ctx: dict = {}
         for bubble in page.bubbles:
             speaker = bubble.speaker_id
             if speaker and speaker not in ctx:
-                char_ctx = MemoryRetrieval.get_character_context(project_dir, speaker)
+                char_ctx = MemoryRetrieval.get_character_context(
+                    project_dir,
+                    speaker,
+                    chapter=current_chapter,
+                )
                 if char_ctx:
                     ctx[speaker] = char_ctx
         return ctx
+
+    def _build_scene_context(
+        self,
+        project_dir: Path,
+        page: object,
+        *,
+        current_chapter: int | None = None,
+    ) -> dict:
+        if current_chapter is None:
+            return {}
+        for page_number in _page_number_candidates(page):
+            scene_ctx = MemoryRetrieval.get_scene_context(
+                project_dir,
+                current_chapter,
+                page_number,
+            )
+            if scene_ctx:
+                return scene_ctx
+        return {}
 
     def _build_cultural_context(self, adapter: CulturalAdapter, page: object) -> dict:
         page_json = page.model_dump()
@@ -93,3 +151,40 @@ class CharacterAttributionStage(PipelineStage):
             "translation_context": adapter.get_translation_context(page_json),
             "analysis": adapter.analyze_page(page_json),
         }
+
+    def _voice_evolution_context(self, profiles: dict[str, dict]) -> dict[str, list[dict]]:
+        voice_evolutions: dict[str, list[dict]] = {}
+        for speaker, profile in profiles.items():
+            entries = profile.get("voice_evolutions")
+            if isinstance(entries, list) and entries:
+                voice_evolutions[speaker] = [
+                    entry for entry in entries if isinstance(entry, dict)
+                ]
+        return voice_evolutions
+
+
+def _current_chapter(metadata: dict) -> int | None:
+    for key in ("chapter", "chapter_number", "chapter_id"):
+        value = metadata.get(key)
+        if isinstance(value, bool):
+            continue
+        if isinstance(value, int):
+            return value
+        if isinstance(value, str):
+            match = re.search(r"\d+", value)
+            if match:
+                return int(match.group(0))
+    return None
+
+
+def _page_number_candidates(page: object) -> list[int]:
+    try:
+        page_index = int(getattr(page, "page_index", 0))
+    except (TypeError, ValueError):
+        return []
+
+    candidates: list[int] = []
+    for candidate in (page_index + 1, page_index):
+        if candidate not in candidates:
+            candidates.append(candidate)
+    return candidates

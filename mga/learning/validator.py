@@ -26,6 +26,8 @@ def validate(result: LearningResult) -> dict:
         "has_style_guide": bool(result.style_guide),
         "has_character_graph": bool(result.character_graph),
         "pages_processed": result.pages_processed,
+        "relationship_speech_rules": 0,
+        "alignment_summary": dict(result.alignment_summary),
     }
 
     # 1. Structural validation
@@ -36,6 +38,45 @@ def validate(result: LearningResult) -> dict:
             issues.append({"type": "structural", "severity": "warning", "entity": char.get("name_jp", "?"), "message": "Missing name_zh"})
         if not char.get("character_id"):
             issues.append({"type": "structural", "severity": "warning", "entity": char.get("name_jp", "?"), "message": "Missing character_id"})
+        relationship_speech = char.get("relationship_speech", {})
+        if relationship_speech:
+            if not isinstance(relationship_speech, dict):
+                issues.append({
+                    "type": "structural",
+                    "severity": "warning",
+                    "entity": char.get("character_id") or char.get("name_jp", "?"),
+                    "message": "relationship_speech must be an object",
+                })
+            else:
+                stats["relationship_speech_rules"] += len(relationship_speech)
+                for listener, rule in relationship_speech.items():
+                    if not isinstance(rule, dict):
+                        issues.append({
+                            "type": "structural",
+                            "severity": "warning",
+                            "entity": char.get("character_id") or char.get("name_jp", "?"),
+                            "message": f"relationship_speech rule for '{listener}' must be an object",
+                        })
+                        continue
+                    actionable = {
+                        "honorific_level",
+                        "self_ref",
+                        "sentence_style",
+                        "emotional_override",
+                        "address",
+                        "required_terms",
+                        "forbidden_terms",
+                    }
+                    if not any(key in rule and rule.get(key) for key in actionable):
+                        issues.append({
+                            "type": "completeness",
+                            "severity": "warning",
+                            "entity": char.get("character_id") or char.get("name_jp", "?"),
+                            "message": (
+                                f"relationship_speech rule for '{listener}' has no "
+                                "actionable speech fields"
+                            ),
+                        })
 
     for term in result.terms:
         if not term.get("term_jp"):
@@ -68,7 +109,25 @@ def validate(result: LearningResult) -> dict:
             "message": f"Frequent terms without translation strategy: {terms_str}",
         })
 
-    # 4. Character graph validation
+    # 4. Alignment quality visibility
+    filename_only = result.alignment_summary.get("filename-only", 0)
+    if filename_only:
+        issues.append({
+            "type": "coverage",
+            "severity": "warning",
+            "entity": "alignment",
+            "message": f"Page pairs without visual verification: {filename_only}",
+        })
+    visual_warnings = result.alignment_summary.get("visual-warning", 0)
+    if visual_warnings:
+        issues.append({
+            "type": "consistency",
+            "severity": "warning",
+            "entity": "alignment",
+            "message": f"Page pairs with visual alignment warnings: {visual_warnings}",
+        })
+
+    # 5. Character graph validation
     graph = result.character_graph
     if graph:
         nodes = graph.get("nodes", [])
@@ -90,7 +149,7 @@ def validate(result: LearningResult) -> dict:
                     "message": f"Edge target '{edge.get('target')}' not in nodes",
                 })
 
-    # 5. Duplicate check
+    # 6. Duplicate check
     char_ids = [c.get("character_id") for c in result.characters if c.get("character_id")]
     if len(char_ids) != len(set(char_ids)):
         issues.append({

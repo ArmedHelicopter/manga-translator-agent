@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
+import re
 from typing import Any
 
 from .orchestrator import PipelineOrchestrator
@@ -32,6 +33,7 @@ class IncrementalTranslator:
         input_path: str | Path,
         output_path: str | Path,
         chapter_id: str = "",
+        metadata: dict | None = None,
     ) -> PipelineContext:
         """Translate a single chapter incrementally.
 
@@ -48,8 +50,19 @@ class IncrementalTranslator:
                      self._count_characters(), self._count_terms())
 
         # Step 2: Run translation pipeline
-        orchestrator = PipelineOrchestrator()
-        context = orchestrator.run(str(input_path), str(output_path), self.config)
+        orchestrator = PipelineOrchestrator(config=self.config)
+        run_metadata = dict(metadata or {})
+        if chapter_id:
+            run_metadata["chapter_id"] = chapter_id
+        if run_metadata:
+            context = orchestrator.run(
+                str(input_path),
+                str(output_path),
+                self.config,
+                metadata=run_metadata,
+            )
+        else:
+            context = orchestrator.run(str(input_path), str(output_path), self.config)
 
         # Step 3: Update profiles with new observations
         self._update_profiles(context, chapter_id)
@@ -97,6 +110,7 @@ class IncrementalTranslator:
             )
 
         # Update each speaker's profile
+        chapter_number = _chapter_number(chapter_id)
         for speaker, pairs in speaker_translations.items():
             # Build profile from accumulated translations
             profile = build_and_save_profile(
@@ -119,7 +133,7 @@ class IncrementalTranslator:
 
             if new_patterns:
                 changes = tracker.detect_changes(
-                    speaker, new_patterns, chapter=0, page=0,
+                    speaker, new_patterns, chapter=chapter_number, page=0,
                 )
                 if changes:
                     tracker.record_changes(changes)
@@ -159,3 +173,8 @@ def incremental_translate(
     """Convenience function for incremental translation."""
     translator = IncrementalTranslator(project_dir, config)
     return translator.translate_chapter(input_path, output_path, chapter_id)
+
+
+def _chapter_number(chapter_id: str) -> int:
+    match = re.search(r"\d+", chapter_id or "")
+    return int(match.group(0)) if match else 0
