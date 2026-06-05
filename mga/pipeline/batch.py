@@ -25,10 +25,16 @@ class BatchProcessor:
         project_dir: str | Path,
         config: Any = None,
         max_workers: int = 1,
+        provider_override: str | None = None,
+        config_path: str | None = None,
+        save_json: bool = False,
     ) -> None:
         self.project_dir = Path(project_dir)
         self.config = config
         self.max_workers = max_workers
+        self.provider_override = provider_override
+        self.config_path = config_path
+        self.save_json = save_json
         self._progress_path = self.project_dir / "batch_progress.json"
 
     def process(
@@ -106,7 +112,10 @@ class BatchProcessor:
         output_path = chapter.get("output_path", "")
         chapter_id = chapter.get("chapter_id", input_path)
 
-        translator = IncrementalTranslator(self.project_dir, self.config)
+        translator = IncrementalTranslator(
+            self.project_dir,
+            self._config_for_chapter(input_path, output_path),
+        )
         context = translator.translate_chapter(input_path, output_path, chapter_id)
 
         return {
@@ -117,6 +126,32 @@ class BatchProcessor:
             "input_path": input_path,
             "output_path": output_path,
         }
+
+    def _config_for_chapter(self, input_path: str, output_path: str) -> Any:
+        if self.config is not None:
+            if hasattr(self.config, "model_copy"):
+                return self.config.model_copy(
+                    update={
+                        "working_dir": input_path,
+                        "output_dir": output_path,
+                        "artifact_dir": output_path,
+                    },
+                    deep=True,
+                )
+            return self.config
+
+        from mga.config.loader import build_project_config
+
+        cfg, _ = build_project_config(
+            input_path=input_path,
+            output_path=output_path,
+            provider_override=self.provider_override,
+            save_json=self.save_json,
+            dry_run=False,
+            config_path=self.config_path,
+        )
+        cfg.save_artifacts = self.save_json
+        return cfg
 
     def _load_progress(self) -> dict[str, Any]:
         """Load batch progress from disk."""
@@ -167,6 +202,31 @@ class BatchProcessor:
             ch for ch in chapters
             if progress.get(ch.get("chapter_id", ch.get("input_path", "")), {}).get("status") != "completed"
         ]
+
+    def get_status(self, chapters: list[dict[str, str]]) -> dict[str, Any]:
+        """Return progress status for a chapter manifest."""
+        progress = self._load_progress()
+        results: dict[str, Any] = {}
+        for ch in chapters:
+            cid = ch.get("chapter_id", ch.get("input_path", ""))
+            saved = progress.get(cid, {})
+            status = saved.get("status", "pending")
+            results[cid] = {
+                **saved,
+                "status": status,
+                "chapter_id": cid,
+                "input_path": ch.get("input_path", ""),
+                "output_path": ch.get("output_path", ""),
+            }
+
+        return {
+            "total_chapters": len(chapters),
+            "completed": sum(1 for r in results.values() if r.get("status") == "completed"),
+            "partial": sum(1 for r in results.values() if r.get("status") == "partial"),
+            "failed": sum(1 for r in results.values() if r.get("status") == "failed"),
+            "pending": sum(1 for r in results.values() if r.get("status") == "pending"),
+            "results": results,
+        }
 
     def reset(self) -> None:
         """Clear all progress data."""

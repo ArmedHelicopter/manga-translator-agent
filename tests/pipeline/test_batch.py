@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from mga.models import ProjectConfig
 from mga.pipeline.batch import BatchProcessor
 from mga.pipeline.stages import PipelineContext
 
@@ -153,6 +154,59 @@ class TestSequentialProcessing:
         assert summary["failed"] == 1
         assert "boom" in summary["results"]["c1"]["error"]
 
+    def test_process_single_builds_chapter_config_when_missing(self, monkeypatch, processor):
+        captured = {}
+
+        class FakeTranslator:
+            def __init__(self, project_dir, config):
+                captured["project_dir"] = project_dir
+                captured["config"] = config
+
+            def translate_chapter(self, input_path, output_path, chapter_id):
+                captured["input_path"] = input_path
+                captured["output_path"] = output_path
+                captured["chapter_id"] = chapter_id
+                return _make_context(translations=2)
+
+        def fake_build_project_config(**kwargs):
+            captured["config_kwargs"] = kwargs
+            return ProjectConfig(), {}
+
+        monkeypatch.setattr("mga.pipeline.batch.IncrementalTranslator", FakeTranslator)
+        monkeypatch.setattr("mga.config.loader.build_project_config", fake_build_project_config)
+
+        result = processor._process_single(_make_chapter("c1"))
+
+        assert result["status"] == "completed"
+        assert result["translations"] == 2
+        assert captured["config_kwargs"]["input_path"] == "/input/c1"
+        assert captured["config_kwargs"]["output_path"] == "/output/c1"
+
+    def test_config_for_chapter_maps_save_json_to_save_artifacts(self, monkeypatch, project_dir):
+        captured = []
+
+        def fake_build_project_config(**kwargs):
+            captured.append(kwargs)
+            return ProjectConfig(save_artifacts=True, save_debug_json=kwargs["save_json"]), {}
+
+        monkeypatch.setattr("mga.config.loader.build_project_config", fake_build_project_config)
+
+        without_json = BatchProcessor(project_dir, save_json=False)._config_for_chapter(
+            "/input/c1",
+            "/output/c1",
+        )
+        with_json = BatchProcessor(project_dir, save_json=True)._config_for_chapter(
+            "/input/c2",
+            "/output/c2",
+        )
+
+        assert without_json.save_artifacts is False
+        assert without_json.save_debug_json is False
+        assert with_json.save_artifacts is True
+        assert with_json.save_debug_json is True
+        assert captured[0]["save_json"] is False
+        assert captured[1]["save_json"] is True
+
 
 # ---------------------------------------------------------------------------
 # Tests: Parallel processing
@@ -204,6 +258,33 @@ class TestGetPendingChapters:
         chapters = [_make_chapter("a")]
         pending = processor.get_pending_chapters(chapters)
         assert len(pending) == 1
+
+
+class TestGetStatus:
+    def test_status_counts_completed_partial_failed_and_pending(self, processor):
+        processor._save_progress(
+            {
+                "a": _completed_result("a"),
+                "b": {"status": "partial", "errors": 1},
+                "c": {"status": "failed", "error": "boom"},
+            }
+        )
+        chapters = [
+            _make_chapter("a"),
+            _make_chapter("b"),
+            _make_chapter("c"),
+            _make_chapter("d"),
+        ]
+
+        status = processor.get_status(chapters)
+
+        assert status["total_chapters"] == 4
+        assert status["completed"] == 1
+        assert status["partial"] == 1
+        assert status["failed"] == 1
+        assert status["pending"] == 1
+        assert status["results"]["d"]["status"] == "pending"
+        assert status["results"]["a"]["input_path"] == "/input/a"
 
 
 class TestReset:
