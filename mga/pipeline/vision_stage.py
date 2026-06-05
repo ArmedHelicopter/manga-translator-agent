@@ -284,31 +284,75 @@ class VisionEnrichmentStage(PipelineStage):
         return by_order.get(order)
 
     def _apply_page_level_enrichment(self, page: object, result: dict) -> None:
-        page.visual_footnotes = [
+        existing_footnotes = list(getattr(page, "visual_footnotes", []) or [])
+        new_footnotes = [
             self._make_visual_footnote(item)
             for item in result.get("visual_footnotes", [])
             if isinstance(item, dict)
         ]
+        seen_footnotes = {self._visual_footnote_key(item) for item in existing_footnotes}
+        for footnote in new_footnotes:
+            key = self._visual_footnote_key(footnote)
+            if key in seen_footnotes:
+                continue
+            existing_footnotes.append(footnote)
+            seen_footnotes.add(key)
+        page.visual_footnotes = existing_footnotes
+
+        existing_hints = list(getattr(page, "voice_hints", []) or [])
+        seen_hints = {str(hint).strip() for hint in existing_hints if str(hint).strip()}
         hints = result.get("voice_hints", [])
-        page.voice_hints = [str(h) for h in hints if str(h).strip()]
+        for hint in hints:
+            text = str(hint)
+            key = text.strip()
+            if not key or key in seen_hints:
+                continue
+            existing_hints.append(text)
+            seen_hints.add(key)
+        page.voice_hints = existing_hints
+
+    def _visual_footnote_key(self, footnote: VisualFootnote) -> tuple:
+        bbox = footnote.bbox
+        bbox_key = None
+        if bbox is not None:
+            bbox_key = (bbox.x, bbox.y, bbox.width, bbox.height)
+        return (
+            footnote.source_text,
+            footnote.translation_hint,
+            footnote.kind,
+            bbox_key,
+            footnote.notes,
+        )
 
     def _make_visual_footnote(self, raw: dict) -> VisualFootnote:
-        bbox = raw.get("bbox")
-        parsed_bbox = None
-        if isinstance(bbox, dict):
-            parsed_bbox = BoundingBox(
-                x=float(bbox.get("x", 0.0)),
-                y=float(bbox.get("y", 0.0)),
-                width=float(bbox.get("width", 0.0)),
-                height=float(bbox.get("height", 0.0)),
-            )
         return VisualFootnote(
             source_text=str(raw.get("source_text", "")),
             translation_hint=str(raw.get("translation_hint", "")),
             kind=str(raw.get("kind", "other") or "other"),
-            bbox=parsed_bbox,
+            bbox=self._parse_visual_footnote_bbox(raw.get("bbox")),
             notes=raw.get("notes"),
         )
+
+    def _parse_visual_footnote_bbox(self, bbox: object) -> BoundingBox | None:
+        try:
+            if isinstance(bbox, dict):
+                return BoundingBox(
+                    x=float(bbox.get("x", 0.0)),
+                    y=float(bbox.get("y", 0.0)),
+                    width=float(bbox.get("width", 0.0)),
+                    height=float(bbox.get("height", 0.0)),
+                )
+            if isinstance(bbox, (list, tuple)) and len(bbox) == 4:
+                x, y, width, height = bbox
+                return BoundingBox(
+                    x=float(x),
+                    y=float(y),
+                    width=float(width),
+                    height=float(height),
+                )
+        except (TypeError, ValueError):
+            return None
+        return None
 
 
 VisionStage = VisionEnrichmentStage
