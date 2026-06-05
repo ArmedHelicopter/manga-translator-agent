@@ -430,6 +430,22 @@ def run_export_artifact(
 
     payload_dir.mkdir(parents=True, exist_ok=True)
     runtime_input = _prepare_runtime_image_input(input_dir, payload_dir)
+    export_config_path = payload_dir / "runtime-export-config.json"
+    export_config_path.write_text(
+        json.dumps(
+            {
+                "translator": {
+                    "translator": "none",
+                    "target_lang": "CHS",
+                }
+            },
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
     command = [
         str(external_python),
@@ -438,9 +454,8 @@ def run_export_artifact(
         "-o", str(payload_dir.resolve()),
         "--overwrite",
         "--export-artifact", str(payload_dir.resolve()),
+        "--config-file", str(export_config_path.resolve()),
     ]
-    if config_path:
-        command.extend(["--config-file", str(config_path)])
 
     child_env = _build_external_child_env()
     completed = subprocess.run(
@@ -452,9 +467,11 @@ def run_export_artifact(
         check=False,
     )
 
-    if completed.returncode != 0:
+    output_tail = f"{completed.stdout[-4000:]}\n{completed.stderr[-4000:]}"
+    if completed.returncode != 0 or "ERROR:" in output_tail or "Traceback" in output_tail:
         raise RuntimeError(
             f"Export artifact failed (exit {completed.returncode}).\n"
+            f"stdout: {completed.stdout[-2000:]}\n"
             f"stderr: {completed.stderr[-2000:]}"
         )
 
