@@ -134,6 +134,104 @@ def _check_translation_provider_connectivity(cfg) -> None:
     logger.info("Provider pre-check succeeded with %s", candidate.provider)
 
 
+def _check_vision_provider_capability(cfg, auto_vision_model: bool = False) -> None:
+    """Probe the vision-stage cascade with a 1px image; fail fast on rejection.
+
+    With *auto_vision_model* set, a primary route whose model rejects images is
+    switched (in-memory) to a vision-capable sibling model on the same
+    provider/key instead of aborting.
+    """
+    from mga.providers import get_provider, resolve_provider_candidates
+    from mga.providers.vision_probe import (
+        discover_vision_models,
+        is_image_rejection_error,
+        probe_vision,
+    )
+
+    candidates = list(resolve_provider_candidates(cfg, "vision"))
+    if not candidates:
+        return
+
+    probe_errors: list[str] = []
+    rejected: list = []
+    for candidate in candidates:
+        try:
+            provider = get_provider(candidate.provider, **(candidate.settings or {}))
+        except Exception as exc:  # noqa: BLE001 - connectivity issues surface later in cascade.
+            probe_errors.append(f"{candidate.role}/{candidate.provider}: {exc}")
+            continue
+        ok, err = probe_vision(provider)
+        if ok:
+            logger.info(
+                "Vision pre-check succeeded with %s (%s)",
+                candidate.provider,
+                getattr(provider, "model_name", ""),
+            )
+            return
+        probe_errors.append(f"{candidate.role}/{candidate.provider}: {err}")
+        if is_image_rejection_error(err):
+            rejected.append(candidate)
+
+    if not rejected:
+        # No candidate explicitly rejected images — likely transient/auth issues.
+        # Leave it to the pipeline cascade rather than blocking the run here.
+        logger.warning("Vision pre-check inconclusive: %s", probe_errors)
+        return
+
+    candidate = rejected[0]
+    settings = dict(candidate.settings or {})
+    configured_model = str(
+        settings.get("vision_model") or settings.get("model") or candidate.model or ""
+    )
+    click.echo(
+        f"Vision pre-check: model '{configured_model}' on provider "
+        f"'{candidate.provider}' rejects image input.",
+        err=True,
+    )
+    click.echo("Vision pre-check: probing sibling models on the same provider/key...", err=True)
+    suggestions = discover_vision_models(
+        candidate.provider, settings, current_model=configured_model
+    )
+
+    if auto_vision_model and suggestions:
+        chosen = suggestions[0]
+        stage_cfg = cfg.provider_routes.get("vision")
+        if stage_cfg is not None and stage_cfg.primary.provider == candidate.provider:
+            stage_cfg.primary.model = chosen
+        provider_settings = dict(cfg.provider_settings.get(candidate.provider, {}))
+        provider_settings["vision_model"] = chosen
+        cfg.provider_settings[candidate.provider] = provider_settings
+        click.echo(
+            f"Vision pre-check: auto-switched vision model to '{chosen}' "
+            f"(--auto-vision-model). Update your config to make this permanent.",
+            err=True,
+        )
+        return
+
+    lines = [
+        f"Vision pre-check failed: model '{configured_model}' on provider "
+        f"'{candidate.provider}' does not accept image input, so vision "
+        "enrichment would silently add 0 bubbles.",
+    ]
+    if suggestions:
+        lines.append(
+            f"Vision-capable models available with the same API key: {', '.join(suggestions)}."
+        )
+        lines.append(
+            f"Fix: set vision_model = \"{suggestions[0]}\" under "
+            f"[providers.{candidate.provider}] in your config, or rerun with "
+            "--auto-vision-model to switch automatically for this run."
+        )
+    else:
+        lines.append(
+            "No vision-capable sibling model was found on this provider. "
+            "Configure a vision-capable provider for [stages.vision] "
+            "(e.g. openai/gpt-4o, gemini, openrouter) or use --auto-vision-model "
+            "after adding one."
+        )
+    raise click.ClickException("\n".join(lines))
+
+
 _NOVEL_EXTENSIONS = {".epub", ".txt", ".mobi"}
 _MANGA_FILE_EXTENSIONS = {".pdf", ".epub", ".cbz", ".cbr", ".mobi"}
 _AUTO_MANGA_FILE_EXTENSIONS = {".pdf", ".cbz", ".cbr"}
@@ -223,10 +321,28 @@ def _profile_catchphrases(raw: object) -> list[str]:
     type=click.Path(exists=True),
     help="Reuse an existing runtime payload directory and skip Pass 1 export.",
 )
+@click.option(
+    "--parallel-mode",
+    type=click.Choice(["serial", "parallel", "pipelined"]),
+    default=None,
+    help="Pipeline parallelism mode (default: serial).",
+)
+@click.option(
+    "--concurrency",
+    default=None,
+    type=int,
+    help="Max pages in flight for parallel/pipelined mode (default: 5).",
+)
+@click.option(
+    "--auto-vision-model",
+    is_flag=True,
+    help="If the configured vision model rejects image input, automatically "
+    "switch to a vision-capable model on the same provider/key for this run.",
+)
 def translate(
     input_path, output_path, provider, output_format, mode, learn_from, learn_only,
     output_profiles, lang, config_path, save_json, bilingual, incremental, chapter_id, dry_run,
-    verbose, artifact_payload_dir,
+    verbose, artifact_payload_dir, parallel_mode, concurrency, auto_vision_model,
 ):
     """Run the translation pipeline on INPUT_PATH."""
     from mga.config.loader import build_project_config
@@ -246,6 +362,10 @@ def translate(
     cfg.source_lang, cfg.target_lang = src, tgt
     cfg.pipeline_mode = pipeline_mode
     cfg.save_artifacts = save_json
+    if parallel_mode:
+        cfg.parallel_mode = parallel_mode
+    if concurrency is not None:
+        cfg.pipeline_concurrency = concurrency
     if output_format:
         cfg.output_format = output_format
     elif pipeline_mode == "novel":
@@ -283,6 +403,9 @@ def translate(
         click.echo("Provider pre-check: testing translation provider connectivity...")
         _check_translation_provider_connectivity(cfg)
         click.echo("Provider pre-check: OK")
+        click.echo("Vision pre-check: testing image input capability...")
+        _check_vision_provider_capability(cfg, auto_vision_model=auto_vision_model)
+        click.echo("Vision pre-check: OK")
         if artifact_payload_dir:
             payload_dir = Path(artifact_payload_dir).resolve()
             pipeline_metadata["artifact_payload_dir"] = str(payload_dir)

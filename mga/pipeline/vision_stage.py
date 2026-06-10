@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 
 from mga.models import BoundingBox, Bubble, ProjectConfig, VisualFootnote
@@ -10,18 +11,43 @@ from mga.providers import ProviderCascade
 
 from .stages import PipelineContext, PipelineStage
 
+logger = logging.getLogger(__name__)
+
+
+def _compute_iou(bbox_a: "BoundingBox", bbox_b: "BoundingBox") -> float:
+    """Axis-aligned bounding box IoU."""
+    x1 = max(bbox_a.x, bbox_b.x)
+    y1 = max(bbox_a.y, bbox_b.y)
+    x2 = min(bbox_a.x + bbox_a.width, bbox_b.x + bbox_b.width)
+    y2 = min(bbox_a.y + bbox_a.height, bbox_b.y + bbox_b.height)
+    if x2 <= x1 or y2 <= y1:
+        return 0.0
+    inter = (x2 - x1) * (y2 - y1)
+    area_a = bbox_a.width * bbox_a.height
+    area_b = bbox_b.width * bbox_b.height
+    union = area_a + area_b - inter
+    if union <= 0:
+        return 0.0
+    return inter / union
+
 
 def _build_vision_prompt() -> str:
     return (
-        "Analyze this manga page as visual enrichment for an OCR-first manga translation pipeline.\n"
-        "Do not replace OCR text. For each existing OCR bubble, return optional metadata keyed by bubble_id:\n"
-        "- box_type: dialogue, narration, sfx, sign, letter, graffiti, or other\n"
-        "- provisional_speaker: temporary visible speaker label, not final attribution\n"
-        "- voice_hint: speech style hints such as politeness, catchphrases, tone, register\n"
-        "- tone and notes if visually inferable\n"
-        "Also detect author-drawn or OCR-missed text such as signs, letters, graffiti, and hand lettering.\n"
-        "Return JSON with keys: bubbles, visual_footnotes, voice_hints, scene_summary.\n"
-        "visual_footnotes items should include source_text, translation_hint, kind, optional bbox, and notes."
+        "Analyze this manga page. Your job is to identify ALL visible text regions.\n\n"
+        "For EACH text region you can see (dialogue bubbles, narration boxes, SFX, signs, "
+        "whispered text, small text, handwritten notes, chapter titles), provide:\n"
+        "- source_text: the Japanese/Chinese text exactly as written\n"
+        "- bbox: {x, y, width, height} in pixel coordinates relative to the full image\n"
+        "- box_type: dialogue, narration, sfx, sign, letter, graffiti, chapter_title, or other\n"
+        "- provisional_speaker: visible speaker label if identifiable\n"
+        "- voice_hint: speech style hints (politeness, catchphrases, tone, register)\n"
+        "- confidence: 0.0-1.0 how confident you are in the text extraction\n"
+        "- reading_order: integer reading order (right-to-left, top-to-bottom for manga)\n"
+        "- tone: emotional tone if visually inferable\n"
+        "- notes: any relevant context\n\n"
+        "IMPORTANT: Report ALL text you can see, even small or stylized text. Do not skip any.\n"
+        "Also report visual_footnotes for author-drawn elements that need translation context.\n\n"
+        "Return JSON: {bubbles: [...], visual_footnotes: [...], voice_hints: [...], scene_summary: str}"
     )
 
 
@@ -187,10 +213,12 @@ class VisionEnrichmentStage(PipelineStage):
                 errors.append({"page_id": page.page_id, "error": str(exc)})
 
         existing = dict(context.artifacts.get(self.name, {}))
+        total_supplemented = sum(getattr(p, "_vision_supplemented", 0) for p in context.pages)
         existing.update({
             "source": source,
             "enrichment": "vision",
             "enriched_pages": len(enrichments),
+            "vision_supplemented_bubbles": total_supplemented,
         })
         if errors:
             existing["enrichment_errors"] = errors
@@ -201,6 +229,20 @@ class VisionEnrichmentStage(PipelineStage):
             existing["provider_cascade_errors"] = provider_errors
         if provider_calls:
             existing["provider_cascade_calls"] = provider_calls
+        if context.pages and not provider_calls:
+            # Zero successful vision calls across every page is virtually always a
+            # config/capability problem (e.g. a text-only model configured for the
+            # vision stage) — make it loud instead of burying it in run.json.
+            sample = provider_errors[0] if provider_errors else (errors[0] if errors else {})
+            warning = (
+                "Vision enrichment made 0 successful provider calls across "
+                f"{len(context.pages)} page(s); proceeding with OCR-only bubbles. "
+                "This usually means the configured vision model cannot accept "
+                f"image input. First error: {sample}"
+            )
+            existing["warning"] = warning
+            logger.warning(warning)
+            print(f"[mga] WARNING: {warning}", flush=True)
         context.artifacts[self.name] = existing
         return context
 
@@ -273,6 +315,69 @@ class VisionEnrichmentStage(PipelineStage):
             bubble.vision_notes = raw.get("vision_notes") or raw.get("notes") or bubble.vision_notes
             bubble.tone = raw.get("tone") or bubble.tone
             bubble.notes = raw.get("notes") or bubble.notes
+
+        matched_indices = set()
+        for i, raw in enumerate(result.get("bubbles", [])):
+            bubble = self._match_enrichment_bubble(raw, by_id, by_order, i)
+            if bubble is not None:
+                matched_indices.add(i)
+
+        vision_added = 0
+        for i, raw in enumerate(result.get("bubbles", [])):
+            if i in matched_indices:
+                continue
+
+            raw_bbox = raw.get("bbox")
+            if not raw_bbox:
+                continue
+            try:
+                vision_bbox = BoundingBox(
+                    x=float(raw_bbox.get("x", 0)),
+                    y=float(raw_bbox.get("y", 0)),
+                    width=float(raw_bbox.get("width", 0)),
+                    height=float(raw_bbox.get("height", 0)),
+                )
+            except (AttributeError, TypeError, ValueError):
+                continue
+            if vision_bbox.width <= 0 or vision_bbox.height <= 0:
+                continue
+
+            max_iou = 0.0
+            for existing in page.bubbles:
+                if existing.bbox and existing.bbox.width > 0 and existing.bbox.height > 0:
+                    iou = _compute_iou(vision_bbox, existing.bbox)
+                    max_iou = max(max_iou, iou)
+
+            if max_iou > 0.3:
+                continue
+
+            source_text = raw.get("source_text", "")
+            if not source_text:
+                continue
+
+            page_idx = getattr(page, "page_index", 0)
+            new_bubble = Bubble(
+                bubble_id=f"vision-{page_idx:04d}-{vision_added:04d}",
+                bbox=vision_bbox,
+                source_text=source_text,
+                reading_order=len(page.bubbles),
+                detection_source="vision",
+                vision_confidence=raw.get("confidence"),
+                box_type=raw.get("box_type", "dialogue") or "dialogue",
+                provisional_speaker=raw.get("provisional_speaker"),
+                voice_hint=raw.get("voice_hint"),
+                tone=raw.get("tone"),
+                notes=raw.get("notes"),
+            )
+            page.bubbles.append(new_bubble)
+            vision_added += 1
+
+        supplemented = getattr(page, "_vision_supplemented", 0) + vision_added
+        try:
+            page._vision_supplemented = supplemented
+        except ValueError:
+            object.__setattr__(page, "_vision_supplemented", supplemented)
+
         self._apply_page_level_enrichment(page, result)
         if result.get("scene_summary"):
             page.scene_summary = result["scene_summary"]

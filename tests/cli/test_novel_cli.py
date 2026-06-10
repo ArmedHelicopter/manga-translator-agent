@@ -537,6 +537,7 @@ def test_translate_manga_learn_from_seeds_persona_before_pipeline(tmp_path, monk
     monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
     monkeypatch.setattr(cli_main, "_check_translation_provider_connectivity", fake_precheck)
+    monkeypatch.setattr(cli_main, "_check_vision_provider_capability", lambda cfg, auto_vision_model=False: None)
     monkeypatch.setattr("mga.runtime_bridge.external.run_export_artifact", fake_export)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
     monkeypatch.setattr("mga.pipeline.incremental.IncrementalTranslator", FakeIncrementalTranslator)
@@ -606,6 +607,7 @@ def test_translate_manga_defaults_to_incremental_after_runtime_export(tmp_path, 
 
     cli_main = importlib.import_module("mga.cli.main")
     monkeypatch.setattr(cli_main, "_check_translation_provider_connectivity", fake_precheck)
+    monkeypatch.setattr(cli_main, "_check_vision_provider_capability", lambda cfg, auto_vision_model=False: None)
     monkeypatch.setattr("mga.runtime_bridge.external.run_export_artifact", fake_export)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
     monkeypatch.setattr("mga.pipeline.incremental.IncrementalTranslator", FakeIncrementalTranslator)
@@ -662,6 +664,7 @@ def test_translate_manga_incremental_uses_incremental_translator_after_runtime_e
 
     cli_main = importlib.import_module("mga.cli.main")
     monkeypatch.setattr(cli_main, "_check_translation_provider_connectivity", fake_precheck)
+    monkeypatch.setattr(cli_main, "_check_vision_provider_capability", lambda cfg, auto_vision_model=False: None)
     monkeypatch.setattr("mga.runtime_bridge.external.run_export_artifact", fake_export)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
     monkeypatch.setattr("mga.pipeline.incremental.IncrementalTranslator", FakeIncrementalTranslator)
