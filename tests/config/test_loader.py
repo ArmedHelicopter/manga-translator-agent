@@ -83,7 +83,7 @@ def test_build_project_config_allows_mimo_builtin_defaults(tmp_path):
 
     assert raw["providers"]["mimo"] == {}
     assert cfg.provider_routes["vision"].primary.provider == "mimo"
-    assert cfg.provider_routes["vision"].primary.model == "mimo-v2.5-pro"
+    assert cfg.provider_routes["vision"].primary.model == "mimo-v2.5"
     assert cfg.provider_routes["translation"].primary.provider == "mimo"
     assert cfg.provider_routes["translation"].primary.model == "mimo-v2.5-pro"
     assert cfg.provider_routes["qa"].primary.provider == "mimo"

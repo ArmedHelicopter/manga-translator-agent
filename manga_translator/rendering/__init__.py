@@ -559,15 +559,78 @@ def render(
     #print(f"Final box dimensions: {box.shape if box is not None else 'None'}")  
 
     src_points = np.array([[0, 0], [box.shape[1], 0], [box.shape[1], box.shape[0]], [0, box.shape[0]]]).astype(np.float32)
+    
+    # Safety check: if the text box itself is too large, downscale it first
+    # This can happen with very long text or large font sizes
+    MAX_BOX_DIM = 16384
+    if max(box.shape[0], box.shape[1]) > MAX_BOX_DIM:
+        scale_factor = MAX_BOX_DIM / max(box.shape[0], box.shape[1])
+        new_h = int(box.shape[0] * scale_factor)
+        new_w = int(box.shape[1] * scale_factor)
+        box = cv2.resize(box, (new_w, new_h), interpolation=cv2.INTER_AREA)
+        src_points = np.array([[0, 0], [box.shape[1], 0], [box.shape[1], box.shape[0]], [0, box.shape[0]]]).astype(np.float32)
+    
     #src_pts[:, 0] = np.clip(np.round(src_pts[:, 0]), 0, enlarged_w * 2)
     #src_pts[:, 1] = np.clip(np.round(src_pts[:, 1]), 0, enlarged_h * 2)
 
     M, _ = cv2.findHomography(src_points, dst_points, cv2.RANSAC, 5.0)
-    rgba_region = cv2.warpPerspective(box, M, (img.shape[1], img.shape[0]), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
-    x, y, w, h = cv2.boundingRect(dst_points.astype(np.int32))
-    canvas_region = rgba_region[y:y+h, x:x+w, :3]
-    mask_region = rgba_region[y:y+h, x:x+w, 3:4].astype(np.float32) / 255.0
-    img[y:y+h, x:x+w] = np.clip((img[y:y+h, x:x+w].astype(np.float32) * (1 - mask_region) + canvas_region.astype(np.float32) * mask_region), 0, 255).astype(np.uint8)
+    
+    # Check if image size exceeds OpenCV's internal limit (SHRT_MAX = 32767)
+    # warpPerspective internally uses cv2.remap which has this limitation
+    max_dim = max(img.shape[0], img.shape[1])
+    OPENCV_SIZE_LIMIT = 4096  # Conservative limit to avoid cv2.remap internal overflow
+    
+    if max_dim > OPENCV_SIZE_LIMIT:
+        # For large images, render to a local region only (bounding box of text)
+        x, y, w, h = cv2.boundingRect(dst_points.astype(np.int32))
+        # Add padding to avoid edge artifacts
+        pad = 50
+        x_start = max(0, x - pad)
+        y_start = max(0, y - pad)
+        x_end = min(img.shape[1], x + w + pad)
+        y_end = min(img.shape[0], y + h + pad)
+        
+        # Create a smaller canvas for this region
+        local_w = x_end - x_start
+        local_h = y_end - y_start
+        
+        # Safety check: if local region is still too large, skip this bubble
+        # This prevents crashes on extremely large text regions
+        MAX_LOCAL_DIM = 8192
+        if max(local_w, local_h) > MAX_LOCAL_DIM:
+            # Log warning and return image unchanged for this bubble
+            import logging
+            logging.warning(f"Skipping text rendering for oversized bubble: {local_w}x{local_h} exceeds {MAX_LOCAL_DIM}px limit")
+            return img
+        
+        # Adjust dst_points to local coordinates
+        dst_points_local = dst_points.copy().astype(np.float32)
+        dst_points_local[..., 0] -= x_start
+        dst_points_local[..., 1] -= y_start
+        
+        # Re-compute homography for local region
+        M_local, _ = cv2.findHomography(src_points, dst_points_local, cv2.RANSAC, 5.0)
+        
+        # Render to local region (much smaller, within OpenCV limits)
+        rgba_region = cv2.warpPerspective(box, M_local, (local_w, local_h), 
+                                         flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+        
+        # Composite onto the original image
+        canvas_region = rgba_region[:, :, :3]
+        mask_region = rgba_region[:, :, 3:4].astype(np.float32) / 255.0
+        img[y_start:y_end, x_start:x_end] = np.clip(
+            (img[y_start:y_end, x_start:x_end].astype(np.float32) * (1 - mask_region) + 
+             canvas_region.astype(np.float32) * mask_region), 0, 255).astype(np.uint8)
+    else:
+        # Normal path for standard-sized images
+        rgba_region = cv2.warpPerspective(box, M, (img.shape[1], img.shape[0]), 
+                                         flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+        x, y, w, h = cv2.boundingRect(dst_points.astype(np.int32))
+        canvas_region = rgba_region[y:y+h, x:x+w, :3]
+        mask_region = rgba_region[y:y+h, x:x+w, 3:4].astype(np.float32) / 255.0
+        img[y:y+h, x:x+w] = np.clip((img[y:y+h, x:x+w].astype(np.float32) * (1 - mask_region) + 
+                                    canvas_region.astype(np.float32) * mask_region), 0, 255).astype(np.uint8)
+    
     return img
 
 async def dispatch_eng_render(img_canvas: np.ndarray, original_img: np.ndarray, text_regions: List[TextBlock], font_path: str = '', line_spacing: int = 0, disable_font_border: bool = False) -> np.ndarray:

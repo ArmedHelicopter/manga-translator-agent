@@ -42,7 +42,7 @@ def test_get_provider_mimo_uses_openai_compatible_defaults(monkeypatch):
     provider = get_provider("mimo")
 
     assert provider.__class__.__name__ == "OpenAIProvider"
-    assert provider.model_name == "mimo-v2.5-pro"
+    assert provider.model_name == "mimo-v2.5"
     assert captured["api_key"] == "mimo-key"
     assert str(captured["base_url"]) == "https://token-plan-cn.xiaomimimo.com/v1"
 

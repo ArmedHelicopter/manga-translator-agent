@@ -25,10 +25,12 @@ _PROVIDER_PROFILES: dict[str, dict[str, Any]] = {
         "api_key_env": "MIMO_API_KEY",
         "base_url_env": "MIMO_BASE_URL",
         "base_url": "https://token-plan-cn.xiaomimimo.com/v1",
-        "vision_model": "mimo-v2.5-pro",
+        "vision_model": "mimo-v2.5",
         "text_model": "mimo-v2.5-pro",
     },
 }
+
+_VALID_NAMES: frozenset[str] = frozenset(set(_PROVIDER_MAP) | set(_PROVIDER_PROFILES))
 
 
 def get_provider_model_default(name: str, stage: str | None = None) -> str:
