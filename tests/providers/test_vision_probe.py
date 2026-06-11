@@ -143,15 +143,15 @@ def _vision_cfg(model: str = "text-only-model") -> ProjectConfig:
 
 def test_vision_precheck_passes_when_capable(monkeypatch):
     cfg = _vision_cfg()
-    monkeypatch.setattr("mga.providers.registry.get_provider", lambda name, **kw: FakeProvider())
+    monkeypatch.setattr("mga.providers.factory.create_provider", lambda name, settings=None, **kw: FakeProvider())
     _check_vision_provider_capability(cfg)  # should not raise
 
 
 def test_vision_precheck_fails_with_suggestions(monkeypatch):
     cfg = _vision_cfg("text-only-model")
     monkeypatch.setattr(
-        "mga.providers.registry.get_provider",
-        lambda name, **kw: FakeProvider(
+        "mga.providers.factory.create_provider",
+        lambda name, settings=None, **kw: FakeProvider(
             vision_ok=False, error="No endpoints found that support image input"
         ),
     )
@@ -172,8 +172,8 @@ def test_vision_precheck_fails_with_suggestions(monkeypatch):
 def test_vision_precheck_fails_without_suggestions(monkeypatch):
     cfg = _vision_cfg()
     monkeypatch.setattr(
-        "mga.providers.registry.get_provider",
-        lambda name, **kw: FakeProvider(
+        "mga.providers.factory.create_provider",
+        lambda name, settings=None, **kw: FakeProvider(
             vision_ok=False, error="does not support image inputs"
         ),
     )
@@ -189,8 +189,8 @@ def test_vision_precheck_fails_without_suggestions(monkeypatch):
 def test_vision_precheck_auto_switches_when_flag_set(monkeypatch):
     cfg = _vision_cfg("text-only-model")
     monkeypatch.setattr(
-        "mga.providers.registry.get_provider",
-        lambda name, **kw: FakeProvider(
+        "mga.providers.factory.create_provider",
+        lambda name, settings=None, **kw: FakeProvider(
             vision_ok=False, error="No endpoints found that support image input"
         ),
     )
@@ -209,8 +209,8 @@ def test_vision_precheck_inconclusive_on_transient_error(monkeypatch):
     """Auth/connectivity failures must not abort the run (cascade handles them)."""
     cfg = _vision_cfg()
     monkeypatch.setattr(
-        "mga.providers.registry.get_provider",
-        lambda name, **kw: FakeProvider(vision_ok=False, error="Invalid API Key"),
+        "mga.providers.factory.create_provider",
+        lambda name, settings=None, **kw: FakeProvider(vision_ok=False, error="Invalid API Key"),
     )
     _check_vision_provider_capability(cfg)  # should not raise
 

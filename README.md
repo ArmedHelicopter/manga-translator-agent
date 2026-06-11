@@ -4,20 +4,34 @@
 
 ## Architecture
 
-```text
-┌──────────────────────────────────────────────┐
-│ mga intelligence layer                       │
-│ OCR-aware translation · Vision enrichment   │
-│ QA · memory/wiki infrastructure             │
-├──────────────────────────────────────────────┤
-│ mga orchestration layer                      │
-│ 7-stage pipeline · artifacts · benchmark     │
-│ incremental · batch · review · config       │
-├──────────────────────────────────────────────┤
-│ external runtime core                        │
-│ detection · OCR · inpainting · rendering    │
-│ provided by manga-image-translator          │
-└──────────────────────────────────────────────┘
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Layer 0: Models (zero deps)                                                │
+│   models/ — Pydantic v2 data models                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Layer 1: Infrastructure (depends on Layer 0)                                │
+│   config/ — TOML config loading, provider route resolution                 │
+│   format/ — FormatAdapter ABC + 6 adapters (images, PDF, EPUB, CBZ, MOBI)  │
+│   providers/ — LLMProvider ABC + 9 providers + factory + cascade           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Layer 2: Intelligence (depends on Layers 0-1)                                │
+│   memory/ — Dual-structure state (JSON) + wiki projection (Markdown)       │
+│   cultural/ — Problem classification, 7 strategies, terminology, honorific │
+│   qa/ — 9 proofreaders + orchestrator                                      │
+│   learning/ — 4-stage translation learning engine (L1-L4)                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Layer 3: Orchestration (depends on Layers 0-2)                             │
+│   pipeline/ — 7-stage pipeline + incremental + batch                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Layer 4: Interface                                                          │
+│   cli/ — Click CLI (translate, benchmark-external, legacy, memory, profile) │
+│   web/ — Web server for monitoring                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Layer 5: Runtime Bridge                                                    │
+│   runtime_bridge/ — External runtime subprocess integration                 │
+│   artifacts/ — ArtifactStore for structured output                        │
+│   benchmark/ — Extraction, translation, and external benchmarks           │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Features
@@ -25,12 +39,14 @@
 - **OCR-first manga path** — Runtime OCR and geometry are authoritative for text and rendering.
 - **Vision Enrichment** — Vision adds box type, visual footnotes, provisional speaker labels, and voice hints; it does not replace OCR text or final speaker attribution.
 - **Translation Context** — Translation prompts consume Vision hints and any available memory/cultural context.
-- **QA Proofreading** — Proofreader modules exist for fact, hallucination, character consistency, fictional script, dialog hierarchy, cultural QA, emotion, language evolution, and style polish checks.
-- **Memory/Wiki Infrastructure** — Dual-structure JSON state plus Markdown wiki projection.
-- **Learning Engine Infrastructure** — L1-L4 learning modules and tests exist, but the manga production path still needs stronger end-to-end validation before treating warm-start character simulation as shipped.
-- **Incremental/Batch Infrastructure** — Modules exist for future workflows; current default product path is the two-pass manga CLI.
+- **QA Proofreading** — 9 proofreader modules: fact, hallucination, character consistency, fictional script, dialog hierarchy, cultural QA, emotion, language evolution, style polish.
+- **Memory/Wiki Infrastructure** — Dual-structure: JSON canonical state + Markdown wiki projection. Includes character graph, evolution tracking, profile loading/building.
+- **Cultural Adaptation** — 7 strategies: literal, adapt, coined, transliterate, contextual, preserve, hybrid. Includes terminology DB, honorific compensator, coinage detector.
+- **Learning Engine** — 4-stage pipeline: L1 Align → L2 Dual Vision → L3 Pattern Extractor → L4 Validator.
+- **Incremental/Batch Processing** — Load previous chapter context, translate, update profiles. Multi-chapter parallel processing with resume.
 - **9 LLM Providers** — OpenAI, Anthropic, Gemini, DeepSeek, OpenRouter, Ollama, vLLM, LM Studio, llama.cpp
 - **6 Format Adapters** — Images, PDF, EPUB, CBZ/CBR, MOBI, Bilingual PDF
+- **Vision Capability Pre-check** — Opt-in auto-switch when configured provider lacks vision support.
 
 ## Quick Start
 
@@ -53,45 +69,66 @@ pytest tests/ -v
 
 ## Package Layout
 
-```text
+```
 mga/
 ├── artifacts/       # ArtifactStore for structured output
-├── benchmark/       # Extraction, translation, and external benchmarks
-├── cli/             # Click CLI (translate, benchmark-external, legacy, memory, profile, term)
+├── benchmark/       # External runtime benchmarks
+├── cache/           # LLM response caching
+├── cli/             # Click CLI (translate, benchmark, legacy, memory, profile, term)
 ├── config/          # TOML config loading, provider route resolution
-├── cultural/        # Problem classification, strategies, terminology DB, honorific, coinage
-├── format/          # FormatAdapter ABC + 6 adapters
+├── cultural/        # Problem classification, strategies, terminology, honorific, coinage
+├── format/          # FormatAdapter ABC + 6 adapters (images, PDF, EPUB, CBZ, MOBI, bilingual)
 ├── learning/        # 4-stage translation learning engine (L1-L4)
 ├── memory/          # Dual-structure state + wiki + graph + profiles + evolution tracker
 ├── models/          # Pydantic v2 data models
-├── pipeline/        # 7-stage pipeline + incremental + batch
-├── providers/       # LLMProvider ABC + 9 providers + registry
+├── ocr/            # OCR guard, recovery strategies, detector
+├── pipeline/        # 7-stage pipeline + incremental + batch + streamlined translation
+├── providers/       # LLMProvider ABC + 9 providers + factory + cascade
 ├── qa/              # 9 proofreaders + orchestrator
 ├── review/          # Review diff tools
-└── runtime_bridge/  # External runtime subprocess integration
+├── runtime_bridge/  # External runtime subprocess integration
+├── util/            # Utility functions (JSON helpers)
+└── web/             # Web server for monitoring
 ```
 
 ## Pipeline
 
 ```
-Format → OCR Artifact → Vision Enrichment → Character+Culture → Translation → QA → Render → Output
+Format → OCR Artifact → Vision Enrichment → Speaker Attribution → Character → Translation → QA → Render → Output
 ```
 
-When the external runtime (`manga-image-translator`) is available, the pipeline uses a two-pass architecture:
+### Two-Pass Architecture
+
+When the external runtime (`manga-image-translator`) is available:
 
 1. **Pass 1** — Runtime runs detect/OCR/merge/inpaint, exports `artifact.json` + `inpainted.png`
 2. **Enrichment + Intelligence** — mga reads OCR text regions, runs Vision enrichment for box types, visual footnotes, and provisional voice hints, then runs character/cultural adaptation, translation, and QA
 3. **Pass 2** — Runtime loads mga translations and renders them onto the inpainted image
 
-OCR/runtime output is authoritative for bubble text and render geometry. Vision enrichment must not overwrite OCR text or drive final speaker attribution; OCR-missed author-drawn text is carried as page-level footnotes. When the runtime is unavailable, the pipeline falls back to LLM vision for degraded JSON artifacts only (no guaranteed rendered images).
+### OCR/Runtime Authority
 
-Current implementation status:
+OCR/runtime output is authoritative for bubble text and render geometry. Vision enrichment must not overwrite OCR text or drive final speaker attribution; OCR-missed author-drawn text is carried as page-level footnotes.
 
-- The installed `manga-translate` entrypoint resolves to `mga.cli.main:main` and enters the mga pipeline after runtime artifact export.
-- The compatibility shim `manga_translate.cli` is legacy external-core plumbing kept for older tests/imports; it is not the source of truth for the product pipeline.
-- The intelligent layer now has a minimum page-sequential memory loop for formal `speaker_id`: translated bubbles update `CharacterState`, later pages can read the updated style context, and `context.artifacts["character_memory"]` records the trace. The current style model is still a lightweight heuristic, not a mature character voice model.
-- Vision provisional speakers are prompt hints only. `SpeakerAttributionStage` may conservatively promote exact matches against existing character profiles into formal `speaker_id`; unmatched or generic hints are traced but not written to character memory.
-- Provider routing is stage-aware in config, with primary → fallback → local runtime cascade coverage for pipeline stages, learning, benchmarks, the compatibility shim, and the public provider API.
+### Memory Loop
+
+The intelligent layer has a minimum page-sequential memory loop for formal `speaker_id`: translated bubbles update `CharacterState`, later pages can read the updated style context, and `context.artifacts["character_memory"]` records the trace.
+
+## Provider Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ ProviderFactory (factory.py)                               │
+│   create_provider(name, settings) → LLMProvider            │
+│   register_provider(name, cls)                             │
+│   get_provider(name, **kwargs) → LLMProvider (compat)     │
+├─────────────────────────────────────────────────────────────┤
+│ ProviderRegistry (registry.py)                             │
+│   Stage-aware routing: primary → fallback → local          │
+│   ProviderCascade for automatic failover                    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+Supported providers: `openai`, `anthropic`, `gemini`, `deepseek`, `openrouter`, `ollama`, `vllm`, `lmstudio`, `llamacpp`
 
 ## CLI Reference
 
@@ -101,22 +138,42 @@ Current implementation status:
 | `manga-translate input/ --learn-from dir/` | Warm start from existing translations |
 | `manga-translate --bilingual` | Output bilingual PDF |
 | `manga-translate --save-json` | Save translation report + debug artifacts |
-| `manga-translate --artifact-payload-dir dir/` | Reuse an exported runtime payload and run the mga pipeline |
+| `manga-translate --artifact-payload-dir dir/` | Reuse exported runtime payload |
 | `manga-translate benchmark-external` | Run external runtime benchmark |
 | `manga-translate legacy benchmark-extraction` | Legacy extraction benchmark |
 | `manga-translate memory init/sync` | Memory management |
 | `manga-translate profile list` | List character profiles |
 | `manga-translate term list` | List terminology |
 
+## Configuration
+
+Create `config.toml` or use `~/.config/manga-translate/config.toml`:
+
+```toml
+[providers]
+openai.api_key = "sk-..."
+anthropic.api_key = "sk-ant-..."
+
+[[provider_routes.vision]]
+primary = { provider = "openai", model = "gpt-4o" }
+fallback = { provider = "anthropic", model = "claude-3-5-sonnet" }
+
+[[provider_routes.translate]]
+primary = { provider = "openai", model = "gpt-4o" }
+fallback = { provider = "deepseek", model = "deepseek-chat" }
+```
+
 ## Tests
 
 ```bash
-pytest tests/ -v
-pytest tests/qa/ -v       # QA proofreaders
-pytest tests/cultural/    # Cultural adaptation
-pytest tests/learning/    # Learning engine
-pytest tests/memory/      # Memory/wiki/graph
-pytest tests/pipeline/    # Pipeline stages + incremental + batch
+pytest tests/ -v                    # All tests
+pytest tests/providers/ -v         # Provider tests
+pytest tests/qa/ -v                # QA proofreaders
+pytest tests/cultural/ -v          # Cultural adaptation
+pytest tests/learning/ -v          # Learning engine
+pytest tests/memory/ -v           # Memory/wiki/graph
+pytest tests/pipeline/ -v          # Pipeline stages + incremental + batch
+pytest tests/ocr/ -v               # OCR guard and recovery
 ```
 
 ## Related Docs

@@ -141,7 +141,8 @@ def _check_vision_provider_capability(cfg, auto_vision_model: bool = False) -> N
     switched (in-memory) to a vision-capable sibling model on the same
     provider/key instead of aborting.
     """
-    from mga.providers import get_provider, resolve_provider_candidates
+    from mga.providers.cascade import resolve_provider_candidates
+    from mga.providers.factory import create_provider
     from mga.providers.vision_probe import (
         discover_vision_models,
         is_image_rejection_error,
@@ -156,7 +157,7 @@ def _check_vision_provider_capability(cfg, auto_vision_model: bool = False) -> N
     rejected: list = []
     for candidate in candidates:
         try:
-            provider = get_provider(candidate.provider, **(candidate.settings or {}))
+            provider = create_provider(candidate.provider, candidate.settings or {})
         except Exception as exc:  # noqa: BLE001 - connectivity issues surface later in cascade.
             probe_errors.append(f"{candidate.role}/{candidate.provider}: {exc}")
             continue
