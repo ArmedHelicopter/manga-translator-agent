@@ -6,33 +6,62 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Manga Translate Agent (`mga`) — an external-first manga translation agent with character consistency, cultural adaptation, QA proofreading, and memory/wiki system. Uses `manga-image-translator` as the rendering runtime (invoked via subprocess), while `mga` handles intelligence, orchestration, and review.
 
-## Architecture (6 Layers)
+## Architecture (4 Layers — Token-Optimized, High Cohesion)
 
 ```
-Layer 0: Models (zero deps)
-  mga/models/          — Pydantic v2 data models
+Layer 0: Core (mga/core) — Zero-dependency foundation
+  models.py       — Domain models (PipelineContext, TranslationCandidate, etc.)
+  services.py     — TranslationService (unified LLM interface)
+  provider_factory.py — create_provider(), ProviderCascade (all 9 providers)
+  memory_service.py   — MemoryService (character/scene/terminology)
+  cultural_service.py — CulturalService (adaptation, terminology)
+  NOTE: All Layer 1+ modules import ONLY from mga.core, never directly from Layer 1 modules
 
 Layer 1: Infrastructure (depends on Layer 0)
   mga/config/          — TOML config loading, provider route resolution
-  mga/format/          — FormatAdapter ABC + 6 adapters (images, PDF, EPUB, CBZ/CBR, MOBI, bilingual)
-  mga/providers/       — LLMProvider ABC + 9 providers + registry with fallback cascade
+  mga/format/          — FormatAdapter ABC + 6 adapters
 
-Layer 2: Intelligence (depends on Layers 0-1)
-  mga/memory/          — Dual-structure state (JSON) + wiki projection (Markdown) + graph + profiles
-  mga/cultural/        — Problem classification, 7 strategies, terminology DB, honorific compensation, coinage detection
+Layer 2: Domain (depends on Layer 0)
+  mga/memory/          — State management, wiki sync, graph operations
+  mga/cultural/        — Extended cultural features (honorific, coinage, etc.)
   mga/qa/              — 9 proofreaders + orchestrator
-  mga/learning/        — 4-stage translation learning engine (L1-L4)
+  mga/learning/        — 4-stage translation learning engine
 
 Layer 3: Orchestration (depends on Layers 0-2)
-  mga/pipeline/        — 7-stage pipeline + incremental translation + batch processing
+  mga/pipeline/        — 7-stage pipeline + incremental + batch
 
 Layer 4: Interface
-  mga/cli/             — Click CLI (translate, benchmark-external, legacy, memory, profile, term)
+  mga/cli/             — Click CLI (translate, benchmark, memory, profile, term)
 
 Layer 5: Runtime Bridge
   mga/runtime_bridge/  — External runtime subprocess integration
-  mga/artifacts/       — ArtifactStore for structured output
-  mga/benchmark/       — Extraction, translation, and external benchmarks
+  mga/artifacts/       — ArtifactStore, run summary
+  mga/benchmark/       — Extraction, translation, external benchmarks
+```
+
+## Core Layer Quick Reference
+
+```python
+from mga.core import (
+    # Models
+    PipelineContext, ProjectConfig, TranslationCandidate,
+    # Services
+    TranslationService, MemoryService, CulturalService,
+    # Providers
+    create_provider, ProviderCascade,
+    # Convenience
+    translate_bubble, init_memory,
+)
+
+# Create a provider
+provider = create_provider("openai", {"api_key": "sk-..."})
+
+# Create services
+mem_service = MemoryService("./project")
+cult_service = CulturalService("./project")
+
+# Translate a bubble
+result = translate_bubble(config, "こんにちは")
 ```
 
 ## Providers (9 concrete)
