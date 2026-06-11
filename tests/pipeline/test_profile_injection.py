@@ -33,7 +33,7 @@ def test_prompt_with_full_profile():
     assert "严肃" in result
     assert "保留" in result
     assert "Source: 元気ですか？" in result
-    assert "Return a JSON" in result
+    assert "Return JSON" in result
 
 
 # ── Minimal profile ────────────────────────────────────────────
@@ -67,7 +67,7 @@ def test_prompt_without_profile():
     # Should not contain profile section
     assert "角色档案" not in result
     assert "Source: おはよう" in result
-    assert "Return a JSON" in result
+    assert "Return JSON" in result
 
 
 # ── Cultural context ───────────────────────────────────────────
@@ -100,7 +100,7 @@ def test_prompt_structure():
 
     assert "角色档案" in result
     assert "Source: よろしく" in result
-    assert "Return a JSON" in result
+    assert "Return JSON" in result
     # Verify it asks for text and rationale keys
     assert "'text'" in result
     assert "'rationale'" in result

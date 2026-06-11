@@ -4,11 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from mga.memory.entities import CharacterState
 from mga.memory.profile_loader import get_profile_as_dict
 from mga.memory.state import StateManager
+
+if TYPE_CHECKING:
+    from mga.memory.service import MemoryService
 
 
 @dataclass(frozen=True)
@@ -20,10 +23,40 @@ class CharacterMemoryUpdate:
 
 
 class CharacterMemoryUpdater:
-    """Update structured character memory from page-sequential translations."""
+    """Update structured character memory from page-sequential translations.
 
-    def __init__(self, project_dir: Path) -> None:
+    Supports optional MemoryService for LRU-cached profile lookups.
+    When memory_service is provided, profile lookups use O(1) L1 cache.
+    """
+
+    def __init__(
+        self,
+        project_dir: Path,
+        memory_service: "MemoryService | None" = None,
+    ) -> None:
         self.project_dir = project_dir
+        self._memory_service = memory_service
+
+    def _get_profile(self, speaker: str) -> CharacterState | None:
+        """Get character profile via MemoryService cache or StateManager."""
+        if self._memory_service is not None:
+            profile = self._memory_service.get_character(speaker)
+            if profile is not None:
+                # Convert CharacterProfile back to CharacterState for compatibility
+                return CharacterState(
+                    character_id=profile.character_id,
+                    name_jp=profile.name_jp,
+                    name_zh=profile.name_zh,
+                    archetype=profile.archetype,
+                    speech_patterns=profile.speech_patterns,
+                    catchphrases=profile.catchphrases,
+                    tone_spectrum=profile.tone_spectrum,
+                    translation_notes=profile.translation_notes,
+                    relationship_speech=profile.relationships,
+                    voice_evolutions=profile.voice_evolutions,
+                    provenance=profile.provenance,
+                )
+        return StateManager.get_character(self.project_dir, speaker)
 
     def update_from_translation(
         self,
@@ -56,7 +89,7 @@ class CharacterMemoryUpdater:
 
     def profile_for_speaker(self, speaker: str) -> dict[str, Any] | None:
         """Return a prompt-ready profile dict for a speaker, if persisted."""
-        profile = StateManager.get_character(self.project_dir, speaker)
+        profile = self._get_profile(speaker)
         if profile is None:
             return None
         return get_profile_as_dict(profile)
@@ -81,7 +114,7 @@ class CharacterMemoryUpdater:
         page_id: str,
         translated_text: str,
     ) -> dict[str, Any]:
-        profile = StateManager.get_character(self.project_dir, speaker)
+        profile = self._get_profile(speaker)
         if profile is None:
             profile = CharacterState(
                 character_id=speaker,

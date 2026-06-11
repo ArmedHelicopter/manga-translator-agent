@@ -1,28 +1,17 @@
-"""Base classes for the 7-stage translation pipeline."""
+"""Base classes for the 7-stage translation pipeline.
+
+Re-exports PipelineContext from context.py for backward compatibility.
+New code should import from context.py directly for typed sub-contexts.
+"""
 
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any
 
-from pydantic import BaseModel, Field
+from .context import PipelineContext
 
-from mga.models import Page, ProjectConfig, TranslationCandidate
-
-
-class PipelineContext(BaseModel):
-    """Mutable context passed between pipeline stages."""
-
-    project_config: Any = None
-    pages: list[Page] = Field(default_factory=list)
-    current_page: Page | None = None
-    translations: list[TranslationCandidate] = Field(default_factory=list)
-    qa_report: dict = Field(default_factory=dict)
-    cultural_context: dict = Field(default_factory=dict)
-    memory_context: dict = Field(default_factory=dict)
-    artifacts: dict[str, Any] = Field(default_factory=dict)
-    errors: list[dict] = Field(default_factory=list)
-    metadata: dict[str, Any] = Field(default_factory=dict)
+# Re-export for backward compatibility
+__all__ = ["PipelineContext", "PipelineStage"]
 
 
 class PipelineStage(ABC):

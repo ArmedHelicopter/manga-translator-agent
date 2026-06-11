@@ -131,6 +131,7 @@ class TestTranslateChapter:
             metadata={
                 "artifact_payload_dir": str(project_dir / ".mga-payload"),
                 "chapter_id": "ch1",
+                "type": "external-two-pass",
             },
         )
 

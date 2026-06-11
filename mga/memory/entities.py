@@ -55,6 +55,8 @@ class TermState(BaseModel):
     provenance: dict[str, Any] = Field(default_factory=dict)
     pending_human_review: bool = False
     frequency: int = 0
+    grade: str = ""  # G1-G7 grading
+    status: str = ""  # pending/confirmed/rejected
 
 
 class DecisionState(BaseModel):

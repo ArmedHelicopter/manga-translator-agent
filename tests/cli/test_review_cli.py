@@ -156,7 +156,7 @@ def test_review_report_cli_writes_review_report_artifact(tmp_path: Path) -> None
     )
 
     assert result.exit_code == 0, result.output
-    assert "1 pages, 1 needing human review" in result.output
+    assert "1 pages, 1 need review" in result.output
     payload = json.loads((output_dir / "review" / "report.json").read_text(encoding="utf-8"))
     assert payload["summary"]["total_pages"] == 1
     assert payload["summary"]["pages_needing_human_review"] == 1

@@ -57,6 +57,8 @@ def test_term_edit_creates_terminology_entry(tmp_path: Path) -> None:
         "provenance": {},
         "pending_human_review": False,
         "frequency": 3,
+        "grade": "",
+        "status": "",
     }
 
 

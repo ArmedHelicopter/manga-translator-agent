@@ -3,9 +3,13 @@
 Dual-structure memory system:
 - Structured state (JSON) is the canonical source of truth
 - Wiki projections (Markdown) are human-readable annotations
+
+Single entry point: use get_memory_service(project_dir) for all operations.
 """
 
 from __future__ import annotations
+
+from pathlib import Path
 
 from mga.memory.entities import (
     CharacterState,
@@ -14,30 +18,49 @@ from mga.memory.entities import (
     SceneState,
     TermState,
 )
-from mga.memory.learn import LearnEngine
-from mga.memory.retrieval import MemoryRetrieval
-from mga.memory.seeding import seed_memory_from_external_output
 from mga.memory.state import StateManager
 from mga.memory.sync import state_to_wiki, wiki_to_state
 from mga.memory.wiki import WikiProjection
 
+# Lazy imports for heavy modules
 __all__ = [
+    # Core entities (import directly for type hints)
     "CharacterState",
     "DecisionState",
-    "LearnEngine",
     "MemoryIndex",
-    "MemoryRetrieval",
     "SceneState",
-    "StateManager",
     "TermState",
+    # State management
+    "StateManager",
     "WikiProjection",
+    "state_to_wiki",
+    "wiki_to_state",
+    # Service factory (primary interface)
+    "get_memory_service",
+    "reset_memory_service",
+    # Lazy exports
+    "LearnEngine",
+    "MemoryRetrieval",
+    "seed_memory_from_external_output",
     "build_and_save_profile",
     "load_all_profiles",
     "load_character_profile",
-    "seed_memory_from_external_output",
-    "state_to_wiki",
-    "wiki_to_state",
+    "CharacterGraph",
+    "GraphRetrieval",
+    "EvolutionTracker",
 ]
+
+
+def get_memory_service(project_dir: Path | str):
+    """Get or create singleton MemoryService for project."""
+    from .service import get_memory_service as _get
+    return _get(project_dir)
+
+
+def reset_memory_service(project_dir: Path | str):
+    """Reset memory service for project (for testing)."""
+    from .service import reset_memory_service as _reset
+    return _reset(project_dir)
 
 
 def __getattr__(name: str):
@@ -64,4 +87,13 @@ def __getattr__(name: str):
     if name in ("EvolutionTracker",):
         from .evolution_tracker import EvolutionTracker
         return EvolutionTracker
+    if name in ("LearnEngine",):
+        from .learn import LearnEngine
+        return LearnEngine
+    if name in ("MemoryRetrieval",):
+        from .retrieval import MemoryRetrieval
+        return MemoryRetrieval
+    if name in ("seed_memory_from_external_output",):
+        from .seeding import seed_memory_from_external_output
+        return seed_memory_from_external_output
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

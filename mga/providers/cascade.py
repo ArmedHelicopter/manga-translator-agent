@@ -9,7 +9,7 @@ from typing import Iterable
 from mga.exceptions import ProviderError
 from mga.models import ProjectConfig, ProviderRoute
 
-from .registry import get_provider
+from .factory import get_provider
 
 
 @dataclass(frozen=True)

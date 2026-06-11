@@ -22,43 +22,57 @@ _PROFILE_METADATA_KEYS = (
 )
 
 
-def load_character_profile(project_dir: Path, character_id: str) -> CharacterState | None:
-    """Load a single character profile from memory state."""
+def load_character_profile(project_dir: Path, character_id: str, work: str | None = None) -> CharacterState | None:
+    """Load a single character profile from memory state.
+
+    Args:
+        project_dir: Project directory.
+        character_id: Character identifier.
+        work: Optional work namespace (subdirectory under character_profiles/).
+    """
     profile = StateManager.get_character(project_dir, character_id)
     if profile is not None:
         return profile
-    return _load_toml_profile(project_dir, character_id)
+    return _load_toml_profile(project_dir, character_id, work=work)
 
 
-def load_all_profiles(project_dir: Path) -> dict[str, CharacterState]:
-    """Load all character profiles, keyed by character_id."""
-    profiles = _load_all_toml_profiles(project_dir)
+def load_all_profiles(project_dir: Path, work: str | None = None) -> dict[str, CharacterState]:
+    """Load all character profiles, keyed by character_id.
+
+    Args:
+        project_dir: Project directory containing character_profiles/ and memory/ state files.
+        work: Optional work namespace filter (subdirectory under character_profiles/).
+    """
+    profiles = _load_all_toml_profiles(project_dir, work=work)
     chars = StateManager.list_characters(project_dir)
     profiles.update({c.character_id: c for c in chars if c.character_id})
     return profiles
 
 
-def _load_toml_profile(project_dir: Path, character_id: str) -> CharacterState | None:
-    for profile in _iter_toml_profiles(project_dir):
+def _load_toml_profile(project_dir: Path, character_id: str, work: str | None = None) -> CharacterState | None:
+    for profile in _iter_toml_profiles(project_dir, work=work):
         if profile.character_id == character_id:
             return profile
     return None
 
 
-def _load_all_toml_profiles(project_dir: Path) -> dict[str, CharacterState]:
+def _load_all_toml_profiles(project_dir: Path, work: str | None = None) -> dict[str, CharacterState]:
     return {
         profile.character_id: profile
-        for profile in _iter_toml_profiles(project_dir)
+        for profile in _iter_toml_profiles(project_dir, work=work)
         if profile.character_id
     }
 
 
-def _iter_toml_profiles(project_dir: Path) -> list[CharacterState]:
+def _iter_toml_profiles(project_dir: Path, work: str | None = None) -> list[CharacterState]:
     profiles_dir = project_dir / "character_profiles"
     if not profiles_dir.exists():
         return []
+    search_dir = profiles_dir / work if work else profiles_dir
+    if not search_dir.exists():
+        return []
     profiles: list[CharacterState] = []
-    for path in sorted(profiles_dir.rglob("*.toml")):
+    for path in sorted(search_dir.rglob("*.toml")):
         profiles.append(_parse_toml_profile(path))
     return profiles
 

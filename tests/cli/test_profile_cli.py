@@ -173,16 +173,14 @@ def test_profile_import_reads_toml_profile(tmp_path: Path) -> None:
     profile_dir.mkdir(parents=True)
     (profile_dir / "akari.toml").write_text(
         """
-[meta]
+character_id = "akari"
 name_jp = "Akari"
 name_zh = "Deng"
 archetype = "protagonist"
+catchphrases = ["I understand"]
 
 [speech_patterns]
-self_reference = ["boku", "watashi"]
-
-[catchphrases]
-patterns = ["I understand"]
+default = "polite"
 
 [tone_spectrum]
 default = "quiet"
@@ -201,7 +199,7 @@ addressing = "uses surnames"
     assert profile["name_jp"] == "Akari"
     assert profile["name_zh"] == "Deng"
     assert profile["archetype"] == "protagonist"
-    assert profile["speech_patterns"] == {"self_reference": "boku, watashi"}
+    assert profile["speech_patterns"] == {"default": "polite"}
     assert profile["catchphrases"] == ["I understand"]
     assert profile["tone_spectrum"] == {"default": "quiet"}
     assert profile["translation_notes"] == {"addressing": "uses surnames"}

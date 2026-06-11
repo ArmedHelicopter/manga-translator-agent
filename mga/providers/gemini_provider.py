@@ -16,11 +16,12 @@ from .base import LLMProvider
 class GeminiProvider(LLMProvider):
     """Google Gemini provider using the google-generativeai SDK."""
 
-    def __init__(self, api_key: str, model: str = "gemini-2.5-flash") -> None:
+    def __init__(self, api_key: str, model: str = "gemini-2.5-flash", **kwargs) -> None:
         import google.generativeai as genai
         genai.configure(api_key=api_key)
         self._model_name = model
         self._genai = genai
+        # Accept unused kwargs for provider factory compatibility
 
     @property
     def model_name(self) -> str:

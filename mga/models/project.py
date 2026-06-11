@@ -41,3 +41,18 @@ class ProjectConfig(BaseModel):
         default_factory=dict,
         description="Project-local plugin configuration for extension points.",
     )
+    # Pipeline optimization settings
+    parallel_mode: str = "serial"  # serial | parallel | pipelined
+    pipeline_concurrency: int = 5  # Max pages in flight
+    translation_max_workers: int = 3  # Per-page bubble concurrency
+    llm_cache_enabled: bool = True
+    llm_cache_dir: str = ".mga_cache"
+    translation_config: dict = Field(
+        default_factory=dict,
+        description="Translation pipeline config from TOML (populated by loader)",
+    )
+    # OCR guard configuration (dict or OCRGuardConfig instance)
+    ocr_guard: Optional[dict] = Field(
+        default=None,
+        description="OCR blank-page detection and recovery config.",
+    )

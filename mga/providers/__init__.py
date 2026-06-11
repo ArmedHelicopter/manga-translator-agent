@@ -1,37 +1,35 @@
-"""Provider architecture for LLM integrations."""
+"""Provider layer - unified factory + cascade.
 
-from .base import LLMProvider
-from .cascade import ProviderCandidate, ProviderCascade, ProviderCascadeAdapter, resolve_provider_candidates
-from .legacy import LLMProvider as LegacyLLMProvider
+Single source of truth for all provider creation.
+"""
+
+from .factory import (
+    # Factory functions
+    create_provider,
+    get_provider,
+    resolve_provider_settings,
+    get_default_model,
+    list_providers,
+    list_profiles,
+    # Base
+    LLMProvider,
+)
+from .cascade import (
+    # Cascade
+    ProviderCascade,
+    ProviderCandidate,
+    ProviderCascadeAdapter,
+)
 
 __all__ = [
-    "LLMProvider",
-    "LegacyLLMProvider",
-    "ProviderCandidate",
-    "ProviderCascade",
-    "ProviderCascadeAdapter",
+    "create_provider",
     "get_provider",
-    "resolve_provider_candidates",
-    "select_provider",
-    "OpenAIProvider",
-    "AnthropicProvider",
-    "GeminiProvider",
-    "DeepSeekProvider",
-    "OllamaProvider",
-    "VLLMProvider",
-    "OpenRouterProvider",
-    "LMStudioProvider",
-    "LlamaCppProvider",
+    "resolve_provider_settings",
+    "get_default_model",
+    "list_providers",
+    "list_profiles",
+    "ProviderCascade",
+    "ProviderCandidate",
+    "ProviderCascadeAdapter",
+    "LLMProvider",
 ]
-
-
-def get_provider(name: str, **kwargs) -> LLMProvider:
-    """Get a provider instance by name."""
-    from .registry import get_provider as _get
-    return _get(name, **kwargs)
-
-
-def select_provider(stage: str, config: dict, force_local: bool = False) -> LLMProvider:
-    """Select provider for a stage with fallback cascade."""
-    from .registry import select_provider as _select
-    return _select(stage, config, force_local=force_local)

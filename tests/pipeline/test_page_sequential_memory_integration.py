@@ -488,6 +488,7 @@ def test_translation_stage_injects_scene_memory_context(tmp_path, monkeypatch):
     result = TranslationStage().execute(context)
 
     persona_prompt = provider.prompts[1]
+    assert "## Page Summary" in persona_prompt
     assert "A short summary from the page adapter" in persona_prompt
     assert "## Scene Memory" in persona_prompt
     assert "- scene_id: ch1_p1_glass_room" in persona_prompt

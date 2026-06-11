@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -195,6 +196,38 @@ def _complete_runtime_artifacts(payload_dir: Path, runtime_input: Path) -> bool:
     )
     return bool(pages_list)
 
+
+# ---------------------------------------------------------------------------
+# Sanitization
+# ---------------------------------------------------------------------------
+
+_SECRET_PATTERNS = [
+    # sk-proj-... (OpenAI project keys)
+    (r"sk-proj-[A-Za-z0-9_-]{10,}", "[REDACTED]"),
+    # Bearer tokens
+    (r"Bearer\s+([A-Za-z0-9_-]{10,})", r"Bearer [REDACTED]"),
+    # api_key=... query params
+    (r"(api_key|apikey|api-key)=[A-Za-z0-9_-]{6,}", r"\1=[REDACTED]"),
+    # KEY=value env var style
+    (r"([A-Z_][A-Z0-9_]*(?:API_KEY|SECRET|TOKEN|PASSWORD|KEY)[A-Z0-9_]*)=[^\s]{4,}", r"\1=[REDACTED]"),
+    # Authorization headers
+    (r"(Authorization:\s*)[^\s]+", r"\1[REDACTED]"),
+]
+
+
+def _sanitize_subprocess_output(output: str) -> str:
+    """Redact secrets from subprocess stdout/stderr for safe logging."""
+    if not output:
+        return output
+    result = output
+    for pattern, replacement in _SECRET_PATTERNS:
+        result = re.sub(pattern, replacement, result)
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Child process environment
+# ---------------------------------------------------------------------------
 
 def _build_external_child_env() -> dict[str, str]:
     """Build a tighter child environment for external subprocesses."""

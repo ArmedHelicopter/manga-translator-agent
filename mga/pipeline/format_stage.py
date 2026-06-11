@@ -30,6 +30,19 @@ class FormatStage(PipelineStage):
         return self._execute_manga(cfg, input_path, context)
 
     def _execute_manga(self, cfg: ProjectConfig, input_path: Path, context: PipelineContext) -> PipelineContext:
+        # Check for runtime payload - use pre-extracted pages if available
+        payload_dir = context.metadata.get("artifact_payload_dir", "")
+        if payload_dir and Path(payload_dir).exists():
+            pages = self._load_from_runtime_payload(Path(payload_dir))
+            if pages:
+                context.pages = pages
+                context.artifacts[self.name] = {
+                    "page_count": len(pages),
+                    "format": cfg.input_format,
+                    "source": "artifact_payload",
+                }
+                return context
+
         adapter = get_adapter(cfg.input_format)
         pages: list[Page] = []
 
@@ -48,6 +61,35 @@ class FormatStage(PipelineStage):
             "format": cfg.input_format,
         }
         return context
+
+    def _load_from_runtime_payload(self, payload_dir: Path) -> list[Page]:
+        """Load pre-extracted pages from runtime payload directory."""
+        import json as _json
+
+        pages_json = payload_dir / "pages.json"
+        runtime_input = payload_dir / ".runtime-input"
+
+        if not pages_json.exists() or not runtime_input.exists():
+            return []
+
+        try:
+            pages_meta = _json.loads(pages_json.read_text(encoding="utf-8"))
+        except Exception:
+            return []
+
+        pages = []
+        for page_meta in pages_meta:
+            page_index = page_meta.get("page_index", 0)
+            image_path = runtime_input / f"page-{page_index:04d}.png"
+            if image_path.exists():
+                pages.append(Page(
+                    page_id=f"page_{page_index:04d}",
+                    page_index=page_index,
+                    image=PageImage(path=str(image_path)),
+                    source_lang="ja",
+                ))
+
+        return pages
 
     def _execute_novel(self, cfg: ProjectConfig, input_path: Path, context: PipelineContext) -> PipelineContext:
         adapter = get_adapter(f"novel-{cfg.input_format}")

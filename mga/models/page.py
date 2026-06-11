@@ -42,6 +42,8 @@ class Bubble(BaseModel):
     provisional_speaker: Optional[str] = None
     voice_hint: Optional[str] = None
     vision_notes: Optional[str] = None
+    detection_source: Optional[str] = None  # "ocr" | "vision" | "fallback"
+    vision_confidence: Optional[float] = None  # confidence score from vision detection
 
 
 class Page(BaseModel):

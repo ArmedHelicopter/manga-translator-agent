@@ -143,7 +143,8 @@ def _vision_cfg(model: str = "text-only-model") -> ProjectConfig:
 
 def test_vision_precheck_passes_when_capable(monkeypatch):
     cfg = _vision_cfg()
-    monkeypatch.setattr("mga.providers.factory.create_provider", lambda name, settings=None, **kw: FakeProvider())
+    monkeypatch.setattr("mga.providers.factory.create_provider",
+        lambda name, settings=None, **kw: FakeProvider())
     _check_vision_provider_capability(cfg)  # should not raise
 
 
@@ -164,7 +165,7 @@ def test_vision_precheck_fails_with_suggestions(monkeypatch):
         _check_vision_provider_capability(cfg)
 
     message = str(excinfo.value.message)
-    assert "text-only-model" in message
+    assert "does not support vision" in message
     assert "vision-model-a" in message
     assert "--auto-vision-model" in message
 
@@ -183,7 +184,7 @@ def test_vision_precheck_fails_without_suggestions(monkeypatch):
 
     with pytest.raises(click.ClickException) as excinfo:
         _check_vision_provider_capability(cfg)
-    assert "vision-capable provider" in str(excinfo.value.message)
+    assert "does not support vision" in str(excinfo.value.message)
 
 
 def test_vision_precheck_auto_switches_when_flag_set(monkeypatch):

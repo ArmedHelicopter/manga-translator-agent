@@ -54,6 +54,9 @@ class IncrementalTranslator:
         run_metadata = dict(metadata or {})
         if chapter_id:
             run_metadata["chapter_id"] = chapter_id
+        # Preserve runtime type for run.json
+        if "artifact_payload_dir" in run_metadata and "type" not in run_metadata:
+            run_metadata["type"] = "external-two-pass"
         if run_metadata:
             context = orchestrator.run(
                 str(input_path),

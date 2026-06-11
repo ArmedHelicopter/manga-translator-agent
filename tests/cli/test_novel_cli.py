@@ -196,7 +196,7 @@ def test_translate_learn_only_seeds_memory_with_configured_learning_provider(tmp
         def __init__(self, *args, **kwargs):
             raise AssertionError("PipelineOrchestrator should not be instantiated")
 
-    monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.providers.registry.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
 
@@ -263,7 +263,7 @@ def test_translate_learn_only_falls_back_when_primary_learning_provider_fails(
         def __init__(self, *args, **kwargs):
             raise AssertionError("PipelineOrchestrator should not be instantiated")
 
-    monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.providers.registry.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
 
@@ -340,7 +340,7 @@ def test_translate_learn_only_runtime_provider_call_falls_back_to_secondary(
         def __init__(self, *args, **kwargs):
             raise AssertionError("PipelineOrchestrator should not be instantiated")
 
-    monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.providers.registry.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
 
@@ -392,7 +392,7 @@ def test_translate_learn_only_uses_input_path_when_learn_from_is_omitted(tmp_pat
         def __init__(self, *args, **kwargs):
             raise AssertionError("PipelineOrchestrator should not be instantiated")
 
-    monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.providers.registry.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
 
@@ -449,7 +449,7 @@ def test_translate_learn_only_output_profiles_exports_generated_toml(tmp_path, m
             raise AssertionError("PipelineOrchestrator should not be instantiated")
 
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
-    monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.providers.registry.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
 
     runner = CliRunner()
@@ -464,7 +464,7 @@ def test_translate_learn_only_output_profiles_exports_generated_toml(tmp_path, m
     assert captured["provider_name"] == "openai"
     assert captured["learn_from"] == input_dir
     assert (profiles_dir / "akari.toml").read_text(encoding="utf-8").startswith("[meta]")
-    assert "Profiles exported: 1 profiles" in result.output
+    assert "Profiles exported: 1" in result.output
     assert "Memory seeded. --learn-only set, skipping translation." in result.output
 
 
@@ -534,9 +534,9 @@ def test_translate_manga_learn_from_seeds_persona_before_pipeline(tmp_path, monk
             return PipelineContext(project_config=captured["incremental_config"])
 
     cli_main = importlib.import_module("mga.cli.main")
-    monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.providers.registry.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
-    monkeypatch.setattr(cli_main, "_check_translation_provider_connectivity", fake_precheck)
+    monkeypatch.setattr(cli_main, "check_provider_connectivity", fake_precheck)
     monkeypatch.setattr(cli_main, "_check_vision_provider_capability", lambda cfg, auto_vision_model=False: None)
     monkeypatch.setattr("mga.runtime_bridge.external.run_export_artifact", fake_export)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
@@ -566,9 +566,10 @@ def test_translate_manga_learn_from_seeds_persona_before_pipeline(tmp_path, monk
     assert captured["export_after_learning"] is True
     assert captured["incremental_project_dir"] == input_dir.resolve()
     assert captured["pipeline_saw_profile"] is True
-    assert captured["pipeline_metadata"] == {"artifact_payload_dir": str(payload_dir)}
+    assert captured["pipeline_metadata"].get("artifact_payload_dir") == str(payload_dir)
+    assert captured["pipeline_metadata"].get("type") == "external-two-pass"
     assert captured["chapter_id"] == input_dir.name
-    assert "Learning complete: 1 characters, 0 terms" in result.output
+    assert "Learning: 1 chars, 0 terms" in result.output
 
 
 def test_translate_manga_defaults_to_incremental_after_runtime_export(tmp_path, monkeypatch):
@@ -606,7 +607,7 @@ def test_translate_manga_defaults_to_incremental_after_runtime_export(tmp_path, 
             return PipelineContext(project_config=captured["incremental_config"])
 
     cli_main = importlib.import_module("mga.cli.main")
-    monkeypatch.setattr(cli_main, "_check_translation_provider_connectivity", fake_precheck)
+    monkeypatch.setattr(cli_main, "check_provider_connectivity", fake_precheck)
     monkeypatch.setattr(cli_main, "_check_vision_provider_capability", lambda cfg, auto_vision_model=False: None)
     monkeypatch.setattr("mga.runtime_bridge.external.run_export_artifact", fake_export)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
@@ -624,8 +625,11 @@ def test_translate_manga_defaults_to_incremental_after_runtime_export(tmp_path, 
     assert captured["incremental_input_path"] == str(input_dir)
     assert captured["incremental_output_path"] == str(output_dir)
     assert captured["chapter_id"] == input_dir.name
-    assert captured["metadata"] == {"artifact_payload_dir": str(payload_dir)}
-    assert f"Incremental translation complete: {input_dir.name}" in result.output
+    assert captured["metadata"].get("artifact_payload_dir") == str(payload_dir)
+    assert captured["metadata"].get("type") == "external-two-pass"
+    assert "memory_service" in captured["metadata"]  # Services are now injected into metadata
+    assert "cultural_service" in captured["metadata"]
+    assert f"Incremental complete: {input_dir.name}" in result.output
 
 
 def test_translate_manga_incremental_uses_incremental_translator_after_runtime_export(tmp_path, monkeypatch):
@@ -663,7 +667,7 @@ def test_translate_manga_incremental_uses_incremental_translator_after_runtime_e
             return PipelineContext(project_config=captured["incremental_config"])
 
     cli_main = importlib.import_module("mga.cli.main")
-    monkeypatch.setattr(cli_main, "_check_translation_provider_connectivity", fake_precheck)
+    monkeypatch.setattr(cli_main, "check_provider_connectivity", fake_precheck)
     monkeypatch.setattr(cli_main, "_check_vision_provider_capability", lambda cfg, auto_vision_model=False: None)
     monkeypatch.setattr("mga.runtime_bridge.external.run_export_artifact", fake_export)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
@@ -693,5 +697,8 @@ def test_translate_manga_incremental_uses_incremental_translator_after_runtime_e
     assert captured["incremental_input_path"] == str(input_dir)
     assert captured["incremental_output_path"] == str(output_dir)
     assert captured["chapter_id"] == "ch011"
-    assert captured["metadata"] == {"artifact_payload_dir": str(payload_dir)}
-    assert "Incremental translation complete: ch011" in result.output
+    assert captured["metadata"].get("artifact_payload_dir") == str(payload_dir)
+    assert captured["metadata"].get("type") == "external-two-pass"
+    assert "memory_service" in captured["metadata"]  # Services are now injected into metadata
+    assert "cultural_service" in captured["metadata"]
+    assert "Incremental complete: ch011" in result.output
