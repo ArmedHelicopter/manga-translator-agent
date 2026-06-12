@@ -16,6 +16,8 @@ from mga.distill import (
     LorebookExporter,
     CharacterCardImporter,
     LorebookImporter,
+    HermesSkill,
+    HermesSkillImporter,
 )
 from mga.memory.service import MemoryService
 
@@ -380,37 +382,312 @@ class TestLorebookImporter:
 
 # ── Hermes Skill Tests ─────────────────────────────────────────────────────────
 
+class TestHermesSkillModel:
+    """Tests for HermesSkill Pydantic model."""
+
+    def test_create_skill(self):
+        """Test creating a HermesSkill."""
+        skill = HermesSkill(
+            name="act_as_sakura",
+            description="Act as Sakura",
+            instruction="You are 樱.",
+            variables={"character_name": "樱"},
+        )
+        assert skill.name == "act_as_sakura"
+        assert skill.version == "1.0"
+        assert skill.variables["character_name"] == "樱"
+
+    def test_to_json(self):
+        """Test JSON serialization."""
+        skill = HermesSkill(
+            name="act_as_test",
+            instruction="You are test.",
+            variables={"character_name": "Test"},
+            triggers=["test"],
+            constraints=["Stay in character."],
+        )
+        json_str = skill.to_json()
+        data = json.loads(json_str)
+        assert data["name"] == "act_as_test"
+        assert data["triggers"] == ["test"]
+        assert data["constraints"] == ["Stay in character."]
+        # exclude_defaults=True means empty lists/dicts are omitted
+        assert "examples" not in data
+
+    def test_from_json(self):
+        """Test JSON deserialization."""
+        data = {
+            "name": "act_as_sakura",
+            "instruction": "You are 樱.",
+            "variables": {"character_name": "樱"},
+            "triggers": ["桜", "樱"],
+        }
+        skill = HermesSkill.from_json(data)
+        assert skill.name == "act_as_sakura"
+        assert len(skill.triggers) == 2
+
+    def test_from_json_string(self):
+        """Test JSON string deserialization."""
+        json_str = '{"name": "test", "instruction": "Hello"}'
+        skill = HermesSkill.from_json(json_str)
+        assert skill.name == "test"
+
+    def test_to_yaml(self):
+        """Test YAML serialization."""
+        skill = HermesSkill(
+            name="act_as_sakura",
+            instruction="You are 樱.",
+            variables={"character_name": "樱"},
+        )
+        yaml_str = skill.to_yaml()
+        assert "act_as_sakura" in yaml_str
+        assert "樱" in yaml_str
+
+    def test_from_yaml(self):
+        """Test YAML deserialization."""
+        yaml_str = "name: act_as_test\ninstruction: You are test.\nvariables:\n  character_name: Test\n"
+        skill = HermesSkill.from_yaml(yaml_str)
+        assert skill.name == "act_as_test"
+        assert skill.variables["character_name"] == "Test"
+
+    def test_roundtrip_json(self):
+        """Test JSON round-trip serialization."""
+        skill = HermesSkill(
+            name="act_as_roundtrip",
+            description="Round-trip test",
+            version="1.0",
+            instruction="You are round-trip.",
+            variables={"character_name": "RT"},
+            triggers=["rt"],
+            constraints=["Stay in character."],
+            examples=[{"input": "hello?", "output": "hi!"}],
+        )
+        json_str = skill.to_json()
+        restored = HermesSkill.from_json(json_str)
+        assert restored.name == skill.name
+        assert restored.instruction == skill.instruction
+        assert restored.variables == skill.variables
+        assert restored.triggers == skill.triggers
+        assert restored.constraints == skill.constraints
+        assert restored.examples == skill.examples
+
+
 class TestHermesSkillImporter:
-    """Tests for HermesSkillImporter."""
+    """Tests for HermesSkillImporter export and import."""
 
     def test_export_skill(self, memory_with_data, temp_project):
         """Test exporting character as Hermes skill."""
-        from mga.distill.importers import HermesSkillImporter
-
         importer = HermesSkillImporter(temp_project)
         skill = importer.export_skill("sakura")
 
-        assert "name" in skill
-        assert "instruction" in skill
-        assert "sakura" in skill["name"]
+        assert isinstance(skill, HermesSkill)
+        assert "sakura" in skill.name
+        assert "樱" in skill.description
+        assert "樱" in skill.instruction  # name_zh is used in instruction
+        assert "元气少女" in skill.instruction
+        assert skill.variables.get("character_name") == "樱"
+        assert skill.variables.get("archetype") == "元气少女"
+        assert skill.variables.get("name_jp") == "桜"
+        assert "桜" in skill.triggers
+        assert "樱" in skill.triggers
+        assert len(skill.constraints) >= 1
+        assert any("character" in c.lower() for c in skill.constraints)
 
-    def test_import_skill(self, temp_project):
-        """Test importing Hermes skill into memory."""
-        from mga.distill.importers import HermesSkillImporter
+    def test_export_skill_has_triggers(self, memory_with_data, temp_project):
+        """Test exported skill has trigger keywords."""
+        importer = HermesSkillImporter(temp_project)
+        skill = importer.export_skill("sakura")
 
+        # Should have name-based triggers
+        assert "桜" in skill.triggers
+        assert "樱" in skill.triggers
+        assert "sakura" in skill.triggers
+        # First catchphrase as trigger
+        assert "我来啦！" in skill.triggers
+
+    def test_export_skill_has_constraints(self, memory_with_data, temp_project):
+        """Test exported skill has behavioral constraints."""
+        importer = HermesSkillImporter(temp_project)
+        skill = importer.export_skill("sakura")
+
+        assert len(skill.constraints) >= 2  # "Stay in character" + speech patterns
+        assert any("speech pattern" in c.lower() for c in skill.constraints)
+
+    def test_export_skill_has_examples(self, memory_with_data, temp_project):
+        """Test exported skill has few-shot examples."""
+        importer = HermesSkillImporter(temp_project)
+        skill = importer.export_skill("sakura")
+
+        assert len(skill.examples) >= 1
+        assert skill.examples[0]["output"] == "我来啦！"
+
+    def test_export_skill_has_metadata(self, memory_with_data, temp_project):
+        """Test exported skill has metadata with character details."""
+        importer = HermesSkillImporter(temp_project)
+        skill = importer.export_skill("sakura")
+
+        assert skill.metadata["character_id"] == "sakura"
+        assert skill.metadata["name_jp"] == "桜"
+        assert skill.metadata["name_zh"] == "樱"
+
+    def test_export_nonexistent_character(self, temp_project):
+        """Test exporting nonexistent character raises ValueError."""
+        importer = HermesSkillImporter(temp_project)
+        with pytest.raises(ValueError, match="Character not found"):
+            importer.export_skill("nonexistent")
+
+    def test_export_skill_file_yaml(self, memory_with_data, temp_project):
+        """Test exporting skill to YAML file."""
+        importer = HermesSkillImporter(temp_project)
+        output_path = temp_project / "skills" / "sakura.yaml"
+        saved = importer.export_skill_file("sakura", output_path, fmt="yaml")
+
+        assert saved.exists()
+        content = saved.read_text(encoding="utf-8")
+        assert "act_as" in content
+        assert "樱" in content
+
+    def test_export_skill_file_json(self, memory_with_data, temp_project):
+        """Test exporting skill to JSON file."""
+        importer = HermesSkillImporter(temp_project)
+        output_path = temp_project / "skills" / "sakura.json"
+        saved = importer.export_skill_file("sakura", output_path, fmt="json")
+
+        assert saved.exists()
+        data = json.loads(saved.read_text(encoding="utf-8"))
+        assert "sakura" in data["name"]
+
+    def test_import_skill_dict(self, temp_project):
+        """Test importing Hermes skill from dict into memory."""
         skill_data = {
             "name": "act_as_sakura",
-            "instruction": "You are 樱. Character type: 元气少女.",
+            "description": "Act as Sakura",
+            "instruction": "You are 樱. Character type: 元气少女. Speech patterns: formal: です, casual: だ.",
             "variables": {
                 "character_name": "樱",
                 "archetype": "元气少女",
+                "name_jp": "桜",
             },
+            "triggers": ["桜", "樱"],
+            "constraints": ["Stay in character at all times."],
+            "examples": [
+                {"input": "What would 樱 say?", "output": "我来啦！"},
+            ],
+            "metadata": {"name_jp": "桜", "name_zh": "樱"},
         }
 
         importer = HermesSkillImporter(temp_project)
         character_id = importer.import_skill(skill_data)
 
         assert character_id == "sakura"
+        # Verify the character was actually imported
+        profile = importer.memory.get_character(character_id)
+        assert profile is not None
+        assert profile.name_zh == "樱"
+        assert profile.archetype == "元气少女"
+        assert len(profile.catchphrases) >= 1
+        assert "我来啦！" in profile.catchphrases
+
+    def test_import_skill_hermes_skill_object(self, temp_project):
+        """Test importing from a HermesSkill object."""
+        skill = HermesSkill(
+            name="act_as_hermes_test",
+            instruction="You are test. Speech patterns: bold: da.",
+            variables={"character_name": "TestChar", "archetype": "hero"},
+            examples=[{"input": "Speak", "output": "I am here!"}],
+            metadata={"name_jp": "テスト"},
+        )
+
+        importer = HermesSkillImporter(temp_project)
+        character_id = importer.import_skill(skill)
+
+        assert character_id == "hermes_test"
+        profile = importer.memory.get_character(character_id)
+        assert profile.name_zh == "TestChar"
+        assert profile.archetype == "hero"
+        assert "I am here!" in profile.catchphrases
+
+    def test_import_skill_json_string(self, temp_project):
+        """Test importing from a JSON string."""
+        json_str = json.dumps({
+            "name": "act_as_json_test",
+            "instruction": "You are JSON test.",
+            "variables": {"character_name": "JsonTest"},
+        })
+
+        importer = HermesSkillImporter(temp_project)
+        character_id = importer.import_skill(json_str)
+        assert character_id == "json_test"
+
+    def test_import_skill_yaml_string(self, temp_project):
+        """Test importing from a YAML string."""
+        yaml_str = "name: act_as_yaml_test\ninstruction: You are YAML test.\nvariables:\n  character_name: YamlTest\n"
+
+        importer = HermesSkillImporter(temp_project)
+        character_id = importer.import_skill(yaml_str)
+        assert character_id == "yaml_test"
+
+    def test_import_file_yaml(self, temp_project):
+        """Test importing skill from a YAML file."""
+        yaml_content = (
+            "name: act_as_file_test\n"
+            "description: File import test\n"
+            "instruction: You are file test.\n"
+            "variables:\n"
+            "  character_name: FileTest\n"
+            "  archetype: tester\n"
+            "triggers:\n"
+            "  - FileTest\n"
+        )
+        skill_path = temp_project / "skill.yaml"
+        skill_path.write_text(yaml_content, encoding="utf-8")
+
+        importer = HermesSkillImporter(temp_project)
+        character_id = importer.import_file(skill_path)
+
+        assert character_id == "file_test"
+        profile = importer.memory.get_character(character_id)
+        assert profile.name_zh == "FileTest"
+        assert profile.archetype == "tester"
+
+    def test_import_file_json(self, temp_project):
+        """Test importing skill from a JSON file."""
+        data = {
+            "name": "act_as_jsonfile_test",
+            "instruction": "You are JSON file test.",
+            "variables": {"character_name": "JsonFileTest"},
+        }
+        skill_path = temp_project / "skill.json"
+        skill_path.write_text(json.dumps(data), encoding="utf-8")
+
+        importer = HermesSkillImporter(temp_project)
+        character_id = importer.import_file(skill_path)
+        assert character_id == "jsonfile_test"
+
+    def test_export_import_roundtrip(self, memory_with_data, temp_project):
+        """Test exporting to Hermes skill and re-importing preserves key data."""
+        # Export
+        exporter = HermesSkillImporter(temp_project)
+        skill = exporter.export_skill("sakura")
+
+        # Save to file
+        skill_path = temp_project / "roundtrip.yaml"
+        skill_path.write_text(skill.to_yaml(), encoding="utf-8")
+
+        # Clear memory
+        from mga.memory.service import reset_memory_service
+        reset_memory_service(temp_project)
+
+        # Re-import
+        importer = HermesSkillImporter(temp_project)
+        character_id = importer.import_file(skill_path)
+
+        # Verify
+        profile = importer.memory.get_character(character_id)
+        assert profile is not None
+        assert profile.name_zh == "樱"
+        assert profile.archetype == "元气少女"
+        assert "桜" in profile.name_jp
 
 
 # ── Integration Tests ──────────────────────────────────────────────────────────
