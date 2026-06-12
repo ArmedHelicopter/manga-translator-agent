@@ -146,6 +146,41 @@ class TranslationStage(PipelineStage):
                     llm_cache=llm_cache,
                 )
                 # Fallback to serial - don't mark parallel_mode in artifacts
+        elif parallel_mode == "batch-parallel":
+            try:
+                all_translations, realization_traces = self._execute_batch_parallel(
+                    context=context,
+                    provider_cascade=provider_cascade,
+                    cfg=cfg,
+                    cultural_adapter=cultural_adapter,
+                    cultural_service=cultural_service,
+                    graph_retrieval=graph_retrieval,
+                    name_glossary=name_glossary,
+                    memory_updater=memory_updater,
+                    memory_trace=character_memory_trace,
+                    llm_cache=llm_cache,
+                    parallel_config=parallel_config,
+                )
+                used_parallel_mode = True
+            except ParallelExecutionError as exc:
+                self._logger.warning(
+                    "Batch-parallel execution failed (%s), falling back to serial mode", exc
+                )
+                # Clear any partial state
+                context.translations = []
+                context.memory_context["character_profiles"] = {}
+                all_translations, realization_traces = self._execute_serial(
+                    context=context,
+                    provider_cascade=provider_cascade,
+                    cfg=cfg,
+                    cultural_adapter=cultural_adapter,
+                    cultural_service=cultural_service,
+                    graph_retrieval=graph_retrieval,
+                    name_glossary=name_glossary,
+                    memory_updater=memory_updater,
+                    memory_trace=character_memory_trace,
+                    llm_cache=llm_cache,
+                )
         else:
             # Default serial execution
             all_translations, realization_traces = self._execute_serial(
@@ -259,6 +294,98 @@ class TranslationStage(PipelineStage):
                 memory_updater=memory_updater,
                 next_page=context.pages[page_index + 1] if page_index + 1 < len(context.pages) else None,
             )
+
+        return all_translations, realization_traces
+
+    def _execute_batch_parallel(
+        self,
+        context: PipelineContext,
+        provider_cascade: ProviderCascade,
+        cfg: ProjectConfig,
+        cultural_adapter: CulturalAdapter | None,
+        cultural_service: object | None,
+        graph_retrieval: object | None,
+        name_glossary: dict[str, str],
+        memory_updater: CharacterMemoryUpdater,
+        memory_trace: list[dict[str, Any]],
+        llm_cache: object | None,
+        parallel_config: dict[str, Any],
+    ) -> tuple[list[TranslationCandidate], list[DialogueRealizationTrace]]:
+        """Execute translation with batch-parallel page processing."""
+        batch_size = parallel_config.get("batch_size", 3)
+        max_concurrent = parallel_config.get("max_concurrent_requests", 3)
+        semantic_timeout = parallel_config.get("semantic_timeout", 60)
+
+        all_translations: list[TranslationCandidate] = []
+        realization_traces: list[DialogueRealizationTrace] = []
+
+        # Split pages into batches
+        pages = context.pages
+        for batch_start in range(0, len(pages), batch_size):
+            batch_pages = pages[batch_start:batch_start + batch_size]
+
+            # Process pages in batch in parallel
+            batch_results: list[tuple[int, list[TranslationCandidate], list[DialogueRealizationTrace]]] = []
+
+            def translate_page_in_batch(page_idx: int, page: object) -> tuple[int, list[TranslationCandidate], list[DialogueRealizationTrace]]:
+                page_translations, page_traces = self._translate_page_semantic_parallel(
+                    provider_cascade=provider_cascade,
+                    page=page,
+                    context=context,
+                    cfg=cfg,
+                    cultural_adapter=cultural_adapter,
+                    cultural_service=cultural_service,
+                    graph_retrieval=graph_retrieval,
+                    name_glossary=name_glossary,
+                    memory_updater=memory_updater,
+                    memory_trace=memory_trace,
+                    llm_cache=llm_cache,
+                    max_concurrent=max_concurrent,
+                    semantic_timeout=semantic_timeout,
+                )
+                return page_idx, page_translations, page_traces
+
+            with ThreadPoolExecutor(max_workers=len(batch_pages)) as executor:
+                futures = {
+                    executor.submit(translate_page_in_batch, batch_start + idx, page): idx
+                    for idx, page in enumerate(batch_pages)
+                }
+
+                try:
+                    for future in as_completed(futures, timeout=semantic_timeout * len(batch_pages)):
+                        idx = futures[future]
+                        try:
+                            result = future.result()
+                            batch_results.append(result)
+                        except Exception as exc:
+                            self._logger.error("Batch parallel translation failed for page index %s: %s", idx, exc)
+                            raise ParallelExecutionError(
+                                f"Page translation failed in batch: {exc}",
+                                errors=[(idx, exc)],
+                            )
+                except TimeoutError:
+                    executor.shutdown(wait=False, cancel_futures=True)
+                    raise ParallelExecutionError(
+                        f"Batch parallel translation timeout after {semantic_timeout * len(batch_pages)}s",
+                        errors=[],
+                    )
+
+            # Sort results by page_idx to maintain order
+            batch_results.sort(key=lambda x: x[0])
+
+            # Serial memory updates within batch (by page_id order)
+            for page_idx, page_translations, page_traces in batch_results:
+                all_translations.extend(page_translations)
+                realization_traces.extend(page_traces)
+
+                # Refresh profiles for next page
+                next_page_idx = page_idx + 1
+                if next_page_idx < len(pages):
+                    self._refresh_page_profiles_after_memory_update(
+                        context=context,
+                        memory_updater=memory_updater,
+                        next_page=pages[next_page_idx],
+                    )
 
         return all_translations, realization_traces
 
