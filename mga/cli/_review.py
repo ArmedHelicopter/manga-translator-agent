@@ -116,6 +116,7 @@ def review_decide(
         confidence = float(repair.get("confidence", 0.0))
     except (TypeError, ValueError):
         confidence = 0.0
+    # Build metadata from repair item only (exclude top-level DecisionState fields)
     decision_state = DecisionState(
         decision_id=decision_id,
         stage="review",
@@ -123,6 +124,17 @@ def review_decide(
         decision=f"{status} {action} for {bubble_id}",
         rationale=rationale,
         confidence=confidence,
+        metadata={
+            "page_id": repair.get("page_id"),
+            "bubble_id": repair.get("bubble_id"),
+            "target": repair.get("target"),
+            "action": repair.get("action"),
+            "message": repair.get("message"),
+            "original_text": repair.get("original_text"),
+            "suggested_text": repair.get("suggested_text"),
+            "repair_rationale": repair.get("rationale"),
+            "status": status,
+        },
     )
     StateManager.upsert_decision(project_dir, decision_state)
     click.echo(f"Review decision saved: {decision_id}")

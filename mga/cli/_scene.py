@@ -27,7 +27,7 @@ def scene_group():
 @click.option("--narrative-summary", "narrative_summary", default=None, help="Narrative summary")
 @click.option("--characters", default=None, help="Comma-separated character IDs")
 @click.option("--character", "characters_extra", multiple=True, default=(), help="Add a character (can be repeated)")
-@click.option("--key-dialogue", "key_dialogue", default=None, help="Comma-separated lines")
+@click.option("--key-dialogue", "key_dialogue_lines", multiple=True, default=(), help="Add key dialogue (can be repeated)")
 @click.option("--relationship-change", "relationship_changes", multiple=True, default=(), help="Add a relationship change (can be repeated)")
 @click.option("--future-impact", "future_impact", default=None)
 def scene_edit(
@@ -40,7 +40,7 @@ def scene_edit(
     narrative_summary: str | None,
     characters: str | None,
     characters_extra: tuple[str, ...],
-    key_dialogue: str | None,
+    key_dialogue_lines: tuple[str, ...],
     relationship_changes: tuple[str, ...],
     future_impact: str | None,
 ):
@@ -65,8 +65,8 @@ def scene_edit(
         scene.characters = scene.characters + [c for c in characters_extra if c not in seen]
     if relationship_changes:
         scene.relationship_changes = list(relationship_changes)
-    if key_dialogue is not None:
-        scene.key_dialogue = [d.strip() for d in key_dialogue.split("|") if d.strip()]
+    if key_dialogue_lines:
+        scene.key_dialogue = [d.strip() for d in key_dialogue_lines if d.strip()]
     if future_impact is not None:
         scene.future_impact = future_impact
 

@@ -135,6 +135,11 @@ def _stage_data_for(stages_data: dict, stage_name: str) -> dict:
     return stages_data.get(STAGE_CONFIG_KEYS[stage_name], {})
 
 
+def _load_translation_config(raw_config: dict) -> dict:
+    """Extract the [translation] section for TranslationStage config."""
+    return dict(raw_config.get("translation", {}))
+
+
 def build_project_config(
     *,
     input_path: str,
@@ -201,5 +206,7 @@ def build_project_config(
         provider_routes=provider_routes,
         provider_settings=dict(providers_data),
         plugins=dict(raw_config.get("plugins", {})),
+        # Populate translation_config from [translation] TOML section
+        translation_config=_load_translation_config(raw_config),
     )
     return project_config, raw_config

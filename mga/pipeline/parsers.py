@@ -57,14 +57,14 @@ def parse_translation_response(bubble_id: str, raw: str) -> TranslationCandidate
     text, parsed = parse_jsonish_response(raw)
 
     if isinstance(parsed, dict):
-        footnotes = [
-            FootnoteEntry(**fn) for fn in parsed.get("footnotes", [])
-            if isinstance(fn, dict)
-        ]
-        # Enforce policy: names are never footnotes.
+        footnotes = []
+        for fn in parsed.get("footnotes", []):
+            if isinstance(fn, dict):
+                footnotes.append(FootnoteEntry(**fn))
+        # Accept all footnote types: loanword, sfx, coined, cultural, fictional
         footnotes = [
             fn for fn in footnotes
-            if fn.type in {"loanword", "sfx"}
+            if fn.type in {"loanword", "sfx", "coined", "cultural", "fictional"}
         ]
         footnotes = augment_footnotes_from_rationale(
             text=parsed.get("text", parsed.get("translation", text)),
@@ -220,11 +220,12 @@ def parse_semantic_response(bubble_id: str, raw: str) -> SemanticTranslation:
     """Parse semantic translation LLM response."""
     text, parsed = parse_jsonish_response(raw)
     if isinstance(parsed, dict):
-        footnotes = [
-            FootnoteEntry(**fn) for fn in parsed.get("footnotes", [])
-            if isinstance(fn, dict)
-        ]
-        footnotes = [fn for fn in footnotes if fn.type in {"loanword", "sfx"}]
+        footnotes = []
+        for fn in parsed.get("footnotes", []):
+            if isinstance(fn, dict):
+                footnotes.append(FootnoteEntry(**fn))
+        # Accept all footnote types now (including coined, cultural, fictional)
+        footnotes = [fn for fn in footnotes if fn.type in {"loanword", "sfx", "coined", "cultural", "fictional"}]
         return SemanticTranslation(
             bubble_id=bubble_id,
             text=parsed.get("text", parsed.get("translation", text)),

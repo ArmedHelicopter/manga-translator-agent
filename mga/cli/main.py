@@ -34,6 +34,7 @@ from ._provider import (
 )
 from ._memory import memory_group
 from ._benchmark import benchmark_group, _legacy_group
+from ._distill import distill_group
 from ._profile import profile
 from ._term import term
 from ._term import term_group
@@ -123,7 +124,7 @@ def _parse_kv(values: tuple[str, ...], name: str) -> dict[str, str]:
 @click.option("--dry-run", is_flag=True, help="Show config and exit")
 @click.option("-v", "--verbose", is_flag=True)
 @click.option("--artifact-payload-dir", type=click.Path(exists=True), help="Reuse existing payload")
-@click.option("--parallel-mode", type=click.Choice(["serial", "parallel", "pipelined"]))
+@click.option("--parallel-mode", type=click.Choice(["serial", "parallel", "pipelined", "semantic-parallel"]))
 @click.option("--concurrency", type=int, help="Max pages in flight")
 @click.option("--auto-vision-model", is_flag=True, help="Auto-switch vision model if rejected")
 def translate(
@@ -189,7 +190,7 @@ def translate(
         click.echo("Provider pre-check...")
         check_provider_connectivity(cfg)
         click.echo("Vision pre-check...")
-        check_vision_capability(cfg, auto_switch=auto_vision_model)
+        check_vision_capability(cfg, auto_vision_model=auto_vision_model)
         click.echo("Pre-checks OK")
 
         from mga.memory.service import get_memory_service
@@ -258,10 +259,9 @@ benchmark.add_command(_legacy_group, name="legacy")
 @click.option("--host", default="127.0.0.1")
 @click.option("--port", default=8000, type=int)
 def web(project_root, host, port):
-    """Run FastAPI project management Web UI."""
-    import uvicorn
-    from mga.web import create_app
-    uvicorn.run(create_app(project_root=Path(project_root)), host=host, port=port)
+    """Run FastAPI project management Web UI with blue-white theme."""
+    from mga.web import run_web_server
+    run_web_server(project_root=Path(project_root), host=host, port=port)
 
 
 @click.command("mcp")
@@ -290,6 +290,7 @@ main.add_command(batch_group)
 main.add_command(review_group)
 main.add_command(scene_group_cmd)
 main.add_command(decision_group)
+main.add_command(distill_group)
 main.add_command(web)
 main.add_command(mcp)
 

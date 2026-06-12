@@ -16,9 +16,11 @@ class Utterance(BaseModel):
 
 
 class FootnoteEntry(BaseModel):
+    """A single footnote entry for loanwords, coined terms, or cultural references."""
     original: str = ""
     translation: str = ""
-    type: str = ""
+    type: str = ""  # "loanword" | "coined" | "cultural" | "sfx" | "fictional"
+    explanation: Optional[str] = None  # Detailed explanation (e.g., cultural background)
 
 
 class TranslationCandidate(BaseModel):

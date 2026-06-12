@@ -9,8 +9,10 @@ from .factory import (
     get_provider,
     resolve_provider_settings,
     get_default_model,
+    get_provider_info,
     list_providers,
     list_profiles,
+    list_all_providers,
     # Base
     LLMProvider,
 )
@@ -26,8 +28,10 @@ __all__ = [
     "get_provider",
     "resolve_provider_settings",
     "get_default_model",
+    "get_provider_info",
     "list_providers",
     "list_profiles",
+    "list_all_providers",
     "ProviderCascade",
     "ProviderCandidate",
     "ProviderCascadeAdapter",

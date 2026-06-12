@@ -40,7 +40,7 @@ def test_batch_run_cli_processes_chapter_manifest(monkeypatch, tmp_path: Path) -
                 "results": {"ch1": {"status": "completed"}},
             }
 
-    monkeypatch.setattr("mga.pipeline.batch.BatchProcessor", FakeBatchProcessor)
+    monkeypatch.setattr("mga.cli._batch.BatchProcessor", FakeBatchProcessor)
 
     result = runner.invoke(
         main,
@@ -126,7 +126,7 @@ def test_batch_status_cli_writes_progress_summary(monkeypatch, tmp_path: Path) -
                 },
             }
 
-    monkeypatch.setattr("mga.pipeline.batch.BatchProcessor", FakeBatchProcessor)
+    monkeypatch.setattr("mga.cli._batch.BatchProcessor", FakeBatchProcessor)
 
     result = runner.invoke(
         main,
@@ -154,7 +154,7 @@ def test_batch_reset_cli_clears_progress(monkeypatch, tmp_path: Path) -> None:
         def reset(self):
             captured["reset"] = True
 
-    monkeypatch.setattr("mga.pipeline.batch.BatchProcessor", FakeBatchProcessor)
+    monkeypatch.setattr("mga.cli._batch.BatchProcessor", FakeBatchProcessor)
 
     result = runner.invoke(main, ["batch", "reset", "--project-dir", str(project_dir)])
 

@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import logging
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
+from .parallel_executor import ParallelExecutor, ParallelExecutionError
 from .parsers import (
     parse_jsonish_response,
     parse_translation_response,
@@ -16,6 +20,7 @@ from .parsers import (
     augment_footnotes_from_rationale,
     extract_structured_from_malformed,
 )
+from .page_footnotes import get_page_footnote_service
 
 from mga.cultural import CulturalAdapter
 from mga.exceptions import StageExecutionError
@@ -45,6 +50,10 @@ from .prompts import (
 class TranslationStage(PipelineStage):
     """Translate each bubble using LLM with character and cultural context."""
 
+    def __init__(self) -> None:
+        self._logger = logging.getLogger(__name__)
+        self._memory_lock = threading.Lock()
+
     @property
     def name(self) -> str:
         return "translation"
@@ -57,6 +66,10 @@ class TranslationStage(PipelineStage):
         cfg: ProjectConfig = context.project_config
         provider_cascade = ProviderCascade(cfg, "translation")
         project_dir = Path(cfg.working_dir) if cfg.working_dir else Path(".")
+
+        # Determine parallel mode from config
+        parallel_config = cfg.translation_config or {}
+        parallel_mode = parallel_config.get("parallel_mode", "serial")
 
         # Use optimized services if available in metadata
         memory_service = context.metadata.get("memory_service")
@@ -94,21 +107,58 @@ class TranslationStage(PipelineStage):
 
         all_translations: list[TranslationCandidate] = []
         realization_traces: list[DialogueRealizationTrace] = []
-        for page_index, page in enumerate(context.pages):
-            page_translations, page_traces = self._translate_page(
-                provider_cascade, page, context, cfg, cultural_adapter,
+        used_parallel_mode = False
+
+        # Check if semantic-parallel mode is enabled
+        if parallel_mode == "semantic-parallel":
+            try:
+                all_translations, realization_traces = self._execute_semantic_parallel(
+                    context=context,
+                    provider_cascade=provider_cascade,
+                    cfg=cfg,
+                    cultural_adapter=cultural_adapter,
+                    cultural_service=cultural_service,
+                    graph_retrieval=graph_retrieval,
+                    name_glossary=name_glossary,
+                    memory_updater=memory_updater,
+                    memory_trace=character_memory_trace,
+                    llm_cache=llm_cache,
+                    parallel_config=parallel_config,
+                )
+                used_parallel_mode = True
+            except ParallelExecutionError as exc:
+                self._logger.warning(
+                    "Parallel execution failed (%s), falling back to serial mode", exc
+                )
+                # Clear any partial state
+                context.translations = []
+                context.memory_context["character_profiles"] = {}
+                all_translations, realization_traces = self._execute_serial(
+                    context=context,
+                    provider_cascade=provider_cascade,
+                    cfg=cfg,
+                    cultural_adapter=cultural_adapter,
+                    cultural_service=cultural_service,
+                    graph_retrieval=graph_retrieval,
+                    name_glossary=name_glossary,
+                    memory_updater=memory_updater,
+                    memory_trace=character_memory_trace,
+                    llm_cache=llm_cache,
+                )
+                # Fallback to serial - don't mark parallel_mode in artifacts
+        else:
+            # Default serial execution
+            all_translations, realization_traces = self._execute_serial(
+                context=context,
+                provider_cascade=provider_cascade,
+                cfg=cfg,
+                cultural_adapter=cultural_adapter,
                 cultural_service=cultural_service,
-                graph_retrieval=graph_retrieval, name_glossary=name_glossary,
+                graph_retrieval=graph_retrieval,
+                name_glossary=name_glossary,
                 memory_updater=memory_updater,
                 memory_trace=character_memory_trace,
                 llm_cache=llm_cache,
-            )
-            all_translations.extend(page_translations)
-            realization_traces.extend(page_traces)
-            self._refresh_page_profiles_after_memory_update(
-                context=context,
-                memory_updater=memory_updater,
-                next_page=context.pages[page_index + 1] if page_index + 1 < len(context.pages) else None,
             )
 
         context.translations = all_translations
@@ -123,7 +173,381 @@ class TranslationStage(PipelineStage):
             },
             "provider_cascade_errors": provider_cascade.errors,
         }
+        # Only record parallel_mode when parallel execution succeeded
+        if used_parallel_mode:
+            context.artifacts[self.name]["parallel_mode"] = parallel_mode
         return context
+
+    def _execute_serial(
+        self,
+        context: PipelineContext,
+        provider_cascade: ProviderCascade,
+        cfg: ProjectConfig,
+        cultural_adapter: CulturalAdapter | None,
+        cultural_service: object | None,
+        graph_retrieval: object | None,
+        name_glossary: dict[str, str],
+        memory_updater: CharacterMemoryUpdater,
+        memory_trace: list[dict[str, Any]],
+        llm_cache: object | None,
+    ) -> tuple[list[TranslationCandidate], list[DialogueRealizationTrace]]:
+        """Execute translation serially (original behavior)."""
+        all_translations: list[TranslationCandidate] = []
+        realization_traces: list[DialogueRealizationTrace] = []
+
+        for page_index, page in enumerate(context.pages):
+            page_translations, page_traces = self._translate_page(
+                provider_cascade, page, context, cfg, cultural_adapter,
+                cultural_service=cultural_service,
+                graph_retrieval=graph_retrieval, name_glossary=name_glossary,
+                memory_updater=memory_updater,
+                memory_trace=memory_trace,
+                llm_cache=llm_cache,
+            )
+            all_translations.extend(page_translations)
+            realization_traces.extend(page_traces)
+            self._refresh_page_profiles_after_memory_update(
+                context=context,
+                memory_updater=memory_updater,
+                next_page=context.pages[page_index + 1] if page_index + 1 < len(context.pages) else None,
+            )
+
+        return all_translations, realization_traces
+
+    def _execute_semantic_parallel(
+        self,
+        context: PipelineContext,
+        provider_cascade: ProviderCascade,
+        cfg: ProjectConfig,
+        cultural_adapter: CulturalAdapter | None,
+        cultural_service: object | None,
+        graph_retrieval: object | None,
+        name_glossary: dict[str, str],
+        memory_updater: CharacterMemoryUpdater,
+        memory_trace: list[dict[str, Any]],
+        llm_cache: object | None,
+        parallel_config: dict[str, Any],
+    ) -> tuple[list[TranslationCandidate], list[DialogueRealizationTrace]]:
+        """Execute translation with semantic-parallel bubble processing."""
+        max_concurrent = parallel_config.get("max_concurrent_requests", 3)
+        semantic_timeout = parallel_config.get("semantic_timeout", 60)
+
+        all_translations: list[TranslationCandidate] = []
+        realization_traces: list[DialogueRealizationTrace] = []
+
+        # Process pages serially to maintain memory consistency
+        for page_index, page in enumerate(context.pages):
+            page_translations, page_traces = self._translate_page_semantic_parallel(
+                provider_cascade=provider_cascade,
+                page=page,
+                context=context,
+                cfg=cfg,
+                cultural_adapter=cultural_adapter,
+                cultural_service=cultural_service,
+                graph_retrieval=graph_retrieval,
+                name_glossary=name_glossary,
+                memory_updater=memory_updater,
+                memory_trace=memory_trace,
+                llm_cache=llm_cache,
+                max_concurrent=max_concurrent,
+                semantic_timeout=semantic_timeout,
+            )
+            all_translations.extend(page_translations)
+            realization_traces.extend(page_traces)
+            self._refresh_page_profiles_after_memory_update(
+                context=context,
+                memory_updater=memory_updater,
+                next_page=context.pages[page_index + 1] if page_index + 1 < len(context.pages) else None,
+            )
+
+        return all_translations, realization_traces
+
+    def _translate_page_semantic_parallel(
+        self,
+        provider_cascade: ProviderCascade,
+        page: object,
+        context: PipelineContext,
+        cfg: ProjectConfig,
+        cultural_adapter: CulturalAdapter | None,
+        cultural_service: object | None,
+        graph_retrieval: object | None,
+        name_glossary: dict[str, str],
+        memory_updater: CharacterMemoryUpdater,
+        memory_trace: list[dict[str, Any]],
+        llm_cache: object | None,
+        max_concurrent: int = 3,
+        semantic_timeout: float = 60,
+    ) -> tuple[list[TranslationCandidate], list[DialogueRealizationTrace]]:
+        """Translate a page with parallel semantic translation and serial persona rendering."""
+        page_profiles = context.memory_context.get("page_profiles", {})
+        mem_page = page_profiles.get(page.page_id, {})
+        scene_contexts = context.memory_context.get("scene_contexts", {})
+        scene_context = scene_contexts.get(page.page_id, {})
+        cult_page = context.cultural_context.get(page.page_id, {})
+
+        bubbles = list(page.bubbles)
+        if not bubbles:
+            return [], []
+
+        # Step 1: Parallel semantic translation for all bubbles
+        bubble_contexts = []
+        for bubble in bubbles:
+            speaker = bubble.speaker_id or ""
+            char_mem = mem_page.get(speaker, {})
+            vision_ctx = self._build_vision_context(page, bubble)
+            relationship_ctx, listener, relationship_data = self._build_relationship_context(
+                page=page,
+                bubble=bubble,
+                speaker=speaker,
+                graph_retrieval=graph_retrieval,
+            )
+            translation_memory = MemoryRetrieval.search_translation_memory(
+                Path(cfg.working_dir) if cfg.working_dir else Path("."),
+                bubble.source_text,
+                limit=3,
+            )
+
+            semantic_prompt = _build_semantic_translation_prompt(
+                bubble.source_text, cult_page, cfg.target_lang,
+                vision_ctx=vision_ctx,
+                translation_memory=translation_memory,
+            )
+
+            bubble_contexts.append({
+                "bubble": bubble,
+                "speaker": speaker,
+                "char_mem": char_mem,
+                "vision_ctx": vision_ctx,
+                "relationship_ctx": relationship_ctx,
+                "listener": listener,
+                "relationship_data": relationship_data,
+                "semantic_prompt": semantic_prompt,
+            })
+
+        # Execute semantic translations in parallel
+        semantic_results = self._parallel_semantic_translation(
+            provider_cascade=provider_cascade,
+            bubble_contexts=bubble_contexts,
+            target_lang=cfg.target_lang,
+            llm_cache=llm_cache,
+            max_workers=max_concurrent,
+            timeout=semantic_timeout,
+        )
+
+        # Step 2: Serial persona rendering (requires memory updates from previous bubbles)
+        results: list[TranslationCandidate] = []
+        traces: list[DialogueRealizationTrace] = []
+
+        for idx, bubble_ctx in enumerate(bubble_contexts):
+            bubble = bubble_ctx["bubble"]
+            speaker = bubble_ctx["speaker"]
+            char_mem = bubble_ctx["char_mem"]
+            vision_ctx = bubble_ctx["vision_ctx"]
+            relationship_ctx = bubble_ctx["relationship_ctx"]
+            listener = bubble_ctx["listener"]
+            relationship_data = bubble_ctx["relationship_data"]
+
+            semantic = semantic_results[idx]
+
+            # Apply katakana footnotes to semantic result
+            semantic.footnotes = ensure_katakana_footnotes(
+                source_text=bubble.source_text,
+                translated_text=semantic.text,
+                footnotes=semantic.footnotes,
+            )
+
+            # Get updated character memory (may have been updated by previous bubbles on same page)
+            mem_page_current = context.memory_context.get("page_profiles", {}).get(page.page_id, {})
+            char_mem_updated = mem_page_current.get(speaker, char_mem)
+
+            persona_prompt = _build_persona_render_prompt(
+                bubble.source_text,
+                semantic,
+                char_mem_updated,
+                cfg.target_lang,
+                relationship_ctx=relationship_ctx,
+                vision_ctx=vision_ctx,
+                listener_id=listener,
+                scene_summary=getattr(page, "scene_summary", "") or "",
+                scene_context=scene_context,
+                relationship_data=relationship_data,
+            )
+            candidate, persona, persona_provider = self._call_persona_llm(
+                provider_cascade=provider_cascade,
+                bubble_id=bubble.bubble_id,
+                prompt=persona_prompt,
+                semantic=semantic,
+                speaker_id=speaker or None,
+                listener_id=listener,
+                relationship_context_used=bool(relationship_ctx),
+                memory_context_used=bool(char_mem_updated or scene_context or MemoryRetrieval.search_translation_memory(
+                    Path(cfg.working_dir) if cfg.working_dir else Path("."),
+                    bubble.source_text,
+                    limit=3,
+                )),
+                vision_context_used=bool(vision_ctx),
+                source_text=bubble.source_text,
+                target_lang=cfg.target_lang,
+                llm_cache=llm_cache,
+            )
+
+            # Apply cultural terminology substitutions
+            cultural_processing_ctx = {
+                "translation": candidate.text,
+                "target_lang": cfg.target_lang,
+            }
+            if speaker and listener:
+                cultural_processing_ctx.update({
+                    "speaker": char_mem_updated,
+                    "listener": self._listener_memory_context(
+                        listener=listener,
+                        page_memory=mem_page_current,
+                        global_memory=context.memory_context.get("character_profiles", {}),
+                    ),
+                    "relationship": self._cultural_relationship_context(
+                        speaker=speaker,
+                        listener=listener,
+                        graph_retrieval=graph_retrieval,
+                    ),
+                })
+
+            # Use optimized CulturalService if available
+            if cultural_service is not None:
+                processed = cultural_service.process_translation(
+                    bubble.bubble_id, bubble.source_text,
+                    {"translation": candidate.text, "target_lang": cfg.target_lang, **cultural_processing_ctx},
+                )
+            else:
+                processed = cultural_adapter.process_translation(
+                    bubble.bubble_id, bubble.source_text,
+                    cultural_processing_ctx,
+                )
+            candidate.text = processed.get("translation", candidate.text)
+            candidate.footnotes = merge_footnotes(semantic.footnotes, candidate.footnotes)
+            candidate.footnotes = ensure_katakana_footnotes(
+                source_text=bubble.source_text,
+                translated_text=candidate.text,
+                footnotes=candidate.footnotes,
+            )
+            candidate.text = normalize_name_translation(
+                source_text=bubble.source_text,
+                translated_text=candidate.text,
+                glossary=name_glossary,
+            )
+            requires_human_translation = self._requires_human_translation(candidate)
+            if requires_human_translation:
+                self._mark_human_translation_required(candidate, persona, bubble.source_text)
+            persona.rendered_text = candidate.text
+            results.append(candidate)
+
+            # Build provider trace
+            semantic_trace = {"operation": "semantic_translation", "provider": "", "model": ""}
+            persona_trace = persona_provider.trace("persona_render") if persona_provider else {"operation": "persona_render", "provider": "", "model": ""}
+            traces.append(DialogueRealizationTrace(
+                page_id=page.page_id,
+                bubble_id=bubble.bubble_id,
+                source_text=bubble.source_text,
+                speaker_id=speaker or None,
+                provisional_speaker=getattr(bubble, "provisional_speaker", None),
+                semantic=semantic,
+                persona=persona,
+                provider=TranslationProviderTrace(
+                    semantic=semantic_trace,
+                    persona=persona_trace,
+                ),
+                final_text=candidate.text,
+            ))
+
+            # Update memory after persona rendering
+            if speaker and memory_updater is not None and not requires_human_translation:
+                update = memory_updater.update_from_translation(
+                    speaker=speaker,
+                    bubble=bubble,
+                    page_id=page.page_id,
+                    translated_text=candidate.text,
+                    memory_before=char_mem_updated,
+                    prompt=persona_prompt,
+                )
+                with self._memory_lock:
+                    context.memory_context["character_profiles"][speaker] = update.memory_after
+                    # Update page profile for next bubble on same page
+                    page_profiles = context.memory_context.setdefault("page_profiles", {})
+                    if page.page_id not in page_profiles:
+                        page_profiles[page.page_id] = {}
+                    page_profiles[page.page_id][speaker] = update.memory_after
+                if memory_trace is not None:
+                    memory_trace.append(update.trace_item)
+
+        # Compile page-level footnotes after all bubbles are translated
+        self._compile_page_footnotes(page, results, context)
+
+        return results, traces
+
+    def _parallel_semantic_translation(
+        self,
+        provider_cascade: ProviderCascade,
+        bubble_contexts: list[dict[str, Any]],
+        target_lang: str,
+        llm_cache: object | None,
+        max_workers: int = 3,
+        timeout: float = 60,
+    ) -> list[SemanticTranslation]:
+        """Execute semantic translations in parallel using ThreadPoolExecutor."""
+        results: list[SemanticTranslation | Exception] = [None] * len(bubble_contexts)
+
+        def translate_single(idx: int, ctx: dict[str, Any]) -> tuple[int, SemanticTranslation]:
+            bubble = ctx["bubble"]
+            semantic_prompt = ctx["semantic_prompt"]
+
+            semantic, _ = self._call_semantic_llm(
+                provider_cascade,
+                bubble.bubble_id,
+                semantic_prompt,
+                source_text=bubble.source_text,
+                target_lang=target_lang,
+                llm_cache=llm_cache,
+            )
+            return idx, semantic
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(translate_single, idx, ctx): idx
+                for idx, ctx in enumerate(bubble_contexts)
+            }
+
+            try:
+                for future in as_completed(futures, timeout=timeout):
+                    idx = futures[future]
+                    try:
+                        result_idx, semantic = future.result()
+                        results[result_idx] = semantic
+                    except Exception as exc:
+                        self._logger.error("Parallel semantic translation failed for index %s: %s", idx, exc)
+                        results[idx] = exc
+            except TimeoutError:
+                executor.shutdown(wait=False, cancel_futures=True)
+                raise ParallelExecutionError(
+                    f"Parallel semantic translation timeout after {timeout}s",
+                    errors=[],
+                )
+
+        # Check for errors and convert to final list
+        final_results: list[SemanticTranslation] = []
+        errors: list[tuple[int, Exception]] = []
+        for idx, result in enumerate(results):
+            if isinstance(result, Exception):
+                errors.append((idx, result))
+            else:
+                final_results.append(result)
+
+        if errors:
+            raise ParallelExecutionError(
+                f"{len(errors)} semantic translations failed out of {len(bubble_contexts)}",
+                errors=errors,
+            )
+
+        # Return in original order
+        return [r for r in results if r is not None]
 
     def _translate_page(
         self, provider_cascade: ProviderCascade, page: object,
@@ -284,6 +708,9 @@ class TranslationStage(PipelineStage):
                 if memory_trace is not None:
                     memory_trace.append(update.trace_item)
 
+        # Compile page-level footnotes after all bubbles are translated
+        self._compile_page_footnotes(page, results, context)
+
         return results, traces
 
     def _requires_human_translation(self, candidate: TranslationCandidate) -> bool:
@@ -304,6 +731,38 @@ class TranslationStage(PipelineStage):
         if "human_translation_required" not in persona.persona_moves:
             persona.persona_moves.append("human_translation_required")
         persona.rationale = candidate.rationale
+
+    def _compile_page_footnotes(
+        self,
+        page: object,
+        translations: list[TranslationCandidate],
+        context: PipelineContext,
+    ) -> None:
+        """Compile page-level footnotes from bubble translations.
+
+        Aggregates all footnotes from bubble translations into a unified
+        page-level footnote section, deduplicating and ordering them.
+        """
+        from mga.pipeline.page_footnotes import get_page_footnote_service
+
+        bubbles = list(getattr(page, "bubbles", []))
+        if not bubbles or not translations:
+            return
+
+        # Get page context for better explanations
+        page_context = getattr(page, "scene_summary", "") or ""
+
+        # Compile page footnotes
+        footnote_service = get_page_footnote_service()
+        page_footnotes = footnote_service.compile_page_footnotes(
+            bubbles=bubbles,
+            translations=translations,
+            page_context=page_context,
+        )
+
+        # Store on page object
+        if hasattr(page, "page_footnotes"):
+            page.page_footnotes = page_footnotes
 
     def _refresh_page_profiles_after_memory_update(
         self,

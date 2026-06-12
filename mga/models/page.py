@@ -27,6 +27,17 @@ class VisualFootnote(BaseModel):
     kind: str = "other"
     bbox: Optional[BoundingBox] = None
     notes: Optional[str] = None
+    explanation: Optional[str] = None  # Detailed cultural/explanatory note
+
+
+class PageFootnote(BaseModel):
+    """A compiled footnote for the page-level footnote section."""
+    index: int = 0  # Footnote number (1, 2, 3...)
+    term: str = ""  # Original Japanese term
+    translation: str = ""  # Translation used in text
+    explanation: str = ""  # Full explanation
+    type: str = "loanword"  # "loanword" | "coined" | "cultural" | "fictional" | "sfx"
+    source_bubble_id: Optional[str] = None  # Which bubble this footnote came from
 
 
 class Bubble(BaseModel):
@@ -56,3 +67,4 @@ class Page(BaseModel):
     scene_summary: str = ""
     visual_footnotes: List[VisualFootnote] = Field(default_factory=list)
     voice_hints: List[str] = Field(default_factory=list)
+    page_footnotes: List[PageFootnote] = Field(default_factory=list)  # Compiled page-level footnotes

@@ -7,21 +7,24 @@ from fastapi.testclient import TestClient
 from mga.web import create_app
 
 
-def test_web_root_returns_react_shell(tmp_path):
+def test_web_root_returns_jinja2_template(tmp_path):
     client = TestClient(create_app(project_root=tmp_path))
 
     response = client.get("/")
 
     assert response.status_code == 200
-    assert "Manga Translate Agent" in response.text
-    assert "https://unpkg.com/react@" in response.text
-    assert 'id="app"' in response.text
-    assert "Character Profile" in response.text
-    assert "formToPayload" in response.text
-    assert "Translation Reports" in response.text
-    assert "QA Review" in response.text
-    assert "Terminology Management" in response.text
-    assert "Provider Configuration" in response.text
+    # Check for key elements from the Jinja2 template
+    assert "Manga Translate Agent" in response.text or "漫画翻译助手" in response.text
+    assert 'id="app"' in response.text or 'class="app-container"' in response.text
+    # Check for blue-white theme elements
+    assert "blue" in response.text.lower() or "--blue-" in response.text or "#3b82f6" in response.text
+    # Check for key navigation elements
+    assert "Dashboard" in response.text or "仪表盘" in response.text
+    assert "Translate" in response.text or "翻译" in response.text
+    # Check for tutorial wizard elements
+    assert "tutorial" in response.text.lower() or "Welcome" in response.text or "欢迎" in response.text
+    # Check for i18n support
+    assert "EN" in response.text or "中文" in response.text
 
 
 def test_project_api_creates_and_lists_projects(tmp_path):

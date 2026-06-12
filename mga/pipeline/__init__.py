@@ -11,6 +11,13 @@ from .context import (
     QAContext,
     ArtifactContext,
 )
+from .page_footnotes import (
+    PageFootnoteService,
+    get_page_footnote_service,
+    detect_footnote_terms,
+    CULTURAL_REFERENCES,
+    FICTIONAL_REFERENCES,
+)
 
 __all__ = [
     "PipelineOrchestrator",
@@ -22,4 +29,10 @@ __all__ = [
     "CulturalContext",
     "QAContext",
     "ArtifactContext",
+    # Page footnotes
+    "PageFootnoteService",
+    "get_page_footnote_service",
+    "detect_footnote_terms",
+    "CULTURAL_REFERENCES",
+    "FICTIONAL_REFERENCES",
 ]

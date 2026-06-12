@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from mga.cultural import CulturalAdapter, load_fictional_script_context
+from mga.cultural import load_fictional_script_context
 from mga.memory import MemoryRetrieval
 from mga.memory.seeding import seed_memory_from_external_output
 from mga.memory.state import StateManager
@@ -55,7 +55,15 @@ class CharacterAttributionStage(PipelineStage):
                 )
                 context.artifacts.setdefault(self.name, {})["auto_seed"] = seed_result
 
+        # Use core services from metadata if available, otherwise fall back to legacy adapters
+        memory_service = context.metadata.get("memory_service")
+        cultural_service = context.metadata.get("cultural_service")
+
+        # Always need CulturalAdapter for get_translation_context
+        # CulturalService (from Layer 2) is used for process_translation
+        from mga.cultural.cultural_adapter import CulturalAdapter
         cultural_adapter = CulturalAdapter(str(project_dir))
+
         all_memory: dict[str, dict] = {}
         all_cultural: dict[str, dict] = {}
         all_scene_contexts: dict[str, dict] = {}
@@ -69,7 +77,11 @@ class CharacterAttributionStage(PipelineStage):
                 page,
                 current_chapter=current_chapter,
             )
-            page_cult = self._build_cultural_context(cultural_adapter, page)
+            page_cult = self._build_cultural_context(
+                cultural_service,
+                cultural_adapter,
+                page,
+            )
             page_scene = self._build_scene_context(
                 project_dir,
                 page,
@@ -103,6 +115,10 @@ class CharacterAttributionStage(PipelineStage):
         context.cultural_context = all_cultural
         context.artifacts[self.name] = {
             "pages_processed": len(context.pages),
+            "core_services_used": {
+                "memory": memory_service.__class__.__name__,
+                "cultural": cultural_service.__class__.__name__ if cultural_service else (cultural_adapter.__class__.__name__ if cultural_adapter else None),
+            },
         }
         return context
 
@@ -114,9 +130,11 @@ class CharacterAttributionStage(PipelineStage):
         current_chapter: int | None = None,
     ) -> dict:
         ctx: dict = {}
+
         for bubble in page.bubbles:
             speaker = bubble.speaker_id
             if speaker and speaker not in ctx:
+                # Use MemoryRetrieval which handles TOML fallback automatically
                 char_ctx = MemoryRetrieval.get_character_context(
                     project_dir,
                     speaker,
@@ -145,11 +163,28 @@ class CharacterAttributionStage(PipelineStage):
                 return scene_ctx
         return {}
 
-    def _build_cultural_context(self, adapter: CulturalAdapter, page: object) -> dict:
+    def _build_cultural_context(
+        self,
+        cultural_service: object | None,
+        cultural_adapter: object | None,
+        page: object,
+    ) -> dict:
         page_json = page.model_dump()
+
+        # CulturalAdapter provides get_translation_context and analyze_page
+        # (required for building cultural context strings for prompts)
+        if cultural_adapter is not None and hasattr(cultural_adapter, "get_translation_context"):
+            translation_context = cultural_adapter.get_translation_context(page_json)
+            analysis = cultural_adapter.analyze_page(page_json)
+        else:
+            translation_context = ""
+            analysis = {}
+
         return {
-            "translation_context": adapter.get_translation_context(page_json),
-            "analysis": adapter.analyze_page(page_json),
+            "translation_context": translation_context,
+            "analysis": analysis,
+            # Include cultural_service analysis if available (for TranslationStage)
+            "cultural_service_analysis": cultural_service.analyze(page_json) if (cultural_service is not None and hasattr(cultural_service, "analyze")) else None,
         }
 
     def _voice_evolution_context(self, profiles: dict[str, dict]) -> dict[str, list[dict]]:

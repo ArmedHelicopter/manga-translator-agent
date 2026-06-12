@@ -14,7 +14,7 @@ def memory_group():
 
 
 @memory_group.command("init")
-@click.argument("project_dir", type=click.Path(path_type=Path))
+@click.argument("project_dir", type=click.Path(path_type=Path), default=".")
 def memory_init(project_dir: Path):
     """Initialize memory/wiki structure in project directory."""
     from mga.memory.state import StateManager
@@ -24,7 +24,7 @@ def memory_init(project_dir: Path):
 
 
 @memory_group.command("sync")
-@click.argument("project_dir", type=click.Path(path_type=Path))
+@click.argument("project_dir", type=click.Path(path_type=Path), default=".")
 @click.option("--dry-run", is_flag=True, help="Show changes without applying")
 @click.option(
     "--direction",
@@ -53,7 +53,7 @@ def memory_sync(project_dir: Path, dry_run: bool, direction: str, work: str | No
 
 
 @memory_group.command("status")
-@click.argument("project_dir", type=click.Path(path_type=Path))
+@click.argument("project_dir", type=click.Path(path_type=Path), default=".")
 def memory_status(project_dir: Path):
     """Show memory state summary."""
     from mga.memory import StateManager
@@ -73,7 +73,7 @@ def memory_status(project_dir: Path):
 
 
 @memory_group.command("export")
-@click.argument("project_dir", type=click.Path(path_type=Path))
+@click.argument("project_dir", type=click.Path(path_type=Path), default=".")
 @click.argument("output_dir", type=click.Path(path_type=Path))
 def memory_export(project_dir: Path, output_dir: Path):
     """Export memory state as JSON."""

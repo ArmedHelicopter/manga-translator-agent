@@ -1,0 +1,929 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('app_title') }}{% endblock %}
+
+{% block content %}
+<!-- Tutorial Wizard Modal -->
+<div class="modal-overlay" id="tutorial-modal">
+  <div class="modal" style="width: 560px;">
+    <div class="modal-header">
+      <h2>{{ t('tutorial_welcome') }}</h2>
+    </div>
+    <div class="modal-body">
+      <!-- Tutorial Steps -->
+      <div id="tutorial-steps">
+        <!-- Step 1: Provider Config -->
+        <div class="tutorial-step" data-step="1">
+          <h3>{{ t('tutorial_step1_title') }}</h3>
+          <p class="text-muted mb-4">{{ t('tutorial_step1_desc') }}</p>
+          <div class="form-group">
+            <label class="form-label">{{ t('translate_provider') }}</label>
+            <select class="form-select" id="tutorial-provider">
+              <option value="openai">OpenAI (GPT-4o)</option>
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="gemini">Google Gemini</option>
+              <option value="deepseek">DeepSeek</option>
+              <option value="openrouter">OpenRouter</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Step 2: Language Config -->
+        <div class="tutorial-step hidden" data-step="2">
+          <h3>{{ t('tutorial_step2_title') }}</h3>
+          <p class="text-muted mb-4">{{ t('tutorial_step2_desc') }}</p>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-group">
+              <label class="form-label">{{ t('translate_source_lang') }}</label>
+              <select class="form-select" id="tutorial-source-lang">
+                <option value="ja">Japanese (日本語)</option>
+                <option value="ko">Korean (한국어)</option>
+                <option value="zh-CN">Chinese (中文)</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('translate_target_lang') }}</label>
+              <select class="form-select" id="tutorial-target-lang">
+                <option value="zh-CN">Chinese (中文)</option>
+                <option value="en">English</option>
+                <option value="ja">Japanese (日本語)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Select Input -->
+        <div class="tutorial-step hidden" data-step="3">
+          <h3>{{ t('tutorial_step3_title') }}</h3>
+          <p class="text-muted mb-4">{{ t('tutorial_step3_desc') }}</p>
+          <div class="form-group">
+            <label class="form-label">{{ t('translate_select_input') }}</label>
+            <div class="flex gap-2">
+              <input type="text" class="form-input" id="tutorial-input-path" placeholder="/path/to/manga">
+              <button class="btn btn-secondary" onclick="browseInputPath()">Browse</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Format</label>
+            <select class="form-select" id="tutorial-format">
+              <option value="images">Images Directory</option>
+              <option value="pdf">PDF Document</option>
+              <option value="epub">EPUB E-book</option>
+              <option value="cbz">CBZ Comic Archive</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Step 4: Ready -->
+        <div class="tutorial-step hidden" data-step="4">
+          <h3>{{ t('tutorial_step4_title') }}</h3>
+          <p class="text-muted mb-4">{{ t('tutorial_step4_desc') }}</p>
+          <div class="card" style="background: var(--blue-50); border-color: var(--blue-200);">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <div class="text-xs text-muted">{{ t('translate_provider') }}</div>
+                <div class="font-medium" id="tutorial-summary-provider">OpenAI</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted">{{ t('translate_source_lang') }} → {{ t('translate_target_lang') }}</div>
+                <div class="font-medium" id="tutorial-summary-lang">Japanese → Chinese</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted">{{ t('translate_select_input') }}</div>
+                <div class="font-medium" id="tutorial-summary-input">Not selected</div>
+              </div>
+              <div>
+                <div class="text-xs text-muted">Format</div>
+                <div class="font-medium" id="tutorial-summary-format">Images</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tutorial Progress -->
+      <div class="flex justify-center gap-2 mt-6" id="tutorial-progress">
+        <div class="tutorial-dot active" data-step="1"></div>
+        <div class="tutorial-dot" data-step="2"></div>
+        <div class="tutorial-dot" data-step="3"></div>
+        <div class="tutorial-dot" data-step="4"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="tutorial-skip" onclick="skipTutorial()">{{ t('tutorial_skip') }}</button>
+      <button class="btn btn-ghost" id="tutorial-back" onclick="prevTutorialStep()" disabled>{{ t('tutorial_back') }}</button>
+      <button class="btn btn-primary" id="tutorial-next" onclick="nextTutorialStep()">{{ t('tutorial_next') }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Project Modal -->
+<div class="modal-overlay" id="create-project-modal">
+  <div class="modal" style="width: 480px;">
+    <div class="modal-header">
+      <h2>{{ t('projects_new') }}</h2>
+    </div>
+    <form id="create-project-form">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">{{ t('projects_name') }}</label>
+          <input type="text" class="form-input" id="project-name" required placeholder="My Manga Project">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label">{{ t('translate_source_lang') }}</label>
+            <select class="form-select" id="project-source-lang">
+              <option value="ja">Japanese</option>
+              <option value="ko">Korean</option>
+              <option value="zh-CN">Chinese</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ t('translate_target_lang') }}</label>
+            <select class="form-select" id="project-target-lang">
+              <option value="zh-CN">Chinese</option>
+              <option value="en">English</option>
+              <option value="ja">Japanese</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="hideModal('create-project-modal')">{{ t('cancel') }}</button>
+        <button type="submit" class="btn btn-primary">{{ t('create') }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Page Sections -->
+<!-- Dashboard Page -->
+<section class="page-section" id="page-dashboard">
+  <div class="grid grid-cols-4 gap-6 mb-6" id="stats-grid">
+    <!-- Stats will be rendered by JS -->
+  </div>
+
+  <div class="grid grid-cols-2 gap-6">
+    <div class="card">
+      <div class="card-header flex justify-between items-center">
+        <div>
+          <h3 class="card-title">{{ t('dashboard_recent_projects') }}</h3>
+        </div>
+        <button class="btn btn-sm btn-primary" onclick="showModal('create-project-modal')">
+          + {{ t('projects_new') }}
+        </button>
+      </div>
+      <div id="projects-list">
+        <!-- Projects will be rendered by JS -->
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">{{ t('dashboard_quick_actions') }}</h3>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <button class="btn btn-outline" onclick="navigateTo('translate')">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+          </svg>
+          {{ t('nav_translate') }}
+        </button>
+        <button class="btn btn-outline" onclick="navigateTo('batch')">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+          </svg>
+          {{ t('translate_batch') }}
+        </button>
+        <button class="btn btn-outline" onclick="navigateTo('characters')">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          {{ t('nav_profiles') }}
+        </button>
+        <button class="btn btn-outline" onclick="navigateTo('settings')">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          {{ t('nav_settings') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Translate Page -->
+<section class="page-section hidden" id="page-translate">
+  <div class="card mb-6">
+    <div class="card-header">
+      <h3 class="card-title">{{ t('translate_single') }}</h3>
+      <p class="card-description">Translate a single manga file or directory</p>
+    </div>
+    <form id="translate-form">
+      <div class="grid grid-cols-2 gap-6">
+        <div class="form-group">
+          <label class="form-label">{{ t('translate_select_input') }}</label>
+          <div class="flex gap-2">
+            <input type="text" class="form-input" id="translate-input" placeholder="/path/to/manga">
+            <button type="button" class="btn btn-secondary">Browse</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('translate_output_dir') }}</label>
+          <div class="flex gap-2">
+            <input type="text" class="form-input" id="translate-output" placeholder="/path/to/output">
+            <button type="button" class="btn btn-secondary">Browse</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('translate_source_lang') }}</label>
+          <select class="form-select" id="translate-source-lang">
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="zh-CN">Chinese</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('translate_target_lang') }}</label>
+          <select class="form-select" id="translate-target-lang">
+            <option value="zh-CN">Chinese</option>
+            <option value="en">English</option>
+            <option value="ja">Japanese</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('translate_provider') }}</label>
+          <select class="form-select" id="translate-provider">
+            <option value="openai">OpenAI (GPT-4o)</option>
+            <option value="anthropic">Anthropic (Claude)</option>
+            <option value="gemini">Google Gemini</option>
+            <option value="deepseek">DeepSeek</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Format</label>
+          <select class="form-select" id="translate-format">
+            <option value="images">Images Directory</option>
+            <option value="pdf">PDF Document</option>
+            <option value="epub">EPUB E-book</option>
+            <option value="cbz">CBZ Comic Archive</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex gap-3 mt-6">
+        <button type="submit" class="btn btn-primary btn-lg">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          {{ t('translate_start') }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">{{ t('translate_progress') }}</h3>
+    </div>
+    <div id="translation-progress">
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </div>
+        <div class="empty-state-title">{{ t('no_data') }}</div>
+        <div class="empty-state-description">{{ t('translate_progress') }}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Batch Translation Page -->
+<section class="page-section hidden" id="page-batch">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">{{ t('translate_batch') }}</h3>
+      <p class="card-description">Translate multiple files or directories</p>
+    </div>
+    <form id="batch-form">
+      <div class="form-group">
+        <label class="form-label">{{ t('translate_select_input') }} (Directory)</label>
+        <div class="flex gap-2">
+          <input type="text" class="form-input" id="batch-input" placeholder="/path/to/chapters">
+          <button type="button" class="btn btn-secondary">Browse</button>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-6">
+        <div class="form-group">
+          <label class="form-label">{{ t('translate_source_lang') }}</label>
+          <select class="form-select" id="batch-source-lang">
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="zh-CN">Chinese</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('translate_target_lang') }}</label>
+          <select class="form-select" id="batch-target-lang">
+            <option value="zh-CN">Chinese</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('translate_provider') }}</label>
+          <select class="form-select" id="batch-provider">
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Anthropic</option>
+            <option value="gemini">Google Gemini</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex gap-3 mt-6">
+        <button type="submit" class="btn btn-primary btn-lg">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+          </svg>
+          {{ t('translate_start') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- Characters Page -->
+<section class="page-section hidden" id="page-characters">
+  <div class="card">
+    <div class="card-header flex justify-between items-center">
+      <div>
+        <h3 class="card-title">{{ t('memory_characters') }}</h3>
+        <p class="card-description">Manage character profiles for consistent translation</p>
+      </div>
+      <button class="btn btn-sm btn-primary" onclick="showAddCharacterModal()">
+        + {{ t('memory_add_character') }}
+      </button>
+    </div>
+    <div id="characters-list">
+      <!-- Characters will be rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- Terms Page -->
+<section class="page-section hidden" id="page-terms">
+  <div class="card">
+    <div class="card-header flex justify-between items-center">
+      <div>
+        <h3 class="card-title">{{ t('terms_title') }}</h3>
+        <p class="card-description">Manage terminology for consistent translation</p>
+      </div>
+      <button class="btn btn-sm btn-primary" onclick="showAddTermModal()">
+        + {{ t('terms_add') }}
+      </button>
+    </div>
+    <div id="terms-list">
+      <!-- Terms will be rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- Settings Page -->
+<section class="page-section hidden" id="page-settings">
+  <div class="grid grid-cols-2 gap-6">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">{{ t('settings_general') }}</h3>
+      </div>
+      <form id="settings-general-form">
+        <div class="form-group">
+          <label class="form-label">{{ t('settings_language') }}</label>
+          <select class="form-select" id="settings-locale">
+            <option value="en">English</option>
+            <option value="zh">中文 (Chinese)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('translate_source_lang') }} (Default)</label>
+          <select class="form-select" id="settings-default-source">
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="zh-CN">Chinese</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('translate_target_lang') }} (Default)</label>
+          <select class="form-select" id="settings-default-target">
+            <option value="zh-CN">Chinese</option>
+            <option value="en">English</option>
+            <option value="ja">Japanese</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">{{ t('settings_save') }}</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">{{ t('settings_provider') }}</h3>
+      </div>
+      <form id="provider-config-form">
+        <div class="tabs">
+          <div class="tab active" data-tab="vision">{{ t('provider_vision') }}</div>
+          <div class="tab" data-tab="translation">{{ t('provider_translation') }}</div>
+          <div class="tab" data-tab="qa">{{ t('provider_qa') }}</div>
+        </div>
+        <div class="tab-content" id="tab-vision">
+          <div class="grid grid-cols-3 gap-4">
+            <div class="form-group">
+              <label class="form-label">{{ t('provider_primary') }}</label>
+              <select class="form-select" id="provider-vision-primary">
+                <option value="openai">OpenAI</option>
+                <option value="anthropic">Anthropic</option>
+                <option value="gemini">Google Gemini</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('provider_fallback') }}</label>
+              <select class="form-select" id="provider-vision-fallback">
+                <option value="">None</option>
+                <option value="gemini">Google Gemini</option>
+                <option value="openai">OpenAI</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('provider_local') }}</label>
+              <select class="form-select" id="provider-vision-local">
+                <option value="">None</option>
+                <option value="ollama">Ollama</option>
+                <option value="llama.cpp">llama.cpp</option>
+                <option value="lmstudio">LM Studio</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="tab-content hidden" id="tab-translation">
+          <div class="grid grid-cols-3 gap-4">
+            <div class="form-group">
+              <label class="form-label">{{ t('provider_primary') }}</label>
+              <select class="form-select" id="provider-translation-primary">
+                <option value="openai">OpenAI</option>
+                <option value="anthropic">Anthropic</option>
+                <option value="deepseek">DeepSeek</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('provider_fallback') }}</label>
+              <select class="form-select" id="provider-translation-fallback">
+                <option value="">None</option>
+                <option value="deepseek">DeepSeek</option>
+                <option value="openai">OpenAI</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('provider_local') }}</label>
+              <select class="form-select" id="provider-translation-local">
+                <option value="">None</option>
+                <option value="ollama">Ollama</option>
+                <option value="llama.cpp">llama.cpp</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="tab-content hidden" id="tab-qa">
+          <div class="grid grid-cols-3 gap-4">
+            <div class="form-group">
+              <label class="form-label">{{ t('provider_primary') }}</label>
+              <select class="form-select" id="provider-qa-primary">
+                <option value="openai">OpenAI</option>
+                <option value="anthropic">Anthropic</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('provider_fallback') }}</label>
+              <select class="form-select" id="provider-qa-fallback">
+                <option value="">None</option>
+                <option value="deepseek">DeepSeek</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t('provider_local') }}</label>
+              <select class="form-select" id="provider-qa-local">
+                <option value="">None</option>
+                <option value="ollama">Ollama</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-4">{{ t('save') }}</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card mt-6">
+    <div class="card-header">
+      <h3 class="card-title">{{ t('settings_about') }}</h3>
+    </div>
+    <div class="text-sm">
+      <p><strong>Manga Translate Agent (mga)</strong></p>
+      <p class="text-muted mt-2">An AI-powered manga translation system with character consistency, cultural adaptation, and QA proofreading.</p>
+      <div class="grid grid-cols-3 gap-4 mt-4">
+        <div>
+          <div class="text-xs text-muted">Version</div>
+          <div>1.0.0</div>
+        </div>
+        <div>
+          <div class="text-xs text-muted">Architecture</div>
+          <div>6-Layer Design</div>
+        </div>
+        <div>
+          <div class="text-xs text-muted">Providers</div>
+          <div>9 Supported</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+  /* Tutorial Styles */
+  .tutorial-step {
+    min-height: 200px;
+  }
+
+  .tutorial-step h3 {
+    margin-bottom: var(--space-2);
+  }
+
+  .tutorial-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--gray-300);
+    transition: all var(--transition-fast);
+  }
+
+  .tutorial-dot.active {
+    background: var(--blue-500);
+    transform: scale(1.2);
+  }
+
+  .tutorial-dot.completed {
+    background: var(--success);
+  }
+
+  /* Tab Content */
+  .tab-content {
+    padding: var(--space-4) 0;
+  }
+
+  /* Character/Term List */
+  .character-item, .term-item {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .character-item:last-child, .term-item:last-child {
+    border-bottom: none;
+  }
+
+  .character-item:hover, .term-item:hover {
+    background: var(--gray-50);
+  }
+</style>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+  // ============================================
+  // Tutorial Wizard
+  // ============================================
+  let tutorialStep = 1;
+  const totalTutorialSteps = 4;
+
+  function showTutorial() {
+    const modal = document.getElementById('tutorial-modal');
+    if (modal) {
+      modal.classList.add('active');
+    }
+  }
+
+  function skipTutorial() {
+    hideModal('tutorial-modal');
+    localStorage.setItem('mga-tutorial-completed', 'true');
+  }
+
+  function nextTutorialStep() {
+    if (tutorialStep < totalTutorialSteps) {
+      tutorialStep++;
+      updateTutorialUI();
+    } else {
+      skipTutorial();
+    }
+  }
+
+  function prevTutorialStep() {
+    if (tutorialStep > 1) {
+      tutorialStep--;
+      updateTutorialUI();
+    }
+  }
+
+  function updateTutorialUI() {
+    // Update steps visibility
+    document.querySelectorAll('.tutorial-step').forEach(step => {
+      step.classList.toggle('hidden', parseInt(step.dataset.step) !== tutorialStep);
+    });
+
+    // Update progress dots
+    document.querySelectorAll('.tutorial-dot').forEach(dot => {
+      const step = parseInt(dot.dataset.step);
+      dot.classList.toggle('active', step === tutorialStep);
+      dot.classList.toggle('completed', step < tutorialStep);
+    });
+
+    // Update buttons
+    document.getElementById('tutorial-back').disabled = tutorialStep === 1;
+    document.getElementById('tutorial-next').textContent =
+      tutorialStep === totalTutorialSteps ? '{{ t("tutorial_done") }}' : '{{ t("tutorial_next") }}';
+
+    // Update summary on step 4
+    if (tutorialStep === 4) {
+      const provider = document.getElementById('tutorial-provider').value;
+      const sourceLang = document.getElementById('tutorial-source-lang').value;
+      const targetLang = document.getElementById('tutorial-target-lang').value;
+      const format = document.getElementById('tutorial-format').value;
+
+      document.getElementById('tutorial-summary-provider').textContent = provider;
+      document.getElementById('tutorial-summary-lang').textContent = `${sourceLang} → ${targetLang}`;
+      document.getElementById('tutorial-summary-input').textContent =
+        document.getElementById('tutorial-input-path').value || 'Not selected';
+      document.getElementById('tutorial-summary-format').textContent = format;
+    }
+  }
+
+  // Listen for tutorial input changes
+  ['tutorial-provider', 'tutorial-source-lang', 'tutorial-target-lang',
+   'tutorial-input-path', 'tutorial-format'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', () => {
+      if (tutorialStep === 4) {
+        updateTutorialUI();
+      }
+    });
+  });
+
+  // ============================================
+  // Tab Navigation
+  // ============================================
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabName = tab.dataset.tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.toggle('hidden', content.id !== `tab-${tabName}`);
+      });
+    });
+  });
+
+  // ============================================
+  // Create Project Form
+  // ============================================
+  document.getElementById('create-project-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = {
+      name: document.getElementById('project-name').value,
+      source_lang: document.getElementById('project-source-lang').value,
+      target_lang: document.getElementById('project-target-lang').value,
+    };
+    await createProject(formData);
+  });
+
+  // ============================================
+  // Settings Form
+  // ============================================
+  document.getElementById('settings-general-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const locale = document.getElementById('settings-locale').value;
+    localStorage.setItem('mga-locale', locale);
+    location.reload();
+  });
+
+  // ============================================
+  // Provider Config Form
+  // ============================================
+  document.getElementById('provider-config-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const config = {
+      stages: {
+        vision: {
+          primary: document.getElementById('provider-vision-primary').value,
+          fallback: document.getElementById('provider-vision-fallback').value,
+          local: document.getElementById('provider-vision-local').value,
+        },
+        translation: {
+          primary: document.getElementById('provider-translation-primary').value,
+          fallback: document.getElementById('provider-translation-fallback').value,
+          local: document.getElementById('provider-translation-local').value,
+        },
+        qa: {
+          primary: document.getElementById('provider-qa-primary').value,
+          fallback: document.getElementById('provider-qa-fallback').value,
+          local: document.getElementById('provider-qa-local').value,
+        },
+      },
+      providers: {},
+    };
+    console.log('Provider config:', config);
+    // TODO: Save to project config
+  });
+
+  // ============================================
+  // Initialize
+  // ============================================
+  (function init() {
+    // Check if tutorial should be shown
+    const tutorialCompleted = localStorage.getItem('mga-tutorial-completed');
+    if (!tutorialCompleted) {
+      setTimeout(showTutorial, 500);
+    }
+
+    // Load provider config if project selected
+    if (state.selectedProject) {
+      loadProviderConfig(state.selectedProject.id);
+    }
+  })();
+
+  // ============================================
+  // Character/Term Functions
+  // ============================================
+  async function loadCharacters() {
+    if (!state.selectedProject) return;
+    try {
+      const response = await fetch(`/api/projects/${state.selectedProject.id}/characters`);
+      const data = await response.json();
+      renderCharacters(data.characters || []);
+    } catch (error) {
+      console.error('Failed to load characters:', error);
+    }
+  }
+
+  function renderCharacters(characters) {
+    const container = document.getElementById('characters-list');
+    if (!container) return;
+
+    if (characters.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-title">{{ t('no_data') }}</div>
+          <div class="empty-state-description">{{ t('memory_add_character') }}</div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = characters.map(char => `
+      <div class="character-item">
+        <div class="flex justify-between items-center">
+          <div>
+            <div class="font-medium">${escapeHtml(char.name_jp || char.character_id)}</div>
+            <div class="text-sm text-muted">${escapeHtml(char.name_zh || '')} ${char.archetype ? '· ' + escapeHtml(char.archetype) : ''}</div>
+          </div>
+          <div class="list-item-actions">
+            <button class="btn btn-sm btn-ghost" onclick="editCharacter('${char.character_id}')">{{ t('edit') }}</button>
+            <button class="btn btn-sm btn-ghost" onclick="deleteCharacter('${char.character_id}')">{{ t('delete') }}</button>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-2">
+          <span class="badge badge-blue">${char.speech_pattern_count || 0} patterns</span>
+          <span class="badge badge-gray">${char.catchphrase_count || 0} catchphrases</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function loadTerms() {
+    if (!state.selectedProject) return;
+    try {
+      const response = await fetch(`/api/projects/${state.selectedProject.id}/terms`);
+      const data = await response.json();
+      renderTerms(data.terms || []);
+    } catch (error) {
+      console.error('Failed to load terms:', error);
+    }
+  }
+
+  function renderTerms(terms) {
+    const container = document.getElementById('terms-list');
+    if (!container) return;
+
+    if (terms.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-title">{{ t('no_data') }}</div>
+          <div class="empty-state-description">{{ t('terms_add') }}</div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = terms.map(term => `
+      <div class="term-item">
+        <div class="flex justify-between items-center">
+          <div>
+            <div class="font-medium">${escapeHtml(term.term_jp || term.term_id)}</div>
+            <div class="text-sm text-muted">${escapeHtml(term.term_zh || 'No translation')} ${term.strategy ? '· ' + escapeHtml(term.strategy) : ''}</div>
+          </div>
+          <div class="list-item-actions">
+            <button class="btn btn-sm btn-ghost" onclick="editTerm('${encodeURIComponent(term.term_id)}')">{{ t('edit') }}</button>
+            <button class="btn btn-sm btn-ghost" onclick="deleteTerm('${encodeURIComponent(term.term_id)}')">{{ t('delete') }}</button>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-2">
+          ${term.cultural_weight ? `<span class="badge badge-purple">${escapeHtml(term.cultural_weight)}</span>` : ''}
+          ${term.pending_human_review ? '<span class="badge badge-yellow">Pending Review</span>' : ''}
+          <span class="badge badge-gray">${term.frequency || 0} uses</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function showAddCharacterModal() {
+    // TODO: Implement character add modal
+    alert('Add character modal - TODO');
+  }
+
+  function showAddTermModal() {
+    // TODO: Implement term add modal
+    alert('Add term modal - TODO');
+  }
+
+  function editCharacter(id) {
+    // TODO: Implement character edit
+    console.log('Edit character:', id);
+  }
+
+  function deleteCharacter(id) {
+    if (confirm(t('confirm_delete'))) {
+      // TODO: Implement character delete
+      console.log('Delete character:', id);
+    }
+  }
+
+  function editTerm(id) {
+    // TODO: Implement term edit
+    console.log('Edit term:', id);
+  }
+
+  function deleteTerm(id) {
+    if (confirm(t('confirm_delete'))) {
+      // TODO: Implement term delete
+      console.log('Delete term:', id);
+    }
+  }
+
+  async function loadProviderConfig(projectId) {
+    try {
+      const response = await fetch(`/api/projects/${projectId}/provider-config`);
+      const data = await response.json();
+      state.config = data;
+
+      // Populate form fields
+      if (data.stages) {
+        document.getElementById('provider-vision-primary').value = data.stages.vision?.primary || 'openai';
+        document.getElementById('provider-vision-fallback').value = data.stages.vision?.fallback || '';
+        document.getElementById('provider-vision-local').value = data.stages.vision?.local || '';
+        document.getElementById('provider-translation-primary').value = data.stages.translation?.primary || 'openai';
+        document.getElementById('provider-translation-fallback').value = data.stages.translation?.fallback || '';
+        document.getElementById('provider-translation-local').value = data.stages.translation?.local || '';
+        document.getElementById('provider-qa-primary').value = data.stages.qa?.primary || 'openai';
+        document.getElementById('provider-qa-fallback').value = data.stages.qa?.fallback || '';
+        document.getElementById('provider-qa-local').value = data.stages.qa?.local || '';
+      }
+    } catch (error) {
+      console.error('Failed to load provider config:', error);
+    }
+  }
+
+  // ============================================
+  // Load Characters/Terms when navigating
+  // ============================================
+  const originalNavigateTo = navigateTo;
+  navigateTo = function(page) {
+    originalNavigateTo(page);
+    if (page === 'characters') {
+      loadCharacters();
+    } else if (page === 'terms') {
+      loadTerms();
+    }
+  };
+</script>
+{% endblock %}

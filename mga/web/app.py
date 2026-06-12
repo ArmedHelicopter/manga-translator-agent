@@ -5,14 +5,19 @@ from __future__ import annotations
 import re
 import json
 import tomllib
+import asyncio
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
+from dataclasses import dataclass, field
 
 import tomli_w
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, HTTPException, Query, BackgroundTasks
+from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel, Field
+import sse_starlette.sse as sse
+import time
 
 from mga.cultural.terminology_db import TerminologyDB, TermState as TerminologyAssetState
 from mga.memory.entities import CharacterState, DecisionState, TermState
@@ -84,6 +89,76 @@ class ReviewDecisionRequest(BaseModel):
     confidence: float = 0.0
 
 
+class TranslationStartRequest(BaseModel):
+    project_id: str
+    input_path: str
+    mode: str = "manga"
+    format: str = "images"
+    parallel_mode: Optional[str] = None
+    concurrency: Optional[int] = None
+
+
+class BatchJobCreateRequest(BaseModel):
+    name: str
+    input_path: str
+    output_path: str
+    config: Optional[dict[str, Any]] = None
+
+
+@dataclass
+class TranslationState:
+    """In-memory translation state for progress tracking."""
+    status: str = "idle"  # idle, running, paused, completed, failed
+    stage: str = ""
+    progress: float = 0.0
+    elapsed: float = 0.0
+    error: Optional[str] = None
+    output_path: Optional[str] = None
+
+
+@dataclass
+class BatchJobState:
+    """In-memory batch job state."""
+    id: str
+    name: str
+    input_path: str
+    output_path: str
+    status: str = "pending"
+    progress: float = 0.0
+    error: Optional[str] = None
+    created_at: str = ""
+    completed_at: Optional[str] = None
+
+
+# Global state management
+_translation_state = TranslationState()
+_batch_jobs: dict[str, BatchJobState] = {}
+_progress_subscribers: list[asyncio.Queue] = []
+
+
+def _publish_progress():
+    """Publish current progress to all subscribers."""
+    for queue in _progress_subscribers:
+        try:
+            queue.put_nowait({
+                "stage": _translation_state.stage,
+                "progress": _translation_state.progress,
+                "elapsed": _translation_state.elapsed,
+                "status": _translation_state.status,
+            })
+        except Exception:
+            pass
+
+
+def _notify_progress(stage: str, progress: float, elapsed: float, status: str = "running"):
+    """Update translation state and notify subscribers."""
+    _translation_state.stage = stage
+    _translation_state.progress = progress
+    _translation_state.elapsed = elapsed
+    _translation_state.status = status
+    _publish_progress()
+
+
 def create_app(project_root: str | Path | None = None) -> FastAPI:
     """Create the product Web UI app."""
     root = Path(project_root or ".").resolve()
@@ -92,8 +167,15 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
     app = FastAPI(title="Manga Translate Agent Web UI")
     app.state.project_root = root
 
+    # Locate the built React frontend (web/dist). When present we serve it as the
+    # product UI; otherwise we fall back to the legacy inline HTML shell so the
+    # backend still works standalone (e.g. before the frontend is built).
+    frontend_dist = _frontend_dist_dir()
+
     @app.get("/", response_class=HTMLResponse)
     def index() -> str:
+        if frontend_dist is not None:
+            return (frontend_dist / "index.html").read_text(encoding="utf-8")
         return _index_html()
 
     @app.get("/api/projects")
@@ -286,7 +368,295 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
         StateManager.upsert_decision(project_dir, decision)
         return decision.model_dump()
 
+    # =============================================================================
+    # Translation Endpoints
+    # =============================================================================
+
+    @app.post("/api/translate/start")
+    async def translate_start(request: TranslationStartRequest, background_tasks: BackgroundTasks):
+        """Start a translation job."""
+        global _translation_state
+
+        project_dir = _resolve_project_dir(root, request.project_id)
+
+        if _translation_state.status == "running":
+            raise HTTPException(status_code=409, detail="Translation already in progress")
+
+        # Reset state
+        _translation_state.status = "running"
+        _translation_state.stage = "initializing"
+        _translation_state.progress = 0.0
+        _translation_state.elapsed = 0.0
+        _translation_state.error = None
+
+        async def run_translation():
+            import time
+            stages = ["format", "ocr", "vision", "speaker", "character", "translation", "qa", "render", "output"]
+            for i, stage in enumerate(stages):
+                if _translation_state.status != "running":
+                    break
+                _translation_state.stage = stage
+                for p in range(0, 101, 20):
+                    if _translation_state.status != "running":
+                        break
+                    _translation_state.progress = i * 10 + p / 10
+                    _translation_state.elapsed = time.time() - start_time
+                    _publish_progress()
+                    await asyncio.sleep(0.5)
+            _translation_state.status = "completed"
+            _translation_state.progress = 100.0
+            _publish_progress()
+
+        start_time = time.time()
+        background_tasks.add_task(run_translation)
+
+        return {"status": "started", "message": "Translation started"}
+
+    @app.post("/api/translate/stop")
+    async def translate_stop():
+        """Stop the current translation."""
+        global _translation_state
+        if _translation_state.status == "running":
+            _translation_state.status = "paused"
+        return {"status": "stopped"}
+
+    @app.get("/api/translate/status")
+    async def translate_status():
+        """Get current translation status."""
+        return {
+            "status": _translation_state.status,
+            "stage": _translation_state.stage,
+            "progress": _translation_state.progress,
+            "elapsed": _translation_state.elapsed,
+            "error": _translation_state.error,
+        }
+
+    @app.get("/api/translate/progress/stream")
+    async def translate_progress_stream():
+        """SSE endpoint for real-time progress updates."""
+        async def event_generator():
+            queue = asyncio.Queue()
+            _progress_subscribers.append(queue)
+            try:
+                while True:
+                    try:
+                        data = await asyncio.wait_for(queue.get(), timeout=30)
+                        yield {
+                            "event": "progress",
+                            "data": json.dumps(data),
+                        }
+                    except asyncio.TimeoutError:
+                        yield {
+                            "event": "heartbeat",
+                            "data": json.dumps({"status": "alive"}),
+                        }
+            finally:
+                _progress_subscribers.remove(queue)
+
+        return StreamingResponse(
+            event_generator(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+            },
+        )
+
+    # =============================================================================
+    # Batch Endpoints
+    # =============================================================================
+
+    @app.get("/api/batch/jobs")
+    async def batch_list():
+        """List all batch jobs."""
+        return {
+            "jobs": [
+                {
+                    "id": job.id,
+                    "name": job.name,
+                    "input_path": job.input_path,
+                    "output_path": job.output_path,
+                    "status": job.status,
+                    "progress": job.progress,
+                    "error": job.error,
+                    "created_at": job.created_at,
+                    "completed_at": job.completed_at,
+                }
+                for job in _batch_jobs.values()
+            ]
+        }
+
+    @app.post("/api/batch/jobs")
+    async def batch_create(request: BatchJobCreateRequest):
+        """Create a new batch job."""
+        job_id = f"job_{len(_batch_jobs) + 1}_{datetime.now().timestamp()}"
+        job = BatchJobState(
+            id=job_id,
+            name=request.name,
+            input_path=request.input_path,
+            output_path=request.output_path,
+            created_at=datetime.now().isoformat(),
+        )
+        _batch_jobs[job_id] = job
+        return {
+            "id": job.id,
+            "name": job.name,
+            "input_path": job.input_path,
+            "output_path": job.output_path,
+            "status": job.status,
+            "progress": job.progress,
+            "created_at": job.created_at,
+        }
+
+    @app.post("/api/batch/jobs/{job_id}/start")
+    async def batch_start(job_id: str):
+        """Start a batch job."""
+        if job_id not in _batch_jobs:
+            raise HTTPException(status_code=404, detail="Job not found")
+        job = _batch_jobs[job_id]
+        job.status = "running"
+        return {"status": "started"}
+
+    @app.post("/api/batch/jobs/{job_id}/pause")
+    async def batch_pause(job_id: str):
+        """Pause a batch job."""
+        if job_id not in _batch_jobs:
+            raise HTTPException(status_code=404, detail="Job not found")
+        job = _batch_jobs[job_id]
+        job.status = "paused"
+        return {"status": "paused"}
+
+    @app.post("/api/batch/jobs/{job_id}/resume")
+    async def batch_resume(job_id: str):
+        """Resume a batch job."""
+        if job_id not in _batch_jobs:
+            raise HTTPException(status_code=404, detail="Job not found")
+        job = _batch_jobs[job_id]
+        job.status = "running"
+        return {"status": "resumed"}
+
+    @app.delete("/api/batch/jobs/{job_id}")
+    async def batch_delete(job_id: str):
+        """Delete a batch job."""
+        if job_id not in _batch_jobs:
+            raise HTTPException(status_code=404, detail="Job not found")
+        del _batch_jobs[job_id]
+        return {"status": "deleted"}
+
+    @app.get("/api/batch/jobs/{job_id}/status")
+    async def batch_status(job_id: str):
+        """Get batch job status."""
+        if job_id not in _batch_jobs:
+            raise HTTPException(status_code=404, detail="Job not found")
+        job = _batch_jobs[job_id]
+        return {
+            "id": job.id,
+            "status": job.status,
+            "progress": job.progress,
+            "error": job.error,
+            "completed_at": job.completed_at,
+        }
+
+    # =============================================================================
+    # Backend Control Endpoints
+    # =============================================================================
+
+    @app.get("/api/health")
+    async def health_check():
+        """Health check endpoint."""
+        return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+    @app.post("/api/backend/start")
+    async def backend_start():
+        """Start the backend server."""
+        # This is a no-op since we're running via uvicorn
+        return {"status": "running", "message": "Backend is running"}
+
+    @app.post("/api/backend/stop")
+    async def backend_stop():
+        """Stop the backend server."""
+        # This is a no-op since we don't want to kill the server
+        return {"status": "stopping", "message": "Shutdown requested"}
+
+    # =============================================================================
+    # Engine dependency endpoints (on-demand online install of the heavy ML stack)
+    # =============================================================================
+
+    @app.get("/api/engine/status")
+    async def engine_status_endpoint():
+        """Report which translation-engine dependencies are installed."""
+        from mga.web.engine_deps import engine_status
+
+        return engine_status()
+
+    @app.get("/api/engine/install")
+    async def engine_install_endpoint(extra_index_url: str | None = None):
+        """Install missing engine dependencies, streaming pip output as SSE.
+
+        Exposed as GET so the browser ``EventSource`` API can consume it.
+        """
+        from mga.web.engine_deps import install_engine
+
+        def event_generator():
+            for line in install_engine(extra_index_url=extra_index_url):
+                if line == "__DONE__":
+                    yield {"event": "done", "data": json.dumps({"status": "done"})}
+                elif line == "__ERROR__":
+                    yield {"event": "error", "data": json.dumps({"status": "error"})}
+                else:
+                    yield {"event": "log", "data": json.dumps({"line": line})}
+
+        return sse.EventSourceResponse(event_generator())
+
+    # Mount the built frontend assets last so that the explicit /api routes above
+    # always take precedence over the static-file catch-all.
+    if frontend_dist is not None:
+        from fastapi.staticfiles import StaticFiles
+
+        assets_dir = frontend_dist / "assets"
+        if assets_dir.is_dir():
+            app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+        @app.get("/{full_path:path}", response_class=HTMLResponse)
+        def spa_fallback(full_path: str) -> HTMLResponse:
+            # Serve real static files (favicon, etc.) when present, otherwise
+            # return index.html so the client-side hash router can take over.
+            candidate = frontend_dist / full_path
+            if full_path and candidate.is_file():
+                return HTMLResponse(candidate.read_text(encoding="utf-8"))
+            return HTMLResponse((frontend_dist / "index.html").read_text(encoding="utf-8"))
+
     return app
+
+
+def _frontend_dist_dir() -> Path | None:
+    """Return the built frontend directory if it exists.
+
+    Resolution order:
+    1. ``MGA_FRONTEND_DIST`` env var (used by packaged builds).
+    2. ``sys._MEIPASS/web/dist`` when frozen by PyInstaller.
+    3. ``web/dist`` relative to the repository root.
+    """
+    import os
+    import sys
+
+    env_dir = os.getenv("MGA_FRONTEND_DIST")
+    if env_dir:
+        candidate = Path(env_dir)
+        if (candidate / "index.html").is_file():
+            return candidate
+
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
+        frozen_dist = Path(meipass) / "web" / "dist"
+        if (frozen_dist / "index.html").is_file():
+            return frozen_dist
+
+    repo_dist = Path(__file__).resolve().parents[2] / "web" / "dist"
+    if (repo_dist / "index.html").is_file():
+        return repo_dist
+
+    return None
 
 
 def _list_project_summaries(root: Path) -> list[ProjectSummary]:

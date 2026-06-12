@@ -19,26 +19,38 @@ from typing import Any
 MAX_TOKENS_PER_SECTION = 500
 DEFAULT_TARGET_LANG = "zh-CN"
 
+# Shared base rules to avoid duplication
+_BASE_RULES = (
+    "- 所有文字翻译为中文，画面不得出现日文\n"
+    "- 片假名外来语翻译为中文，footnotes 注明原文"
+)
+
 TRANSLATION_RULES = (
     "## 翻译规则\n"
-    "- 所有文字翻译为中文，画面不得出现日文\n"
+    f"{_BASE_RULES}\n"
     "- 人名按中文习惯翻译，不写入 footnotes\n"
-    "- 片假名外来语翻译为中文，footnotes 注明原文\n"
     "- 拟声词翻译为中文拟声词"
 )
 
 SEMANTIC_RULES = (
     "## 语义层规则\n"
+    f"{_BASE_RULES}\n"
     "- 只翻译原文意思、事实、术语、拟声词和脚注，不做人格化\n"
-    "- 所有文字翻译为中文，画面不得出现日文\n"
-    "- 片假名外来语翻译为中文，footnotes 注明原文"
+    "## 脚注识别规则\n"
+    "- 片假名外来语（カタカナ）：翻译为中文，添加 footnotes ['type': 'loanword']\n"
+    "- 作者造词/虚构术语：保留原词感，添加 footnotes ['type': 'coined', 'explanation': '造词说明']\n"
+    "- 文化特有词汇（如 highball、障子、お盆）：翻译并添加 footnotes ['type': 'cultural', 'explanation': '文化背景说明']\n"
+    "- 拟声词/音效：翻译为中文，添加 footnotes ['type': 'sfx']\n"
+    "- 虚构设定词（魔法、スキル等）：添加 footnotes ['type': 'fictional', 'explanation': '设定说明']\n"
+    "- footnotes.translation 填写正文中使用的翻译（见正文/具体翻译均可）\n"
+    "- footnotes.explanation 填写详细解释（文化背景、造词来源、含义等）\n"
 )
 
 PERSONA_RULES = (
     "## 人格层规则\n"
     "- 只允许调整语气、句式、句尾、节奏、敬语层级和口癖\n"
     "- 不得改变事实、指代、事件逻辑、专名术语\n"
-    "- 最终文本必须适合直接嵌字，不输出解释文字"
+    "- 最终文本必须适合直接嵌字"
 )
 
 FORMALITY_MAP = {
@@ -48,14 +60,9 @@ FORMALITY_MAP = {
     "formal": "正式",
 }
 
-JSON_SCHEMA_TRANSLATION = "{'text': '翻译', 'footnotes': [], 'rationale': ''}"
-JSON_SCHEMA_SEMANTIC = (
-    "{'text': '语义翻译', 'speech_act': '', 'emotion': '', "
-    "'must_preserve': [], 'footnotes': [], 'rationale': '', 'confidence': 0.8}"
-)
-JSON_SCHEMA_PERSONA = (
-    "{'text': '人格化翻译', 'persona_moves': [], 'rationale': '', 'confidence': 0.8}"
-)
+JSON_SCHEMA_TRANSLATION = "{'text':'翻译','footnotes':[],'rationale':''}"
+JSON_SCHEMA_SEMANTIC = "{'text':'语义','speech_act':'','emotion':'','must_preserve':[],'footnotes':[{'original':'原文','translation':'译文','type':'loanword|coined|cultural|fictional|sfx','explanation':'详细解释（可选）'}],'rationale':'','confidence':0.8}"
+JSON_SCHEMA_PERSONA = "{'text':'人格','persona_moves':[],'rationale':'','confidence':0.8}"
 
 
 # ── Section Builders ───────────────────────────────────────────────────────────

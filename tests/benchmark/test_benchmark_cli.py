@@ -214,7 +214,8 @@ def test_mga_legacy_benchmark_extraction_falls_back_when_primary_provider_fails(
     runner = CliRunner()
     input_dir = tmp_path / "input"
     input_dir.mkdir()
-    (input_dir / "001.png").write_bytes(b"fake image data")
+    from PIL import Image
+    Image.new("RGB", (8, 8), "white").save(input_dir / "001.png")
     output_dir = tmp_path / "output"
     config_path = tmp_path / "providers.toml"
     config_path.write_text(
@@ -239,19 +240,18 @@ def test_mga_legacy_benchmark_extraction_falls_back_when_primary_provider_fails(
         captured["ocr_specs"] = kwargs["ocr_specs"]
         return {"page_count": len(kwargs["pages"])}
 
-    monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.cli._provider.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.providers.cascade.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.benchmark.evaluate.run_extraction_benchmark", fake_run_extraction_benchmark)
 
     result = runner.invoke(
         mga_main,
         [
+            "benchmark",
             "legacy",
             "benchmark-extraction",
             str(input_dir),
-            "-o",
             str(output_dir),
-            "--config",
-            str(config_path),
         ],
     )
 
@@ -278,7 +278,7 @@ def test_mga_stage_provider_falls_back_for_benchmark_runtime_methods(monkeypatch
         captured["providers"].append((name, settings))
         return BrokenProvider() if name == "openai" else WorkingProvider()
 
-    monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.cli._provider.get_provider", fake_get_provider)
     cfg = ProjectConfig(
         provider_routes={
             "vision": StageProviderConfig(
@@ -294,7 +294,9 @@ def test_mga_stage_provider_falls_back_for_benchmark_runtime_methods(monkeypatch
 
     provider = _resolve_stage_provider(cfg, "vision")
 
-    assert provider.vision_extract("page", store="store") == ("page", "trace")
+    # Pass a Page-like object instead of a plain string
+    mock_page = type("MockPage", (), {"image": type("MockImage", (), {"path": "page"})()})()
+    assert provider.vision_extract(mock_page, store="store") == ("page", "trace")
     assert [name for name, _settings in captured["providers"]] == ["openai", "gemini"]
     assert captured["providers"][0][1]["model"] == "primary-vision"
     assert captured["providers"][1][1]["model"] == "fallback-vision"
@@ -342,7 +344,7 @@ def test_compat_legacy_benchmark_extraction_builds_fallback_provider_from_raw_co
         captured["ocr_specs"] = kwargs["ocr_specs"]
         return {"page_count": len(kwargs["pages"])}
 
-    monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.cli._provider.get_provider", fake_get_provider)
     monkeypatch.setattr("manga_translate.cli.run_extraction_benchmark", fake_run_extraction_benchmark)
 
     result = runner.invoke(
@@ -387,7 +389,7 @@ def test_compat_legacy_provider_falls_back_for_runtime_vision_extract(monkeypatc
         captured["providers"].append((name, settings))
         return BrokenProvider() if name == "openai" else WorkingProvider()
 
-    monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.cli._provider.get_provider", fake_get_provider)
 
     provider = build_legacy_provider(raw_config, None, stage="vision")
 
@@ -425,7 +427,7 @@ def test_compat_legacy_provider_falls_back_for_runtime_translation_methods(monke
         captured["providers"].append((name, settings))
         return BrokenProvider() if name == "openai" else WorkingProvider()
 
-    monkeypatch.setattr("mga.providers.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.cli._provider.get_provider", fake_get_provider)
 
     provider = build_legacy_provider(raw_config, None, stage="translation")
 

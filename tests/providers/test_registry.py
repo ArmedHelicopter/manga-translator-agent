@@ -20,6 +20,9 @@ def test_registry_exposes_documented_provider_map():
         "vllm": (".vllm_provider", "VLLMProvider"),
         "openrouter": (".openrouter_provider", "OpenRouterProvider"),
         "llamacpp": (".llamacpp_provider", "LlamaCppProvider"),
+        "cohere": (".cohere_provider", "CohereProvider"),
+        "mistral": (".mistral_provider", "MistralProvider"),
+        "groq": (".groq_provider", "GroqProvider"),
     }
 
 
@@ -576,3 +579,96 @@ def test_provider_cascade_adapter_falls_back_for_direct_translate_page_runtime_f
             "model": "",
         }
     ]
+
+
+# ── Provider Profile Tests ─────────────────────────────────────────────────────
+
+
+def test_provider_profiles_contains_siliconflow():
+    """SiliconFlow is a pre-configured OpenAI-compatible provider profile."""
+    profile = registry._PROVIDER_PROFILES.get("siliconflow")
+    assert profile is not None
+    assert profile["provider_type"] == "openai"
+    assert profile["base_url"] == "https://api.siliconflow.cn/v1"
+    assert profile["vision_model"] == "Qwen/Qwen-VL-Plus"
+    assert profile["text_model"] == "Qwen/Qwen2.5-72B-Instruct"
+
+
+def test_provider_profiles_contains_zhipu():
+    """Zhipu GLM is a pre-configured OpenAI-compatible provider profile."""
+    profile = registry._PROVIDER_PROFILES.get("zhipu")
+    assert profile is not None
+    assert profile["provider_type"] == "openai"
+    assert profile["base_url"] == "https://open.bigmodel.cn/api/paas/v4"
+    assert profile["vision_model"] == "glm-4v-flash"
+    assert profile["text_model"] == "glm-4-flash"
+
+
+def test_provider_profiles_contains_kimi():
+    """Kimi (Moonshot) is a pre-configured OpenAI-compatible provider profile."""
+    profile = registry._PROVIDER_PROFILES.get("kimi")
+    assert profile is not None
+    assert profile["provider_type"] == "openai"
+    assert profile["base_url"] == "https://api.moonshot.cn/v1"
+    assert profile["vision_model"] == "moonshot-v1-vision"
+    assert profile["text_model"] == "moonshot-v1-128k"
+
+
+def test_provider_profiles_supports_aliyun():
+    """Aliyun DashScope is a pre-configured OpenAI-compatible provider profile."""
+    profile = registry._PROVIDER_PROFILES.get("aliyun")
+    assert profile is not None
+    assert profile["provider_type"] == "openai"
+    assert profile["base_url"] == "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    assert profile["vision_model"] == "qwen-vl-plus"
+
+
+def test_provider_profiles_supports_volcengine():
+    """VolcEngine is a pre-configured OpenAI-compatible provider profile."""
+    profile = registry._PROVIDER_PROFILES.get("volcengine")
+    assert profile is not None
+    assert profile["provider_type"] == "openai"
+    assert profile["base_url"] == "https://ark.cn-beijing.volces.com/api/v3"
+    assert profile["vision_model"] == "doubao-vision-pro"
+
+
+def test_provider_profiles_supports_novita():
+    """Novita AI is a pre-configured OpenAI-compatible provider profile."""
+    profile = registry._PROVIDER_PROFILES.get("novita")
+    assert profile is not None
+    assert profile["provider_type"] == "openai"
+    assert profile["base_url"] == "https://api.novita.ai/v2"
+
+
+def test_get_provider_siliconflow_uses_openai_compatible_defaults():
+    """SiliconFlow provider uses OpenAI provider type with pre-configured defaults."""
+    provider = get_provider("siliconflow", api_key="test-key")
+    assert provider is not None
+    assert provider.__class__.__name__ == "OpenAIProvider"
+
+
+def test_get_provider_zhipu_uses_openai_compatible_defaults():
+    """Zhipu provider uses OpenAI provider type with pre-configured defaults."""
+    provider = get_provider("zhipu", api_key="test-key")
+    assert provider is not None
+    assert provider.__class__.__name__ == "OpenAIProvider"
+
+
+def test_get_provider_kimi_uses_openai_compatible_defaults():
+    """Kimi provider uses OpenAI provider type with pre-configured defaults."""
+    provider = get_provider("kimi", api_key="test-key")
+    assert provider is not None
+    assert provider.__class__.__name__ == "OpenAIProvider"
+
+
+def test_provider_profiles_includes_minimum_20_providers():
+    """Verify we have added substantial provider support (at least 20 profiles)."""
+    assert len(registry._PROVIDER_PROFILES) >= 20
+
+
+def test_valid_names_includes_all_providers():
+    """All provider names (classes + profiles) should be in VALID_NAMES."""
+    for name in registry._PROVIDER_MAP:
+        assert name in registry._VALID_NAMES, f"{name} should be in VALID_NAMES"
+    for name in registry._PROVIDER_PROFILES:
+        assert name in registry._VALID_NAMES, f"{name} should be in VALID_NAMES"

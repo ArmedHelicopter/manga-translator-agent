@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="{{ locale }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ t('app_title') }} - {{ t('app_subtitle') }}{% endblock %}</title>
+
+  <style>
+    /* ============================================
+       CSS Variables - Blue & White Theme
+       ============================================ */
+    :root {
+      /* Primary Blue Palette */
+      --blue-50: #eff6ff;
+      --blue-100: #dbeafe;
+      --blue-200: #bfdbfe;
+      --blue-300: #93c5fd;
+      --blue-400: #60a5fa;
+      --blue-500: #3b82f6;
+      --blue-600: #2563eb;
+      --blue-700: #1d4ed8;
+      --blue-800: #1e40af;
+      --blue-900: #1e3a8a;
+      --blue-950: #172554;
+
+      /* White/Gray Backgrounds */
+      --white: #ffffff;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+
+      /* Semantic Colors */
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --info: #06b6d4;
+
+      /* Spacing */
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+
+      /* Border Radius */
+      --radius-sm: 0.25rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+      /* Transitions */
+      --transition-fast: 150ms ease;
+      --transition-normal: 250ms ease;
+      --transition-slow: 350ms ease;
+
+      /* Font */
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+    }
+
+    /* ============================================
+       Reset & Base Styles
+       ============================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--gray-50);
+      color: var(--gray-800);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    a {
+      color: var(--blue-600);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    a:hover {
+      color: var(--blue-800);
+    }
+
+    /* ============================================
+       Typography
+       ============================================ */
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--gray-900);
+    }
+
+    h1 { font-size: 1.875rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1.125rem; }
+    h5 { font-size: 1rem; }
+    h6 { font-size: 0.875rem; }
+
+    p {
+      margin-bottom: var(--space-4);
+    }
+
+    /* ============================================
+       Layout Components
+       ============================================ */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 240px;
+      background: var(--white);
+      border-right: 1px solid var(--gray-200);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      z-index: 100;
+      transition: transform var(--transition-normal);
+    }
+
+    .sidebar-header {
+      padding: var(--space-6);
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .sidebar-logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--blue-500), var(--blue-700));
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: 700;
+      font-size: 1.125rem;
+    }
+
+    .sidebar-logo-text {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: var(--space-4);
+      overflow-y: auto;
+    }
+
+    .nav-section {
+      margin-bottom: var(--space-6);
+    }
+
+    .nav-section-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gray-400);
+      padding: 0 var(--space-3);
+      margin-bottom: var(--space-2);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-3);
+      border-radius: var(--radius-md);
+      color: var(--gray-600);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .nav-item:hover {
+      background: var(--blue-50);
+      color: var(--blue-700);
+    }
+
+    .nav-item.active {
+      background: var(--blue-100);
+      color: var(--blue-700);
+    }
+
+    .nav-item-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-footer {
+      padding: var(--space-4);
+      border-top: 1px solid var(--gray-100);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 240px;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: var(--space-4) var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    /* Page Content */
+    .page-content {
+      padding: var(--space-6);
+    }
+
+    /* Card */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .card-description {
+      color: var(--gray-500);
+      font-size: 0.875rem;
+      margin-top: var(--space-1);
+    }
+
+    /* ============================================
+       Buttons
+       ============================================ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--blue-500);
+      color: var(--white);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--blue-600);
+    }
+
+    .btn-primary:active:not(:disabled) {
+      background: var(--blue-700);
+    }
+
+    .btn-secondary {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--gray-200);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--gray-300);
+      color: var(--gray-700);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: var(--gray-50);
+      border-color: var(--gray-400);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--gray-600);
+    }
+
+    .btn-ghost:hover:not(:disabled) {
+      background: var(--gray-100);
+    }
+
+    .btn-icon {
+      padding: var(--space-2);
+      border-radius: var(--radius-md);
+    }
+
+    .btn-lg {
+      padding: var(--space-3) var(--space-6);
+      font-size: 1rem;
+    }
+
+    .btn-sm {
+      padding: var(--space-1) var(--space-3);
+      font-size: 0.75rem;
+    }
+
+    /* ============================================
+       Form Elements
+       ============================================ */
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--gray-700);
+      margin-bottom: var(--space-2);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      font-size: 0.875rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-md);
+      background: var(--white);
+      transition: all var(--transition-fast);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--blue-500);
+      box-shadow: 0 0 0 3px var(--blue-100);
+    }
+
+    .form-input::placeholder {
+      color: var(--gray-400);
+    }
+
+    .form-select {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      font-size: 0.875rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-md);
+      background: var(--white);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='Sonnet 4.5L6 8l3.5-3.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right var(--space-3) center;
+      padding-right: var(--space-8);
+    }
+
+    .form-select:focus {
+      outline: none;
+      border-color: var(--blue-500);
+      box-shadow: 0 0 0 3px var(--blue-100);
+    }
+
+    .form-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: var(--space-3);
+      font-size: 0.875rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-md);
+      background: var(--white);
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--blue-500);
+      box-shadow: 0 0 0 3px var(--blue-100);
+    }
+
+    .form-hint {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+      margin-top: var(--space-1);
+    }
+
+    .form-error {
+      font-size: 0.75rem;
+      color: var(--error);
+      margin-top: var(--space-1);
+    }
+
+    /* ============================================
+       Grid System
+       ============================================ */
+    .grid {
+      display: grid;
+      gap: var(--space-6);
+    }
+
+    .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+    .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+    @media (max-width: 1024px) {
+      .grid-cols-3 { grid-template-columns: repeat(2, 1fr); }
+      .grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .grid-cols-2, .grid-cols-3, .grid-cols-4 { grid-template-columns: repeat(1, 1fr); }
+    }
+
+    /* ============================================
+       Stats Cards
+       ============================================ */
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-3);
+    }
+
+    .stat-icon.blue { background: var(--blue-100); color: var(--blue-600); }
+    .stat-icon.green { background: #d1fae5; color: #059669; }
+    .stat-icon.purple { background: #ede9fe; color: #7c3aed; }
+    .stat-icon.orange { background: #ffedd5; color: #ea580c; }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--gray-500);
+    }
+
+    /* ============================================
+       List Items
+       ============================================ */
+    .list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--gray-100);
+      transition: background var(--transition-fast);
+    }
+
+    .list-item:last-child {
+      border-bottom: none;
+    }
+
+    .list-item:hover {
+      background: var(--gray-50);
+    }
+
+    .list-item-content {
+      flex: 1;
+    }
+
+    .list-item-title {
+      font-weight: 500;
+      color: var(--gray-900);
+    }
+
+    .list-item-subtitle {
+      font-size: 0.875rem;
+      color: var(--gray-500);
+      margin-top: var(--space-1);
+    }
+
+    .list-item-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    /* ============================================
+       Badges
+       ============================================ */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--space-1) var(--space-2);
+      font-size: 0.75rem;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+    }
+
+    .badge-blue { background: var(--blue-100); color: var(--blue-700); }
+    .badge-green { background: #d1fae5; color: #059669; }
+    .badge-yellow { background: #fef3c7; color: #d97706; }
+    .badge-red { background: #fee2e2; color: #dc2626; }
+    .badge-gray { background: var(--gray-100); color: var(--gray-600); }
+
+    /* ============================================
+       Progress Bar
+       ============================================ */
+    .progress {
+      height: 8px;
+      background: var(--gray-200);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue-500), var(--blue-600));
+      border-radius: var(--radius-full);
+      transition: width var(--transition-normal);
+    }
+
+    /* ============================================
+       Modal / Overlay
+       ============================================ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--transition-fast);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow: auto;
+      transform: scale(0.95);
+      transition: transform var(--transition-fast);
+    }
+
+    .modal-overlay.active .modal {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: var(--space-6);
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .modal-body {
+      padding: var(--space-6);
+    }
+
+    .modal-footer {
+      padding: var(--space-4) var(--space-6);
+      border-top: 1px solid var(--gray-100);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-3);
+    }
+
+    /* ============================================
+       Language Switcher
+       ============================================ */
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: var(--gray-100);
+      border-radius: var(--radius-md);
+      padding: var(--space-1);
+    }
+
+    .lang-btn {
+      padding: var(--space-1) var(--space-3);
+      font-size: 0.75rem;
+      font-weight: 500;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .lang-btn.active {
+      background: var(--white);
+      color: var(--blue-600);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ============================================
+       Empty State
+       ============================================ */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-12) var(--space-6);
+      color: var(--gray-500);
+    }
+
+    .empty-state-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto var(--space-4);
+      color: var(--gray-300);
+    }
+
+    .empty-state-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: var(--space-2);
+    }
+
+    .empty-state-description {
+      font-size: 0.875rem;
+      margin-bottom: var(--space-4);
+    }
+
+    /* ============================================
+       Table
+       ============================================ */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+      padding: var(--space-3) var(--space-4);
+      text-align: left;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .table th {
+      font-weight: 600;
+      color: var(--gray-600);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--gray-50);
+    }
+
+    .table tr:hover {
+      background: var(--gray-50);
+    }
+
+    /* ============================================
+       Tabs
+       ============================================ */
+    .tabs {
+      display: flex;
+      gap: var(--space-1);
+      border-bottom: 1px solid var(--gray-200);
+      margin-bottom: var(--space-4);
+    }
+
+    .tab {
+      padding: var(--space-3) var(--space-4);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--gray-500);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .tab:hover {
+      color: var(--gray-700);
+    }
+
+    .tab.active {
+      color: var(--blue-600);
+      border-bottom-color: var(--blue-600);
+    }
+
+    /* ============================================
+       Utilities
+       ============================================ */
+    .hidden { display: none !important; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: var(--space-2); }
+    .gap-3 { gap: var(--space-3); }
+    .gap-4 { gap: var(--space-4); }
+    .gap-6 { gap: var(--space-6); }
+    .w-full { width: 100%; }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .text-sm { font-size: 0.875rem; }
+    .text-xs { font-size: 0.75rem; }
+    .text-muted { color: var(--gray-500); }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .mt-4 { margin-top: var(--space-4); }
+    .mt-6 { margin-top: var(--space-6); }
+    .mb-4 { margin-bottom: var(--space-4); }
+    .mb-6 { margin-bottom: var(--space-6); }
+    .p-4 { padding: var(--space-4); }
+    .p-6 { padding: var(--space-6); }
+
+    /* ============================================
+       Responsive
+       ============================================ */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .header {
+        padding: var(--space-3) var(--space-4);
+      }
+
+      .page-content {
+        padding: var(--space-4);
+      }
+    }
+  </style>
+
+  {% block extra_styles %}{% endblock %}
+</head>
+<body>
+  <div class="app-container">
+    {% block sidebar %}
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-icon">M</div>
+          <span class="sidebar-logo-text">{{ t('app_title') }}</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">{{ t('nav_dashboard') }}</div>
+          <div class="nav-item active" data-page="dashboard">
+            <span class="nav-item-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+              </svg>
+            </span>
+            <span>{{ t('nav_dashboard') }}</span>
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">{{ t('nav_translate') }}</div>
+          <div class="nav-item" data-page="translate">
+            <span class="nav-item-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+              </svg>
+            </span>
+            <span>{{ t('nav_translate') }}</span>
+          </div>
+          <div class="nav-item" data-page="batch">
+            <span class="nav-item-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+              </svg>
+            </span>
+            <span>{{ t('translate_batch') }}</span>
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">{{ t('nav_memory') }}</div>
+          <div class="nav-item" data-page="characters">
+            <span class="nav-item-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </span>
+            <span>{{ t('nav_profiles') }}</span>
+          </div>
+          <div class="nav-item" data-page="terms">
+            <span class="nav-item-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+            </span>
+            <span>{{ t('nav_terms') }}</span>
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">{{ t('nav_settings') }}</div>
+          <div class="nav-item" data-page="settings">
+            <span class="nav-item-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </span>
+            <span>{{ t('nav_settings') }}</span>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="lang-switcher">
+          <button class="lang-btn {% if locale == 'en' %}active{% endif %}" data-locale="en">EN</button>
+          <button class="lang-btn {% if locale == 'zh' %}active{% endif %}" data-locale="zh">中文</button>
+        </div>
+      </div>
+    </aside>
+    {% endblock %}
+
+    <main class="main-content">
+      {% block header %}
+      <header class="header">
+        <h1 class="header-title">{% block page_title %}{{ t('dashboard_title') }}{% endblock %}</h1>
+        <div class="header-actions">
+          {% block header_actions %}{% endblock %}
+        </div>
+      </header>
+      {% endblock %}
+
+      <div class="page-content">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+
+  {% block modals %}{% endblock %}
+
+  {% block scripts %}
+  <script>
+    // ============================================
+    // Global State
+    // ============================================
+    const state = {
+      locale: '{{ locale }}',
+      currentPage: 'dashboard',
+      projects: [],
+      selectedProject: null,
+      config: null,
+    };
+
+    // ============================================
+    // Translation Function
+    // ============================================
+    const translations = {
+      en: {{ translations_en | tojson | safe }},
+      zh: {{ translations_zh | tojson | safe }},
+    };
+
+    function t(key) {
+      return translations[state.locale]?.[key] || translations['en']?.[key] || key;
+    }
+
+    // ============================================
+    // Navigation
+    // ============================================
+    function navigateTo(page) {
+      state.currentPage = page;
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.page === page);
+      });
+      document.querySelectorAll('.page-section').forEach(section => {
+        section.classList.toggle('hidden', section.id !== `page-${page}`);
+      });
+      document.querySelector('.header-title').textContent = t(`nav_${page}`) || page;
+    }
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const page = item.dataset.page;
+        if (page) navigateTo(page);
+      });
+    });
+
+    // ============================================
+    // Language Switcher
+    // ============================================
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const newLocale = btn.dataset.locale;
+        if (newLocale !== state.locale) {
+          state.locale = newLocale;
+          document.querySelectorAll('.lang-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.locale === newLocale);
+          });
+          // Update all translatable elements
+          document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.dataset.i18n;
+            el.textContent = t(key);
+          });
+          // Update page title
+          document.querySelector('.header-title').textContent = t(`nav_${state.currentPage}`) || state.currentPage;
+          // Store preference
+          localStorage.setItem('mga-locale', newLocale);
+        }
+      });
+    });
+
+    // ============================================
+    // Initialize
+    // ============================================
+    (function init() {
+      // Load saved locale preference
+      const savedLocale = localStorage.getItem('mga-locale');
+      if (savedLocale && ['en', 'zh'].includes(savedLocale)) {
+        state.locale = savedLocale;
+        document.querySelectorAll('.lang-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.locale === savedLocale);
+        });
+      }
+
+      // Load initial data
+      loadProjects();
+    })();
+
+    // ============================================
+    // API Functions
+    // ============================================
+    async function loadProjects() {
+      try {
+        const response = await fetch('/api/projects');
+        const data = await response.json();
+        state.projects = data.projects || [];
+        renderProjects();
+        renderDashboardStats();
+      } catch (error) {
+        console.error('Failed to load projects:', error);
+      }
+    }
+
+    function renderProjects() {
+      const container = document.getElementById('projects-list');
+      if (!container) return;
+
+      if (state.projects.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <div class="empty-state-title">${t('no_data')}</div>
+            <div class="empty-state-description">{{ t('projects_new') }}</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = state.projects.map(project => `
+        <div class="list-item" data-project-id="${project.id}">
+          <div class="list-item-content">
+            <div class="list-item-title">${escapeHtml(project.name)}</div>
+            <div class="list-item-subtitle">
+              ${project.source_lang} → ${project.target_lang} · ${project.character_count} chars · ${project.term_count} terms
+            </div>
+          </div>
+          <div class="list-item-actions">
+            <button class="btn btn-sm btn-outline" onclick="openProject('${project.id}')">{{ t('projects_open') }}</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderDashboardStats() {
+      const container = document.getElementById('stats-grid');
+      if (!container) return;
+
+      const totalProjects = state.projects.length;
+      const totalCharacters = state.projects.reduce((sum, p) => sum + (p.character_count || 0), 0);
+      const totalTerms = state.projects.reduce((sum, p) => sum + (p.term_count || 0), 0);
+
+      container.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-icon blue">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+            </svg>
+          </div>
+          <div class="stat-value">${totalProjects}</div>
+          <div class="stat-label">${t('dashboard_total_projects')}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <div class="stat-value">${totalCharacters}</div>
+          <div class="stat-label">${t('dashboard_total_characters')}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+          </div>
+          <div class="stat-value">${totalTerms}</div>
+          <div class="stat-label">${t('dashboard_total_terms')}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">${t('dashboard_total_pages')}</div>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // Utility Functions
+    // ============================================
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    async function openProject(projectId) {
+      state.selectedProject = state.projects.find(p => p.id === projectId);
+      if (state.selectedProject) {
+        navigateTo('characters');
+      }
+    }
+
+    // ============================================
+    // Modal Functions
+    // ============================================
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('active');
+      }
+    }
+
+    function hideModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('active');
+      }
+    }
+
+    // ============================================
+    // Form Handling
+    // ============================================
+    async function createProject(formData) {
+      try {
+        const response = await fetch('/api/projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+        if (response.ok) {
+          hideModal('create-project-modal');
+          loadProjects();
+        }
+      } catch (error) {
+        console.error('Failed to create project:', error);
+      }
+    }
+  </script>
+  {% endblock %}
+</body>
+</html>

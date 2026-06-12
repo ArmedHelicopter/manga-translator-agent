@@ -196,7 +196,7 @@ def test_translate_learn_only_seeds_memory_with_configured_learning_provider(tmp
         def __init__(self, *args, **kwargs):
             raise AssertionError("PipelineOrchestrator should not be instantiated")
 
-    monkeypatch.setattr("mga.providers.registry.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.cli._provider.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
 
@@ -263,7 +263,7 @@ def test_translate_learn_only_falls_back_when_primary_learning_provider_fails(
         def __init__(self, *args, **kwargs):
             raise AssertionError("PipelineOrchestrator should not be instantiated")
 
-    monkeypatch.setattr("mga.providers.registry.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.cli._provider.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
 
@@ -340,7 +340,7 @@ def test_translate_learn_only_runtime_provider_call_falls_back_to_secondary(
         def __init__(self, *args, **kwargs):
             raise AssertionError("PipelineOrchestrator should not be instantiated")
 
-    monkeypatch.setattr("mga.providers.registry.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.cli._provider.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
 
@@ -392,7 +392,7 @@ def test_translate_learn_only_uses_input_path_when_learn_from_is_omitted(tmp_pat
         def __init__(self, *args, **kwargs):
             raise AssertionError("PipelineOrchestrator should not be instantiated")
 
-    monkeypatch.setattr("mga.providers.registry.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.cli._provider.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
 
@@ -449,7 +449,7 @@ def test_translate_learn_only_output_profiles_exports_generated_toml(tmp_path, m
             raise AssertionError("PipelineOrchestrator should not be instantiated")
 
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
-    monkeypatch.setattr("mga.providers.registry.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.cli._provider.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.pipeline.orchestrator.PipelineOrchestrator", FailingOrchestrator)
 
     runner = CliRunner()
@@ -534,7 +534,7 @@ def test_translate_manga_learn_from_seeds_persona_before_pipeline(tmp_path, monk
             return PipelineContext(project_config=captured["incremental_config"])
 
     cli_main = importlib.import_module("mga.cli.main")
-    monkeypatch.setattr("mga.providers.registry.get_provider", fake_get_provider)
+    monkeypatch.setattr("mga.cli._provider.get_provider", fake_get_provider)
     monkeypatch.setattr("mga.learning.engine.LearningEngine", FakeLearningEngine)
     monkeypatch.setattr(cli_main, "check_provider_connectivity", fake_precheck)
     monkeypatch.setattr(cli_main, "_check_vision_provider_capability", lambda cfg, auto_vision_model=False: None)

@@ -204,14 +204,12 @@ def _complete_runtime_artifacts(payload_dir: Path, runtime_input: Path) -> bool:
 _SECRET_PATTERNS = [
     # sk-proj-... (OpenAI project keys)
     (r"sk-proj-[A-Za-z0-9_-]{10,}", "[REDACTED]"),
-    # Bearer tokens
+    # Bearer tokens in "Authorization: Bearer <token>" headers
     (r"Bearer\s+([A-Za-z0-9_-]{10,})", r"Bearer [REDACTED]"),
     # api_key=... query params
     (r"(api_key|apikey|api-key)=[A-Za-z0-9_-]{6,}", r"\1=[REDACTED]"),
     # KEY=value env var style
     (r"([A-Z_][A-Z0-9_]*(?:API_KEY|SECRET|TOKEN|PASSWORD|KEY)[A-Z0-9_]*)=[^\s]{4,}", r"\1=[REDACTED]"),
-    # Authorization headers
-    (r"(Authorization:\s*)[^\s]+", r"\1[REDACTED]"),
 ]
 
 
@@ -239,6 +237,14 @@ def _build_external_child_env() -> dict[str, str]:
 
     child_env.pop("PYTHONHOME", None)
     child_env.pop("PYTHONPATH", None)
+
+    # Strip API key / secret / token environment variables
+    _API_KEY_PATTERN_RE = re.compile(
+        r"^[A-Z_][A-Z0-9_]*(?:API_KEY|SECRET|TOKEN|PASSWORD|KEY)$"
+    )
+    for key in list(child_env):
+        if _API_KEY_PATTERN_RE.match(key):
+            child_env.pop(key, None)
 
     path_entries, path_separator = _split_path_list(child_env.get("PATH", ""))
     filtered_path = [
@@ -656,8 +662,8 @@ def run_export_artifact(
     if completed.returncode != 0 or "ERROR:" in output_tail or "Traceback" in output_tail:
         raise RuntimeError(
             f"Export artifact failed (exit {completed.returncode}).\n"
-            f"stdout: {completed.stdout[-2000:]}\n"
-            f"stderr: {completed.stderr[-2000:]}"
+            f"stdout: {_sanitize_subprocess_output(completed.stdout[-2000:])}\n"
+            f"stderr: {_sanitize_subprocess_output(completed.stderr[-2000:])}"
         )
 
     # Check for either per-page or single-file artifact format. Fill empty pages
@@ -729,7 +735,7 @@ def run_render_only(
     if completed.returncode != 0:
         raise RuntimeError(
             f"Render-only failed (exit {completed.returncode}).\n"
-            f"stderr: {completed.stderr[-2000:]}"
+            f"stderr: {_sanitize_subprocess_output(completed.stderr[-2000:])}"
         )
 
     return {
