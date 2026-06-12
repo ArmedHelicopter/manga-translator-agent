@@ -146,12 +146,22 @@ class RenderStage(PipelineStage):
                 "translation": self._extract_render_text(t.text),
                 "target_lang": _normalize_runtime_lang_code(cfg.target_lang or "CHS"),
             })
-            for fn in t.footnotes:
-                original = self._sanitize_footnote_text(fn.original)
+
+            # Name footnotes are intentionally disabled by product rule.
+
+        # Term footnotes: prefer the page-level compiled set (deduplicated,
+        # database-enriched explanations, all explanatory types). Fall back to
+        # bubble-level candidates when compilation has not run.
+        page_obj = next(
+            (p for p in context.pages if p.page_index == page_idx),
+            None,
+        )
+        compiled = list(getattr(page_obj, "page_footnotes", []) or []) if page_obj else []
+        if compiled:
+            for fn in compiled:
+                original = self._sanitize_footnote_text(fn.term)
                 translation = self._sanitize_footnote_text(fn.translation)
                 if not original or not translation:
-                    continue
-                if fn.type not in {"loanword", "sfx", "visual"}:
                     continue
                 key = (original, translation)
                 if key in seen_footnote_keys:
@@ -161,9 +171,29 @@ class RenderStage(PipelineStage):
                     "original": original,
                     "translation": translation,
                     "type": fn.type,
+                    "explanation": self._sanitize_footnote_text(fn.explanation),
                 })
-
-            # Name footnotes are intentionally disabled by product rule.
+        else:
+            for t in context.translations:
+                if not t.bubble_id.startswith(prefix):
+                    continue
+                for fn in t.footnotes:
+                    original = self._sanitize_footnote_text(fn.original)
+                    translation = self._sanitize_footnote_text(fn.translation)
+                    if not original or not translation:
+                        continue
+                    if fn.type not in {"loanword", "sfx", "visual", "cultural", "coined", "fictional"}:
+                        continue
+                    key = (original, translation)
+                    if key in seen_footnote_keys:
+                        continue
+                    seen_footnote_keys.add(key)
+                    footnotes.append({
+                        "original": original,
+                        "translation": translation,
+                        "type": fn.type,
+                        "explanation": self._sanitize_footnote_text(fn.explanation or ""),
+                    })
 
         for page in context.pages:
             if page.page_index != page_idx:

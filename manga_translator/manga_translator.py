@@ -767,8 +767,14 @@ class MangaTranslator:
             orig = fn.get("original", "")
             trans = fn.get("translation", "")
             fn_type = fn.get("type", "")
+            explanation = (fn.get("explanation") or "").strip()
             if orig and trans:
-                label = f"※ {trans}（{orig}）" if fn_type != "sfx" else f"※ {trans}（{orig}，拟声）"
+                if fn_type == "sfx":
+                    label = f"※ {trans}（{orig}，拟声）"
+                else:
+                    label = f"※ {trans}（{orig}）"
+                if explanation:
+                    label = f"{label}：{explanation}"
                 lines.append(label)
 
         if not lines:
@@ -784,6 +790,29 @@ class MangaTranslator:
                 font = ImageFont.truetype("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", font_size)
             except (OSError, IOError):
                 font = ImageFont.load_default()
+
+        # Wrap long footnote lines so explanations stay within the page width.
+        max_text_w = max(1, int(w * 0.45))
+
+        def _wrap(line: str) -> list:
+            wrapped = []
+            current = ""
+            for ch in line:
+                trial = current + ch
+                bbox = draw.textbbox((0, 0), trial, font=font)
+                if (bbox[2] - bbox[0]) > max_text_w and current:
+                    wrapped.append(current)
+                    current = ch
+                else:
+                    current = trial
+            if current:
+                wrapped.append(current)
+            return wrapped or [line]
+
+        wrapped_lines = []
+        for line in lines:
+            wrapped_lines.extend(_wrap(line))
+        lines = wrapped_lines
 
         # Compute text box size
         max_line_w = 0
