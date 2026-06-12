@@ -1,0 +1,216 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0002-0000",
+      "reading_order": 0,
+      "source_text": "32話",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0001",
+      "reading_order": 1,
+      "source_text": "昔日の足音",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0002",
+      "reading_order": 2,
+      "source_text": "罪過",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0003",
+      "reading_order": 3,
+      "source_text": "幕間",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0004",
+      "reading_order": 4,
+      "source_text": "社美胡",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0005",
+      "reading_order": 5,
+      "source_text": "34話",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0006",
+      "reading_order": 6,
+      "source_text": "慚愧の轍",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0007",
+      "reading_order": 7,
+      "source_text": "CONTENTS",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0008",
+      "reading_order": 8,
+      "source_text": "陽を縁取るもの",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0009",
+      "reading_order": 9,
+      "source_text": "36話",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0010",
+      "reading_order": 10,
+      "source_text": "変化",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0011",
+      "reading_order": 11,
+      "source_text": "番外編",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0012",
+      "reading_order": 12,
+      "source_text": "わたたべっ！ 2",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0013",
+      "reading_order": 13,
+      "source_text": "あとがき 174",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0002",
+  "page_index": 2,
+  "translations": [
+    {
+      "bubble_id": "region-0002-0000",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "QA re-translated: Number '32' from source not found in translation; Translation is much longer than source -- possible addition; Name '切勿再谈' in translation not found in source or known profiles; Name '保重' in translation not found in source or known profiles; Name '之人皆化' in translation not found in source or known profiles; Name '夺取钥匙' in translation not found in source or known profiles; Name '为亡魂' in translation not found in source or known profiles; Name '森罗' in translation not found in source or known profiles; Name '钥匙之事' in translation not found in source or known profiles; Name '根据记载' in translation not found in source or known profiles; Name '今后' in translation not found in source or known profiles; Name '已查实牺' in translation not found in source or known profiles; Name '牲者七名' in translation not found in source or known profiles; Source contains numbers but translation has none; Text may overflow bubble -- high character density detected",
+      "text": "第32话"
+    },
+    {
+      "bubble_id": "region-0002-0001",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "在保留原句‘昔日的脚步声’语义核心的前提下，通过添加句尾语气词‘呢’，将略显书面的叙述转化为带有回忆与追思感的口语化独白，使其更符合漫画对话中角色喃喃自语或旁白追忆的氛围，同时完全不影响原有指代与事件逻辑。",
+      "text": "昔日的脚步声呢"
+    },
+    {
+      "bubble_id": "region-0002-0002",
+      "confidence": 0.98,
+      "footnotes": [],
+      "rationale": "在保留原文核心词汇「罪过」的基础上，通过添加省略号「...」来营造一种低语、忏悔的语气，增强了 guilt/remorse 的情感层次，使其更符合角色内心挣扎时的喃喃自语感。",
+      "text": "罪过..."
+    },
+    {
+      "bubble_id": "region-0002-0003",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "在'幕间'后增加省略号，既保持了原术语的准确性，又通过标点模拟出场景转换的停顿感和叙事留白，更适合漫画分镜的视觉节奏。",
+      "text": "幕间……"
+    },
+    {
+      "bubble_id": "region-0002-0004",
+      "confidence": 0.85,
+      "footnotes": [
+        {
+          "original": "シャミ子",
+          "translation": "社美子",
+          "type": "loanword"
+        }
+      ],
+      "rationale": "角色名「社美胡」必须保留，未做语义改变；基于中性叙述语调，适合漫画对话的直接嵌字，无额外调整。",
+      "text": "社美胡"
+    },
+    {
+      "bubble_id": "region-0002-0005",
+      "confidence": 0.95,
+      "footnotes": [
+        {
+          "original": "ドン",
+          "translation": "咚",
+          "type": "sfx"
+        }
+      ],
+      "rationale": "QA re-translated: Number '34' from source not found in translation; Translation is much longer than source -- possible addition; Name '这次由我' in translation not found in source or known profiles; Name '小野寺同' in translation not found in source or known profiles; Name '听好了' in translation not found in source or known profiles; Name '停一下' in translation not found in source or known profiles; Name '拍桌' in translation not found in source or known profiles; Name '诸位' in translation not found in source or known profiles; Source contains numbers but translation has none; Text may overflow bubble -- high character density detected",
+      "text": "第34话"
+    },
+    {
+      "bubble_id": "region-0002-0006",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "在保持原意的基础上，添加了语气词'啊'和强调词'真是'，以增强羞耻情绪并使其更口语化，适合漫画对话的嵌字要求。",
+      "text": "真是惭愧的辙痕啊。"
+    },
+    {
+      "bubble_id": "region-0002-0007",
+      "confidence": 0.85,
+      "footnotes": [],
+      "rationale": "将中性翻译调整为更具宣布感的漫画标题语气，通过增加感叹号强化视觉和语气上的提示，使‘内容’更贴近漫画目录或章节页的常见表达，同时未改变其核心指代。",
+      "text": "目录！"
+    },
+    {
+      "bubble_id": "region-0002-0008",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "将直译‘为太阳镶边的事物’提炼为更具文学意象的‘日冕’，既准确对应原文中太阳边缘发光的视觉意象，又符合漫画标题常见的诗意简洁风格。‘物语’补充了‘事物’的叙事性内涵，使标题更完整且富有韵律。",
+      "text": "日冕物语"
+    },
+    {
+      "bubble_id": "region-0002-0009",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "为了适合漫画嵌字，将原始技术性文本转化为更亲切、直接的口语化请求，保留核心事实（缺少原文、请求提供日文文本），并省略了列表细节以保持紧凑。",
+      "text": "第36话的翻译框架和规则我收到了，但原文好像没附上呢。请提供漫画里的日文文本，我会按规则翻译并返回JSON哦。"
+    },
+    {
+      "bubble_id": "region-0002-0010",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "在必须保留的术语'变化'后添加语气助词'了'，使其符合中文口语陈述的节奏，更自然地嵌入漫画对话框，同时未改变核心语义。",
+      "text": "变化了"
+    },
+    {
+      "bubble_id": "region-0002-0011",
+      "confidence": 1.0,
+      "footnotes": [],
+      "rationale": "“番外篇”是中文漫画的标准术语，直接沿用最符合行业习惯与语义要求。语气中性，无需额外修饰，确保与漫画原文字体、排版风格自然融合。",
+      "text": "番外篇"
+    },
+    {
+      "bubble_id": "region-0002-0012",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "QA re-translated: Number '2' from source not found in translation; Name '肚子好饿' in translation not found in source or known profiles; Source contains numbers but translation has none",
+      "text": "哇！好想吃啊——！ 2"
+    },
+    {
+      "bubble_id": "region-0002-0013",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "将'后记 174'调整为更符合中文阅读习惯的'第174页后记'，使页码引用更清晰自然，同时保持原意。语气更贴近日常叙述，适合嵌字排版。",
+      "text": "第174页后记"
+    }
+  ]
+}

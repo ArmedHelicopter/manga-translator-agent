@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "target_lang": "CHS",
+  "translations": [
+    {
+      "region_index": 0,
+      "translation": "美胡酱~",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 1,
+      "translation": "小美胡",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 2,
+      "translation": "诶？",
+      "target_lang": "CHS"
+    }
+  ],
+  "footnotes": [
+    {
+      "original": "ちゃん",
+      "translation": "酱",
+      "type": "loanword"
+    },
+    {
+      "original": "へっ？",
+      "translation": "诶？",
+      "type": "sfx"
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "version": "2026-06-09",
+  "experiments": {
+    "08": {
+      "title": "CLI pipeline integration fix",
+      "status": "PASS",
+      "description": "Fixed CLI provider routing, pip path issues, timeout configuration, and _VALID_NAMES validation",
+      "results": {
+        "status": "CLI working end-to-end",
+        "tests": "520 passing, 1 provider-optional skip",
+        "changes": ["mga/providers/registry.py", "mga/web/app.py", "mga/config/loader.py"]
+      }
+    },
+    "09": {
+      "title": "LLM response list coercion fix",
+      "status": "PASS",
+      "description": "Fixed Pydantic validation error when LLM returns list instead of string",
+      "results": {
+        "status": "Translation working",
+        "tests": "520 passing",
+        "changes": ["mga/models/translation.py"],
+        "notes": "Applied to both TranslationCandidate and SemanticTranslation (2026-06-09)"
+      }
+    },
+    "10": {
+      "title": "Parallel bubble translation",
+      "status": "PASS",
+      "description": "Implemented ThreadPoolExecutor for bubble translation",
+      "results": {
+        "status": "Parallel translation working",
+        "tests": "520 passing",
+        "changes": ["mga/pipeline/translation_stage.py"]
+      }
+    },
+    "11": {
+      "title": "OpenCV render size limit fix",
+      "status": "PASS",
+      "description": "Fixed OpenCV remap SHRT_MAX=32767 limitation for high-res manga (3750×5334)",
+      "results": {
+        "status": "✅ VERIFIED - 3 pages rendered successfully at 3750×5456 resolution",
+        "visual_quality": "Good, Chinese text clear and positioned correctly",
+        "tests": "520 passing",
+        "test_data": {
+          "pages": 3,
+          "resolution": "3750×5334 / 3750×5456",
+          "total_time": "18min 35sec",
+          "avg_per_page": "6min 12sec"
+        },
+        "changes": ["manga_translator/rendering/__init__.py"]
+      }
+    },
+    "12": {
+      "title": "Translation pipeline optimization (BCDF)",
+      "status": "REVERTED",
+      "description": "Implement B + D + F + E optimization: parallel degree + cache + pipeline + local model",
+      "implementation": {
+        "approach": "Simplified - Enhanced parallel + cache",
+        "components": [
+          "✅ TranslationCache class with SQLite backend",
+          "✅ ProjectConfig with translation_config field",
+          "✅ Configuration loader support",
+          "✅ Mode selection logic",
+          "✅ Enhanced parallel method with cache integration",
+          "❌ Caused provider initialization issues"
+        ],
+        "changes": [
+          "mga/pipeline/translation_cache.py (NEW - 275 lines)",
+          "mga/pipeline/translation_stage.py (REVERTED - broke provider calls)",
+          "mga/models/project.py (UPDATED)",
+          "mga/config/loader.py (UPDATED)",
+          "configs/providers.toml.example (UPDATED)"
+        ]
+      },
+      "issues": {
+        "provider_error": "Coder modifications broke provider cascade, causing 'No provider available' errors",
+        "resolution": "Reverted translation_stage.py to original version via git checkout",
+        "cache_component": "TranslationCache module is working but not integrated"
+      },
+      "status_notes": "Implementation code exists but not active. Core translation working without BCDF optimizations.",
+      "next_steps": [
+        "Re-implement BCDF with careful testing at each step",
+        "Test cache integration independently",
+        "Validate provider calls after each change"
+      ]
+    },
+    "13": {
+      "title": "SemanticTranslation list coercion fix",
+      "status": "PASS",
+      "date": "2026-06-09",
+      "description": "Extended experiment #9 fix to SemanticTranslation model (speech_act and emotion fields)",
+      "problem": "LLM returned lists for speech_act and emotion fields, causing Pydantic validation errors during 3-page translation test",
+      "solution": "Added @field_validator for speech_act and emotion in SemanticTranslation class using _coerce_str helper",
+      "results": {
+        "status": "✅ 3-page translation succeeded",
+        "test_time": "18min 35sec",
+        "visual_quality": "Good - all bubbles translated with clear Chinese text",
+        "changes": ["mga/models/translation.py"]
+      },
+      "test_data": {
+        "input": "3 clean pages (3750×5334/5456)",
+        "output": "3 PNG files with Chinese translations",
+        "bubbles_processed": "~28 bubbles",
+        "avg_time_per_page": "6min 12sec"
+      }
+    }
+  },
+  "testing_guidelines": {
+    "file": "docs/testing-guidelines.md",
+    "critical_issues": [
+      "Recursive input: Always use clean input directories without subdirectories",
+      "Environment variables: Explicitly export MIMO_API_KEY before running tests",
+      "LLM list responses: Both TranslationCandidate and SemanticTranslation need list coercion"
+    ]
+  },
+  "current_status": {
+    "translation_pipeline": "✅ Working",
+    "high_res_rendering": "✅ Working (verified at 3750×5456)",
+    "bcdf_optimization": "❌ Not active (reverted due to provider issues)",
+    "test_suite": "✅ 520 tests passing",
+    "known_issues": [
+      "BCDF implementation needs careful re-integration",
+      "10-page test not completed (stopped after discovering issues)"
+    ]
+  }
+}

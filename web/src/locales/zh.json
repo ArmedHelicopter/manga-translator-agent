@@ -1,0 +1,346 @@
+{
+  "app": {
+    "title": "漫画翻译助手",
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "confirm": "确认",
+    "close": "关闭",
+    "back": "返回",
+    "next": "下一步",
+    "skip": "跳过",
+    "search": "搜索",
+    "noData": "暂无数据",
+    "copied": "已复制！"
+  },
+  "nav": {
+    "projects": "项目",
+    "translate": "翻译",
+    "batch": "批处理",
+    "settings": "设置",
+    "wiki": "维基",
+    "help": "帮助"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "欢迎使用漫画翻译助手",
+      "subtitle": "专业级漫画翻译，配合 AI 驱动的质量保证",
+      "description": "本指南将帮助您设置应用程序并了解所有可用功能。"
+    },
+    "language": {
+      "title": "选择您的语言",
+      "subtitle": "选择您偏好的界面语言"
+    },
+    "apiKey": {
+      "title": "配置 API 提供商",
+      "subtitle": "设置翻译提供商以启用 AI 功能",
+      "description": "您至少需要一个翻译提供商才能使用此应用程序。",
+      "providerTypes": {
+        "primary": "主要提供商",
+        "fallback": "备用提供商",
+        "local": "本地提供商"
+      },
+      "addNew": "添加提供商",
+      "envPlaceholder": "环境变量（如 ${OPENAI_API_KEY}）",
+      "directPlaceholder": "直接输入 API Key",
+      "learnMore": "了解如何获取 API Key",
+      "warnings": {
+        "primaryRequired": "至少需要一个主要提供商",
+        "fallbackUnreachable": "备用提供商不可达。如可用将使用本地提供商。",
+        "localUnreachable": "本地提供商不可达。将仅使用主要提供商。"
+      }
+    },
+    "model": {
+      "title": "配置模型",
+      "subtitle": "设置 OCR 和翻译模型",
+      "ocrModel": "OCR 模型",
+      "translationModel": "翻译模型",
+      "qaModel": "QA 模型"
+    },
+    "project": {
+      "title": "创建您的第一个项目",
+      "subtitle": "设置项目以组织您的翻译工作",
+      "projectName": "项目名称",
+      "sourceLang": "源语言",
+      "targetLang": "目标语言",
+      "createFirst": "创建您的第一个项目"
+    },
+    "complete": {
+      "title": "设置完成！",
+      "subtitle": "配置完成",
+      "description": "您现在可以开始翻译漫画或配置其他设置。",
+      "startTranslating": "开始翻译",
+      "configureMore": "配置更多设置"
+    }
+  },
+  "projects": {
+    "title": "项目",
+    "create": "创建项目",
+    "noProjects": "暂无项目",
+    "createFirst": "创建您的第一个项目开始使用",
+    "deleteConfirm": "确定要删除此项目吗？",
+    "details": {
+      "characters": "角色",
+      "terms": "术语",
+      "scenes": "场景",
+      "created": "创建时间",
+      "updated": "更新时间"
+    },
+    "form": {
+      "name": "项目名称",
+      "namePlaceholder": "输入项目名称",
+      "sourceLang": "源语言",
+      "targetLang": "目标语言"
+    }
+  },
+  "engine": {
+    "setupTitle": "翻译引擎安装",
+    "setupSubtitle": "需要一次性下载",
+    "setupDescription": "翻译漫画需要 AI 引擎（PyTorch、Transformers、OCR 模型以及渲染运行时）。这些是较大的安装包，仅需下载一次，之后会重复使用。",
+    "installed": "已安装",
+    "notInstalled": "未安装",
+    "installNow": "立即安装引擎",
+    "installing": "正在安装引擎，可能需要几分钟……",
+    "installLog": "安装日志",
+    "installFailed": "安装失败。请查看上方日志后重试。",
+    "retry": "重新安装"
+  },
+  "translate": {
+    "title": "翻译",
+    "selectInput": "选择输入",
+    "selectFolder": "选择包含图片的文件夹",
+    "folderPath": "文件夹路径",
+    "browse": "浏览",
+    "startTranslate": "开始翻译",
+    "stopTranslate": "停止",
+    "mode": {
+      "manga": "漫画",
+      "novel": "小说"
+    },
+    "format": {
+      "images": "图片",
+      "pdf": "PDF",
+      "epub": "EPUB",
+      "cbz": "CBZ"
+    },
+    "progress": {
+      "title": "翻译进度",
+      "stage": "阶段",
+      "progress": "进度",
+      "elapsed": "已用时",
+      "remaining": "剩余",
+      "completed": "已完成",
+      "failed": "失败",
+      "pending": "等待中"
+    },
+    "stages": {
+      "format": "格式检测",
+      "ocr": "文字识别",
+      "vision": "视觉增强",
+      "speaker": "说话人识别",
+      "character": "角色识别",
+      "translation": "翻译",
+      "qa": "质量检查",
+      "render": "渲染",
+      "output": "输出"
+    }
+  },
+  "batch": {
+    "title": "批处理",
+    "create": "创建批处理任务",
+    "noJobs": "暂无批处理任务",
+    "createFirst": "创建批处理任务以处理多个输入",
+    "job": {
+      "name": "任务名称",
+      "inputPath": "输入路径",
+      "outputPath": "输出路径",
+      "status": "状态",
+      "progress": "进度",
+      "created": "创建时间",
+      "actions": "操作"
+    },
+    "status": {
+      "pending": "等待中",
+      "running": "运行中",
+      "completed": "已完成",
+      "failed": "失败",
+      "paused": "已暂停"
+    },
+    "controls": {
+      "startAll": "全部开始",
+      "pauseAll": "全部暂停",
+      "resumeAll": "全部恢复",
+      "clearCompleted": "清除已完成"
+    }
+  },
+  "characters": {
+    "title": "角色配置",
+    "create": "添加角色",
+    "noCharacters": "暂无角色",
+    "addFirst": "添加您的第一个角色配置",
+    "form": {
+      "id": "角色 ID",
+      "nameJp": "日文名",
+      "nameZh": "中文名",
+      "nameEn": "英文名",
+      "archetype": "角色类型",
+      "speechPatterns": "说话风格",
+      "catchphrases": "口头禅",
+      "toneSpectrum": "语气特点",
+      "translationNotes": "翻译备注",
+      "relationships": "人物关系"
+    },
+    "archetypes": {
+      "protagonist": "主角",
+      "antagonist": "反派",
+      "supporting": "配角",
+      "minor": "次要角色"
+    }
+  },
+  "terms": {
+    "title": "术语表",
+    "create": "添加术语",
+    "noTerms": "暂无术语条目",
+    "addFirst": "添加您的第一个术语条目",
+    "form": {
+      "source": "源术语",
+      "target": "目标翻译",
+      "category": "分类",
+      "strategy": "策略",
+      "context": "上下文",
+      "frequency": "使用频率",
+      "pendingReview": "待审核"
+    },
+    "categories": {
+      "character": "角色名",
+      "location": "地名",
+      "ability": "能力/技能",
+      "item": "物品/道具",
+      "organization": "组织名",
+      "cultural": "文化典故",
+      "other": "其他"
+    },
+    "strategies": {
+      "literal": "直译",
+      "adapt": "文化适配",
+      "coined": "自创术语",
+      "transliterate": "音译",
+      "preserve": "保留原词"
+    }
+  },
+  "providers": {
+    "title": "提供商配置",
+    "configuredProviders": "已配置的提供商",
+    "availableProviders": "可用提供商",
+    "addProvider": "添加新的提供商",
+    "stageConfig": "阶段配置",
+    "stages": {
+      "vision": "视觉阶段",
+      "translation": "翻译阶段",
+      "qa": "质检阶段"
+    },
+    "provider": {
+      "openai": "OpenAI",
+      "anthropic": "Anthropic",
+      "gemini": "Google Gemini",
+      "deepseek": "DeepSeek",
+      "ollama": "Ollama（本地）",
+      "lmstudio": "LM Studio（本地）",
+      "vllm": "vLLM（本地）",
+      "openrouter": "OpenRouter",
+      "llamacpp": "llama.cpp（本地）",
+      "groq": "Groq",
+      "cohere": "Cohere",
+      "mistral": "Mistral AI"
+    },
+    "settings": {
+      "apiKey": "API Key",
+      "baseUrl": "基础 URL",
+      "model": "模型",
+      "visionModel": "视觉模型",
+      "textModel": "文本模型",
+      "maxTokens": "最大 Token 数",
+      "temperature": "温度参数"
+    },
+    "testConnection": "测试连接",
+    "connectionSuccess": "连接成功",
+    "connectionFailed": "连接失败"
+  },
+  "wiki": {
+    "title": "维基与世界书",
+    "export": "导出维基",
+    "exportFormat": "导出格式",
+    "lastExport": "上次导出",
+    "never": "从未",
+    "sync": "同步记忆",
+    "syncDirection": {
+      "toWiki": "状态 → 维基",
+      "fromWiki": "维基 → 状态"
+    }
+  },
+  "settings": {
+    "title": "设置",
+    "general": {
+      "title": "通用",
+      "language": "语言",
+      "theme": "主题",
+      "autoStart": "启动时自动启动后端"
+    },
+    "backend": {
+      "title": "后端",
+      "host": "主机",
+      "port": "端口",
+      "status": "状态",
+      "running": "运行中",
+      "stopped": "已停止",
+      "start": "启动后端",
+      "stop": "停止后端",
+      "autoStart": "随应用启动"
+    },
+    "about": {
+      "title": "关于",
+      "version": "版本",
+      "documentation": "文档",
+      "reportIssue": "报告问题"
+    },
+    "reset": {
+      "title": "重置",
+      "resetTutorial": "重置教程",
+      "resetTutorialDesc": "重新显示入门教程",
+      "resetSettings": "重置所有设置",
+      "resetSettingsDesc": "将所有设置恢复为默认值"
+    }
+  },
+  "help": {
+    "title": "帮助与文档",
+    "quickStart": "快速入门指南",
+    "faq": "常见问题",
+    "keyboard": "快捷键",
+    "changelog": "更新日志",
+    "showTutorial": "重新显示教程"
+  },
+  "engine": {
+    "setupTitle": "翻译引擎设置",
+    "setupSubtitle": "首次翻译需要下载依赖",
+    "setupDescription": "翻译引擎需要 PyTorch、Transformers 等深度学习库（约 5 GB）。这是一次性下载，之后可永久使用。",
+    "installed": "已安装",
+    "notInstalled": "未安装",
+    "installNow": "立即下载",
+    "installing": "正在安装...",
+    "installFailed": "安装失败，请重试",
+    "installLog": "安装日志",
+    "retry": "重试"
+  },
+  "errors": {
+    "network": "网络错误，请检查您的连接。",
+    "notFound": "未找到",
+    "serverError": "服务器错误，请稍后重试。",
+    "unauthorized": "请重新登录。",
+    "validation": "请检查您的输入。"
+  }
+}

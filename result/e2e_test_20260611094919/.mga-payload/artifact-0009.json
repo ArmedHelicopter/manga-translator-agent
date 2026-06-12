@@ -1,0 +1,597 @@
+{
+  "version": 1,
+  "page_index": 9,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "a: 0.00 x: 1|013 y:||9",
+      "texts": [
+        "a: 0.00",
+        "x: 1|013",
+        "y:||9"
+      ],
+      "lines": [
+        [
+          [
+            1029,
+            203
+          ],
+          [
+            1130,
+            200
+          ],
+          [
+            1131,
+            230
+          ],
+          [
+            1030,
+            234
+          ]
+        ],
+        [
+          [
+            1025,
+            227
+          ],
+          [
+            1135,
+            224
+          ],
+          [
+            1136,
+            256
+          ],
+          [
+            1026,
+            259
+          ]
+        ],
+        [
+          [
+            1048,
+            255
+          ],
+          [
+            1108,
+            251
+          ],
+          [
+            1110,
+            282
+          ],
+          [
+            1050,
+            286
+          ]
+        ]
+      ],
+      "font_size": 31,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        255,
+        128,
+        109
+      ],
+      "bg_color": [
+        165,
+        85,
+        79
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.8487431845914336
+    },
+    {
+      "index": 1,
+      "text": "a: 0.00 x: 484 y:|20",
+      "texts": [
+        "a: 0.00",
+        "x: 484",
+        "y:|20'"
+      ],
+      "lines": [
+        [
+          [
+            498,
+            162
+          ],
+          [
+            598,
+            158
+          ],
+          [
+            599,
+            188
+          ],
+          [
+            499,
+            192
+          ]
+        ],
+        [
+          [
+            499,
+            183
+          ],
+          [
+            597,
+            179
+          ],
+          [
+            599,
+            216
+          ],
+          [
+            501,
+            220
+          ]
+        ],
+        [
+          [
+            504,
+            212
+          ],
+          [
+            587,
+            204
+          ],
+          [
+            590,
+            240
+          ],
+          [
+            507,
+            248
+          ]
+        ]
+      ],
+      "font_size": 30,
+      "angle": -3.255617330497543,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        255,
+        124,
+        123
+      ],
+      "bg_color": [
+        225,
+        111,
+        112
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.8824806788486049
+    },
+    {
+      "index": 2,
+      "text": "a: -5.28 X:0 y: 73",
+      "texts": [
+        "a: -5.28",
+        "X:0",
+        "y: 73"
+      ],
+      "lines": [
+        [
+          [
+            8,
+            166
+          ],
+          [
+            131,
+            164
+          ],
+          [
+            131,
+            196
+          ],
+          [
+            8,
+            197
+          ]
+        ],
+        [
+          [
+            37,
+            195
+          ],
+          [
+            97,
+            191
+          ],
+          [
+            99,
+            219
+          ],
+          [
+            39,
+            223
+          ]
+        ],
+        [
+          [
+            27,
+            216
+          ],
+          [
+            108,
+            211
+          ],
+          [
+            110,
+            247
+          ],
+          [
+            29,
+            252
+          ]
+        ]
+      ],
+      "font_size": 28,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        255,
+        125,
+        135
+      ],
+      "bg_color": [
+        151,
+        79,
+        92
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9036487995153756
+    },
+    {
+      "index": 3,
+      "text": "a: -11.96 x: 866 |y: 803",
+      "texts": [
+        "a: -11.96",
+        "x: 866",
+        "|y: 803"
+      ],
+      "lines": [
+        [
+          [
+            868,
+            882
+          ],
+          [
+            1006,
+            881
+          ],
+          [
+            1006,
+            910
+          ],
+          [
+            868,
+            911
+          ]
+        ],
+        [
+          [
+            890,
+            907
+          ],
+          [
+            983,
+            905
+          ],
+          [
+            984,
+            935
+          ],
+          [
+            891,
+            937
+          ]
+        ],
+        [
+          [
+            889,
+            931
+          ],
+          [
+            981,
+            930
+          ],
+          [
+            982,
+            960
+          ],
+          [
+            890,
+            961
+          ]
+        ]
+      ],
+      "font_size": 29,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        243,
+        121,
+        127
+      ],
+      "bg_color": [
+        169,
+        88,
+        99
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9170919474062725
+    },
+    {
+      "index": 4,
+      "text": "x: 527 y: 933",
+      "texts": [
+        "x: 527",
+        "y: 933"
+      ],
+      "lines": [
+        [
+          [
+            556,
+            1035
+          ],
+          [
+            651,
+            1031
+          ],
+          [
+            652,
+            1062
+          ],
+          [
+            558,
+            1067
+          ]
+        ],
+        [
+          [
+            556,
+            1060
+          ],
+          [
+            650,
+            1055
+          ],
+          [
+            652,
+            1088
+          ],
+          [
+            558,
+            1094
+          ]
+        ]
+      ],
+      "font_size": 31,
+      "angle": -3.5289233364285906,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        255,
+        126,
+        134
+      ],
+      "bg_color": [
+        184,
+        94,
+        108
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.973164646751771
+    },
+    {
+      "index": 5,
+      "text": "a: -9.93 x: 213 y: 771",
+      "texts": [
+        "a: -9.93",
+        "x: 213",
+        "y: 771"
+      ],
+      "lines": [
+        [
+          [
+            232,
+            878
+          ],
+          [
+            352,
+            875
+          ],
+          [
+            353,
+            902
+          ],
+          [
+            233,
+            906
+          ]
+        ],
+        [
+          [
+            244,
+            902
+          ],
+          [
+            338,
+            897
+          ],
+          [
+            339,
+            929
+          ],
+          [
+            245,
+            933
+          ]
+        ],
+        [
+          [
+            242,
+            926
+          ],
+          [
+            334,
+            920
+          ],
+          [
+            336,
+            954
+          ],
+          [
+            244,
+            960
+          ]
+        ]
+      ],
+      "font_size": 28,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        254,
+        125,
+        133
+      ],
+      "bg_color": [
+        154,
+        81,
+        96
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.8912744217481579
+    },
+    {
+      "index": 6,
+      "text": "X: 969 y: 1475",
+      "texts": [
+        "X: 969",
+        "y: 1475"
+      ],
+      "lines": [
+        [
+          [
+            952,
+            1537
+          ],
+          [
+            1044,
+            1533
+          ],
+          [
+            1046,
+            1565
+          ],
+          [
+            954,
+            1569
+          ]
+        ],
+        [
+          [
+            942,
+            1562
+          ],
+          [
+            1053,
+            1556
+          ],
+          [
+            1055,
+            1591
+          ],
+          [
+            944,
+            1597
+          ]
+        ]
+      ],
+      "font_size": 32,
+      "angle": -3.4234112317876964,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        248,
+        126,
+        126
+      ],
+      "bg_color": [
+        248,
+        125,
+        126
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9048932354585421
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    1637,
+    1158,
+    3
+  ]
+}

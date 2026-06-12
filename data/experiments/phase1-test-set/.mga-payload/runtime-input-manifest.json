@@ -1,0 +1,62 @@
+{
+  "input_mtime_ns": 1778855538793450300,
+  "input_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\input\\私を喰べたい、ひとでなし(8) (電撃コミックスNEXT) (苗川采) (z-library.sk, 1lib.sk, z-lib.sk).pdf",
+  "input_size": 135954268,
+  "input_suffix": ".pdf",
+  "max_pages": 10,
+  "page_count": 10,
+  "pages": [
+    {
+      "index": 0,
+      "name": "page-0000.png",
+      "size": 6497515
+    },
+    {
+      "index": 1,
+      "name": "page-0001.png",
+      "size": 445362
+    },
+    {
+      "index": 2,
+      "name": "page-0002.png",
+      "size": 6211503
+    },
+    {
+      "index": 3,
+      "name": "page-0003.png",
+      "size": 353160
+    },
+    {
+      "index": 4,
+      "name": "page-0004.png",
+      "size": 2930439
+    },
+    {
+      "index": 5,
+      "name": "page-0005.png",
+      "size": 3304265
+    },
+    {
+      "index": 6,
+      "name": "page-0006.png",
+      "size": 3365516
+    },
+    {
+      "index": 7,
+      "name": "page-0007.png",
+      "size": 3264738
+    },
+    {
+      "index": 8,
+      "name": "page-0008.png",
+      "size": 2830290
+    },
+    {
+      "index": 9,
+      "name": "page-0009.png",
+      "size": 2693211
+    }
+  ],
+  "pdf_render_dpi": 200,
+  "runtime_input": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\output\\10pages\\translated\\.mga-payload\\.runtime-input"
+}

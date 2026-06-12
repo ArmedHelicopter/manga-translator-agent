@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "page_index": 3,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "これが人を愛し 慈しみ信じた者の末路さ",
+      "texts": [
+        "これが",
+        "人を愛し 慈しみ",
+        "信じた者の末路さ"
+      ],
+      "lines": [
+        [
+          [
+            2961,
+            385
+          ],
+          [
+            3101,
+            385
+          ],
+          [
+            3101,
+            757
+          ],
+          [
+            2961,
+            757
+          ]
+        ],
+        [
+          [
+            2789,
+            395
+          ],
+          [
+            2911,
+            395
+          ],
+          [
+            2911,
+            1281
+          ],
+          [
+            2789,
+            1281
+          ]
+        ],
+        [
+          [
+            2609,
+            398
+          ],
+          [
+            2732,
+            398
+          ],
+          [
+            2732,
+            1336
+          ],
+          [
+            2609,
+            1336
+          ]
+        ]
+      ],
+      "font_size": 122,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        3,
+        5,
+        2
+      ],
+      "bg_color": [
+        3,
+        5,
+        2
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9860857509961968
+    },
+    {
+      "index": 1,
+      "text": "化け狐",
+      "texts": [
+        "化け狐"
+      ],
+      "lines": [
+        [
+          [
+            1312,
+            2953
+          ],
+          [
+            1510,
+            2953
+          ],
+          [
+            1510,
+            3466
+          ],
+          [
+            1312,
+            3466
+          ]
+        ]
+      ],
+      "font_size": 198,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        3,
+        4,
+        0
+      ],
+      "bg_color": [
+        3,
+        4,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9997289731803006
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    5334,
+    3750,
+    3
+  ]
+}

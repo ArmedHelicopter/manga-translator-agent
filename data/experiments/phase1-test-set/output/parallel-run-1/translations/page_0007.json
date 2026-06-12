@@ -1,0 +1,56 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0007-0000",
+      "reading_order": 0,
+      "source_text": "美胡ちゃん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "reading_order": 1,
+      "source_text": "美胡ちゃん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0007-0002",
+      "reading_order": 2,
+      "source_text": "へっ？",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0007",
+  "page_index": 7,
+  "translations": [
+    {
+      "bubble_id": "region-0007-0000",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "采用中文漫画常见的昵称后缀「酱」本地化日文「ちゃん」，保持中性叙述语气，符合中文读者对漫画角色名称的阅读习惯。",
+      "text": "美胡酱"
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "语义翻译已正确保留日语亲昵称呼'ちゃん'的对应形式'酱'，情绪标注为中性陈述，无需额外语气调整。直接采用音译名'美胡酱'作为最终嵌字文本，符合对角色昵称的自然呼唤。",
+      "text": "美胡酱"
+    },
+    {
+      "bubble_id": "region-0007-0002",
+      "confidence": 0.0,
+      "footnotes": [
+        {
+          "original": "へっ",
+          "translation": "嗯",
+          "type": "sfx"
+        }
+      ],
+      "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0007-0002': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "text": "へっ？"
+    }
+  ]
+}

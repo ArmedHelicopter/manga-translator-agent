@@ -1,0 +1,495 @@
+# Manga Translate Agent provider configuration example
+#
+# Copy this file to configs/providers.toml, then fill in API keys or set the
+# referenced environment variables. The loader resolves model names in this order:
+#
+#   1. Stage-level model override: model / fallback_model / local_model
+#   2. Provider stage model: vision_model for [stages.vision], text_model otherwise
+#   3. Provider generic model: model
+#   4. Built-in provider defaults, when available
+
+# -----------------------------------------------------------------------------
+# Mode 1: Balanced default routing
+# -----------------------------------------------------------------------------
+# Use a vision-capable model for OCR/page understanding, a cheaper text model for
+# translation, and a proofreading model for QA. This is the recommended starting
+# point for most projects.
+
+[stages.vision]
+primary = "openai"
+fallback = "gemini"
+# Optional per-stage override for the primary provider. If set, this wins over
+# [providers.openai].vision_model and [providers.openai].model.
+# model = "gpt-4.1"
+
+[stages.translation]
+primary = "openai"
+fallback = "deepseek"
+local = "ollama"
+# Optional route-specific model overrides. These apply to this stage only.
+# model = "gpt-4.1-mini"
+# fallback_model = "deepseek-chat"
+# local_model = "qwen2.5:14b"
+
+[translation]
+# Translation optimization settings
+# Options:
+#   "serial"           - Default, one bubble at a time (safe, slower)
+#   "semantic-parallel"- Parallel semantic translation, serial persona rendering (recommended)
+#   "parallel"         - Fully parallel (faster, may have memory consistency issues)
+#   "pipelined"        - Pipeline mode
+parallel_mode = "semantic-parallel"
+# Max concurrent LLM calls per page (up to 50 for high-end machines)
+max_workers = 10
+# Semantic translation timeout per bubble (seconds)
+semantic_timeout = 60
+# Max concurrent requests in semantic-parallel mode (default: 3)
+max_concurrent_requests = 3
+# Enable SQLite-based translation caching (recommended for repeated content)
+enable_cache = true
+# Cache expiration time in days (0 = no expiration)
+cache_ttl_days = 30
+
+[stages.qa]
+primary = "deepseek"
+fallback = "openai"
+local = "ollama"
+# model = "deepseek-chat"
+# fallback_model = "gpt-4.1-mini"
+# local_model = "qwen2.5:14b"
+
+# -----------------------------------------------------------------------------
+# Mode 2: Single-provider routing with Mimo
+# -----------------------------------------------------------------------------
+# Use Xiaomi Mimo for all stages - a powerful Chinese vision model.
+#
+# [stages.vision]
+# primary = "mimo"
+#
+# [stages.translation]
+# primary = "mimo"
+#
+# [stages.qa]
+# primary = "mimo"
+
+# -----------------------------------------------------------------------------
+# Mode 3: Cost-optimized hybrid routing
+# -----------------------------------------------------------------------------
+# Keep expensive multimodal models only where images are needed. Use cheaper text
+# models for translation/QA and local models as the final fallback.
+#
+# [stages.vision]
+# primary = "gemini"
+# model = "gemini-2.0-flash"
+# fallback = "cohere"
+# fallback_model = "command-a-plus-128k"
+#
+# [stages.translation]
+# primary = "groq"
+# model = "llama-3.3-70b-versatile"
+# fallback = "deepseek"
+# fallback_model = "deepseek-chat"
+# local = "ollama"
+# local_model = "qwen2.5:14b"
+#
+# [stages.qa]
+# primary = "groq"
+# model = "llama-3.3-70b-versatile"
+# fallback = "mistral"
+# fallback_model = "mistral-small-latest"
+# local = "ollama"
+# local_model = "qwen2.5:7b"
+
+# -----------------------------------------------------------------------------
+# OCR blank-page guard
+# -----------------------------------------------------------------------------
+# Detect suspicious runs of blank OCR pages after the runtime artifact export.
+# Empty auto_recovery_strategy means prompt interactively. Supported automatic
+# values: "hybrid", "continue", "abort", "adjust_threshold", "switch_model".
+
+[ocr_guard]
+enabled = true
+consecutive_blank_threshold = 3
+min_text_length = 3
+auto_recovery_strategy = ""
+
+[ocr_guard.hybrid_mode]
+enabled = false
+# Empty means use stages.vision.primary.
+vision_model_override = ""
+
+# =============================================================================
+# PROVIDER DEFINITIONS
+# =============================================================================
+# API key values can be literal strings or environment placeholders like
+# "${OPENAI_API_KEY}". Some providers also support *_env keys, depending on the
+# provider implementation.
+
+# -----------------------------------------------------------------------------
+# Official Providers (with dedicated provider classes)
+# -----------------------------------------------------------------------------
+
+[providers.openai]
+api_key = "${OPENAI_API_KEY}"
+vision_model = "gpt-4.1-mini"
+text_model = "gpt-4.1-mini"
+
+[providers.anthropic]
+api_key = "${ANTHROPIC_API_KEY}"
+vision_model = "claude-3-5-sonnet-latest"
+text_model = "claude-3-5-haiku-latest"
+
+[providers.gemini]
+api_key = "${GEMINI_API_KEY}"
+vision_model = "gemini-2.0-flash"
+text_model = "gemini-2.0-flash"
+
+[providers.deepseek]
+api_key = "${DEEPSEEK_API_KEY}"
+model = "deepseek-chat"
+
+[providers.openrouter]
+api_key = "${OPENROUTER_API_KEY}"
+base_url = "https://openrouter.ai/api/v1"
+vision_model = "openai/gpt-4.1-mini"
+text_model = "anthropic/claude-3.5-haiku"
+
+[providers.ollama]
+base_url = "http://localhost:11434"
+model = "qwen2.5:14b"
+
+[providers.lmstudio]
+base_url = "http://localhost:1234/v1"
+model = "local-model"
+
+[providers.vllm]
+base_url = "http://localhost:8000/v1"
+model = "local-model"
+
+[providers.llamacpp]
+base_url = "http://localhost:8080/v1"
+model = "local-model"
+
+[providers.cohere]
+api_key = "${COHERE_API_KEY}"
+vision_model = "command-a-plus-128k"
+text_model = "command-r-plus-08-2024"
+
+[providers.mistral]
+api_key = "${MISTRAL_API_KEY}"
+vision_model = "pixtral-large-latest"
+text_model = "mistral-small-latest"
+
+[providers.groq]
+api_key = "${GROQ_API_KEY}"
+model = "llama-3.3-70b-versatile"
+
+# -----------------------------------------------------------------------------
+# Dedicated Provider: Xiaomi Mimo
+# -----------------------------------------------------------------------------
+# Chinese vision model from Xiaomi with strong manga translation capabilities.
+# Uses dedicated MimoProvider class with pre-configured settings.
+
+[providers.mimo]
+provider_type = "mimo"
+api_key = "REMOVED_CREDENTIAL"
+base_url = "https://token-plan-cn.xiaomimimo.com/v1"
+vision_model = "mimo-v2.5-pro"
+text_model = "mimo-v2.5-pro"
+
+# -----------------------------------------------------------------------------
+# Generic OpenAI-Compatible Provider
+# -----------------------------------------------------------------------------
+# Use for any OpenAI-compatible API endpoint with automatic vision capability detection.
+
+[providers.my_custom_endpoint]
+provider_type = "generic"
+api_key = "${MY_API_KEY}"
+base_url = "https://api.my-custom-provider.com/v1"
+model = "my-model-name"
+supports_vision = true  # Optional: force vision support (auto-detect if omitted)
+
+# =============================================================================
+# PRE-CONFIGURED PROFILES (OpenAI-Compatible Gateways)
+# =============================================================================
+# These providers are pre-configured in the codebase. Simply set the API key
+# and they work out of the box via the generic OpenAI-compatible interface.
+
+# -----------------------------------------------------------------------------
+# Chinese AI Providers
+# -----------------------------------------------------------------------------
+
+[providers.siliconflow]
+api_key = "${SILICONFLOW_API_KEY}"
+base_url = "https://api.siliconflow.cn/v1"
+vision_model = "Qwen/Qwen-VL-Plus"
+text_model = "Qwen/Qwen2.5-72B-Instruct"
+
+[providers.zhipu]
+api_key = "${ZHIPU_API_KEY}"
+base_url = "https://open.bigmodel.cn/api/paas/v4"
+vision_model = "glm-4v-flash"
+text_model = "glm-4-flash"
+
+[providers.kimi]
+api_key = "${MOONSHOT_API_KEY}"
+base_url = "https://api.moonshot.cn/v1"
+vision_model = "moonshot-v1-vision"
+text_model = "moonshot-v1-128k"
+
+[providers.aliyun]
+api_key = "${ALIYUN_API_KEY}"
+base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+vision_model = "qwen-vl-plus"
+text_model = "qwen-plus"
+
+[providers.volcengine]
+api_key = "${VOLCENGINE_API_KEY}"
+base_url = "https://ark.cn-beijing.volces.com/api/v3"
+vision_model = "doubao-vision-pro"
+text_model = "doubao-pro-32k"
+
+[providers.stepfun]
+api_key = "${STEPFUN_API_KEY}"
+base_url = "https://api.stepfun.com/v1"
+vision_model = "step-1v-8k"
+text_model = "step-1-32k"
+
+[providers.modelverse]
+api_key = "${MODELVERSE_API_KEY}"
+base_url = "https://api.modelscope.cn/v1"
+vision_model = "qwen-vl-plus"
+text_model = "qwen-plus"
+
+[providers.bailing]
+api_key = "${BAILING_API_KEY}"
+base_url = "https://bailing-api.cn/v1"
+vision_model = "qwen-vl-plus"
+text_model = "qwen-plus"
+
+[providers.yunyun]
+api_key = "${YUNYUN_API_KEY}"
+base_url = "https://api.yunyun.cn/v1"
+vision_model = "qwen-vl-plus"
+text_model = "qwen-plus"
+
+# -----------------------------------------------------------------------------
+# Claude Proxies
+# -----------------------------------------------------------------------------
+
+[providers.claudeapi]
+api_key = "${CLAUDEAPI_API_KEY}"
+base_url = "https://api.claudeapi.com/v1"
+vision_model = "claude-3-5-sonnet"
+text_model = "claude-3-5-haiku"
+
+[providers.claudecn]
+api_key = "${CLAUDECN_API_KEY}"
+base_url = "https://api.claudecn.com/v1"
+vision_model = "claude-3-5-sonnet"
+text_model = "claude-3-5-haiku"
+
+# -----------------------------------------------------------------------------
+# Additional Chinese Gateways
+# -----------------------------------------------------------------------------
+
+[providers.nebulabox]
+api_key = "${NEBULABOX_API_KEY}"
+base_url = "https://api.nebula-box.com/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.cherryai]
+api_key = "${CHERRYAI_API_KEY}"
+base_url = "https://api.cherryai.top/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.apikeyfun]
+api_key = "${APIKEYFUN_API_KEY}"
+base_url = "https://api.apikey.fun/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.relaxy]
+api_key = "${RELAXY_API_KEY}"
+base_url = "https://api.relaxy.cn/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.dmxapi]
+api_key = "${DMXAPI_API_KEY}"
+base_url = "https://api.dmxapi.com/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.pateway]
+api_key = "${PATEWAY_API_KEY}"
+base_url = "https://api.pateway.ai/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.llmstack]
+api_key = "${PIPELLM_API_KEY}"
+base_url = "https://api.pipellm.ai/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.rightcode]
+api_key = "${RIGHTCODE_API_KEY}"
+base_url = "https://api.rightcodeai.com/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.packycode]
+api_key = "${PACKYCODE_API_KEY}"
+base_url = "https://api.packycode.com/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.sudocode]
+api_key = "${SUDOCODE_API_KEY}"
+base_url = "https://api.sudocode.ai/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.ctok]
+api_key = "${CTOK_API_KEY}"
+base_url = "https://api.ctok.ai/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.eflowcode]
+api_key = "${EFLOWCODE_API_KEY}"
+base_url = "https://api.eflowcode.com/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.therouter]
+api_key = "${THEROUTER_API_KEY}"
+base_url = "https://api.therouter.cn/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.sssai]
+api_key = "${SSSAICODE_API_KEY}"
+base_url = "https://api.sssai.cn/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.algocode]
+api_key = "${ALGOCODE_API_KEY}"
+base_url = "https://api.algocode.tech/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.crazyrouter]
+api_key = "${CRAZYROUTER_API_KEY}"
+base_url = "https://api.crazyrouter.com/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.atlascloud]
+api_key = "${ATLASCLOUD_API_KEY}"
+base_url = "https://api.atlascloud.io/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.micu]
+api_key = "${MICU_API_KEY}"
+base_url = "https://api.micu.cn/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.runapi]
+api_key = "${RUNAPI_API_KEY}"
+base_url = "https://api.runapi.com/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.aihubmix]
+api_key = "${AIHUBMIX_API_KEY}"
+base_url = "https://api.aihubmix.com/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.lemondata]
+api_key = "${LEMON_DATA_API_KEY}"
+base_url = "https://api.lemondata.net/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.cubence]
+api_key = "${CUBENCE_API_KEY}"
+base_url = "https://api.cubence.com/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.katcoder]
+api_key = "${KATCODER_API_KEY}"
+base_url = "https://api.katcoder.com/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.longcat]
+api_key = "${LONGCAT_API_KEY}"
+base_url = "https://api.longcat.studio/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.opencode]
+api_key = "${OPENCODE_API_KEY}"
+base_url = "https://api.opencode.ai/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.codemirror]
+api_key = "${CODEMIRROR_API_KEY}"
+base_url = "https://api.codemirror.cn/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.ccsub]
+api_key = "${CCSUB_API_KEY}"
+base_url = "https://api.ccsub.com/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.byteplus]
+api_key = "${BYTEPLUS_API_KEY}"
+base_url = "https://ark.cn-beijing.volces.com/api/v3"
+vision_model = "doubao-vision-pro"
+text_model = "doubao-pro-32k"
+
+[providers.doubioseed]
+api_key = "${DOUBIOSEED_API_KEY}"
+base_url = "https://ark.cn-beijing.volces.com/api/v3"
+vision_model = "doubao-vision-pro"
+text_model = "doubao-pro-32k"
+
+[providers.shengsuan]
+api_key = "${SHENGSUAN_API_KEY}"
+base_url = "https://api.shengsuan.cn/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+[providers.novita]
+api_key = "${NOVITA_API_KEY}"
+base_url = "https://api.novita.ai/v2"
+vision_model = "novita/llama-3.3-70b-instruct"
+text_model = "novita/llama-3.3-70b-instruct"
+
+[providers.api2d]
+api_key = "${API2D_API_KEY}"
+base_url = "https://api.api2d.com/v1"
+vision_model = "gpt-4o"
+text_model = "gpt-4o-mini"
+
+# =============================================================================
+# COST OPTIMIZATION CHECKLIST
+# =============================================================================
+# 1. Put multimodal/vision models only in [stages.vision].
+# 2. Prefer text_model or stage.model for translation and QA.
+# 3. Set fallback_model to a cheaper reliable remote model.
+# 4. Set local_model for offline recovery or bulk low-priority runs.
+# 5. Use CLI --provider for temporary provider swaps; stage.model still wins.

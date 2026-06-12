@@ -1,0 +1,33 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0000-0000",
+      "reading_order": 0,
+      "source_text": "電撃コミックスNEXT",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0000",
+  "page_index": 0,
+  "translations": [
+    {
+      "bubble_id": "region-0000-0000",
+      "confidence": 1.0,
+      "footnotes": [
+        {
+          "original": "電撃コミックスNEXT",
+          "translation": "电击漫画NEXT",
+          "type": "loanword"
+        },
+        {
+          "original": "コミックス",
+          "translation": "见正文",
+          "type": "loanword"
+        }
+      ],
+      "rationale": "该文本为专有名词『电击漫画NEXT』，属于出版品牌名称，在语义翻译中已标记为必须保留。作为中性叙述，无需调整语气或句式，直接保持原样即可适合漫画嵌字。",
+      "text": "电击漫画NEXT"
+    }
+  ]
+}

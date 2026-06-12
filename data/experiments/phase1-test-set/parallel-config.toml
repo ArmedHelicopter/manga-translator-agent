@@ -1,0 +1,33 @@
+[stages.vision]
+primary = "mimo"
+
+[stages.translation]
+primary = "mimo"
+
+[translation]
+parallel_mode = "serial"
+max_concurrent_requests = 3
+semantic_timeout = 600
+
+[stages.qa]
+primary = "mimo"
+
+[ocr_guard]
+enabled = true
+consecutive_blank_threshold = 3
+min_text_length = 3
+# Empty means prompt interactively when blank pages are detected.
+auto_recovery_strategy = ""
+
+[ocr_guard.hybrid_mode]
+enabled = false
+# Empty means use stages.vision.primary.
+vision_model_override = ""
+
+[providers.mimo]
+provider_type = "openai"
+api_key_env = "MIMO_API_KEY"
+base_url_env = "MIMO_BASE_URL"
+base_url = "https://token-plan-cn.xiaomimimo.com/v1"
+vision_model = "mimo-v2.5-pro"
+text_model = "mimo-v2.5-pro"

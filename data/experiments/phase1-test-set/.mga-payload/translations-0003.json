@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "target_lang": "CHS",
+  "translations": [
+    {
+      "region_index": 0,
+      "translation": "啊……这就是爱他人、怜悯并信任他人之人的末路！",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 1,
+      "translation": "妖狐",
+      "target_lang": "CHS"
+    }
+  ],
+  "footnotes": []
+}

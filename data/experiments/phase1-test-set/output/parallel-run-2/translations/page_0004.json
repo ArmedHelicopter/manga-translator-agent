@@ -1,0 +1,64 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0004-0000",
+      "reading_order": 0,
+      "source_text": "こんなあたしを見てなお",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "reading_order": 1,
+      "source_text": "お前は人間の側に居続けるつもりかい？",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "reading_order": 2,
+      "source_text": "…あたしはお前とは違う",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "reading_order": 3,
+      "source_text": "いいや違わんさ",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0004",
+  "page_index": 4,
+  "translations": [
+    {
+      "bubble_id": "region-0004-0000",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "将‘即使看到’强化为‘连…都看得下去’增强情感张力，添加‘啊’字尾助词使自嘲语气更自然，符合漫画口语化嵌字需求",
+      "text": "连这样的我你都看得下去啊"
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "在语义翻译基础上添加'还'以增强口语化和对抗性语气，匹配 confrontational 情感，同时严格保留'人类'术语和原事实逻辑。",
+      "text": "你还打算继续待在人类那边吗？"
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "Adjusted tone to 'slightly confrontational' by emphasizing contrast with '才' and adding the conversational particle '呢', fitting manga dialogue style while preserving the core meaning of difference.",
+      "text": "我跟你才不一样呢"
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "将原句'不，不对啊'调整为更紧凑的'不对啊！'，通过添加感叹号增强纠正语气，使其更符合漫画对话的冲击力和口语化风格，同时保留原意的否定和纠正核心。",
+      "text": "不对啊！"
+    }
+  ]
+}

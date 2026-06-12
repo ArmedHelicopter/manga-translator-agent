@@ -1,0 +1,64 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0004-0000",
+      "reading_order": 0,
+      "source_text": "こんなあたしを見てなお",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "reading_order": 1,
+      "source_text": "お前は人間の側に居続けるつもりかい？",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "reading_order": 2,
+      "source_text": "…あたしはお前とは違う",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "reading_order": 3,
+      "source_text": "いいや違わんさ",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0004",
+  "page_index": 4,
+  "translations": [
+    {
+      "bubble_id": "region-0004-0000",
+      "confidence": 0.0,
+      "footnotes": [],
+      "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0004-0000': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "text": "こんなあたしを見てなお"
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "将中性代词'你'转为更贴近原文'お前'粗鲁语感的'你小子'；句末添加'吗'强化疑问句式，符合日语疑问终助词'かい'的语气；将'留在'改为'赖在'，既保留'居続ける'的持续含义，又增加口语中略带不屑或挑衅的色彩，使对话更生动，适合漫画角色间带有张力的对白。",
+      "text": "你小子还打算赖在人类那一边吗？"
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "在保留原意“我与你不同”的基础上，将陈述语气调整为更口语化且略带疏离感的表达。“不一样”比“不同”更具对话感与情绪张力，配合开头的省略号，能更好地体现角色间微妙的对立与区隔感，符合漫画对白特点。",
+      "text": "…我跟你不一样。"
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "将基础否定表达'不对'通过添加口语化语气词'啦'，转化为更符合漫画对话场景、带轻微纠正和强调意味的日常口吻，既保留核心否定语义，又增强了角色互动感。",
+      "text": "不对啦"
+    }
+  ]
+}

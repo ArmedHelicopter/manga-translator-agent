@@ -1,0 +1,22 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0001-0000",
+      "reading_order": 0,
+      "source_text": "CoverDesign：SALIDAS",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0001",
+  "page_index": 1,
+  "translations": [
+    {
+      "bubble_id": "region-0001-0000",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "原始文本为中性陈述，语气和句式已符合漫画嵌字需求，无需调整以保持语义完整性。",
+      "text": "封面设计：萨利达斯"
+    }
+  ]
+}

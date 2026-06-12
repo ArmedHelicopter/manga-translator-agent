@@ -1,0 +1,204 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0002-0000",
+      "reading_order": 0,
+      "source_text": "32話",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0001",
+      "reading_order": 1,
+      "source_text": "昔日の足音",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0002",
+      "reading_order": 2,
+      "source_text": "罪過",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0003",
+      "reading_order": 3,
+      "source_text": "幕間",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0004",
+      "reading_order": 4,
+      "source_text": "社美胡",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0005",
+      "reading_order": 5,
+      "source_text": "34話",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0006",
+      "reading_order": 6,
+      "source_text": "慚愧の轍",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0007",
+      "reading_order": 7,
+      "source_text": "CONTENTS",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0008",
+      "reading_order": 8,
+      "source_text": "陽を縁取るもの",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0009",
+      "reading_order": 9,
+      "source_text": "36話",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0010",
+      "reading_order": 10,
+      "source_text": "変化",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0011",
+      "reading_order": 11,
+      "source_text": "番外編",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0012",
+      "reading_order": 12,
+      "source_text": "わたたべっ！ 2",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0013",
+      "reading_order": 13,
+      "source_text": "あとがき 174",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0002",
+  "page_index": 2,
+  "translations": [
+    {
+      "bubble_id": "region-0002-0000",
+      "confidence": 1.0,
+      "footnotes": [],
+      "rationale": "原文为章节标题的语义翻译，采用中文漫画标准格式，属于叙述性文本，无需调整语气、句式或口癖，直接保持原样以适合嵌字。",
+      "text": "第32话"
+    },
+    {
+      "bubble_id": "region-0002-0001",
+      "confidence": 0.93,
+      "footnotes": [],
+      "rationale": "原文为怀旧独白，'昔日的脚步声'本身已具文学韵味，节奏舒缓而带有回溯感。保留原译句式，因四字结构'昔日'配'脚步声'在中文漫画中天然适合回忆独白框，音节平仄交替（仄仄仄仄）营造出悠远寂寥的氛围，无需额外修饰即可传达nostalgic情绪。",
+      "text": "昔日的脚步声"
+    },
+    {
+      "bubble_id": "region-0002-0002",
+      "confidence": 0.93,
+      "footnotes": [],
+      "rationale": "原文'罪過'为书面感较强的自责用语。渲染时在句尾添加语气词'啊'使其更具口语化的感叹色彩，配合省略号营造出内疚、欲言又止的语气节奏，贴合漫画气泡中角色自责时的神态。'罪过'核心语义完全保留。",
+      "text": "罪过啊……"
+    },
+    {
+      "bubble_id": "region-0002-0003",
+      "confidence": 1.0,
+      "footnotes": [],
+      "rationale": "根据人格层规则，保留must_preserve中的术语'幕間'，并调整语气为中性叙述，以适合漫画嵌字。由于原始情感为中性，未大幅改变句式，仅确保简洁性和功能性。",
+      "text": "幕間"
+    },
+    {
+      "bubble_id": "region-0002-0004",
+      "confidence": 1.0,
+      "footnotes": [],
+      "rationale": "文本为专有名词（人物名），且属于语义翻译中的must_preserve内容，因此保持原样未作调整。",
+      "text": "社美胡"
+    },
+    {
+      "bubble_id": "region-0002-0005",
+      "confidence": 0.6,
+      "footnotes": [],
+      "rationale": "QA re-translated: Number '34' from source not found in translation; Translation is much longer than source -- possible addition; Name '你处理的' in translation not found in source or known profiles; Name '交给我吧' in translation not found in source or known profiles; Name '容呢' in translation not found in source or known profiles; Name '我会严格' in translation not found in source or known profiles; Name '的漫画内' in translation not found in source or known profiles; Name '按规则帮' in translation not found in source or known profiles; Name '需要翻译' in translation not found in source or known profiles; Source contains numbers but translation has none; Text may overflow bubble -- high character density detected",
+      "text": "第34话"
+    },
+    {
+      "bubble_id": "region-0002-0006",
+      "confidence": 0.0,
+      "footnotes": [],
+      "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0002-0006': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "text": "慚愧の轍"
+    },
+    {
+      "bubble_id": "region-0002-0007",
+      "confidence": 0.99,
+      "footnotes": [],
+      "rationale": "原文为章节标题，直接翻译为“目录”符合书籍或漫画开头的正式表述，无需调整语气或句式。",
+      "text": "目录"
+    },
+    {
+      "bubble_id": "region-0002-0008",
+      "confidence": 0.88,
+      "footnotes": [],
+      "rationale": "原文已是成熟的标题译法，简洁且富诗意。保持「描摹阳光者」不变，符合漫画单行本/章节标题的凝练气质，无需额外修饰。",
+      "text": "描摹阳光者"
+    },
+    {
+      "bubble_id": "region-0002-0009",
+      "confidence": 1.0,
+      "footnotes": [],
+      "rationale": "作为章节标题的叙述，保持标准中文漫画格式，语气中性、句式简洁，适合直接嵌字，无需额外调整。",
+      "text": "第36话"
+    },
+    {
+      "bubble_id": "region-0002-0010",
+      "confidence": 1.0,
+      "footnotes": [],
+      "rationale": "原词“变化”本身已是简洁的中文书面表达，与日语原义完全对应。作为中性叙述文本，无需添加语气词或改变句式即可直接嵌入漫画，符合漫画叙事简洁的语境要求。",
+      "text": "变化"
+    },
+    {
+      "bubble_id": "region-0002-0011",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "原文本'番外篇'为标准术语，叙述行为中性，人格层规则下无需调整语气、句式等，保持原样以确保语义忠实和适合直接嵌字。",
+      "text": "番外篇"
+    },
+    {
+      "bubble_id": "region-0002-0012",
+      "confidence": 0.0,
+      "footnotes": [],
+      "rationale": "provider failure; human translation required: Semantic translation provider failed for bubble 'region-0002-0012': No provider available for stage 'translation'. Tried: ['mimo']",
+      "text": "わたたべっ！ 2"
+    },
+    {
+      "bubble_id": "region-0002-0013",
+      "confidence": 0.0,
+      "footnotes": [],
+      "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0002-0013': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "text": "あとがき 174"
+    }
+  ]
+}

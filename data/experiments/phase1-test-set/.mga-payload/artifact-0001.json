@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "page_index": 1,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "CoverDesign：SALIDAS",
+      "texts": [
+        "CoverDesign：SALIDAS"
+      ],
+      "lines": [
+        [
+          [
+            2187,
+            5096
+          ],
+          [
+            2883,
+            5094
+          ],
+          [
+            2883,
+            5146
+          ],
+          [
+            2187,
+            5149
+          ]
+        ]
+      ],
+      "font_size": 52,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        18,
+        18,
+        11
+      ],
+      "bg_color": [
+        18,
+        18,
+        11
+      ],
+      "source_lang": "zh",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.5314525365829468
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    5334,
+    3750,
+    3
+  ]
+}

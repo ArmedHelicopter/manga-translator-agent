@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "target_lang": "CHS",
+  "translations": [
+    {
+      "region_index": 0,
+      "translation": "真可悲啊……",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 1,
+      "translation": "你的下场也不会例外",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 2,
+      "translation": "肯定和我一样呢——…",
+      "target_lang": "CHS"
+    }
+  ],
+  "footnotes": []
+}

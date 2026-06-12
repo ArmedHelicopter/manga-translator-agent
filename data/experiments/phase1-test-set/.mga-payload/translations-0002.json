@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "target_lang": "CHS",
+  "translations": [
+    {
+      "region_index": 0,
+      "translation": "第32话",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 1,
+      "translation": "昔日の足音",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 2,
+      "translation": "罪过啊",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 3,
+      "translation": "幕间啦",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 4,
+      "translation": "社美胡",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 5,
+      "translation": "第34话",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 6,
+      "translation": "慚愧の轍",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 7,
+      "translation": "目录",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 8,
+      "translation": "描摹太阳者",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 9,
+      "translation": "36話",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 10,
+      "translation": "变化",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 11,
+      "translation": "番外篇",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 12,
+      "translation": "わたたべっ！ 2",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 13,
+      "translation": "第174页 后记",
+      "target_lang": "CHS"
+    }
+  ],
+  "footnotes": [
+    {
+      "original": "ザワザワ",
+      "translation": "嘈杂声",
+      "type": "sfx"
+    },
+    {
+      "original": "話",
+      "translation": "话",
+      "type": "loanword"
+    }
+  ]
+}

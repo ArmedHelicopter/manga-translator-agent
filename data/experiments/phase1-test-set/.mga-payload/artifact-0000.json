@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "page_index": 0,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "電撃コミックスNEXT",
+      "texts": [
+        "電撃コミックス",
+        "NEXT"
+      ],
+      "lines": [
+        [
+          [
+            343,
+            5060
+          ],
+          [
+            1270,
+            5055
+          ],
+          [
+            1270,
+            5208
+          ],
+          [
+            343,
+            5214
+          ]
+        ],
+        [
+          [
+            625,
+            5211
+          ],
+          [
+            997,
+            5211
+          ],
+          [
+            997,
+            5320
+          ],
+          [
+            625,
+            5320
+          ]
+        ]
+      ],
+      "font_size": 109,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        123,
+        100,
+        104
+      ],
+      "bg_color": [
+        123,
+        100,
+        104
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9919216618423838
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    5334,
+    3750,
+    3
+  ]
+}

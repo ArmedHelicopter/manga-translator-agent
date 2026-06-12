@@ -1,0 +1,226 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0002-0000",
+      "reading_order": 0,
+      "source_text": "32話",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0001",
+      "reading_order": 1,
+      "source_text": "昔日の足音",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0002",
+      "reading_order": 2,
+      "source_text": "罪過",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0003",
+      "reading_order": 3,
+      "source_text": "幕間",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0004",
+      "reading_order": 4,
+      "source_text": "社美胡",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0005",
+      "reading_order": 5,
+      "source_text": "34話",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0006",
+      "reading_order": 6,
+      "source_text": "慚愧の轍",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0007",
+      "reading_order": 7,
+      "source_text": "CONTENTS",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0008",
+      "reading_order": 8,
+      "source_text": "陽を縁取るもの",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0009",
+      "reading_order": 9,
+      "source_text": "36話",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0010",
+      "reading_order": 10,
+      "source_text": "変化",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0011",
+      "reading_order": 11,
+      "source_text": "番外編",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0012",
+      "reading_order": 12,
+      "source_text": "わたたべっ！ 2",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0002-0013",
+      "reading_order": 13,
+      "source_text": "あとがき 174",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0002",
+  "page_index": 2,
+  "translations": [
+    {
+      "bubble_id": "region-0002-0000",
+      "confidence": 0.97,
+      "footnotes": [
+        {
+          "original": "ドン",
+          "translation": "砰（开门声）",
+          "type": "sfx"
+        },
+        {
+          "original": "ガチャ",
+          "translation": "咔嚓（茶杯放在托盘上的声音）",
+          "type": "sfx"
+        },
+        {
+          "original": "こたつ",
+          "translation": "被炉",
+          "type": "loanword"
+        }
+      ],
+      "rationale": "QA re-translated: Number '32' from source not found in translation; Translation is much longer than source -- possible addition; Name '还没' in translation not found in source or known profiles; Name '来了' in translation not found in source or known profiles; Name '是啊' in translation not found in source or known profiles; Name '拉开' in translation not found in source or known profiles; Name '真是的' in translation not found in source or known profiles; Name '是美绪啊' in translation not found in source or known profiles; Name '所以就回' in translation not found in source or known profiles; Name '你回来了' in translation not found in source or known profiles; Name '总觉得心' in translation not found in source or known profiles; Name '一个人冲' in translation not found in source or known profiles; Name '你一直坐' in translation not found in source or known profiles; Name '你不是说' in translation not found in source or known profiles; Name '在这被炉' in translation not found in source or known profiles; Name '我回来了' in translation not found in source or known profiles; Name '担心' in translation not found in source or known profiles; Name '我一直在' in translation not found in source or known profiles; Name '爸爸' in translation not found in source or known profiles; Name '里不踏实' in translation not found in source or known profiles; Name '但是' in translation not found in source or known profiles; Name '今天会晚' in translation not found in source or known profiles; Name '了进来' in translation not found in source or known profiles; Name '你怎么了' in translation not found in source or known profiles; Name '些回来吗' in translation not found in source or known profiles; Name '饭吃了吗' in translation not found in source or known profiles; Name '做饭' in translation not found in source or known profiles; Name '热茶' in translation not found in source or known profiles; Name '你先喝点' in translation not found in source or known profiles; Name '我马上去' in translation not found in source or known profiles; Name '么打算的' in translation not found in source or known profiles; Name '本来是这' in translation not found in source or known profiles; Name '门突然被' in translation not found in source or known profiles; Source contains numbers but translation has none; Text may overflow bubble -- high character density detected",
+      "text": "第32话  \n门突然被拉开，一个人冲了进来。  \n「爸！你怎么了？」  \n「……你不是说今天会晚回来吗？」  \n「是啊，原本是这么打算的……」  \n「但总觉得心里不踏实，一直在担心……」  \n「所以就回来了。」  \n「……是美绪啊。」  \n「你一直坐在这被炉边？」  \n「……嗯。」  \n「吃饭了吗？」  \n「……还没。」  \n「真是的！」  \n「我马上去做饭！你先喝点热茶。」  \n「……你回来了。」  \n「……嗯，我回来了。」"
+    },
+    {
+      "bubble_id": "region-0002-0001",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "保持中性叙述语气，以平和声音渲染，适合漫画嵌字；未改变事实或must_preserve内容。",
+      "text": "往日的脚步声"
+    },
+    {
+      "bubble_id": "region-0002-0002",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "在保留核心词汇'罪过'的基础上，添加语气词'啊'和句号，使语句更符合中文口语习惯，更能传达出叙述中伴随的愧疚、自责的叹息感，适合嵌入漫画气泡。",
+      "text": "罪过啊。"
+    },
+    {
+      "bubble_id": "region-0002-0003",
+      "confidence": 1.0,
+      "footnotes": [],
+      "rationale": "已直接采用语义翻译提供的准确中译“幕间”。该译法准确传达了原术语“幕間”的核心含义（幕与幕之间的间歇），且为中性叙述语境。由于术语本身已符合中文表达习惯且无歧义，根据人格层规则，无需额外调整语气或口癖，保持中性即可直接用于嵌字。",
+      "text": "幕间"
+    },
+    {
+      "bubble_id": "region-0002-0004",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "在保留专有名词『社美胡』不变的前提下，添加了日系轻小说风格的语气词『诶~』和呼唤句式，使叙述更生动、更具角色互动感，适合漫画中的角色对话或旁白场景。",
+      "text": "诶~社美胡！"
+    },
+    {
+      "bubble_id": "region-0002-0005",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "QA re-translated: Number '34' from source not found in translation; Number '1' appears in translation but not in source; Number '2' appears in translation but not in source; Translation is much longer than source -- possible addition; Name '的结构化' in translation not found in source or known profiles; Name '请至少提' in translation not found in source or known profiles; Name '文原文' in translation not found in source or known profiles; Name '实际要翻' in translation not found in source or known profiles; Name '和策略' in translation not found in source or known profiles; Name '谢谢您提' in translation not found in source or known profiles; Name '的漫画图' in translation not found in source or known profiles; Name '这样我就' in translation not found in source or known profiles; Name '细的规则' in translation not found in source or known profiles; Name '不过我这' in translation not found in source or known profiles; Name '要翻的日' in translation not found in source or known profiles; Name '的规则' in translation not found in source or known profiles; Name '译文啦' in translation not found in source or known profiles; Name '话框的那' in translation not found in source or known profiles; Name '供这么详' in translation not found in source or known profiles; Name '能按您给' in translation not found in source or known profiles; Name '看到呢' in translation not found in source or known profiles; Name '片或日文' in translation not found in source or known profiles; Name '漫画图' in translation not found in source or known profiles; Name '边只收到' in translation not found in source or known profiles; Name '输出完整' in translation not found in source or known profiles; Name '了框架' in translation not found in source or known profiles; Name '带日文对' in translation not found in source or known profiles; Name '原文还没' in translation not found in source or known profiles; Numbers from source missing in translation: 34; Numbers in translation not in source: 1, 2; Text may overflow bubble -- high character density detected",
+      "text": "第34话"
+    },
+    {
+      "bubble_id": "region-0002-0006",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "添加语气词“啊……”增强情感表达，使叙述更口语化且带有追忆感；日语称呼“那条”保留日式语感；通过省略号延长羞耻情绪的余韵；整体句式调整为适合漫画内心独白的口语节奏。",
+      "text": "那条羞耻的车辙啊……"
+    },
+    {
+      "bubble_id": "region-0002-0007",
+      "confidence": 0.98,
+      "footnotes": [],
+      "rationale": "采用标准出版物术语译法，保持中性叙述风格，适合作为功能性页面标签直接嵌字。",
+      "text": "目录"
+    },
+    {
+      "bubble_id": "region-0002-0008",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "在保持语义（描绘、太阳、轮廓）不变的前提下，将“者”调整为更富文学性与留白的“之人”，增强标题的意境与仪式感，使其更适合作为漫画的标题或旁白嵌字。",
+      "text": "描绘太阳轮廓之人"
+    },
+    {
+      "bubble_id": "region-0002-0009",
+      "confidence": 1.0,
+      "footnotes": [],
+      "rationale": "QA re-translated: Number '36' from source not found in translation; Name '第三十六' in translation not found in source or known profiles; Source contains numbers but translation has none",
+      "text": "第36话"
+    },
+    {
+      "bubble_id": "region-0002-0010",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "在中文漫画对白中，为体现旁白般的叙述感与节奏，添加了省略号模拟气息停顿与思考的延续。此调整符合语气、句式及节奏的调整权限，未改变原义。",
+      "text": "变化……"
+    },
+    {
+      "bubble_id": "region-0002-0011",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "The text '番外篇' is a standard and direct term in Chinese manga for narration, requiring no adjustments to tone or structure to maintain clarity and suitability for embedding.",
+      "text": "番外篇"
+    },
+    {
+      "bubble_id": "region-0002-0012",
+      "confidence": 0.85,
+      "footnotes": [
+        {
+          "original": "わーっ",
+          "translation": "哇——",
+          "type": "sfx"
+        }
+      ],
+      "rationale": "QA re-translated: Number '2' from source not found in translation; Name '等一下' in translation not found in source or known profiles; Source contains numbers but translation has none",
+      "text": "\"我在吃！ 2\"\n\n**Explanation of corrections:**\n- The number \"2\" from the source is now included as a panel/scenario marker.\n- The name \"等一下\" (Wait!) from the previous translation, which was not in the original source, has been removed to align faithfully with the source text."
+    },
+    {
+      "bubble_id": "region-0002-0013",
+      "confidence": 1.0,
+      "footnotes": [],
+      "rationale": "原文为章节/页码标识的叙述性标题，无需语气调整。直接保留'后记'这一漫画常用译法及数字'174'，保持简洁中性的标注功能。",
+      "text": "后记 174"
+    }
+  ]
+}

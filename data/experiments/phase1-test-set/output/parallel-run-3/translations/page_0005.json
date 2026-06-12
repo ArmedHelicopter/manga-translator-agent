@@ -1,0 +1,50 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0005-0000",
+      "reading_order": 0,
+      "source_text": "悲しいかな",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "reading_order": 1,
+      "source_text": "お前の行く末も",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "reading_order": 2,
+      "source_text": "きっとあたしと同じだよ――…",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0005",
+  "page_index": 5,
+  "translations": [
+    {
+      "bubble_id": "region-0005-0000",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "将'真是'压缩为'真'使语气更贴近口语感叹，句末以省略号收束强化怅然若失的余韵，适合漫画气泡中独白式的悲伤渲染。",
+      "text": "真可悲啊……"
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "confidence": 0.85,
+      "footnotes": [],
+      "rationale": "将中性表述‘也是如此’转化为更具压迫感的‘也不会例外’，通过句式倒装（‘下场’前置）与否定强调（‘不会’）强化 ominous 情绪，同时严格保留‘你的未来’这一核心指代。尾音采用短促收束，符合反派台词节奏。",
+      "text": "你的下场也不会例外"
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "confidence": 0.93,
+      "footnotes": [],
+      "rationale": "保留了第一人称'我'、比较结构'和我一样'及句尾破折号与省略号。将推测副词'一定'微调为口语中更常用于表达感同身受的'肯定'，将语气词'吧'调整为'呢'以强化共情与温柔感，符合'推测、共情'的语境，且整体更适合漫画对话的嵌字节奏。",
+      "text": "肯定和我一样呢——…"
+    }
+  ]
+}

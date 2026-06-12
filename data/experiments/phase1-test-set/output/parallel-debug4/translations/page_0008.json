@@ -1,0 +1,131 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0008-0000",
+      "reading_order": 0,
+      "source_text": "あーごめんごめん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0001",
+      "reading_order": 1,
+      "source_text": "ちょっとボーっとしちゃってた",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0002",
+      "reading_order": 2,
+      "source_text": "えっと…なんだっけ？",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0003",
+      "reading_order": 3,
+      "source_text": "うん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0004",
+      "reading_order": 4,
+      "source_text": "もうすぐお昼だからどうしようかなって…",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0005",
+      "reading_order": 5,
+      "source_text": "あーうん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0006",
+      "reading_order": 6,
+      "source_text": "お昼…ねぇ…",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0007",
+      "reading_order": 7,
+      "source_text": "…美胡ちゃん",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0008",
+  "page_index": 8,
+  "translations": [
+    {
+      "bubble_id": "region-0008-0000",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "通过添加感叹号增强语气，以更好地传达remorseful情感，同时保持道歉语义和口语化重复句式不变。",
+      "text": "啊，对不起对不起！"
+    },
+    {
+      "bubble_id": "region-0008-0001",
+      "confidence": 0.95,
+      "footnotes": [
+        {
+          "original": "ボーっと",
+          "translation": "走神或发呆",
+          "type": "sfx"
+        },
+        {
+          "original": "ボー",
+          "translation": "见正文",
+          "type": "loanword"
+        }
+      ],
+      "rationale": "Added the particle '呢' to enhance the casual and conversational tone, making the dialogue more natural for manga without changing the factual meaning or semantic content.",
+      "text": "我有点走神了呢"
+    },
+    {
+      "bubble_id": "region-0008-0002",
+      "confidence": 0.93,
+      "footnotes": [],
+      "rationale": "保留'呃…'的犹豫感，将'是什么呢'调整为'是什么来着'更符合中文口语中努力回忆时的自然表达，'来着'是专门用于搜索记忆的语气词，比直译的'呢'更贴合漫画对白的口语质感，整体节奏与原作自言自语的迟疑情绪一致。",
+      "text": "呃…是什么来着？"
+    },
+    {
+      "bubble_id": "region-0008-0003",
+      "confidence": 0.99,
+      "footnotes": [],
+      "rationale": "The semantic translation '嗯' is already a casual, neutral affirmation in Chinese, fitting for manga dialogue. No adjustments were needed as it aligns with the persona rules for tone and sentence structure.",
+      "text": "嗯"
+    },
+    {
+      "bubble_id": "region-0008-0004",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "将‘因为…我在想…’的叙述结构转化为更贴近自言自语的慵懒口吻，用‘快到中午了’替代原句因果逻辑，保留句末省略号体现犹豫思绪，更符合漫画气泡的口语自然度。",
+      "text": "快到中午了，要怎么办呢……"
+    },
+    {
+      "bubble_id": "region-0008-0005",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "将'啊嗯'调整为'嗯啊'，更贴合中文口语中表示迟疑、思索时先发出鼻音'嗯'再略作补充的常见语序。'嗯'字放在前面更能体现犹豫不决、正在思考的语气，同时保持口语化与亲切感。",
+      "text": "嗯啊"
+    },
+    {
+      "bubble_id": "region-0008-0006",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "将“午餐”调整为更口语化的“午饭”，更符合日常对话场景；将句尾的“诶…”转化为更自然、略带拖长音的中文语气词“啊…”，强化犹豫和试探的情绪，整体语气更柔和、生活化。",
+      "text": "午饭啊…"
+    },
+    {
+      "bubble_id": "region-0008-0007",
+      "confidence": 0.0,
+      "footnotes": [],
+      "rationale": "provider failure; human translation required: Semantic translation provider failed for bubble 'region-0008-0007': No provider available for stage 'translation'. Tried: ['mimo']",
+      "text": "…美胡ちゃん"
+    }
+  ]
+}

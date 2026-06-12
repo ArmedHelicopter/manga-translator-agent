@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "target_lang": "CHS",
+  "translations": [
+    {
+      "region_index": 0,
+      "translation": "【第32话】",
+      "target_lang": "CHS"
+    },
+    {
+      "region_index": 1,
+      "translation": "那昔日的足音……",
+      "target_lang": "CHS"
+    }
+  ],
+  "footnotes": []
+}

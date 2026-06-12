@@ -1,0 +1,138 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0008-0000",
+      "reading_order": 0,
+      "source_text": "あーごめんごめん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0001",
+      "reading_order": 1,
+      "source_text": "ちょっとボーっとしちゃってた",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0002",
+      "reading_order": 2,
+      "source_text": "えっと…なんだっけ？",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0003",
+      "reading_order": 3,
+      "source_text": "うん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0004",
+      "reading_order": 4,
+      "source_text": "もうすぐお昼だからどうしようかなって…",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0005",
+      "reading_order": 5,
+      "source_text": "あーうん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0006",
+      "reading_order": 6,
+      "source_text": "お昼…ねぇ…",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0008-0007",
+      "reading_order": 7,
+      "source_text": "…美胡ちゃん",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0008",
+  "page_index": 8,
+  "translations": [
+    {
+      "bubble_id": "region-0008-0000",
+      "confidence": 0.0,
+      "footnotes": [],
+      "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0008-0000': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "text": "あーごめんごめん"
+    },
+    {
+      "bubble_id": "region-0008-0001",
+      "confidence": 0.92,
+      "footnotes": [
+        {
+          "original": "ボー",
+          "translation": "见正文",
+          "type": "loanword"
+        }
+      ],
+      "rationale": "基于语义翻译的文本，添加句尾语气词'呢'使对白更自然、柔和，符合中文漫画的口语表达习惯，同时保持原意中的轻微自嘲和自述语气，未改变事实或语义内容。",
+      "text": "刚才有点走神了呢。"
+    },
+    {
+      "bubble_id": "region-0008-0002",
+      "confidence": 0.92,
+      "footnotes": [
+        {
+          "original": "えっと",
+          "translation": "嗯",
+          "type": "sfx"
+        }
+      ],
+      "rationale": "将拟声词'嗯'替换为更口语化、犹豫语气更强的'呃'，以贴合角色犹豫不决的情感；保留原疑问句式与'来着'这一口语化句尾，确保语义与指代不变，同时增强对话的自然感与嵌入适用性。",
+      "text": "呃...是什么来着？"
+    },
+    {
+      "bubble_id": "region-0008-0003",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "原译文「嗯」已是简洁、口语化的肯定回应，符合日文「うん」的语感与语用功能。语气中性，无需额外调整语气或句式，直接保留即适合嵌字。",
+      "text": "嗯"
+    },
+    {
+      "bubble_id": "region-0008-0004",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "将'马上要'调整为更口语化的'都快'以增强节奏感，添加'才好'强化犹豫和纠结语气，保留省略号表现思考的延续性，同时保持语义核心不变。",
+      "text": "都快中午了，我在想要怎么办才好呢……"
+    },
+    {
+      "bubble_id": "region-0008-0005",
+      "confidence": 0.95,
+      "footnotes": [
+        {
+          "original": "あーうん",
+          "translation": "啊嗯",
+          "type": "sfx"
+        }
+      ],
+      "rationale": "将‘啊嗯’处理为更符合中文口语习惯的‘呃……嗯……’，通过拉长音和添加省略号，强化了原语义中‘犹豫’和‘含糊回应’的语气，使其更适用于漫画对话的场景表达。",
+      "text": "呃……嗯……"
+    },
+    {
+      "bubble_id": "region-0008-0006",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "将‘午餐’拆解为口语化的‘午…午饭’，增加停顿感以匹配犹豫情绪；将‘嗯’替换为更自然的语气词‘呢’，体现试探或轻声询问的口吻，整体更贴合漫画角色的说话方式。",
+      "text": "午…午饭呢…"
+    },
+    {
+      "bubble_id": "region-0008-0007",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "基于亲昵情感，在句尾添加波浪线以强化呼唤的温暖感，同时保留原文省略号表示语气延续，符合漫画对白直接嵌字要求。",
+      "text": "…美胡酱～"
+    }
+  ]
+}

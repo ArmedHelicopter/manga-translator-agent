@@ -1,0 +1,36 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0006-0000",
+      "reading_order": 0,
+      "source_text": "【32話】",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0006-0001",
+      "reading_order": 1,
+      "source_text": "昔日の足音",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0006",
+  "page_index": 6,
+  "translations": [
+    {
+      "bubble_id": "region-0006-0000",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "标题为中性陈述，且必须保留数字32；标准中文漫画标题格式简洁，无需调整语气或句式以适合直接嵌字。",
+      "text": "第32话"
+    },
+    {
+      "bubble_id": "region-0006-0001",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "将书面化、稍显文雅的‘昔日的足音’调整为更简洁、更具画面感的‘旧时脚步’。这使其更符合漫画对白简洁、直接的嵌字要求，同时保留了‘往昔的时间感’与‘声音意象’，口语化程度增加但情感基调（怀旧）未变。",
+      "text": "旧时脚步"
+    }
+  ]
+}

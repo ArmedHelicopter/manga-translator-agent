@@ -1,0 +1,15 @@
+{
+  "artifact_count": 11,
+  "empty_text_region_pages": 1,
+  "expected_page_count": 11,
+  "fallback_count": 1,
+  "fallback_page_indices": [
+    10
+  ],
+  "ocr_model": "48px",
+  "page_count": 11,
+  "pages_with_text_regions": 10,
+  "payload_dir": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\experiments\\pass1-fix-validation\\.mga-payload",
+  "returncode": 0,
+  "text_regions_count": 47
+}

@@ -1,0 +1,288 @@
+{
+  "version": 1,
+  "page_index": 9,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "大丈夫？",
+      "texts": [
+        "大丈夫？"
+      ],
+      "lines": [
+        [
+          [
+            1383,
+            456
+          ],
+          [
+            1558,
+            456
+          ],
+          [
+            1558,
+            1037
+          ],
+          [
+            1383,
+            1037
+          ]
+        ]
+      ],
+      "font_size": 175,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        1,
+        2,
+        0
+      ],
+      "bg_color": [
+        1,
+        2,
+        0
+      ],
+      "source_lang": "zh",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9983004928664918
+    },
+    {
+      "index": 1,
+      "text": "…え",
+      "texts": [
+        "…え"
+      ],
+      "lines": [
+        [
+          [
+            3123,
+            3102
+          ],
+          [
+            3202,
+            3102
+          ],
+          [
+            3202,
+            3283
+          ],
+          [
+            3123,
+            3283
+          ]
+        ]
+      ],
+      "font_size": 79,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        7,
+        7,
+        3
+      ],
+      "bg_color": [
+        7,
+        7,
+        3
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9971652598955371
+    },
+    {
+      "index": 2,
+      "text": "何が？",
+      "texts": [
+        "何が？"
+      ],
+      "lines": [
+        [
+          [
+            2544,
+            4377
+          ],
+          [
+            2673,
+            4377
+          ],
+          [
+            2673,
+            4706
+          ],
+          [
+            2544,
+            4706
+          ]
+        ]
+      ],
+      "font_size": 129,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        2,
+        3,
+        1
+      ],
+      "bg_color": [
+        2,
+        3,
+        1
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9995156426154431
+    },
+    {
+      "index": 3,
+      "text": "…ちょっと",
+      "texts": [
+        "…ちょっと"
+      ],
+      "lines": [
+        [
+          [
+            1914,
+            3096
+          ],
+          [
+            2006,
+            3096
+          ],
+          [
+            2008,
+            3519
+          ],
+          [
+            1916,
+            3519
+          ]
+        ]
+      ],
+      "font_size": 92,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        3,
+        3,
+        0
+      ],
+      "bg_color": [
+        3,
+        3,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9997369744609905
+    },
+    {
+      "index": 4,
+      "text": "元気がないみたいだから",
+      "texts": [
+        "元気がない",
+        "みたいだから"
+      ],
+      "lines": [
+        [
+          [
+            729,
+            4119
+          ],
+          [
+            854,
+            4119
+          ],
+          [
+            854,
+            4640
+          ],
+          [
+            729,
+            4640
+          ]
+        ],
+        [
+          [
+            602,
+            4129
+          ],
+          [
+            716,
+            4129
+          ],
+          [
+            723,
+            4729
+          ],
+          [
+            608,
+            4729
+          ]
+        ]
+      ],
+      "font_size": 114,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        2,
+        4,
+        0
+      ],
+      "bg_color": [
+        2,
+        4,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9999864017089455
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    5334,
+    3750,
+    3
+  ]
+}

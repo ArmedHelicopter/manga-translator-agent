@@ -1,0 +1,33 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0000-0000",
+      "reading_order": 0,
+      "source_text": "電撃コミックスNEXT",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0000",
+  "page_index": 0,
+  "translations": [
+    {
+      "bubble_id": "region-0000-0000",
+      "confidence": 0.0,
+      "footnotes": [
+        {
+          "original": "電撃コミックスNEXT",
+          "translation": "电击Comics NEXT",
+          "type": "loanword"
+        },
+        {
+          "original": "コミックス",
+          "translation": "见正文",
+          "type": "loanword"
+        }
+      ],
+      "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0000-0000': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "text": "電撃コミックスNEXT"
+    }
+  ]
+}

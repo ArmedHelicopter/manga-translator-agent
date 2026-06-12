@@ -1,0 +1,1549 @@
+[manga-translator.local] Log file created: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\log_20260608085419.txt
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\page-001.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1792x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9877935647964478 电击漫画NEXT fg: (107, 104, 126) bg: (107, 104, 126)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1408x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\page-001.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\page-002.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9997549653053284 SALIDAS fg: (9, 14, 15) bg: (9, 14, 15)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\page-002.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\page-003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9998557567596436 变化 fg: (25, 9, 213) bg: (25, 9, 213)
+[manga-translator.Model48pxOCR] prob: 0.998499870300293 32話 fg: (40, 21, 188) bg: (140, 112, 215)
+[manga-translator.Model48pxOCR] prob: 0.9996305704116821 罪过 fg: (37, 18, 213) bg: (37, 18, 213)
+[manga-translator.Model48pxOCR] prob: 0.998839795589447 34話 fg: (57, 17, 201) bg: (57, 17, 201)
+[manga-translator.Model48pxOCR] prob: 0.9994297027587891 36話 fg: (57, 24, 214) bg: (57, 24, 214)
+[manga-translator.Model48pxOCR] prob: 0.9998438358306885 幕間 fg: (54, 15, 205) bg: (54, 15, 205)
+[manga-translator.Model48pxOCR] prob: 0.9999489784240723 社美胡 fg: (32, 15, 211) bg: (32, 15, 211)
+[manga-translator.Model48pxOCR] prob: 0.9999793767929077 番外篇 fg: (69, 34, 212) bg: (69, 34, 212)
+[manga-translator.Model48pxOCR] prob: 0.9995805025100708 惭愧的辙迹 fg: (41, 16, 209) bg: (41, 16, 209)
+[manga-translator.Model48pxOCR] prob: 0.9991933703422546 昔日の足音 fg: (28, 13, 215) bg: (28, 13, 215)
+[manga-translator.Model48pxOCR] prob: 0.9998588562011719 CONTENTS fg: (28, 15, 221) bg: (28, 15, 221)
+[manga-translator.Model48pxOCR] prob: 0.6380738019943237 わたたべっ！2 fg: (25, 13, 214) bg: (25, 13, 214)
+[manga-translator.Model48pxOCR] prob: 0.9998980760574341 陽を縁取るもの fg: (26, 13, 212) bg: (26, 13, 212)
+[manga-translator.Model48pxOCR] prob: 0.47695621848106384 あとがき １７４ fg: (40, 16, 214) bg: (40, 16, 214)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\page-003.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\page-004.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.7930055856704712 32話 fg: (5, 9, 7) bg: (5, 9, 7)
+[manga-translator.Model48pxOCR] prob: 0.9999299049377441 化け狐 fg: (0, 3, 1) bg: (0, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.998620331287384 人的下场吧。 fg: (0, 1, 1) bg: (0, 1, 1)
+[manga-translator.Model48pxOCR] prob: 0.9931912422180176 这便是爱别人、 fg: (0, 3, 0) bg: (0, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9992449283599854 怜悯并信任他的 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\page-004.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\page-005.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9999768733978271 呢 fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9994840621948242 才不是 fg: (3, 2, 0) bg: (3, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9971148371696472 可不一样。 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999754428863525 を見てなお fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9997596144676208 ……我跟你 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9989978075027466 人类那边啊？ fg: (3, 3, 1) bg: (3, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9997999668121338 こんなあたし fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.999873161315918 你还想继续待在 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\page-005.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\page-006.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9999775886535645 可悲啊 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9021401405334473 样呢—— fg: (8, 9, 7) bg: (7, 8, 7)
+[manga-translator.Model48pxOCR] prob: 0.9964315295219421 你的未来亦 fg: (3, 3, 1) bg: (3, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9746947288513184 一定是和我一 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\page-006.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\page-007.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9963187575340271 第32话 fg: (238, 241, 244) bg: (1, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9949865341186523 昔日的足音… fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\page-007.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\page-008.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9960712790489197 啥？ fg: (4, 6, 1) bg: (4, 6, 1)
+[manga-translator.Model48pxOCR] prob: 0.999902606010437 美胡ちゃん fg: (0, 4, 1) bg: (0, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9995958805084229 美胡ちゃん fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\page-008.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\page-009.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9998993873596191 嗯嗯 fg: (6, 3, 2) bg: (6, 3, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999291896820068 啊嗯 fg: (1, 5, 3) bg: (1, 5, 3)
+[manga-translator.Model48pxOCR] prob: 0.9963582158088684 诶… fg: (3, 5, 0) bg: (3, 5, 0)
+[manga-translator.Model48pxOCR] prob: 0.6464617252349854 JSHI fg: (245, 245, 245) bg: (245, 245, 245)
+[manga-translator.Model48pxOCR] prob: 0.9901733994483948 午饭… fg: (6, 8, 5) bg: (6, 8, 5)
+[manga-translator.Model48pxOCR] prob: 0.9980919361114502 来着？ fg: (1, 3, 3) bg: (1, 3, 3)
+[manga-translator.Model48pxOCR] prob: 0.9984413385391235 ……小美胡 fg: (1, 3, 1) bg: (1, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9998908042907715 抱歉抱歉啦 fg: (3, 3, 5) bg: (3, 3, 5)
+[manga-translator.Model48pxOCR] prob: 0.9967387914657593 ，我在想该怎 fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9990496635437012 那个……什么 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9960700273513794 么办才好呢… fg: (0, 3, 0) bg: (0, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9916016459465027 马上就中午了 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.8242447972297668 INARIZUSHI fg: (174, 170, 169) bg: (174, 170, 169)
+[manga-translator.Model48pxOCR] prob: 0.9991257786750793 刚才有点走神了啦 fg: (2, 4, 1) bg: (2, 4, 1)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\page-009.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\page-010.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9949856996536255 うん fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9987328052520752 うん fg: (5, 4, 2) bg: (5, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9774214625358582 あー fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9702056050300598 あー fg: (6, 6, 2) bg: (6, 6, 2)
+[manga-translator.Model48pxOCR] prob: 0.6302565336227417 JSHI fg: (242, 241, 242) bg: (242, 241, 242)
+[manga-translator.Model48pxOCR] prob: 0.8534761071205139 お昼… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.995652437210083 ねぇ… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.9989630579948425 って… fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999150037765503 もうすぐ fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9963119029998779 えっと… fg: (4, 4, 0) bg: (4, 4, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976890087127686 お昼だから fg: (3, 5, 2) bg: (3, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999189376831055 しちゃってた fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9985042214393616 …美胡ちゃん fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999680519104004 ごめんごめん fg: (0, 1, 1) bg: (0, 1, 1)
+[manga-translator.Model48pxOCR] prob: 0.9950862526893616 なんだっけ？ fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998608827590942 どうしようかな fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976809024810791 ちょっとボーっと fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\page-010.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\parallel-config.toml"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\parallel-config.toml
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\parallel-run-1.log"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\parallel-run-1.log
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\parallel-run-2.log"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\parallel-run-2.log
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\parallel-run-3.log"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\parallel-run-3.log
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0000.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0000.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0001.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0001.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0002.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0002.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0003.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0003.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0004.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0004.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0005.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0005.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0006.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0006.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0007.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0007.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0008.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0008.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0009.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\artifact-0009.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\inpainted-0000.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\inpainted-0000.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\inpainted-0001.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\inpainted-0001.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\inpainted-0002.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\inpainted-0002.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\inpainted-0003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.4199656546115875 【32話 fg: (0, 6, 4) bg: (0, 6, 4)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Removed unpaired bracket from "【32話"
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\inpainted-0003.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\inpainted-0004.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\inpainted-0004.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\inpainted-0005.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\inpainted-0005.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\inpainted-0006.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\inpainted-0006.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\inpainted-0007.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\inpainted-0007.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\inpainted-0008.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9432986378669739 JSHI fg: (245, 242, 241) bg: (245, 242, 241)
+[manga-translator.Model48pxOCR] prob: 0.6739527583122253 INARIZUSH] fg: (170, 166, 167) bg: (170, 166, 167)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Removed unpaired bracket from "INARIZUSH]"
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\inpainted-0008.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\inpainted-0009.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9949856996536255 うん fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9987328052520752 うん fg: (5, 4, 2) bg: (5, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9774214625358582 あー fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9702056050300598 あー fg: (6, 6, 2) bg: (6, 6, 2)
+[manga-translator.Model48pxOCR] prob: 0.6302565336227417 JSHI fg: (242, 241, 242) bg: (242, 241, 242)
+[manga-translator.Model48pxOCR] prob: 0.8534761071205139 お昼… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.995652437210083 ねぇ… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.9989630579948425 って… fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999150037765503 もうすぐ fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9963119029998779 えっと… fg: (4, 4, 0) bg: (4, 4, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976890087127686 お昼だから fg: (3, 5, 2) bg: (3, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999189376831055 しちゃってた fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9985042214393616 …美胡ちゃん fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999680519104004 ごめんごめん fg: (0, 1, 1) bg: (0, 1, 1)
+[manga-translator.Model48pxOCR] prob: 0.9950862526893616 なんだっけ？ fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998608827590942 どうしようかな fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976809024810791 ちょっとボーっと fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\inpainted-0009.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\mask-0000.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\mask-0000.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\mask-0001.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\mask-0001.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\mask-0002.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\mask-0002.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\mask-0003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\mask-0003.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\mask-0004.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\mask-0004.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\mask-0005.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\mask-0005.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\mask-0006.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\mask-0006.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\mask-0007.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\mask-0007.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\mask-0008.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\mask-0008.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\page-0000.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\page-0000.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\page-0001.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\page-0001.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\page-0002.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\page-0002.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\page-0003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\page-0003.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\page-0004.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.4199656546115875 【32話 fg: (0, 6, 4) bg: (0, 6, 4)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Removed unpaired bracket from "【32話"
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\page-0004.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\page-0005.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\page-0005.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\page-0006.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\page-0006.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\page-0007.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\page-0007.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\page-0008.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\page-0008.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\page-0009.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9432986378669739 JSHI fg: (245, 242, 241) bg: (245, 242, 241)
+[manga-translator.Model48pxOCR] prob: 0.6739527583122253 INARIZUSH] fg: (170, 166, 167) bg: (170, 166, 167)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Removed unpaired bracket from "INARIZUSH]"
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\page-0009.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\pages.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\pages.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\runtime-export-config.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\runtime-export-config.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\runtime-input-manifest.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\runtime-input-manifest.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0000.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0000.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0001.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0001.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0002.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0002.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0003.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0003.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0004.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0004.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0005.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0005.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0006.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0006.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0007.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0007.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0008.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0008.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0009.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\translations-0009.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\.runtime-input\page-0000.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9746951460838318 NEXT fg: (140, 88, 95) bg: (140, 88, 95)
+[manga-translator.Model48pxOCR] prob: 0.9988864064216614 電撃コミックス fg: (113, 115, 114) bg: (113, 115, 114)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\.runtime-input\page-0000.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\.runtime-input\page-0001.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.5557550191879272 CoverDesign：SALIDAS fg: (11, 10, 4) bg: (11, 10, 4)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\.runtime-input\page-0001.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\.runtime-input\page-0002.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[33mWARNING:[39m [manga-translator.local] No text regions! - Skipping
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\.runtime-input\page-0002.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\.runtime-input\page-0003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9693681597709656 36 fg: (214, 43, 62) bg: (214, 43, 62)
+[manga-translator.Model48pxOCR] prob: 0.9995824694633484 話 fg: (204, 29, 55) bg: (204, 29, 55)
+[manga-translator.Model48pxOCR] prob: 0.9996864795684814 話 fg: (196, 31, 58) bg: (196, 31, 58)
+[manga-translator.Model48pxOCR] prob: 0.9998866319656372 話 fg: (206, 14, 40) bg: (206, 14, 40)
+[manga-translator.Model48pxOCR] prob: 0.9999210834503174 話 fg: (195, 21, 42) bg: (195, 21, 42)
+[manga-translator.Model48pxOCR] prob: 0.9997768998146057 話 fg: (205, 20, 46) bg: (205, 20, 46)
+[manga-translator.Model48pxOCR] prob: 0.981124758720398 32 fg: (205, 23, 55) bg: (205, 23, 55)
+[manga-translator.Model48pxOCR] prob: 0.99722820520401 33 fg: (222, 21, 48) bg: (222, 21, 48)
+[manga-translator.Model48pxOCR] prob: 0.9565355777740479 35 fg: (215, 21, 46) bg: (225, 117, 128)
+[manga-translator.Model48pxOCR] prob: 0.9862656593322754 34 fg: (208, 18, 48) bg: (218, 103, 122)
+[manga-translator.Model48pxOCR] prob: 0.99596107006073 幕間 fg: (203, 10, 39) bg: (203, 10, 39)
+[manga-translator.Model48pxOCR] prob: 0.9996697902679443 変化 fg: (216, 13, 24) bg: (216, 13, 24)
+[manga-translator.Model48pxOCR] prob: 0.9939455986022949 罪過 fg: (209, 14, 28) bg: (209, 14, 28)
+[manga-translator.Model48pxOCR] prob: 0.8547181487083435 35 fg: (216, 35, 68) bg: (216, 35, 68)
+[manga-translator.Model48pxOCR] prob: 0.9998611211776733 番外編 fg: (206, 21, 55) bg: (206, 21, 55)
+[manga-translator.Model48pxOCR] prob: 0.9998726844787598 社美胡 fg: (212, 9, 21) bg: (212, 9, 21)
+[manga-translator.Model48pxOCR] prob: 0.998254656791687 慚愧の轍 fg: (205, 16, 32) bg: (205, 16, 32)
+[manga-translator.Model48pxOCR] prob: 0.6882769465446472 083 fg: (215, 29, 48) bg: (215, 29, 48)
+[manga-translator.Model48pxOCR] prob: 0.9989057779312134 昔日の足音 fg: (215, 12, 18) bg: (215, 12, 18)
+[manga-translator.Model48pxOCR] prob: 0.9956494569778442 CONTENTS fg: (222, 13, 18) bg: (222, 13, 18)
+[manga-translator.Model48pxOCR] prob: 0.6928947567939758 あとがき 174 fg: (213, 17, 37) bg: (213, 18, 38)
+[manga-translator.Model48pxOCR] prob: 0.9998462200164795 陽を縁取るもの fg: (213, 10, 23) bg: (213, 10, 23)
+[manga-translator.Model48pxOCR] prob: 0.6950213313102722 わたたべっ！ 2 fg: (216, 12, 22) bg: (215, 14, 22)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 35
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: 083
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\.runtime-input\page-0003.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\.runtime-input\page-0004.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.8020156621932983 32話 fg: (5, 9, 7) bg: (5, 9, 7)
+[manga-translator.Model48pxOCR] prob: 0.9999138116836548 化け狐 fg: (1, 0, 0) bg: (1, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.999982476234436 これが fg: (5, 5, 2) bg: (5, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9989385604858398 人を愛し 慈しみ fg: (2, 2, 0) bg: (2, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9992204904556274 信じた者の末路さ fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\.runtime-input\page-0004.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\.runtime-input\page-0005.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9996867775917053 いいや fg: (1, 4, 0) bg: (1, 4, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998898506164551 居続ける fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998843669891357 見てなお fg: (3, 3, 1) bg: (3, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999375343322754 違わんさ fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9988980293273926 …あたしは fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9977288842201233 お前とは違う fg: (2, 4, 1) bg: (2, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.993815004825592 つもりかい？ fg: (1, 2, 1) bg: (1, 2, 1)
+[manga-translator.Model48pxOCR] prob: 0.9998807907104492 こんなあたしを fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998666048049927 お前は人間の側に fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\.runtime-input\page-0005.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\.runtime-input\page-0006.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.999923586845398 悲しいかな fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998434782028198 お前の行く末も fg: (2, 1, 0) bg: (2, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.7318148016929626 同じだよ――… fg: (4, 5, 2) bg: (4, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9998480081558228 きっとあたしと fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\.runtime-input\page-0006.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\.runtime-input\page-0007.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.6350091099739075 (32話) fg: (251, 247, 242) bg: (251, 247, 242)
+[manga-translator.Model48pxOCR] prob: 0.9988241195678711 昔日の足音 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\.runtime-input\page-0007.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\.runtime-input\page-0008.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9708571434020996 へっ？ fg: (3, 4, 0) bg: (3, 4, 0)
+[manga-translator.Model48pxOCR] prob: 0.999870777130127 美胡ちゃん fg: (3, 1, 0) bg: (3, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9997944235801697 美胡ちゃん fg: (1, 0, 0) bg: (1, 0, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\.runtime-input\page-0008.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload\.runtime-input\page-0009.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9949856996536255 うん fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9987328052520752 うん fg: (5, 4, 2) bg: (5, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9774214625358582 あー fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9702056050300598 あー fg: (6, 6, 2) bg: (6, 6, 2)
+[manga-translator.Model48pxOCR] prob: 0.6302565336227417 JSHI fg: (242, 241, 242) bg: (242, 241, 242)
+[manga-translator.Model48pxOCR] prob: 0.8534761071205139 お昼… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.995652437210083 ねぇ… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.9989630579948425 って… fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999150037765503 もうすぐ fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9963119029998779 えっと… fg: (4, 4, 0) bg: (4, 4, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976890087127686 お昼だから fg: (3, 5, 2) bg: (3, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999189376831055 しちゃってた fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9985042214393616 …美胡ちゃん fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999680519104004 ごめんごめん fg: (0, 1, 1) bg: (0, 1, 1)
+[manga-translator.Model48pxOCR] prob: 0.9950862526893616 なんだっけ？ fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998608827590942 どうしようかな fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976809024810791 ちょっとボーっと fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\.mga-payload\.runtime-input\page-0009.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\memory\state\character_graph.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\memory\state\character_graph.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\manifest.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\manifest.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\page-001.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1792x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9970917105674744 電撃コミックスNEXT fg: (104, 104, 123) bg: (104, 104, 123)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1384x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-debug4\page-001.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\page-002.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9974240660667419 封面设计：萨利达斯 fg: (8, 13, 14) bg: (8, 13, 14)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-debug4\page-002.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\page-003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9692376852035522 2话 fg: (33, 13, 175) bg: (130, 102, 212)
+[manga-translator.Model48pxOCR] prob: 0.9355138540267944 第3 fg: (43, 21, 186) bg: (143, 113, 210)
+[manga-translator.Model48pxOCR] prob: 0.9547246098518372 第3 fg: (57, 21, 208) bg: (57, 21, 208)
+[manga-translator.Model48pxOCR] prob: 0.9591462016105652 第3 fg: (56, 27, 208) bg: (56, 27, 208)
+[manga-translator.Model48pxOCR] prob: 0.8608922958374023 4话 fg: (61, 24, 206) bg: (61, 24, 206)
+[manga-translator.Model48pxOCR] prob: 0.9058697819709778 6话 fg: (57, 30, 210) bg: (57, 30, 210)
+[manga-translator.Model48pxOCR] prob: 0.9998584985733032 变化 fg: (25, 9, 213) bg: (25, 9, 213)
+[manga-translator.Model48pxOCR] prob: 0.9989217519760132 目录 fg: (29, 9, 221) bg: (29, 9, 221)
+[manga-translator.Model48pxOCR] prob: 0.9998452663421631 幕間 fg: (54, 15, 205) bg: (54, 15, 205)
+[manga-translator.Model48pxOCR] prob: 0.9999468326568604 社美胡 fg: (32, 15, 212) bg: (32, 15, 212)
+[manga-translator.Model48pxOCR] prob: 0.9999798536300659 番外篇 fg: (69, 34, 212) bg: (69, 34, 212)
+[manga-translator.Model48pxOCR] prob: 0.9986298084259033 慚愧の轍 fg: (42, 18, 211) bg: (42, 18, 211)
+[manga-translator.Model48pxOCR] prob: 0.99881911277771 罪过啊…… fg: (36, 13, 211) bg: (36, 13, 211)
+[manga-translator.Model48pxOCR] prob: 0.9996650815010071 描摹阳光者 fg: (28, 12, 210) bg: (28, 12, 210)
+[manga-translator.Model48pxOCR] prob: 0.9987844228744507 昔日的脚步声 fg: (30, 12, 212) bg: (30, 12, 212)
+[manga-translator.Model48pxOCR] prob: 0.5692636966705322 わたたべっ！2 fg: (24, 12, 216) bg: (24, 12, 216)
+[manga-translator.Model48pxOCR] prob: 0.4769584834575653 あとがき １７４ fg: (40, 16, 214) bg: (40, 16, 214)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-debug4\page-003.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\page-004.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.7975524067878723 32話 fg: (5, 9, 7) bg: (5, 9, 7)
+[manga-translator.Model48pxOCR] prob: 0.9999524354934692 妖狐 fg: (0, 1, 4) bg: (0, 1, 4)
+[manga-translator.Model48pxOCR] prob: 0.9986623525619507 的下场啊。 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9993346929550171 、慈爱并信任他人 fg: (2, 3, 1) bg: (2, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9992433786392212 呵…这就是爱他人 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-debug4\page-004.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\page-005.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9594725966453552 ？ fg: (4, 9, 7) bg: (4, 9, 7)
+[manga-translator.Model48pxOCR] prob: 0.9978936910629272 一样。 fg: (0, 0, 3) bg: (0, 0, 3)
+[manga-translator.Model48pxOCR] prob: 0.9998525381088257 不对啦 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9996615648269653 …我跟你不 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999772310256958 を見てなお fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9997944235801697 こんなあたし fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998213052749634 在人类那一边吗 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9992424249649048 你小子还打算赖 fg: (1, 0, 0) bg: (1, 0, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-debug4\page-005.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\page-006.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.8022499084472656 样呢 fg: (7, 5, 2) bg: (7, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999778270721436 可悲啊 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9987205266952515 想必…和我一 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9977016448974609 你的下场也是。 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-debug4\page-006.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\page-007.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9882329702377319 【32話】 fg: (97, 97, 103) bg: (17, 16, 19)
+[manga-translator.Model48pxOCR] prob: 0.9938752055168152 昔日的脚步声……仿佛还能听见。 fg: (0, 1, 1) bg: (0, 1, 1)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-debug4\page-007.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\page-008.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9994034171104431 美胡酱 fg: (0, 5, 1) bg: (0, 5, 1)
+[manga-translator.Model48pxOCR] prob: 0.9939263463020325 啥？！ fg: (4, 3, 0) bg: (4, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999290704727173 美胡ちゃん fg: (0, 3, 1) bg: (0, 3, 1)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-debug4\page-008.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\page-009.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9999927282333374 嗯 fg: (7, 6, 5) bg: (7, 6, 5)
+[manga-translator.Model48pxOCR] prob: 0.9997032284736633 嗯啊 fg: (4, 8, 5) bg: (4, 8, 5)
+[manga-translator.Model48pxOCR] prob: 0.9977625608444214 着？ fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.6467992067337036 JSHI fg: (245, 245, 245) bg: (245, 245, 245)
+[manga-translator.Model48pxOCR] prob: 0.9987208843231201 午饭啊 fg: (3, 5, 3) bg: (3, 5, 3)
+[manga-translator.Model48pxOCR] prob: 0.9985852241516113 呢…… fg: (3, 0, 0) bg: (3, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9974531531333923 不起！ fg: (2, 5, 1) bg: (2, 5, 1)
+[manga-translator.Model48pxOCR] prob: 0.9986191987991333 ，要怎么办 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998748302459717 快到中午了 fg: (1, 0, 0) bg: (1, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9983110427856445 啊，对不起对 fg: (0, 3, 1) bg: (0, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9988036155700684 …美胡ちゃん fg: (0, 3, 0) bg: (0, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9993558526039124 呃…是什么来 fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9993109703063965 我有点走神了呢 fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.47382602095603943 INARIZUSH] fg: (173, 169, 171) bg: (173, 169, 171)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Removed unpaired bracket from "INARIZUSH]"
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-debug4\page-009.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\page-010.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9949856996536255 うん fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9987328052520752 うん fg: (5, 4, 2) bg: (5, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9774214625358582 あー fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9702056050300598 あー fg: (6, 6, 2) bg: (6, 6, 2)
+[manga-translator.Model48pxOCR] prob: 0.6302565336227417 JSHI fg: (242, 241, 242) bg: (242, 241, 242)
+[manga-translator.Model48pxOCR] prob: 0.8534761071205139 お昼… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.995652437210083 ねぇ… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.9989630579948425 って… fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999150037765503 もうすぐ fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9963119029998779 えっと… fg: (4, 4, 0) bg: (4, 4, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976890087127686 お昼だから fg: (3, 5, 2) bg: (3, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999189376831055 しちゃってた fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9985042214393616 …美胡ちゃん fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999680519104004 ごめんごめん fg: (0, 1, 1) bg: (0, 1, 1)
+[manga-translator.Model48pxOCR] prob: 0.9950862526893616 なんだっけ？ fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998608827590942 どうしようかな fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976809024810791 ちょっとボーっと fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-debug4\page-010.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\qa_report.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\qa_report.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\run.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\run.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translation-report.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translation-report.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0000.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0000.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0001.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0001.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0002.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0002.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0003.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0003.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0004.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0004.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0005.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0005.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0006.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0006.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0007.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0007.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0008.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0008.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0009.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-debug4\translations\page_0009.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\manifest.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\manifest.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\page-001.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1792x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9848684668540955 电击漫画NEXT fg: (107, 103, 126) bg: (107, 103, 126)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1384x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-1\page-001.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\page-002.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9997549653053284 SALIDAS fg: (9, 14, 15) bg: (9, 14, 15)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-1\page-002.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\page-003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9687262773513794 2话 fg: (33, 13, 175) bg: (130, 102, 212)
+[manga-translator.Model48pxOCR] prob: 0.9351004958152771 第3 fg: (43, 21, 186) bg: (143, 112, 210)
+[manga-translator.Model48pxOCR] prob: 0.9542059302330017 第3 fg: (57, 21, 208) bg: (57, 21, 208)
+[manga-translator.Model48pxOCR] prob: 0.8606095314025879 4话 fg: (61, 24, 206) bg: (61, 24, 206)
+[manga-translator.Model48pxOCR] prob: 0.9726471304893494 目录！ fg: (30, 7, 221) bg: (30, 7, 221)
+[manga-translator.Model48pxOCR] prob: 0.9999160766601562 变化了 fg: (25, 7, 214) bg: (25, 7, 214)
+[manga-translator.Model48pxOCR] prob: 0.9999480247497559 社美胡 fg: (32, 15, 211) bg: (32, 15, 211)
+[manga-translator.Model48pxOCR] prob: 0.9976555705070496 罪过… fg: (35, 17, 211) bg: (35, 17, 211)
+[manga-translator.Model48pxOCR] prob: 0.989134669303894 幕间… fg: (50, 14, 205) bg: (50, 14, 205)
+[manga-translator.Model48pxOCR] prob: 0.99997878074646 番外篇 fg: (69, 34, 212) bg: (69, 34, 212)
+[manga-translator.Model48pxOCR] prob: 0.9070159196853638 翻则但附供文按 fg: (47, 22, 212) bg: (47, 22, 212)
+[manga-translator.Model48pxOCR] prob: 0.9945552349090576 日冕物语 fg: (26, 12, 210) bg: (26, 12, 210)
+[manga-translator.Model48pxOCR] prob: 0.6044727563858032 第１７４页后记 fg: (43, 19, 214) bg: (43, 19, 214)
+[manga-translator.Model48pxOCR] prob: 0.998841404914856 昔日的脚步声呢 fg: (30, 13, 215) bg: (30, 13, 215)
+[manga-translator.Model48pxOCR] prob: 0.9994694590568542 真是惭愧的辙痕啊。 fg: (37, 18, 208) bg: (37, 18, 208)
+[manga-translator.Model48pxOCR] prob: 0.5912265181541443 哇！好想吃啊——！２ fg: (29, 10, 218) bg: (29, 10, 218)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-1\page-003.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\page-004.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.7896201014518738 32話 fg: (5, 9, 7) bg: (5, 9, 7)
+[manga-translator.Model48pxOCR] prob: 0.9999308586120605 化け狐 fg: (0, 3, 1) bg: (0, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9996232986450195 末路呵 fg: (2, 3, 1) bg: (2, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9589903950691223 任过——这就是 fg: (0, 4, 1) bg: (0, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9959116578102112 爱过、怜悯并信 fg: (0, 2, 1) bg: (0, 2, 1)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-1\page-004.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\page-005.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9999768733978271 呢 fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.999485969543457 才不是 fg: (3, 2, 0) bg: (3, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9840406179428101 …我跟你， fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.997651994228363 就是不同！ fg: (2, 2, 0) bg: (2, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999769926071167 を見てなお fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.999790608882904 こんなあたし fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9993325471878052 在人类这边吗？ fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999462366104126 你还打算继续待 fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-1\page-005.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\page-006.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9988341927528381 呢…… fg: (1, 0, 0) bg: (1, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998693466186523 可悲罢了 fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9982205629348755 你往后的路… fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9965534806251526 一定和我一样 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-1\page-006.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\page-007.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9962978959083557 第32话 fg: (238, 241, 244) bg: (1, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9988460540771484 旧时脚步 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-1\page-007.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\page-008.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9997318387031555 美胡酱 fg: (0, 5, 1) bg: (0, 5, 1)
+[manga-translator.Model48pxOCR] prob: 0.9994259476661682 美胡酱 fg: (0, 6, 1) bg: (0, 6, 1)
+[manga-translator.Model48pxOCR] prob: 0.9846829175949097 へっ？ fg: (0, 3, 0) bg: (0, 3, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-1\page-008.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\page-009.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9999927282333374 嗯 fg: (7, 6, 5) bg: (7, 6, 5)
+[manga-translator.Model48pxOCR] prob: 0.9999572038650513 歉 fg: (7, 6, 2) bg: (7, 6, 2)
+[manga-translator.Model48pxOCR] prob: 0.9980389475822449 着？ fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.6467992067337036 JSHI fg: (245, 245, 245) bg: (245, 245, 245)
+[manga-translator.Model48pxOCR] prob: 0.9875063896179199 午饭… fg: (8, 11, 4) bg: (8, 11, 4)
+[manga-translator.Model48pxOCR] prob: 0.9982842803001404 啊…嗯 fg: (3, 3, 1) bg: (3, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9980644583702087 呢…… fg: (4, 3, 1) bg: (4, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9924173355102539 …美胡酱 fg: (0, 4, 2) bg: (0, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.992917001247406 ，我该怎么 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9894950985908508 马上中午了 fg: (0, 0, 2) bg: (0, 0, 2)
+[manga-translator.Model48pxOCR] prob: 0.998542308807373 办才好呢… fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.48361262679100037 ！！！ fg: (104, 103, 103) bg: (104, 103, 103)
+[manga-translator.Model48pxOCR] prob: 0.9999387264251709 しちゃってた fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9992045164108276 呃…叫什么来 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9964016079902649 哎呀，抱歉抱 fg: (0, 0, 2) bg: (0, 0, 2)
+[manga-translator.Model48pxOCR] prob: 0.4738259017467499 INARIZUSH] fg: (173, 169, 171) bg: (173, 169, 171)
+[manga-translator.Model48pxOCR] prob: 0.5216805338859558 ちょっとボーっと fg: (0, 3, 0) bg: (0, 3, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: ！！！
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Removed unpaired bracket from "INARIZUSH]"
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-1\page-009.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\page-010.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9949856996536255 うん fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9987328052520752 うん fg: (5, 4, 2) bg: (5, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9774214625358582 あー fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9702056050300598 あー fg: (6, 6, 2) bg: (6, 6, 2)
+[manga-translator.Model48pxOCR] prob: 0.6302565336227417 JSHI fg: (242, 241, 242) bg: (242, 241, 242)
+[manga-translator.Model48pxOCR] prob: 0.8534761071205139 お昼… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.995652437210083 ねぇ… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.9989630579948425 って… fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999150037765503 もうすぐ fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9963119029998779 えっと… fg: (4, 4, 0) bg: (4, 4, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976890087127686 お昼だから fg: (3, 5, 2) bg: (3, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999189376831055 しちゃってた fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9985042214393616 …美胡ちゃん fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999680519104004 ごめんごめん fg: (0, 1, 1) bg: (0, 1, 1)
+[manga-translator.Model48pxOCR] prob: 0.9950862526893616 なんだっけ？ fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998608827590942 どうしようかな fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976809024810791 ちょっとボーっと fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-1\page-010.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\qa_report.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\qa_report.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\run.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\run.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translation-report.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translation-report.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0000.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0000.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0001.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0001.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0002.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0002.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0003.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0003.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0004.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0004.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0005.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0005.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0006.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0006.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0007.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0007.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0008.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0008.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0009.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-1\translations\page_0009.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\manifest.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\manifest.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\page-001.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1792x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9877935647964478 电击漫画NEXT fg: (107, 104, 126) bg: (107, 104, 126)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1408x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-2\page-001.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\page-002.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9985983371734619 设计者：萨利达斯 fg: (11, 17, 20) bg: (11, 17, 20)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-2\page-002.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\page-003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9544151425361633 第3 fg: (57, 21, 208) bg: (57, 21, 208)
+[manga-translator.Model48pxOCR] prob: 0.9513245224952698 第3 fg: (55, 29, 210) bg: (55, 29, 210)
+[manga-translator.Model48pxOCR] prob: 0.8607251644134521 4话 fg: (61, 24, 206) bg: (61, 24, 206)
+[manga-translator.Model48pxOCR] prob: 0.9057577848434448 6话 fg: (57, 30, 210) bg: (57, 30, 210)
+[manga-translator.Model48pxOCR] prob: 0.9989222288131714 目录 fg: (29, 9, 221) bg: (29, 9, 221)
+[manga-translator.Model48pxOCR] prob: 0.9989429712295532 幕间 fg: (56, 13, 204) bg: (56, 13, 204)
+[manga-translator.Model48pxOCR] prob: 0.9999792575836182 番外篇 fg: (69, 34, 212) bg: (69, 34, 212)
+[manga-translator.Model48pxOCR] prob: 0.9988078474998474 啊…… fg: (37, 16, 218) bg: (37, 16, 218)
+[manga-translator.Model48pxOCR] prob: 0.9991094470024109 变化…… fg: (25, 9, 213) bg: (25, 9, 213)
+[manga-translator.Model48pxOCR] prob: 0.9997461438179016 罪过啊。 fg: (37, 17, 212) bg: (37, 17, 212)
+[manga-translator.Model48pxOCR] prob: 0.8710445761680603 后记 174 fg: (45, 19, 216) bg: (45, 19, 217)
+[manga-translator.Model48pxOCR] prob: 0.9487713575363159 诶～社美胡！ fg: (29, 13, 210) bg: (29, 13, 210)
+[manga-translator.Model48pxOCR] prob: 0.9995975494384766 往日的脚步声 fg: (30, 11, 213) bg: (30, 11, 213)
+[manga-translator.Model48pxOCR] prob: 0.9875766634941101 那条羞耻的车辙 fg: (39, 17, 209) bg: (39, 17, 209)
+[manga-translator.Model48pxOCR] prob: 0.9979057312011719 描绘太阳轮廓之人 fg: (29, 11, 211) bg: (29, 11, 211)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-2\page-003.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\page-004.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.8034788370132446 32話 fg: (5, 9, 7) bg: (5, 9, 7)
+[manga-translator.Model48pxOCR] prob: 0.9927202463150024 狐妖！ fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.999015748500824 不疑的下场 fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9891856908798218 人、怀慈心、深信 fg: (2, 4, 2) bg: (2, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9859958291053772 看吧，这就是爱他 fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-2\page-004.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\page-005.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9966683387756348 一样呢 fg: (2, 2, 0) bg: (2, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999392032623291 不对啊 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998247623443604 我跟你才不 fg: (0, 2, 1) bg: (0, 2, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999451637268066 连这样的我你 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999711513519287 都看得下去啊 fg: (1, 3, 1) bg: (1, 3, 1)
+[manga-translator.Model48pxOCR] prob: 0.9992031455039978 在人类那边吗？ fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999462366104126 你还打算继续待 fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-2\page-005.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\page-006.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9980363249778748 样的吧 fg: (8, 6, 3) bg: (8, 6, 3)
+[manga-translator.Model48pxOCR] prob: 0.9977501034736633 可悲啊…… fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9939327239990234 一定和我是一 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9993056654930115 你的前途嘛……也 fg: (2, 0, 0) bg: (2, 0, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-2\page-006.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\page-007.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9767795205116272 【32话】 fg: (155, 157, 160) bg: (7, 5, 6)
+[manga-translator.Model48pxOCR] prob: 0.9991540312767029 往昔之音 fg: (1, 5, 1) bg: (1, 5, 1)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-2\page-007.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\page-008.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9996652603149414 美胡酱 fg: (0, 4, 0) bg: (0, 4, 0)
+[manga-translator.Model48pxOCR] prob: 0.9952448010444641 诶？！ fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9982329607009888 美胡酱啦。 fg: (0, 2, 1) bg: (0, 2, 1)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-2\page-008.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\page-009.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9999904632568359 嗯 fg: (4, 2, 2) bg: (4, 2, 2)
+[manga-translator.Model48pxOCR] prob: 0.9982766509056091 啊 fg: (0, 6, 4) bg: (0, 6, 4)
+[manga-translator.Model48pxOCR] prob: 0.9999905824661255 嗯 fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998687505722046 めん fg: (0, 3, 2) bg: (0, 3, 2)
+[manga-translator.Model48pxOCR] prob: 0.6467992067337036 JSHI fg: (245, 245, 245) bg: (245, 245, 245)
+[manga-translator.Model48pxOCR] prob: 0.9995284676551819 呀…… fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9989644885063171 那个… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.9976279735565186 中午… fg: (8, 8, 4) bg: (8, 8, 4)
+[manga-translator.Model48pxOCR] prob: 0.9984405040740967 么来着？ fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.996212363243103 了，该咋办 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9884446263313293 马上就中午 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9994250535964966 那个……是什 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9988036155700684 …美胡ちゃん fg: (0, 3, 0) bg: (0, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.4973696768283844 あ一ごめんご fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9840790033340454 有点发呆了呢～ fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.47382593154907227 INARIZUSH] fg: (173, 169, 171) bg: (173, 169, 171)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Removed unpaired bracket from "INARIZUSH]"
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-2\page-009.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\page-010.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9949856996536255 うん fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9987328052520752 うん fg: (5, 4, 2) bg: (5, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9774214625358582 あー fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9702056050300598 あー fg: (6, 6, 2) bg: (6, 6, 2)
+[manga-translator.Model48pxOCR] prob: 0.6302565336227417 JSHI fg: (242, 241, 242) bg: (242, 241, 242)
+[manga-translator.Model48pxOCR] prob: 0.8534761071205139 お昼… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.995652437210083 ねぇ… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.9989630579948425 って… fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999150037765503 もうすぐ fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9963119029998779 えっと… fg: (4, 4, 0) bg: (4, 4, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976890087127686 お昼だから fg: (3, 5, 2) bg: (3, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999189376831055 しちゃってた fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9985042214393616 …美胡ちゃん fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999680519104004 ごめんごめん fg: (0, 1, 1) bg: (0, 1, 1)
+[manga-translator.Model48pxOCR] prob: 0.9950862526893616 なんだっけ？ fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998608827590942 どうしようかな fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976809024810791 ちょっとボーっと fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-2\page-010.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\qa_report.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\qa_report.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\run.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\run.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translation-report.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translation-report.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0000.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0000.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0001.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0001.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0002.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0002.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0003.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0003.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0004.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0004.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0005.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0005.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0006.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0006.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0007.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0007.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0008.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0008.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0009.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-2\translations\page_0009.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\manifest.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\manifest.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\page-001.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1792x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9970917105674744 電撃コミックスNEXT fg: (104, 104, 123) bg: (104, 104, 123)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1384x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-3\page-001.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\page-002.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9974240660667419 封面设计：萨利达斯 fg: (8, 13, 14) bg: (8, 13, 14)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-3\page-002.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\page-003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9690656065940857 2话 fg: (33, 13, 175) bg: (130, 102, 212)
+[manga-translator.Model48pxOCR] prob: 0.902524471282959 第3 fg: (56, 21, 198) bg: (56, 21, 198)
+[manga-translator.Model48pxOCR] prob: 0.9353660345077515 第3 fg: (43, 21, 186) bg: (143, 112, 210)
+[manga-translator.Model48pxOCR] prob: 0.8607912063598633 4话 fg: (61, 24, 206) bg: (61, 24, 206)
+[manga-translator.Model48pxOCR] prob: 0.9998562335968018 变化 fg: (25, 9, 213) bg: (25, 9, 213)
+[manga-translator.Model48pxOCR] prob: 0.9994312524795532 36話 fg: (57, 24, 214) bg: (57, 24, 214)
+[manga-translator.Model48pxOCR] prob: 0.9989218711853027 目录 fg: (29, 9, 221) bg: (29, 9, 221)
+[manga-translator.Model48pxOCR] prob: 0.9999462366104126 社美胡 fg: (32, 15, 212) bg: (32, 15, 212)
+[manga-translator.Model48pxOCR] prob: 0.9996331930160522 罪过啊 fg: (36, 14, 213) bg: (36, 14, 213)
+[manga-translator.Model48pxOCR] prob: 0.9993382692337036 幕间啦 fg: (54, 19, 206) bg: (54, 19, 206)
+[manga-translator.Model48pxOCR] prob: 0.9999793767929077 番外篇 fg: (69, 34, 212) bg: (69, 34, 212)
+[manga-translator.Model48pxOCR] prob: 0.9988332390785217 慚愧の轍 fg: (41, 15, 211) bg: (41, 15, 211)
+[manga-translator.Model48pxOCR] prob: 0.9989715814590454 描摹太阳者 fg: (29, 11, 211) bg: (29, 11, 211)
+[manga-translator.Model48pxOCR] prob: 0.9991905093193054 昔日の足音 fg: (28, 13, 215) bg: (28, 13, 215)
+[manga-translator.Model48pxOCR] prob: 0.6950420141220093 わたたべっ！2 fg: (25, 13, 215) bg: (25, 13, 215)
+[manga-translator.Model48pxOCR] prob: 0.5582159161567688 第174页 后 fg: (44, 18, 215) bg: (45, 18, 215)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-3\page-003.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\page-004.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.8020156621932983 32話 fg: (5, 9, 7) bg: (5, 9, 7)
+[manga-translator.Model48pxOCR] prob: 0.9999514818191528 妖狐 fg: (0, 1, 4) bg: (0, 1, 4)
+[manga-translator.Model48pxOCR] prob: 0.9982538223266602 人之人的末路！ fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9967831373214722 人、怜悯并信任他 fg: (0, 3, 0) bg: (0, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9985744953155518 啊……这就是爱他 fg: (2, 2, 0) bg: (2, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-3\page-004.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\page-005.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9999939203262329 的我 fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999233484268188 不啊 fg: (1, 5, 1) bg: (1, 5, 1)
+[manga-translator.Model48pxOCR] prob: 0.999903678894043 不对哦 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9984316229820251 不一样 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9996321201324463 我…跟你可 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9968495965003967 类一方吗？ fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9997392296791077 你还要待在人 fg: (0, 2, 1) bg: (0, 2, 1)
+[manga-translator.Model48pxOCR] prob: 0.9999470710754395 就连看到这样 fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-3\page-005.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\page-006.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.3331930339336395 呢 fg: (1, 2, 1) bg: (1, 2, 1)
+[manga-translator.Model48pxOCR] prob: 0.9997740387916565 肯定和我一样 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9967350363731384 真可悲啊…… fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9991235136985779 你的下场也不会例外 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-3\page-006.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\page-007.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9762338995933533 【第32话】 fg: (188, 184, 183) bg: (17, 14, 16)
+[manga-translator.Model48pxOCR] prob: 0.9927703142166138 那昔日的足音…… fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-3\page-007.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\page-008.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9965533018112183 诶？ fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9993915557861328 小美胡 fg: (0, 3, 0) bg: (0, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9651356339454651 美胡酱～ fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-3\page-008.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\page-009.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9999926090240479 嗯 fg: (7, 6, 5) bg: (7, 6, 5)
+[manga-translator.Model48pxOCR] prob: 0.9973133206367493 着？ fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998679161071777 めん fg: (0, 3, 2) bg: (0, 3, 2)
+[manga-translator.Model48pxOCR] prob: 0.6464617252349854 JSHI fg: (245, 245, 245) bg: (245, 245, 245)
+[manga-translator.Model48pxOCR] prob: 0.9989432096481323 午…午 fg: (1, 4, 1) bg: (1, 4, 1)
+[manga-translator.Model48pxOCR] prob: 0.9910016655921936 饭呢… fg: (8, 7, 2) bg: (8, 7, 2)
+[manga-translator.Model48pxOCR] prob: 0.9992374181747437 呃……嗯 fg: (4, 4, 3) bg: (4, 4, 3)
+[manga-translator.Model48pxOCR] prob: 0.9875245690345764 …美胡酱 fg: (1, 4, 2) bg: (1, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9992888569831848 办才好呢…… fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999361038208008 我在想要怎么 fg: (0, 0, 0) bg: (0, 0, 0)
+[manga-translator.Model48pxOCR] prob: 0.9961565136909485 都快中午了， fg: (1, 1, 1) bg: (1, 1, 1)
+[manga-translator.Model48pxOCR] prob: 0.9993622899055481 呃…是什么来 fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.5074604749679565 あ一ごめんご fg: (0, 2, 0) bg: (0, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.7376353740692139 INARIZUSHI fg: (176, 172, 174) bg: (176, 172, 174)
+[manga-translator.Model48pxOCR] prob: 0.9993127584457397 刚才有点走神了呢 fg: (3, 4, 0) bg: (3, 4, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-3\page-009.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\page-010.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9949856996536255 うん fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9987328052520752 うん fg: (5, 4, 2) bg: (5, 4, 2)
+[manga-translator.Model48pxOCR] prob: 0.9774214625358582 あー fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9702056050300598 あー fg: (6, 6, 2) bg: (6, 6, 2)
+[manga-translator.Model48pxOCR] prob: 0.6302565336227417 JSHI fg: (242, 241, 242) bg: (242, 241, 242)
+[manga-translator.Model48pxOCR] prob: 0.8534761071205139 お昼… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.995652437210083 ねぇ… fg: (6, 7, 3) bg: (6, 7, 3)
+[manga-translator.Model48pxOCR] prob: 0.9989630579948425 って… fg: (1, 1, 0) bg: (1, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999150037765503 もうすぐ fg: (0, 1, 0) bg: (0, 1, 0)
+[manga-translator.Model48pxOCR] prob: 0.9963119029998779 えっと… fg: (4, 4, 0) bg: (4, 4, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976890087127686 お昼だから fg: (3, 5, 2) bg: (3, 5, 2)
+[manga-translator.Model48pxOCR] prob: 0.9999189376831055 しちゃってた fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9985042214393616 …美胡ちゃん fg: (2, 3, 0) bg: (2, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9999680519104004 ごめんごめん fg: (0, 1, 1) bg: (0, 1, 1)
+[manga-translator.Model48pxOCR] prob: 0.9950862526893616 なんだっけ？ fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.Model48pxOCR] prob: 0.9998608827590942 どうしようかな fg: (1, 3, 0) bg: (1, 3, 0)
+[manga-translator.Model48pxOCR] prob: 0.9976809024810791 ちょっとボーっと fg: (1, 2, 0) bg: (1, 2, 0)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload\output\parallel-run-3\page-010.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\qa_report.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\qa_report.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\run.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\run.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translation-report.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translation-report.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0000.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0000.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0001.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0001.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0002.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0002.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0003.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0003.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0004.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0004.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0005.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0005.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0006.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0006.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0007.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0007.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0008.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0008.json
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0009.json"
+[33mWARNING:[39m [manga-translator.local] Failed to open image: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\output\parallel-run-3\translations\page_0009.json
+[manga-translator.local] Done. Translated 89 images in 57.5 minutes
+[manga-translator.local] Results saved to: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-10-pages\.mga-payload"

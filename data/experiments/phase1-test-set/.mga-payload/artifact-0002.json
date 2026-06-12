@@ -1,0 +1,776 @@
+{
+  "version": 1,
+  "page_index": 2,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "32話",
+      "texts": [
+        "32",
+        "話"
+      ],
+      "lines": [
+        [
+          [
+            2622,
+            1877
+          ],
+          [
+            2706,
+            1877
+          ],
+          [
+            2706,
+            1950
+          ],
+          [
+            2622,
+            1950
+          ]
+        ],
+        [
+          [
+            2633,
+            1945
+          ],
+          [
+            2695,
+            1945
+          ],
+          [
+            2695,
+            2018
+          ],
+          [
+            2633,
+            2018
+          ]
+        ]
+      ],
+      "font_size": 62,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        190,
+        20,
+        44
+      ],
+      "bg_color": [
+        214,
+        112,
+        138
+      ],
+      "source_lang": "zh",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9992109475120989
+    },
+    {
+      "index": 1,
+      "text": "昔日の足音",
+      "texts": [
+        "昔日の足音"
+      ],
+      "lines": [
+        [
+          [
+            2622,
+            2161
+          ],
+          [
+            2706,
+            2161
+          ],
+          [
+            2706,
+            2677
+          ],
+          [
+            2622,
+            2677
+          ]
+        ]
+      ],
+      "font_size": 84,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        214,
+        13,
+        28
+      ],
+      "bg_color": [
+        214,
+        13,
+        28
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9998877384202381
+    },
+    {
+      "index": 2,
+      "text": "罪過",
+      "texts": [
+        "罪過"
+      ],
+      "lines": [
+        [
+          [
+            2383,
+            2159
+          ],
+          [
+            2476,
+            2159
+          ],
+          [
+            2476,
+            2422
+          ],
+          [
+            2383,
+            2422
+          ]
+        ]
+      ],
+      "font_size": 93,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        209,
+        16,
+        32
+      ],
+      "bg_color": [
+        209,
+        16,
+        32
+      ],
+      "source_lang": "zh",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9997685429085433
+    },
+    {
+      "index": 3,
+      "text": "幕間",
+      "texts": [
+        "幕間"
+      ],
+      "lines": [
+        [
+          [
+            2161,
+            1875
+          ],
+          [
+            2226,
+            1875
+          ],
+          [
+            2226,
+            2021
+          ],
+          [
+            2161,
+            2021
+          ]
+        ]
+      ],
+      "font_size": 65,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        204,
+        19,
+        50
+      ],
+      "bg_color": [
+        204,
+        19,
+        50
+      ],
+      "source_lang": "zh",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.999924874005715
+    },
+    {
+      "index": 4,
+      "text": "社美胡",
+      "texts": [
+        "社美胡"
+      ],
+      "lines": [
+        [
+          [
+            2151,
+            2159
+          ],
+          [
+            2245,
+            2159
+          ],
+          [
+            2245,
+            2484
+          ],
+          [
+            2151,
+            2484
+          ]
+        ]
+      ],
+      "font_size": 94,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        210,
+        15,
+        27
+      ],
+      "bg_color": [
+        210,
+        15,
+        27
+      ],
+      "source_lang": "zh",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9999924799358417
+    },
+    {
+      "index": 5,
+      "text": "34話",
+      "texts": [
+        "34",
+        "話"
+      ],
+      "lines": [
+        [
+          [
+            1916,
+            1877
+          ],
+          [
+            2010,
+            1877
+          ],
+          [
+            2010,
+            1945
+          ],
+          [
+            1916,
+            1945
+          ]
+        ],
+        [
+          [
+            1927,
+            1950
+          ],
+          [
+            1995,
+            1950
+          ],
+          [
+            1995,
+            2018
+          ],
+          [
+            1927,
+            2018
+          ]
+        ]
+      ],
+      "font_size": 68,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        204,
+        23,
+        57
+      ],
+      "bg_color": [
+        209,
+        70,
+        100
+      ],
+      "source_lang": "zh",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9998100606719672
+    },
+    {
+      "index": 6,
+      "text": "慚愧の轍",
+      "texts": [
+        "慚愧の轍"
+      ],
+      "lines": [
+        [
+          [
+            1919,
+            2164
+          ],
+          [
+            2002,
+            2164
+          ],
+          [
+            2002,
+            2573
+          ],
+          [
+            1919,
+            2573
+          ]
+        ]
+      ],
+      "font_size": 83,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        210,
+        19,
+        37
+      ],
+      "bg_color": [
+        210,
+        19,
+        37
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.999792580314117
+    },
+    {
+      "index": 7,
+      "text": "CONTENTS",
+      "texts": [
+        "CONTENTS"
+      ],
+      "lines": [
+        [
+          [
+            1591,
+            1580
+          ],
+          [
+            2112,
+            1580
+          ],
+          [
+            2112,
+            1648
+          ],
+          [
+            1591,
+            1648
+          ]
+        ]
+      ],
+      "font_size": 68,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        221,
+        15,
+        29
+      ],
+      "bg_color": [
+        221,
+        15,
+        29
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9992662993016792
+    },
+    {
+      "index": 8,
+      "text": "陽を縁取るもの",
+      "texts": [
+        "陽を縁取るもの"
+      ],
+      "lines": [
+        [
+          [
+            1685,
+            2164
+          ],
+          [
+            1768,
+            2164
+          ],
+          [
+            1768,
+            2872
+          ],
+          [
+            1685,
+            2872
+          ]
+        ]
+      ],
+      "font_size": 83,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        211,
+        15,
+        26
+      ],
+      "bg_color": [
+        211,
+        15,
+        26
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9999807461094158
+    },
+    {
+      "index": 9,
+      "text": "36話",
+      "texts": [
+        "36",
+        "話"
+      ],
+      "lines": [
+        [
+          [
+            1448,
+            1875
+          ],
+          [
+            1539,
+            1875
+          ],
+          [
+            1539,
+            1945
+          ],
+          [
+            1448,
+            1945
+          ]
+        ],
+        [
+          [
+            1461,
+            1950
+          ],
+          [
+            1526,
+            1950
+          ],
+          [
+            1526,
+            2018
+          ],
+          [
+            1461,
+            2018
+          ]
+        ]
+      ],
+      "font_size": 65,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        208,
+        28,
+        54
+      ],
+      "bg_color": [
+        208,
+        28,
+        54
+      ],
+      "source_lang": "zh",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.998534376451199
+    },
+    {
+      "index": 10,
+      "text": "変化",
+      "texts": [
+        "変化"
+      ],
+      "lines": [
+        [
+          [
+            1445,
+            2156
+          ],
+          [
+            1541,
+            2156
+          ],
+          [
+            1541,
+            2377
+          ],
+          [
+            1445,
+            2377
+          ]
+        ]
+      ],
+      "font_size": 96,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        212,
+        9,
+        24
+      ],
+      "bg_color": [
+        212,
+        9,
+        24
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9999628513514566
+    },
+    {
+      "index": 11,
+      "text": "番外編",
+      "texts": [
+        "番外編"
+      ],
+      "lines": [
+        [
+          [
+            1226,
+            1877
+          ],
+          [
+            1289,
+            1877
+          ],
+          [
+            1289,
+            2094
+          ],
+          [
+            1226,
+            2094
+          ]
+        ]
+      ],
+      "font_size": 63,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        210,
+        34,
+        66
+      ],
+      "bg_color": [
+        210,
+        34,
+        66
+      ],
+      "source_lang": "zh",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9999953202300713
+    },
+    {
+      "index": 12,
+      "text": "わたたべっ！ 2",
+      "texts": [
+        "わたたべっ！ 2"
+      ],
+      "lines": [
+        [
+          [
+            1216,
+            2166
+          ],
+          [
+            1299,
+            2166
+          ],
+          [
+            1299,
+            2901
+          ],
+          [
+            1216,
+            2901
+          ]
+        ]
+      ],
+      "font_size": 83,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        215,
+        14,
+        25
+      ],
+      "bg_color": [
+        214,
+        15,
+        26
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9045399735483554
+    },
+    {
+      "index": 13,
+      "text": "あとがき 174",
+      "texts": [
+        "あとがき 174"
+      ],
+      "lines": [
+        [
+          [
+            1002,
+            2159
+          ],
+          [
+            1070,
+            2159
+          ],
+          [
+            1070,
+            2703
+          ],
+          [
+            1002,
+            2703
+          ]
+        ]
+      ],
+      "font_size": 68,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        215,
+        19,
+        42
+      ],
+      "bg_color": [
+        216,
+        20,
+        43
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.970956167171575
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    5334,
+    3750,
+    3
+  ]
+}

@@ -1,0 +1,621 @@
+{
+  "version": 1,
+  "page_index": 8,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "あーごめんごめん",
+      "texts": [
+        "あー",
+        "ごめんごめん"
+      ],
+      "lines": [
+        [
+          [
+            3185,
+            187
+          ],
+          [
+            3285,
+            187
+          ],
+          [
+            3285,
+            377
+          ],
+          [
+            3185,
+            377
+          ]
+        ],
+        [
+          [
+            3083,
+            191
+          ],
+          [
+            3179,
+            191
+          ],
+          [
+            3175,
+            695
+          ],
+          [
+            3079,
+            695
+          ]
+        ]
+      ],
+      "font_size": 96,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        0,
+        2,
+        0
+      ],
+      "bg_color": [
+        0,
+        2,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9992799903529581
+    },
+    {
+      "index": 1,
+      "text": "ちょっとボーっとしちゃってた",
+      "texts": [
+        "ちょっとボーっと",
+        "しちゃってた"
+      ],
+      "lines": [
+        [
+          [
+            3029,
+            764
+          ],
+          [
+            3129,
+            764
+          ],
+          [
+            3129,
+            1425
+          ],
+          [
+            3029,
+            1425
+          ]
+        ],
+        [
+          [
+            2925,
+            766
+          ],
+          [
+            3021,
+            766
+          ],
+          [
+            3017,
+            1266
+          ],
+          [
+            2921,
+            1266
+          ]
+        ]
+      ],
+      "font_size": 96,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        1,
+        2,
+        0
+      ],
+      "bg_color": [
+        1,
+        2,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9997397484795182
+    },
+    {
+      "index": 2,
+      "text": "えっと…なんだっけ？",
+      "texts": [
+        "えっと…",
+        "なんだっけ？"
+      ],
+      "lines": [
+        [
+          [
+            2391,
+            1775
+          ],
+          [
+            2487,
+            1775
+          ],
+          [
+            2487,
+            2123
+          ],
+          [
+            2391,
+            2123
+          ]
+        ],
+        [
+          [
+            2287,
+            1781
+          ],
+          [
+            2377,
+            1781
+          ],
+          [
+            2377,
+            2279
+          ],
+          [
+            2287,
+            2279
+          ]
+        ]
+      ],
+      "font_size": 90,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        2,
+        3,
+        0
+      ],
+      "bg_color": [
+        2,
+        3,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9994308069291628
+    },
+    {
+      "index": 3,
+      "text": "JSHI",
+      "texts": [
+        "JSHI"
+      ],
+      "lines": [
+        [
+          [
+            2652,
+            2131
+          ],
+          [
+            2862,
+            2112
+          ],
+          [
+            2873,
+            2216
+          ],
+          [
+            2662,
+            2235
+          ]
+        ]
+      ],
+      "font_size": 104,
+      "angle": -5.492324659536294,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        242,
+        241,
+        242
+      ],
+      "bg_color": [
+        242,
+        241,
+        242
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9832732644655844
+    },
+    {
+      "index": 4,
+      "text": "うん",
+      "texts": [
+        "うん"
+      ],
+      "lines": [
+        [
+          [
+            1687,
+            566
+          ],
+          [
+            1787,
+            566
+          ],
+          [
+            1787,
+            756
+          ],
+          [
+            1687,
+            756
+          ]
+        ]
+      ],
+      "font_size": 100,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        5,
+        4,
+        2
+      ],
+      "bg_color": [
+        5,
+        4,
+        2
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9999601512339727
+    },
+    {
+      "index": 5,
+      "text": "もうすぐお昼だからどうしようかなって…",
+      "texts": [
+        "もうすぐ",
+        "お昼だから",
+        "どうしようかな",
+        "って…"
+      ],
+      "lines": [
+        [
+          [
+            889,
+            1721
+          ],
+          [
+            991,
+            1716
+          ],
+          [
+            1006,
+            2069
+          ],
+          [
+            904,
+            2073
+          ]
+        ],
+        [
+          [
+            773,
+            1725
+          ],
+          [
+            868,
+            1725
+          ],
+          [
+            868,
+            2150
+          ],
+          [
+            773,
+            2150
+          ]
+        ],
+        [
+          [
+            670,
+            1721
+          ],
+          [
+            760,
+            1721
+          ],
+          [
+            756,
+            2310
+          ],
+          [
+            666,
+            2310
+          ]
+        ],
+        [
+          [
+            562,
+            1727
+          ],
+          [
+            654,
+            1727
+          ],
+          [
+            654,
+            1983
+          ],
+          [
+            562,
+            1983
+          ]
+        ]
+      ],
+      "font_size": 90,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        1,
+        2,
+        0
+      ],
+      "bg_color": [
+        1,
+        2,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9997878297601328
+    },
+    {
+      "index": 6,
+      "text": "あーうん",
+      "texts": [
+        "あー",
+        "うん"
+      ],
+      "lines": [
+        [
+          [
+            3119,
+            2742
+          ],
+          [
+            3219,
+            2742
+          ],
+          [
+            3219,
+            2933
+          ],
+          [
+            3119,
+            2933
+          ]
+        ],
+        [
+          [
+            3004,
+            2742
+          ],
+          [
+            3112,
+            2735
+          ],
+          [
+            3123,
+            2933
+          ],
+          [
+            3014,
+            2939
+          ]
+        ]
+      ],
+      "font_size": 100,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        4,
+        4,
+        1
+      ],
+      "bg_color": [
+        4,
+        4,
+        1
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.998866311353468
+    },
+    {
+      "index": 7,
+      "text": "お昼…ねぇ…",
+      "texts": [
+        "お昼…",
+        "ねぇ…"
+      ],
+      "lines": [
+        [
+          [
+            2729,
+            2942
+          ],
+          [
+            2833,
+            2942
+          ],
+          [
+            2833,
+            3217
+          ],
+          [
+            2729,
+            3217
+          ]
+        ],
+        [
+          [
+            2621,
+            2937
+          ],
+          [
+            2725,
+            2933
+          ],
+          [
+            2735,
+            3212
+          ],
+          [
+            2631,
+            3217
+          ]
+        ]
+      ],
+      "font_size": 104,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        6,
+        7,
+        3
+      ],
+      "bg_color": [
+        6,
+        7,
+        3
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.992324721204686
+    },
+    {
+      "index": 8,
+      "text": "…美胡ちゃん",
+      "texts": [
+        "…美胡ちゃん"
+      ],
+      "lines": [
+        [
+          [
+            1218,
+            4256
+          ],
+          [
+            1318,
+            4256
+          ],
+          [
+            1323,
+            4781
+          ],
+          [
+            1223,
+            4781
+          ]
+        ]
+      ],
+      "font_size": 100,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        2,
+        3,
+        0
+      ],
+      "bg_color": [
+        2,
+        3,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9998700205663735
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    5334,
+    3750,
+    3
+  ]
+}

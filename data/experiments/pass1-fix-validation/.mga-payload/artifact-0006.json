@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "page_index": 6,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "(32話)",
+      "texts": [
+        "(32話)"
+      ],
+      "lines": [
+        [
+          [
+            2960,
+            520
+          ],
+          [
+            3304,
+            531
+          ],
+          [
+            3298,
+            737
+          ],
+          [
+            2954,
+            727
+          ]
+        ]
+      ],
+      "font_size": 207,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        251,
+        247,
+        242
+      ],
+      "bg_color": [
+        251,
+        247,
+        242
+      ],
+      "source_lang": "zh",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.8607913439997288
+    },
+    {
+      "index": 1,
+      "text": "昔日の足音",
+      "texts": [
+        "昔日の足音"
+      ],
+      "lines": [
+        [
+          [
+            3052,
+            927
+          ],
+          [
+            3219,
+            927
+          ],
+          [
+            3219,
+            1791
+          ],
+          [
+            3052,
+            1791
+          ]
+        ]
+      ],
+      "font_size": 167,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        0,
+        1,
+        0
+      ],
+      "bg_color": [
+        0,
+        1,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9992121233808732
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    5334,
+    3750,
+    3
+  ]
+}

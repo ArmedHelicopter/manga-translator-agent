@@ -1,0 +1,314 @@
+{
+  "version": 1,
+  "page_index": 4,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "こんなあたしを見てなお",
+      "texts": [
+        "こんなあたしを",
+        "見てなお"
+      ],
+      "lines": [
+        [
+          [
+            3292,
+            512
+          ],
+          [
+            3387,
+            512
+          ],
+          [
+            3390,
+            1110
+          ],
+          [
+            3294,
+            1110
+          ]
+        ],
+        [
+          [
+            3164,
+            510
+          ],
+          [
+            3269,
+            510
+          ],
+          [
+            3264,
+            868
+          ],
+          [
+            3160,
+            868
+          ]
+        ]
+      ],
+      "font_size": 95,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        2,
+        2,
+        0
+      ],
+      "bg_color": [
+        2,
+        2,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9999778136398839
+    },
+    {
+      "index": 1,
+      "text": "お前は人間の側に居続けるつもりかい？",
+      "texts": [
+        "お前は人間の側に",
+        "居続ける",
+        "つもりかい？"
+      ],
+      "lines": [
+        [
+          [
+            2894,
+            1081
+          ],
+          [
+            3000,
+            1081
+          ],
+          [
+            3000,
+            1771
+          ],
+          [
+            2894,
+            1771
+          ]
+        ],
+        [
+          [
+            2767,
+            1081
+          ],
+          [
+            2875,
+            1081
+          ],
+          [
+            2875,
+            1443
+          ],
+          [
+            2767,
+            1443
+          ]
+        ],
+        [
+          [
+            2660,
+            1089
+          ],
+          [
+            2756,
+            1089
+          ],
+          [
+            2756,
+            1598
+          ],
+          [
+            2660,
+            1598
+          ]
+        ]
+      ],
+      "font_size": 96,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        1,
+        2,
+        0
+      ],
+      "bg_color": [
+        1,
+        2,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9995401070230223
+    },
+    {
+      "index": 2,
+      "text": "…あたしはお前とは違う",
+      "texts": [
+        "…あたしは",
+        "お前とは違う"
+      ],
+      "lines": [
+        [
+          [
+            2371,
+            3617
+          ],
+          [
+            2489,
+            3617
+          ],
+          [
+            2494,
+            4142
+          ],
+          [
+            2375,
+            4142
+          ]
+        ],
+        [
+          [
+            2216,
+            3625
+          ],
+          [
+            2335,
+            3625
+          ],
+          [
+            2335,
+            4238
+          ],
+          [
+            2216,
+            4238
+          ]
+        ]
+      ],
+      "font_size": 118,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        2,
+        3,
+        0
+      ],
+      "bg_color": [
+        2,
+        3,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9995329378179985
+    },
+    {
+      "index": 3,
+      "text": "いいや違わんさ",
+      "texts": [
+        "いいや",
+        "違わんさ"
+      ],
+      "lines": [
+        [
+          [
+            993,
+            4308
+          ],
+          [
+            1135,
+            4304
+          ],
+          [
+            1145,
+            4650
+          ],
+          [
+            1004,
+            4654
+          ]
+        ],
+        [
+          [
+            835,
+            4302
+          ],
+          [
+            968,
+            4302
+          ],
+          [
+            973,
+            4767
+          ],
+          [
+            839,
+            4767
+          ]
+        ]
+      ],
+      "font_size": 133,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        2,
+        4,
+        0
+      ],
+      "bg_color": [
+        2,
+        4,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9999616862126773
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    5334,
+    3750,
+    3
+  ]
+}

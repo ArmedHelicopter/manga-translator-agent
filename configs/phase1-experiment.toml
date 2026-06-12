@@ -1,0 +1,21 @@
+# Phase 1 实验配置
+# Semantic 并行翻译测试
+
+[translation]
+# 并行模式: "serial" | "semantic-parallel"
+parallel_mode = "serial"  # 通过命令行 --parallel 覆盖
+
+# 并发控制
+max_concurrent_requests = 5
+semantic_timeout = 60
+persona_timeout = 60
+
+[llm]
+primary_provider = "openai"
+primary_model = "gpt-4o-mini"
+fallback_provider = "openai"
+fallback_model = "gpt-4o-mini"
+
+[project]
+working_dir = "."
+target_lang = "Chinese"

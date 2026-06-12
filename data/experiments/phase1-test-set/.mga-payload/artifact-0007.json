@@ -1,0 +1,169 @@
+{
+  "version": 1,
+  "page_index": 7,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "美胡ちゃん",
+      "texts": [
+        "美胡ちゃん"
+      ],
+      "lines": [
+        [
+          [
+            2958,
+            424
+          ],
+          [
+            3081,
+            424
+          ],
+          [
+            3081,
+            974
+          ],
+          [
+            2958,
+            974
+          ]
+        ]
+      ],
+      "font_size": 123,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        3,
+        4,
+        0
+      ],
+      "bg_color": [
+        3,
+        4,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9999483441621768
+    },
+    {
+      "index": 1,
+      "text": "美胡ちゃん",
+      "texts": [
+        "美胡ちゃん"
+      ],
+      "lines": [
+        [
+          [
+            2206,
+            3909
+          ],
+          [
+            2359,
+            3909
+          ],
+          [
+            2359,
+            4586
+          ],
+          [
+            2206,
+            4586
+          ]
+        ]
+      ],
+      "font_size": 153,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        2,
+        4,
+        0
+      ],
+      "bg_color": [
+        2,
+        4,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9999488089494334
+    },
+    {
+      "index": 2,
+      "text": "へっ？",
+      "texts": [
+        "へっ？"
+      ],
+      "lines": [
+        [
+          [
+            375,
+            3180
+          ],
+          [
+            523,
+            3177
+          ],
+          [
+            528,
+            3596
+          ],
+          [
+            380,
+            3599
+          ]
+        ]
+      ],
+      "font_size": 148,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        1,
+        4,
+        1
+      ],
+      "bg_color": [
+        1,
+        4,
+        1
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9917864206855106
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    5334,
+    3750,
+    3
+  ]
+}

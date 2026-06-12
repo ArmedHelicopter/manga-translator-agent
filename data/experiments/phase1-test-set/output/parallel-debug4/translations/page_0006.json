@@ -1,0 +1,36 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0006-0000",
+      "reading_order": 0,
+      "source_text": "【32話】",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0006-0001",
+      "reading_order": 1,
+      "source_text": "昔日の足音",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0006",
+  "page_index": 6,
+  "translations": [
+    {
+      "bubble_id": "region-0006-0000",
+      "confidence": 0.0,
+      "footnotes": [],
+      "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0006-0000': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "text": "【32話】"
+    },
+    {
+      "bubble_id": "region-0006-0001",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "在完全保留'昔日'与'足音'的前提下，通过添加'仿佛还能听见'和省略号，将直白的标题转化为更具沉浸感的内心独白，增强怀旧情绪。'嗒、嗒'的拟声暗示未显性写出，但通过语气和节奏暗示了脚步声的具象感，符合漫画气泡的口语化与留白美学。",
+      "text": "昔日的脚步声……仿佛还能听见。"
+    }
+  ]
+}

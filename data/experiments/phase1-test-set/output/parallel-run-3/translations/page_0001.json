@@ -1,0 +1,28 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0001-0000",
+      "reading_order": 0,
+      "source_text": "CoverDesign：SALIDAS",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0001",
+  "page_index": 1,
+  "translations": [
+    {
+      "bubble_id": "region-0001-0000",
+      "confidence": 0.95,
+      "footnotes": [
+        {
+          "original": "SALIDAS",
+          "translation": "萨利达斯",
+          "type": "loanword"
+        }
+      ],
+      "rationale": "此为设计署名，需保持简洁、正式与准确性，仅作语气适配而未改动核心信息与结构。",
+      "text": "封面设计：萨利达斯"
+    }
+  ]
+}

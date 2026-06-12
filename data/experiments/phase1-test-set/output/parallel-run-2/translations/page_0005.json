@@ -1,0 +1,50 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0005-0000",
+      "reading_order": 0,
+      "source_text": "悲しいかな",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "reading_order": 1,
+      "source_text": "お前の行く末も",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "reading_order": 2,
+      "source_text": "きっとあたしと同じだよ――…",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0005",
+  "page_index": 5,
+  "translations": [
+    {
+      "bubble_id": "region-0005-0000",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "通过添加省略号来延长语气，强化悲伤情感，符合漫画对话的简洁表现力，同时保留原始语义。",
+      "text": "可悲啊……"
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "confidence": 0.88,
+      "footnotes": [],
+      "rationale": "添加“嘛”将直译转为口语化表达，暗示轻微感慨或提醒；“也”后加省略号模拟话语未尽或拖音效果，符合漫画对话的含蓄语感。",
+      "text": "你的前途嘛……也"
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "confidence": 0.97,
+      "footnotes": [],
+      "rationale": "将'肯定'改为更口语化、略带犹豫感的'一定'，添加'的'字使'一样'后更符合中文口语句式，整体语气更贴近内心独白式的温柔推测。保留破折号与省略号，传达未尽之意与淡淡哀愁。",
+      "text": "一定和我是一样的吧——…"
+    }
+  ]
+}

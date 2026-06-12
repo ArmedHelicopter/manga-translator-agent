@@ -1,0 +1,36 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0003-0000",
+      "reading_order": 0,
+      "source_text": "これが人を愛し 慈しみ信じた者の末路さ",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "reading_order": 1,
+      "source_text": "化け狐",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0003",
+  "page_index": 3,
+  "translations": [
+    {
+      "bubble_id": "region-0003-0000",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "在保持原意（爱、怜悯、信任的行为与末路）的基础上，通过增补句末语气词‘呵’模仿日语终助词‘さ’的无奈感叹感；使用破折号与断句节奏还原原文中间的停顿与沉重语气，增强角色反思时的沧桑与宿命感。",
+      "text": "爱过、怜悯并信任过——这就是末路呵。"
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "confidence": 0.0,
+      "footnotes": [],
+      "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0003-0001': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "text": "化け狐"
+    }
+  ]
+}

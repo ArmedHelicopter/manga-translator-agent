@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "target_lang": "CHS",
+  "translations": [
+    {
+      "region_index": 0,
+      "translation": "封面设计：萨利达斯",
+      "target_lang": "CHS"
+    }
+  ],
+  "footnotes": [
+    {
+      "original": "SALIDAS",
+      "translation": "萨利达斯",
+      "type": "loanword"
+    }
+  ]
+}

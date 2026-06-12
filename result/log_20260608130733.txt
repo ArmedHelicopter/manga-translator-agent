@@ -1,0 +1,29 @@
+[manga-translator.local] Log file created: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\log_20260608130733.txt
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\test-1-page-003\page-003.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9998557567596436 变化 fg: (25, 9, 213) bg: (25, 9, 213)
+[manga-translator.Model48pxOCR] prob: 0.998499870300293 32話 fg: (40, 21, 188) bg: (140, 112, 215)
+[manga-translator.Model48pxOCR] prob: 0.9996305704116821 罪过 fg: (37, 18, 213) bg: (37, 18, 213)
+[manga-translator.Model48pxOCR] prob: 0.998839795589447 34話 fg: (57, 17, 201) bg: (57, 17, 201)
+[manga-translator.Model48pxOCR] prob: 0.9994297027587891 36話 fg: (57, 24, 214) bg: (57, 24, 214)
+[manga-translator.Model48pxOCR] prob: 0.9998438358306885 幕間 fg: (54, 15, 205) bg: (54, 15, 205)
+[manga-translator.Model48pxOCR] prob: 0.9999489784240723 社美胡 fg: (32, 15, 211) bg: (32, 15, 211)
+[manga-translator.Model48pxOCR] prob: 0.9999793767929077 番外篇 fg: (69, 34, 212) bg: (69, 34, 212)
+[manga-translator.Model48pxOCR] prob: 0.9995805025100708 惭愧的辙迹 fg: (41, 16, 209) bg: (41, 16, 209)
+[manga-translator.Model48pxOCR] prob: 0.9991933703422546 昔日の足音 fg: (28, 13, 215) bg: (28, 13, 215)
+[manga-translator.Model48pxOCR] prob: 0.9998588562011719 CONTENTS fg: (28, 15, 221) bg: (28, 15, 221)
+[manga-translator.Model48pxOCR] prob: 0.6380738019943237 わたたべっ！2 fg: (25, 13, 214) bg: (25, 13, 214)
+[manga-translator.Model48pxOCR] prob: 0.9998980760574341 陽を縁取るもの fg: (26, 13, 212) bg: (26, 13, 212)
+[manga-translator.Model48pxOCR] prob: 0.47695621848106384 あとがき １７４ fg: (40, 16, 214) bg: (40, 16, 214)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1440x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-1-page-003\.mga-payload\page-003.png"
+[manga-translator.local] Done. Translated 1 image in 19.4 seconds
+[manga-translator.local] Results saved to: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-1-page-003\.mga-payload"

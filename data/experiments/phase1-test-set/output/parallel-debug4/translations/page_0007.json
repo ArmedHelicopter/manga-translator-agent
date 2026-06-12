@@ -1,0 +1,50 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0007-0000",
+      "reading_order": 0,
+      "source_text": "美胡ちゃん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "reading_order": 1,
+      "source_text": "美胡ちゃん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0007-0002",
+      "reading_order": 2,
+      "source_text": "へっ？",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0007",
+  "page_index": 7,
+  "translations": [
+    {
+      "bubble_id": "region-0007-0000",
+      "confidence": 0.0,
+      "footnotes": [],
+      "rationale": "provider failure; human translation required: Semantic translation provider failed for bubble 'region-0007-0000': No provider available for stage 'translation'. Tried: ['mimo']",
+      "text": "美胡ちゃん"
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "保留原音译名'美胡酱'以严格遵守must_preserve要求，同时通过叙述语气体现affectionate情感，未改变事实或指代。",
+      "text": "美胡酱"
+    },
+    {
+      "bubble_id": "region-0007-0002",
+      "confidence": 0.98,
+      "footnotes": [],
+      "rationale": "将平实的“啥？”升级为“啥？！”，通过追加惊叹号与口语化上扬语气，强化了场景中的突兀感与角色瞬间的错愕情绪，更符合漫画对话的夸张表现需求，同时未改变核心疑问义。",
+      "text": "啥？！"
+    }
+  ]
+}

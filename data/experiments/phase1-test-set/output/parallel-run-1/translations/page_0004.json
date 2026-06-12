@@ -1,0 +1,64 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0004-0000",
+      "reading_order": 0,
+      "source_text": "こんなあたしを見てなお",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "reading_order": 1,
+      "source_text": "お前は人間の側に居続けるつもりかい？",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "reading_order": 2,
+      "source_text": "…あたしはお前とは違う",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "reading_order": 3,
+      "source_text": "いいや違わんさ",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0004",
+  "page_index": 4,
+  "translations": [
+    {
+      "bubble_id": "region-0004-0000",
+      "confidence": 0.0,
+      "footnotes": [],
+      "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0004-0000': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "text": "こんなあたしを見てなお"
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "在语义翻译基础上添加'还'以强化好奇情绪和持续性疑问，保持直接口语化疑问句式，适合漫画嵌字风格，未改变事实或must_preserve内容。",
+      "text": "你还打算继续待在人类这边吗？"
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "将直译调整为更口语化、强势的漫画对白，增强对抗语气并适合嵌字，同时保持原意和指代。",
+      "text": "…我跟你，就是不同！"
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "confidence": 0.85,
+      "footnotes": [],
+      "rationale": "基于语义翻译的'才不是呢'，保留了源文本的口语化否定风格，符合'casual denial'的emotion；通过'呢'字增强随意口吻，适合漫画对话直接嵌字，未改变事实或逻辑。",
+      "text": "才不是呢"
+    }
+  ]
+}

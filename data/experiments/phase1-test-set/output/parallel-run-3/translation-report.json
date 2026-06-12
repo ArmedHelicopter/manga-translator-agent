@@ -1,0 +1,2678 @@
+{
+  "entries": [
+    {
+      "bubble_id": "region-0000-0000",
+      "confidence": 0.0,
+      "cultural_strategy": "preserve",
+      "needs_human_review": true,
+      "page_id": "page_0000",
+      "persona_moves": [
+        "provider_failure",
+        "human_translation_required"
+      ],
+      "persona_rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0000-0000': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "provider_cascade_errors": [
+        {
+          "bubble_id": "region-0000-0000",
+          "error": "Request timed out.",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary",
+          "type": "APITimeoutError"
+        }
+      ],
+      "provider_trace": {
+        "persona": {
+          "error": "Persona rendering provider failed for bubble 'region-0000-0000': No provider available for stage 'translation'. Tried: ['mimo']",
+          "operation": "persona_render",
+          "provider": "unavailable",
+          "type": "StageExecutionError"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [],
+      "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0000-0000': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "repair_plan": [],
+      "semantic_rationale": "原文为日文出版物名称，属于专有名词。按照规则采用'保留原文并提供注释'的策略，音译'電撃'为'电击'，并保留英文'Comics NEXT'作为组成部分。翻译旨在准确传达原文指代的出版品牌信息。",
+      "semantic_text": "电击Comics NEXT",
+      "source_text": "電撃コミックスNEXT",
+      "speaker_id": null,
+      "translated_text": "電撃コミックスNEXT"
+    },
+    {
+      "bubble_id": "region-0001-0000",
+      "confidence": 0.95,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0001",
+      "persona_moves": [
+        "保留正式叙事语气",
+        "维持原格式与专有名词"
+      ],
+      "persona_rationale": "此为设计署名，需保持简洁、正式与准确性，仅作语气适配而未改动核心信息与结构。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0001-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '封面设计' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0001-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '萨利达斯' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "此为设计署名，需保持简洁、正式与准确性，仅作语气适配而未改动核心信息与结构。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0001-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '封面设计' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0001-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '萨利达斯' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "将英语词组'CoverDesign'意译为'封面设计'。将署名'SALIDAS'音译为'萨利达斯'，并作为专有名词保留。将英文冒号保留为中文冒号。",
+      "semantic_text": "封面设计：萨利达斯",
+      "source_text": "CoverDesign：SALIDAS",
+      "speaker_id": null,
+      "translated_text": "封面设计：萨利达斯"
+    },
+    {
+      "bubble_id": "region-0002-0000",
+      "confidence": 0.9,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [
+        "cautious tone",
+        "added sentence-ending particle '啊'"
+      ],
+      "persona_rationale": "为强化谨慎情感，在保留原意和专名的基础上，添加句尾词'啊'以增强口语化和节奏感，适合漫画嵌字。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0002-0000",
+          "category": "fact.number_missing",
+          "confidence": 0.9,
+          "feedback_type": "error",
+          "message": "Number '32' from source not found in translation",
+          "original_text": "32話",
+          "rationale": "Numeric values must be preserved exactly",
+          "suggested_text": "米卡：出现了……是米拉啊。"
+        },
+        {
+          "bubble_id": "region-0002-0000",
+          "category": "fact.possible_addition",
+          "confidence": 0.6,
+          "feedback_type": "warning",
+          "message": "Translation is much longer than source -- possible addition",
+          "original_text": "32話",
+          "rationale": "Extreme length increase may indicate hallucinated content",
+          "suggested_text": "米卡：出现了……是米拉啊。"
+        },
+        {
+          "bubble_id": "region-0002-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '米卡' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0002-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '出现了' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0002-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '是米拉啊' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0002-0000",
+          "category": "hallucination.numbers_lost",
+          "confidence": 0.5,
+          "feedback_type": "warning",
+          "message": "Source contains numbers but translation has none",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0002-0000",
+          "category": "style.overflow_risk",
+          "confidence": 0.6,
+          "feedback_type": "suggestion",
+          "message": "Text may overflow bubble -- high character density detected",
+          "original_text": "32話",
+          "rationale": "Translation text density may not fit in the bubble",
+          "suggested_text": "米卡：出现了……是米拉啊。"
+        }
+      ],
+      "rationale": "QA re-translated: Number '32' from source not found in translation; Translation is much longer than source -- possible addition; Name '米卡' in translation not found in source or known profiles; Name '出现了' in translation not found in source or known profiles; Name '是米拉啊' in translation not found in source or known profiles; Source contains numbers but translation has none; Text may overflow bubble -- high character density detected",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0000",
+          "category": "fact.number_missing",
+          "confidence": 0.9,
+          "feedback_type": "error",
+          "message": "Number '32' from source not found in translation",
+          "original_text": "32話",
+          "rationale": "Numeric values must be preserved exactly",
+          "suggested_text": "米卡：出现了……是米拉啊。",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0000",
+          "category": "fact.possible_addition",
+          "confidence": 0.6,
+          "feedback_type": "warning",
+          "message": "Translation is much longer than source -- possible addition",
+          "original_text": "32話",
+          "rationale": "Extreme length increase may indicate hallucinated content",
+          "suggested_text": "米卡：出现了……是米拉啊。",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '米卡' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '出现了' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '是米拉啊' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0000",
+          "category": "hallucination.numbers_lost",
+          "confidence": 0.5,
+          "feedback_type": "warning",
+          "message": "Source contains numbers but translation has none",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_layout_fit",
+          "bubble_id": "region-0002-0000",
+          "category": "style.overflow_risk",
+          "confidence": 0.6,
+          "feedback_type": "suggestion",
+          "message": "Text may overflow bubble -- high character density detected",
+          "original_text": "32話",
+          "rationale": "Translation text density may not fit in the bubble",
+          "suggested_text": "米卡：出现了……是米拉啊。",
+          "target": "layout"
+        }
+      ],
+      "semantic_rationale": "将角色名「ミカ」和「ミラ」音译为中文常见译名「米卡」和「米拉」。将拟声词「ザワザワ」译为「嘈杂声」并添加脚注。整体采用直译保持原意，符合语义层翻译要求。",
+      "semantic_text": "米卡：出现了……是米拉。",
+      "source_text": "32話",
+      "speaker_id": null,
+      "translated_text": "第32话"
+    },
+    {
+      "bubble_id": "region-0002-0001",
+      "confidence": 0.0,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [
+        "provider_failure",
+        "human_translation_required"
+      ],
+      "persona_rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0002-0001': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "provider_cascade_errors": [
+        {
+          "bubble_id": "region-0002-0001",
+          "error": "Request timed out.",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary",
+          "type": "APITimeoutError"
+        }
+      ],
+      "provider_trace": {
+        "persona": {
+          "error": "Persona rendering provider failed for bubble 'region-0002-0001': No provider available for stage 'translation'. Tried: ['mimo']",
+          "operation": "persona_render",
+          "provider": "unavailable",
+          "type": "StageExecutionError"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [],
+      "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0002-0001': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "repair_plan": [],
+      "semantic_rationale": "采用'昔日'对应'昔日'，'足音'对应'足音'，构成四字短语。省略'の'的连词，使用中文简洁的偏正结构。翻译保留了原句的文学性和回忆基调。",
+      "semantic_text": "昔日足音",
+      "source_text": "昔日の足音",
+      "speaker_id": null,
+      "translated_text": "昔日の足音"
+    },
+    {
+      "bubble_id": "region-0002-0002",
+      "confidence": 0.9,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [
+        "句尾添加语气词",
+        "强化悔恨情绪"
+      ],
+      "persona_rationale": "在语义翻译'罪过'基础上，通过添加句尾语气词'啊'来增强悔恨、自责的情感表达，使其更符合漫画对白的语气调整规则，同时不改变核心语义，适合直接嵌字使用。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0002-0002",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '罪过啊' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "在语义翻译'罪过'基础上，通过添加句尾语气词'啊'来增强悔恨、自责的情感表达，使其更符合漫画对白的语气调整规则，同时不改变核心语义，适合直接嵌字使用。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0002",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '罪过啊' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "将日文汉字词'罪過'直接对应翻译为中文'罪过'，保持语义对等，不添加任何推测或表演性内容。",
+      "semantic_text": "罪过",
+      "source_text": "罪過",
+      "speaker_id": null,
+      "translated_text": "罪过啊"
+    },
+    {
+      "bubble_id": "region-0002-0003",
+      "confidence": 0.9,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [
+        "增加句末语气词"
+      ],
+      "persona_rationale": "在保持‘幕间’核心语义的前提下，添加句末语气词‘啦’，使其在漫画气泡中更自然、更口语化，增强场景的过渡感与口语节奏。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0002-0003",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '幕间啦' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "在保持‘幕间’核心语义的前提下，添加句末语气词‘啦’，使其在漫画气泡中更自然、更口语化，增强场景的过渡感与口语节奏。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0003",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '幕间啦' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "原文“幕間”指表演或戏剧中的中场休息、间隔时间。中文“幕间”是标准且字面对应的翻译，既保留了原词的表意结构（幕 + 间），也符合中文在描述戏剧、电影、表演场次间的习惯用法。这是一个直接且无歧义的语义转换。",
+      "semantic_text": "幕间",
+      "source_text": "幕間",
+      "speaker_id": null,
+      "translated_text": "幕间啦"
+    },
+    {
+      "bubble_id": "region-0002-0004",
+      "confidence": 0.0,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [
+        "provider_failure",
+        "human_translation_required"
+      ],
+      "persona_rationale": "provider failure; human translation required: Semantic translation provider failed for bubble 'region-0002-0004': No provider available for stage 'translation'. Tried: ['mimo']",
+      "provider_cascade_errors": [
+        {
+          "bubble_id": "region-0002-0004",
+          "error": "Request timed out.",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary",
+          "type": "APITimeoutError"
+        }
+      ],
+      "provider_trace": {
+        "persona": {},
+        "semantic": {
+          "error": "Semantic translation provider failed for bubble 'region-0002-0004': No provider available for stage 'translation'. Tried: ['mimo']",
+          "operation": "semantic_translation",
+          "provider": "unavailable",
+          "type": "StageExecutionError"
+        }
+      },
+      "qa_findings": [],
+      "rationale": "provider failure; human translation required: Semantic translation provider failed for bubble 'region-0002-0004': No provider available for stage 'translation'. Tried: ['mimo']",
+      "repair_plan": [],
+      "semantic_rationale": "provider failure; human translation required: Semantic translation provider failed for bubble 'region-0002-0004': No provider available for stage 'translation'. Tried: ['mimo']",
+      "semantic_text": "社美胡",
+      "source_text": "社美胡",
+      "speaker_id": null,
+      "translated_text": "社美胡"
+    },
+    {
+      "bubble_id": "region-0002-0005",
+      "confidence": 1.0,
+      "cultural_strategy": null,
+      "needs_human_review": false,
+      "page_id": "page_0002",
+      "persona_moves": [],
+      "persona_rationale": "章节编号和格式的直译，符合中文漫画标题惯例，无需语气调整。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [],
+      "rationale": "章节编号和格式的直译，符合中文漫画标题惯例，无需语气调整。",
+      "repair_plan": [],
+      "semantic_rationale": "直接将章节编号'34'和表示章节的日文汉字'話'翻译为对应的中文'话'，采用中文漫画常见的'第X话'格式。",
+      "semantic_text": "第34话",
+      "source_text": "34話",
+      "speaker_id": null,
+      "translated_text": "第34话"
+    },
+    {
+      "bubble_id": "region-0002-0006",
+      "confidence": 0.0,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [
+        "provider_failure",
+        "human_translation_required"
+      ],
+      "persona_rationale": "provider failure; human translation required: Semantic translation provider failed for bubble 'region-0002-0006': No provider available for stage 'translation'. Tried: ['mimo']",
+      "provider_cascade_errors": [
+        {
+          "bubble_id": "region-0002-0006",
+          "error": "Request timed out.",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary",
+          "type": "APITimeoutError"
+        }
+      ],
+      "provider_trace": {
+        "persona": {},
+        "semantic": {
+          "error": "Semantic translation provider failed for bubble 'region-0002-0006': No provider available for stage 'translation'. Tried: ['mimo']",
+          "operation": "semantic_translation",
+          "provider": "unavailable",
+          "type": "StageExecutionError"
+        }
+      },
+      "qa_findings": [],
+      "rationale": "provider failure; human translation required: Semantic translation provider failed for bubble 'region-0002-0006': No provider available for stage 'translation'. Tried: ['mimo']",
+      "repair_plan": [],
+      "semantic_rationale": "provider failure; human translation required: Semantic translation provider failed for bubble 'region-0002-0006': No provider available for stage 'translation'. Tried: ['mimo']",
+      "semantic_text": "慚愧の轍",
+      "source_text": "慚愧の轍",
+      "speaker_id": null,
+      "translated_text": "慚愧の轍"
+    },
+    {
+      "bubble_id": "region-0002-0007",
+      "confidence": 0.98,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [
+        "保持术语准确性"
+      ],
+      "persona_rationale": "原文为中性术语'CONTENTS'，直接对应中文'目录'即可。漫画语境下无需添加语气词或调整句式，保持简洁清晰即可满足嵌字需求。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0002-0007",
+          "category": "fact.possible_omission",
+          "confidence": 0.6,
+          "feedback_type": "warning",
+          "message": "Translation is much shorter than source -- possible omission",
+          "original_text": "CONTENTS",
+          "rationale": "Extreme length reduction may indicate dropped information",
+          "suggested_text": "目录"
+        },
+        {
+          "bubble_id": "region-0002-0007",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '目录' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "原文为中性术语'CONTENTS'，直接对应中文'目录'即可。漫画语境下无需添加语气词或调整句式，保持简洁清晰即可满足嵌字需求。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0007",
+          "category": "fact.possible_omission",
+          "confidence": 0.6,
+          "feedback_type": "warning",
+          "message": "Translation is much shorter than source -- possible omission",
+          "original_text": "CONTENTS",
+          "rationale": "Extreme length reduction may indicate dropped information",
+          "suggested_text": "目录",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0007",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '目录' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "原文为单一名词'CONTENTS'，在中文漫画语境下通常翻译为'目录'以清晰表示章节或内容索引。采用中性、准确的术语翻译。",
+      "semantic_text": "目录",
+      "source_text": "CONTENTS",
+      "speaker_id": null,
+      "translated_text": "目录"
+    },
+    {
+      "bubble_id": "region-0002-0008",
+      "confidence": 0.92,
+      "cultural_strategy": "hybrid",
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [
+        "title_style",
+        "classical_diction"
+      ],
+      "persona_rationale": "语义翻译本身已是标题句式，故采用古典短语结构（者字结尾）强化漫画标题的凝练与象征感。句式调整为四字节奏，语气庄重静谧，符合原‘neutral’情绪与标题性质。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0002-0008",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '描摹太阳' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "语义翻译本身已是标题句式，故采用古典短语结构（者字结尾）强化漫画标题的凝练与象征感。句式调整为四字节奏，语气庄重静谧，符合原‘neutral’情绪与标题性质。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0008",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '描摹太阳' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "“陽を縁取るもの”直译为“勾勒太阳边缘之物”。为符合中文标题的简洁性与诗意，将其语义转化为“描摹太阳者”，既保留了“描绘/勾勒”的核心动作（縁取る），又点明了对象（太陽/陽）。未采用字面直译是因为“缘取”在中文里是较生硬的动词，而“描摹”更能传达艺术性或象征性的描绘意味，与漫画标题的潜在意境更契合。",
+      "semantic_text": "描摹太阳者",
+      "source_text": "陽を縁取るもの",
+      "speaker_id": null,
+      "translated_text": "描摹太阳者"
+    },
+    {
+      "bubble_id": "region-0002-0009",
+      "confidence": 0.0,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [
+        "句尾口语化",
+        "语气软化",
+        "节奏调整",
+        "human_translation_required"
+      ],
+      "persona_rationale": "语义翻译内容为空，无法进行人格渲染处理。请提供漫画原文。; low confidence; human translation required",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [],
+      "rationale": "语义翻译内容为空，无法进行人格渲染处理。请提供漫画原文。; low confidence; human translation required",
+      "repair_plan": [],
+      "semantic_rationale": "未提供具体的漫画原文，因此无法进行翻译。为了生成准确的语义翻译，请提供需要翻译的文本内容。",
+      "semantic_text": "",
+      "source_text": "36話",
+      "speaker_id": null,
+      "translated_text": "36話"
+    },
+    {
+      "bubble_id": "region-0002-0010",
+      "confidence": 0.95,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [],
+      "persona_rationale": "原文为中性旁白，单一术语'变化'，本身已具备漫画旁白框的简洁冲击力，无需添加语气词或口癖。保留原貌最适合嵌字。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0002-0010",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '变化' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "原文为中性旁白，单一术语'变化'，本身已具备漫画旁白框的简洁冲击力，无需添加语气词或口癖。保留原貌最适合嵌字。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0010",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '变化' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "Translated '変化' directly to '变化' as the semantic equivalent in Chinese, preserving the core meaning of change or transformation without additional contextual inference.",
+      "semantic_text": "变化",
+      "source_text": "変化",
+      "speaker_id": null,
+      "translated_text": "变化"
+    },
+    {
+      "bubble_id": "region-0002-0011",
+      "confidence": 0.95,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [
+        "中性叙述语气"
+      ],
+      "persona_rationale": "保持原文标题'番外篇'以符合must_preserve要求，采用中性叙述语气调整，适合漫画叙述场景直接嵌字。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0002-0011",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '番外篇' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "保持原文标题'番外篇'以符合must_preserve要求，采用中性叙述语气调整，适合漫画叙述场景直接嵌字。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0011",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '番外篇' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "原文为汉字标题「番外編」，在中文漫画、小说语境中通常直接译为「番外篇」或「特别篇」，意为正篇之外的额外章节。选择「番外篇」既符合中文习惯，又保留了原词的汉字本义。",
+      "semantic_text": "番外篇",
+      "source_text": "番外編",
+      "speaker_id": null,
+      "translated_text": "番外篇"
+    },
+    {
+      "bubble_id": "region-0002-0012",
+      "confidence": 0.0,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [
+        "human_translation_required"
+      ],
+      "persona_rationale": "语义层翻译显示原文缺失（bubble_id: region-0002-0012），无法进行人格层渲染。请提供具体的日文原句，以便完成嵌字用中文对话。; low confidence; human translation required",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [],
+      "rationale": "语义层翻译显示原文缺失（bubble_id: region-0002-0012），无法进行人格层渲染。请提供具体的日文原句，以便完成嵌字用中文对话。; low confidence; human translation required",
+      "repair_plan": [],
+      "semantic_rationale": "用户仅提供了漫画作品名称《わたたべっ！2》，未提供任何需要翻译的具体原文对话、旁白、拟声词或文字。无法生成有意义的语义层翻译。需要具体的日文原文才能执行任务。",
+      "semantic_text": "（原文缺失，无法提供语义层翻译）",
+      "source_text": "わたたべっ！ 2",
+      "speaker_id": null,
+      "translated_text": "わたたべっ！ 2"
+    },
+    {
+      "bubble_id": "region-0002-0013",
+      "confidence": 0.98,
+      "cultural_strategy": "transliterate",
+      "needs_human_review": true,
+      "page_id": "page_0002",
+      "persona_moves": [
+        "结构前置",
+        "补充量词",
+        "调整语序"
+      ],
+      "persona_rationale": "将数字‘174’调整为‘第174页’的完整中文页码格式，结构更清晰，更符合中文出版物对页码的标注习惯。‘后记’保持原意，整体语序调整为‘页码+标题’的叙述逻辑，语气中性、平稳，适合直接用作章节标题。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0002-0013",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '后记' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0002-0013",
+          "category": "cultural.strategy_inconsistent",
+          "confidence": 0.7,
+          "feedback_type": "warning",
+          "message": "Cultural strategy 'transliterate' for term 'あとがき' is not visible in translation or footnotes",
+          "original_text": "あとがき",
+          "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+          "suggested_text": "あとがき"
+        }
+      ],
+      "rationale": "将数字‘174’调整为‘第174页’的完整中文页码格式，结构更清晰，更符合中文出版物对页码的标注习惯。‘后记’保持原意，整体语序调整为‘页码+标题’的叙述逻辑，语气中性、平稳，适合直接用作章节标题。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0013",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '后记' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0002-0013",
+          "category": "cultural.strategy_inconsistent",
+          "confidence": 0.7,
+          "feedback_type": "warning",
+          "message": "Cultural strategy 'transliterate' for term 'あとがき' is not visible in translation or footnotes",
+          "original_text": "あとがき",
+          "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+          "suggested_text": "あとがき",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "将日文标题「あとがき」按中文出版惯例译为‘后记’，指代作品正文后的补充说明部分。数字‘174’保留为章节或页码编号。",
+      "semantic_text": "后记 174",
+      "source_text": "あとがき 174",
+      "speaker_id": null,
+      "translated_text": "第174页 后记"
+    },
+    {
+      "bubble_id": "region-0003-0000",
+      "confidence": 0.96,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0003",
+      "persona_moves": [
+        "增添感叹词与语气词",
+        "调整标点强化情感顿挫"
+      ],
+      "persona_rationale": "在原文陈述句基础上，添加‘啊’与省略号模拟日文终助词‘さ’的感慨语气，句末改用感叹号强化情绪出口。保留‘爱、怜悯、信任’并列结构及‘末路’核心词，仅通过语气和标点优化使台词更贴合漫画人物感叹心境时的口吻。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0003-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '人的末路' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0003-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '这就是爱' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0003-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '怜悯并信' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0003-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '他人' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0003-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '任他人之' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "在原文陈述句基础上，添加‘啊’与省略号模拟日文终助词‘さ’的感慨语气，句末改用感叹号强化情绪出口。保留‘爱、怜悯、信任’并列结构及‘末路’核心词，仅通过语气和标点优化使台词更贴合漫画人物感叹心境时的口吻。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0003-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '人的末路' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0003-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '这就是爱' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0003-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '怜悯并信' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0003-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '他人' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0003-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '任他人之' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "原文表达了一种对人生结局的感慨与总结。'愛し慈しみ信じた者'译为'爱他人、怜悯并信任他人之人'，以保留其并列与递进关系。'末路さ'中的终助词'さ'所带的语气通过句末的'。'和中文陈述句式来传达，并未添加额外语气词。",
+      "semantic_text": "这就是爱他人、怜悯并信任他人之人的末路。",
+      "source_text": "これが人を愛し 慈しみ信じた者の末路さ",
+      "speaker_id": null,
+      "translated_text": "啊……这就是爱他人、怜悯并信任他人之人的末路！"
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "confidence": 0.9,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0003",
+      "persona_moves": [
+        "术语保留",
+        "名词直接引用"
+      ],
+      "persona_rationale": "原文为专有名词指代，无特定情感或语气倾向，直接保留标准译法'妖狐'即可，无需额外修饰。该译法符合中文语境，且字数精简适合漫画气泡。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0003-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '妖狐' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "原文为专有名词指代，无特定情感或语气倾向，直接保留标准译法'妖狐'即可，无需额外修饰。该译法符合中文语境，且字数精简适合漫画气泡。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0003-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '妖狐' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "'化け狐'是日语中指代能够变化形态的狐狸妖怪的复合词，通常译为'妖狐'或'化狐'。选择'妖狐'更符合中文对类似妖怪传说的常见称呼习惯，语义准确。原词为汉字词，非外来语或拟声词，故无需添加脚注。",
+      "semantic_text": "妖狐",
+      "source_text": "化け狐",
+      "speaker_id": null,
+      "translated_text": "妖狐"
+    },
+    {
+      "bubble_id": "region-0004-0000",
+      "confidence": 0.8,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0004",
+      "persona_moves": [
+        "softened phrasing",
+        "enhanced spoken flow"
+      ],
+      "persona_rationale": "将'即便'调整为'就连'以增强口语感和无奈语气，更贴合漫画对话的流畅节奏，同时完全保留原意和指代。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0004-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '这样的我' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0004-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '就连看到' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "将'即便'调整为'就连'以增强口语感和无奈语气，更贴合漫画对话的流畅节奏，同时完全保留原意和指代。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0004-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '这样的我' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0004-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '就连看到' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "The source text 'こんなあたしを見てなお' is a Japanese phrase that expresses a sense of resignation or observation. 'こんな' translates to 'such' or 'this kind of', 'あたし' is an informal first-person pronoun (often female), 'を見て' means 'after seeing' or 'looking at', and 'なお' implies 'still' or 'even so'. The semantic draft '即便看到这样的我' captures the core meaning: 'even after seeing this kind of me', maintaining a neutral and faithful translation without adding persona or voice nuances. No katakana loanwords or onomatopoeia are present, so no footnotes are needed. The emotion is inferred from the self-referential context of 'こんなあたし', which often conveys negative self-assessment.",
+      "semantic_text": "即便看到这样的我",
+      "source_text": "こんなあたしを見てなお",
+      "speaker_id": null,
+      "translated_text": "就连看到这样的我"
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "confidence": 0.93,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0004",
+      "persona_moves": [
+        "口语化句式",
+        "强化试探语气"
+      ],
+      "persona_rationale": "将‘打算继续留在’调整为更口语化、略带‘试探与追问’意味的‘还要待在’，使语气更贴近漫画对白中角色直接对话的张力。保留了核心术语‘人类一方’及疑问结构，符合角色间质询的语境。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0004-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '方吗' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0004-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '在人类一' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0004-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '你还要待' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "将‘打算继续留在’调整为更口语化、略带‘试探与追问’意味的‘还要待在’，使语气更贴近漫画对白中角色直接对话的张力。保留了核心术语‘人类一方’及疑问结构，符合角色间质询的语境。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0004-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '方吗' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0004-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '在人类一' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0004-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '你还要待' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "Translated 'お前' as '你' for informal 'you' without persona, '人間の側' as '人类一方' to faithfully convey the meaning of being on the human side, and used '打算...吗？' to reflect the interrogative structure. No katakana or onomatopoeia present.",
+      "semantic_text": "你打算继续留在人类一方吗？",
+      "source_text": "お前は人間の側に居続けるつもりかい？",
+      "speaker_id": null,
+      "translated_text": "你还要待在人类一方吗？"
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "confidence": 0.92,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0004",
+      "persona_moves": [
+        "强化对抗语气",
+        "女性口癖适配"
+      ],
+      "persona_rationale": "保留语义核心；将'我和你'调整为更具对抗性的'我…跟你'；使用'可不一样'加强断言感，符合女性角色 assertive 语气；省略号增强对话节奏与情绪张力。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0004-0002",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '跟你可不' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0004-0002",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '一样' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "保留语义核心；将'我和你'调整为更具对抗性的'我…跟你'；使用'可不一样'加强断言感，符合女性角色 assertive 语气；省略号增强对话节奏与情绪张力。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0004-0002",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '跟你可不' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0004-0002",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '一样' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "直译原文意思，保持语义忠实；第一人称和第二人称代词按中文习惯翻译为'我'和'你'，不添加人格化或上下文推测。",
+      "semantic_text": "…我和你不一样",
+      "source_text": "…あたしはお前とは違う",
+      "speaker_id": null,
+      "translated_text": "我…跟你可不一样"
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "confidence": 0.92,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0004",
+      "persona_moves": [
+        "添加语气词「啊」增强口语感",
+        "句尾添加「哦」软化语气"
+      ],
+      "persona_rationale": "在保持否定核心语义的前提下，通过添加口语语气词「啊」和句尾助词「哦」，使对话更自然流畅，符合漫画口语风格，同时维持情绪中性。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0004-0003",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '不啊' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0004-0003",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '不对哦' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "在保持否定核心语义的前提下，通过添加口语语气词「啊」和句尾助词「哦」，使对话更自然流畅，符合漫画口语风格，同时维持情绪中性。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0004-0003",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '不啊' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0004-0003",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '不对哦' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "将口语化的否定短语“いいや違わんさ”翻译为直接且符合中文口语习惯的“不，不对”。“いいや”译为“不”表示否定，“違わんさ”是“違う”的口语化表达，译为“不对”以传达纠正或否定的语气。",
+      "semantic_text": "不，不对",
+      "source_text": "いいや違わんさ",
+      "speaker_id": null,
+      "translated_text": "不啊，不对哦"
+    },
+    {
+      "bubble_id": "region-0005-0000",
+      "confidence": 0.92,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0005",
+      "persona_moves": [
+        "省略主语",
+        "句尾省略号留白",
+        "口语化压缩"
+      ],
+      "persona_rationale": "将'真是'压缩为'真'使语气更贴近口语感叹，句末以省略号收束强化怅然若失的余韵，适合漫画气泡中独白式的悲伤渲染。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0005-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '真可悲啊' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "将'真是'压缩为'真'使语气更贴近口语感叹，句末以省略号收束强化怅然若失的余韵，适合漫画气泡中独白式的悲伤渲染。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0005-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '真可悲啊' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "原文 '悲しいかな' 是一个表达强烈悲伤与感叹的短语。'かな' 是语气助词，表示感叹或惋惜。翻译为 '真是可悲啊' 既忠实于原意（可悲），也传达了原文的感叹语气。",
+      "semantic_text": "真是可悲啊",
+      "source_text": "悲しいかな",
+      "speaker_id": null,
+      "translated_text": "真可悲啊……"
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "confidence": 0.85,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0005",
+      "persona_moves": [
+        "威胁感强化",
+        "尾字压低",
+        "句式斩截化"
+      ],
+      "persona_rationale": "将中性表述‘也是如此’转化为更具压迫感的‘也不会例外’，通过句式倒装（‘下场’前置）与否定强调（‘不会’）强化 ominous 情绪，同时严格保留‘你的未来’这一核心指代。尾音采用短促收束，符合反派台词节奏。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0005-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '也不会例' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0005-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '你的下场' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "将中性表述‘也是如此’转化为更具压迫感的‘也不会例外’，通过句式倒装（‘下场’前置）与否定强调（‘不会’）强化 ominous 情绪，同时严格保留‘你的未来’这一核心指代。尾音采用短促收束，符合反派台词节奏。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0005-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '也不会例' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0005-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '你的下场' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "Translated 'お前' as '你' for a neutral second-person reference, and '行く末も' as '未来也是如此' to faithfully convey the meaning of 'future' with the inclusive particle 'も' indicating 'also' or 'even', without adding persona-specific tones.",
+      "semantic_text": "你的未来也是如此",
+      "source_text": "お前の行く末も",
+      "speaker_id": null,
+      "translated_text": "你的下场也不会例外"
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "confidence": 0.93,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0005",
+      "persona_moves": [
+        "将句尾语气词从'吧'调整为更柔和亲切的'呢'",
+        "将'一定'微调为'肯定'以增强口语化共情色彩"
+      ],
+      "persona_rationale": "保留了第一人称'我'、比较结构'和我一样'及句尾破折号与省略号。将推测副词'一定'微调为口语中更常用于表达感同身受的'肯定'，将语气词'吧'调整为'呢'以强化共情与温柔感，符合'推测、共情'的语境，且整体更适合漫画对话的嵌字节奏。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0005-0002",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '肯定和我' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0005-0002",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '一样呢' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "保留了第一人称'我'、比较结构'和我一样'及句尾破折号与省略号。将推测副词'一定'微调为口语中更常用于表达感同身受的'肯定'，将语气词'吧'调整为'呢'以强化共情与温柔感，符合'推测、共情'的语境，且整体更适合漫画对话的嵌字节奏。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0005-0002",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '肯定和我' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0005-0002",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '一样呢' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "将日语推测副词'きっと'译为'一定'以保留原文的推断口吻。'あたし'作为女性第一人称代词，在中文语境下译为'我'即可，无需特殊标注。'同じだよ'直译为'一样'，整体采用口语化短句结构，保留原文的省略与延伸语气。",
+      "semantic_text": "一定和我一样吧——…",
+      "source_text": "きっとあたしと同じだよ――…",
+      "speaker_id": null,
+      "translated_text": "肯定和我一样呢——…"
+    },
+    {
+      "bubble_id": "region-0006-0000",
+      "confidence": 1.0,
+      "cultural_strategy": "coined",
+      "needs_human_review": false,
+      "page_id": "page_0006",
+      "persona_moves": [],
+      "persona_rationale": "章节标题属于叙述性文字，保持原文格式和中括号结构不变。无需调整语气或口癖，直接采用标准漫画标题排版。must_preserve内容完整保留。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0006-0000",
+          "category": "cultural.strategy_inconsistent",
+          "confidence": 0.7,
+          "feedback_type": "warning",
+          "message": "Cultural strategy 'coined' for term '【32話】' is not visible in translation or footnotes",
+          "original_text": "【32話】",
+          "rationale": "Strategy 'coined' requires visible handling of the source term.",
+          "suggested_text": "【32話】"
+        }
+      ],
+      "rationale": "章节标题属于叙述性文字，保持原文格式和中括号结构不变。无需调整语气或口癖，直接采用标准漫画标题排版。must_preserve内容完整保留。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0006-0000",
+          "category": "cultural.strategy_inconsistent",
+          "confidence": 0.7,
+          "feedback_type": "warning",
+          "message": "Cultural strategy 'coined' for term '【32話】' is not visible in translation or footnotes",
+          "original_text": "【32話】",
+          "rationale": "Strategy 'coined' requires visible handling of the source term.",
+          "suggested_text": "【32話】",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "原文'【32話】'是漫画章节标题，'話'在中文漫画语境中对应'话'。保留方括号格式和数字，遵循中文习惯翻译为'第32话'。文本功能为章节标题标注，属于叙述性文字。",
+      "semantic_text": "【第32话】",
+      "source_text": "【32話】",
+      "speaker_id": null,
+      "translated_text": "【第32话】"
+    },
+    {
+      "bubble_id": "region-0006-0001",
+      "confidence": 0.92,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0006",
+      "persona_moves": [
+        "poetic-narration",
+        "soft-opening"
+      ],
+      "persona_rationale": "添加'那'字作为引导词，使旁白开场更自然流畅；保留句末省略号强化'wistful'的余韵与停顿感，符合漫画气泡的视觉节奏。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0006-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '那昔日的' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "添加'那'字作为引导词，使旁白开场更自然流畅；保留句末省略号强化'wistful'的余韵与停顿感，符合漫画气泡的视觉节奏。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0006-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '那昔日的' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "直译保留原文意象：'昔日'对应'过去/往日'，'足音'对应'脚步声'，组合为'昔日足音'既符合中文诗意表达习惯，又完整传递了'过去的脚步声/往昔足迹'的核心语义。",
+      "semantic_text": "昔日足音",
+      "source_text": "昔日の足音",
+      "speaker_id": null,
+      "translated_text": "那昔日的足音……"
+    },
+    {
+      "bubble_id": "region-0007-0000",
+      "confidence": 0.95,
+      "cultural_strategy": "transliterate",
+      "needs_human_review": true,
+      "page_id": "page_0007",
+      "persona_moves": [
+        "添加语气词拉长音效",
+        "保持亲昵称呼"
+      ],
+      "persona_rationale": "在原译基础上增加句尾波浪号，营造漫画对话常见的轻柔、亲昵语调，更贴合“ちゃん”原本的亲昵语境与漫画对白风格，同时完全保留核心称呼“美胡酱”。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0007-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '美胡酱' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0007-0000",
+          "category": "cultural.honorific_removed",
+          "confidence": 0.3,
+          "feedback_type": "suggestion",
+          "message": "Honorific 'ちゃん' from source not present in translation",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0007-0000",
+          "category": "cultural.strategy_inconsistent",
+          "confidence": 0.7,
+          "feedback_type": "warning",
+          "message": "Cultural strategy 'transliterate' for term '美胡ちゃん' is not visible in translation or footnotes",
+          "original_text": "美胡ちゃん",
+          "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+          "suggested_text": "美胡ちゃん"
+        }
+      ],
+      "rationale": "在原译基础上增加句尾波浪号，营造漫画对话常见的轻柔、亲昵语调，更贴合“ちゃん”原本的亲昵语境与漫画对白风格，同时完全保留核心称呼“美胡酱”。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0007-0000",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '美胡酱' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0007-0000",
+          "category": "cultural.honorific_removed",
+          "confidence": 0.3,
+          "feedback_type": "suggestion",
+          "message": "Honorific 'ちゃん' from source not present in translation",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0007-0000",
+          "category": "cultural.strategy_inconsistent",
+          "confidence": 0.7,
+          "feedback_type": "warning",
+          "message": "Cultural strategy 'transliterate' for term '美胡ちゃん' is not visible in translation or footnotes",
+          "original_text": "美胡ちゃん",
+          "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+          "suggested_text": "美胡ちゃん",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "'美胡ちゃん' 是一个日本名字或称呼。按照翻译规则，人名应按中文习惯音译或翻译。'ちゃん' 是一个常见的日语敬称，通常用于表示亲昵。在中文网络和流行文化中，常音译为 '酱'。因此，将 '美胡ちゃん' 翻译为 '美胡酱'，既忠实于原文发音，也符合中文对类似日本称呼的习惯处理。",
+      "semantic_text": "美胡酱",
+      "source_text": "美胡ちゃん",
+      "speaker_id": null,
+      "translated_text": "美胡酱~"
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "confidence": 0.9,
+      "cultural_strategy": "transliterate",
+      "needs_human_review": true,
+      "page_id": "page_0007",
+      "persona_moves": [
+        "亲昵语气"
+      ],
+      "persona_rationale": "选择「小美胡」作为译法，符合中文漫画对亲近角色名添加「小」前缀的常见习惯，准确传达了原文亲昵的呼唤语气。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0007-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '小美胡' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0007-0001",
+          "category": "cultural.honorific_removed",
+          "confidence": 0.3,
+          "feedback_type": "suggestion",
+          "message": "Honorific 'ちゃん' from source not present in translation",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0007-0001",
+          "category": "cultural.strategy_inconsistent",
+          "confidence": 0.7,
+          "feedback_type": "warning",
+          "message": "Cultural strategy 'transliterate' for term '美胡ちゃん' is not visible in translation or footnotes",
+          "original_text": "美胡ちゃん",
+          "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+          "suggested_text": "美胡ちゃん"
+        }
+      ],
+      "rationale": "选择「小美胡」作为译法，符合中文漫画对亲近角色名添加「小」前缀的常见习惯，准确传达了原文亲昵的呼唤语气。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0007-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '小美胡' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0007-0001",
+          "category": "cultural.honorific_removed",
+          "confidence": 0.3,
+          "feedback_type": "suggestion",
+          "message": "Honorific 'ちゃん' from source not present in translation",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0007-0001",
+          "category": "cultural.strategy_inconsistent",
+          "confidence": 0.7,
+          "feedback_type": "warning",
+          "message": "Cultural strategy 'transliterate' for term '美胡ちゃん' is not visible in translation or footnotes",
+          "original_text": "美胡ちゃん",
+          "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+          "suggested_text": "美胡ちゃん",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "「美胡」为角色名，直接音译保留。「ちゃん」是日语中对亲近之人（多为孩童、亲密朋友）的亲昵称呼，中文漫画翻译中常译为「小」前缀或「酱」音译。采用「小美胡」更符合中文表达习惯，保留亲昵语气。",
+      "semantic_text": "小美胡",
+      "source_text": "美胡ちゃん",
+      "speaker_id": null,
+      "translated_text": "小美胡"
+    },
+    {
+      "bubble_id": "region-0007-0002",
+      "confidence": 0.9,
+      "cultural_strategy": null,
+      "needs_human_review": false,
+      "page_id": "page_0007",
+      "persona_moves": [],
+      "persona_rationale": "保持原语义翻译'诶？'，因为它准确传达了源文本'へっ？'的惊讶和疑问语气，符合漫画对话的常见风格。未调整语气、句式或口癖，以避免改变事实或语义核心，确保文本适合直接嵌字。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [],
+      "rationale": "保持原语义翻译'诶？'，因为它准确传达了源文本'へっ？'的惊讶和疑问语气，符合漫画对话的常见风格。未调整语气、句式或口癖，以避免改变事实或语义核心，确保文本适合直接嵌字。",
+      "repair_plan": [],
+      "semantic_rationale": "Translated the Japanese interjection 'へっ？' as '诶？' in Chinese to faithfully convey its meaning of surprise and questioning, consistent with common manga sfx translations. Included a footnote to note the original onomatopoeia as per rules.",
+      "semantic_text": "诶？",
+      "source_text": "へっ？",
+      "speaker_id": null,
+      "translated_text": "诶？"
+    },
+    {
+      "bubble_id": "region-0008-0000",
+      "confidence": 0.0,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0008",
+      "persona_moves": [
+        "provider_failure",
+        "human_translation_required"
+      ],
+      "persona_rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0008-0000': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "provider_cascade_errors": [
+        {
+          "bubble_id": "region-0008-0000",
+          "error": "Request timed out.",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary",
+          "type": "APITimeoutError"
+        }
+      ],
+      "provider_trace": {
+        "persona": {
+          "error": "Persona rendering provider failed for bubble 'region-0008-0000': No provider available for stage 'translation'. Tried: ['mimo']",
+          "operation": "persona_render",
+          "provider": "unavailable",
+          "type": "StageExecutionError"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [],
+      "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0008-0000': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+      "repair_plan": [],
+      "semantic_rationale": "「あー」译为拖长的感叹词「啊——」保留语气停顿感；「ごめんごめん」为口语化重复道歉，译为「抱歉抱歉」对应中文口语习惯，较「对不起」更轻松随意，贴合原文语气",
+      "semantic_text": "啊——抱歉抱歉",
+      "source_text": "あーごめんごめん",
+      "speaker_id": null,
+      "translated_text": "あーごめんごめん"
+    },
+    {
+      "bubble_id": "region-0008-0001",
+      "confidence": 0.92,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0008",
+      "persona_moves": [
+        "added sentence-final particle '呢'",
+        "tone softening",
+        "enhanced口语化节奏"
+      ],
+      "persona_rationale": "基于语义翻译的文本，添加句尾语气词'呢'使对白更自然、柔和，符合中文漫画的口语表达习惯，同时保持原意中的轻微自嘲和自述语气，未改变事实或语义内容。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0008-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '刚才有点' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0008-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '走神了呢' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "基于语义翻译的文本，添加句尾语气词'呢'使对白更自然、柔和，符合中文漫画的口语表达习惯，同时保持原意中的轻微自嘲和自述语气，未改变事实或语义内容。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0008-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '刚才有点' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0008-0001",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '走神了呢' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "原句为自述，表达一种短暂的精神恍惚状态。使用'走神'是中文漫画中表达类似状态的自然口语，同时保留了原句的轻微自嘲语气。片假名词'ボーっと'源自英语'vague'，在日语中常作拟声/状态词使用，译为'走神'并在注释中保留原文。",
+      "semantic_text": "刚才有点走神了。",
+      "source_text": "ちょっとボーっとしちゃってた",
+      "speaker_id": null,
+      "translated_text": "刚才有点走神了呢。"
+    },
+    {
+      "bubble_id": "region-0008-0002",
+      "confidence": 0.92,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0008",
+      "persona_moves": [
+        "hesitation_marker_substitution",
+        "colloquial_speech_act"
+      ],
+      "persona_rationale": "将拟声词'嗯'替换为更口语化、犹豫语气更强的'呃'，以贴合角色犹豫不决的情感；保留原疑问句式与'来着'这一口语化句尾，确保语义与指代不变，同时增强对话的自然感与嵌入适用性。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0008-0002",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '是什么来' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "将拟声词'嗯'替换为更口语化、犹豫语气更强的'呃'，以贴合角色犹豫不决的情感；保留原疑问句式与'来着'这一口语化句尾，确保语义与指代不变，同时增强对话的自然感与嵌入适用性。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0008-0002",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '是什么来' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "翻译 'えっと' 为中文拟声词 '嗯' 以忠实表示犹豫声音，'なんだっけ' 译为 '是什么来着？' 保持口语化和回想语义，整体避免人格化表演。",
+      "semantic_text": "嗯...是什么来着？",
+      "source_text": "えっと…なんだっけ？",
+      "speaker_id": null,
+      "translated_text": "呃...是什么来着？"
+    },
+    {
+      "bubble_id": "region-0008-0003",
+      "confidence": 0.95,
+      "cultural_strategy": null,
+      "needs_human_review": false,
+      "page_id": "page_0008",
+      "persona_moves": [],
+      "persona_rationale": "原译文「嗯」已是简洁、口语化的肯定回应，符合日文「うん」的语感与语用功能。语气中性，无需额外调整语气或句式，直接保留即适合嵌字。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [],
+      "rationale": "原译文「嗯」已是简洁、口语化的肯定回应，符合日文「うん」的语感与语用功能。语气中性，无需额外调整语气或句式，直接保留即适合嵌字。",
+      "repair_plan": [],
+      "semantic_rationale": "「うん」在日语中是表示肯定、同意或理解的非正式感叹词，对应中文口语中表示肯定回应的“嗯”。此处采用单字“嗯”以保持其简短、口语化且中性的特点，符合语义层规则中不添加人物语气或推测身份的要求。",
+      "semantic_text": "嗯",
+      "source_text": "うん",
+      "speaker_id": null,
+      "translated_text": "嗯"
+    },
+    {
+      "bubble_id": "region-0008-0004",
+      "confidence": 0.92,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0008",
+      "persona_moves": [
+        "soften time expression",
+        "add colloquial particle '才好'",
+        "use ellipsis for hesitation"
+      ],
+      "persona_rationale": "将'马上要'调整为更口语化的'都快'以增强节奏感，添加'才好'强化犹豫和纠结语气，保留省略号表现思考的延续性，同时保持语义核心不变。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0008-0004",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '怎么办才' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0008-0004",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '都快中午' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0008-0004",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '我在想要' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0008-0004",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '好呢' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "将'马上要'调整为更口语化的'都快'以增强节奏感，添加'才好'强化犹豫和纠结语气，保留省略号表现思考的延续性，同时保持语义核心不变。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0008-0004",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '怎么办才' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0008-0004",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '都快中午' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0008-0004",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '我在想要' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0008-0004",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '好呢' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "将口语化的日文表达‘どうしようかなって’转化为中文口语‘我在想到底该怎么办呢’，保留犹豫不决的语义核心。时间状语‘もうすぐお昼’按中文习惯前置，使用‘马上’对应‘もうすぐ’。",
+      "semantic_text": "马上要中午了，我在想到底该怎么办呢……",
+      "source_text": "もうすぐお昼だからどうしようかなって…",
+      "speaker_id": null,
+      "translated_text": "都快中午了，我在想要怎么办才好呢……"
+    },
+    {
+      "bubble_id": "region-0008-0005",
+      "confidence": 0.95,
+      "cultural_strategy": null,
+      "needs_human_review": false,
+      "page_id": "page_0008",
+      "persona_moves": [
+        "拉长音节",
+        "添加省略号增强犹豫节奏"
+      ],
+      "persona_rationale": "将‘啊嗯’处理为更符合中文口语习惯的‘呃……嗯……’，通过拉长音和添加省略号，强化了原语义中‘犹豫’和‘含糊回应’的语气，使其更适用于漫画对话的场景表达。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [],
+      "rationale": "将‘啊嗯’处理为更符合中文口语习惯的‘呃……嗯……’，通过拉长音和添加省略号，强化了原语义中‘犹豫’和‘含糊回应’的语气，使其更适用于漫画对话的场景表达。",
+      "repair_plan": [],
+      "semantic_rationale": "原文'あーうん'是日语拟声词，表示犹豫、思考或含糊回应的声音，类似中文'啊嗯'，以忠实传达原意。",
+      "semantic_text": "啊嗯",
+      "source_text": "あーうん",
+      "speaker_id": null,
+      "translated_text": "呃……嗯……"
+    },
+    {
+      "bubble_id": "region-0008-0006",
+      "confidence": 0.95,
+      "cultural_strategy": null,
+      "needs_human_review": true,
+      "page_id": "page_0008",
+      "persona_moves": [
+        "口语化",
+        "句尾优化",
+        "节奏调整"
+      ],
+      "persona_rationale": "将‘午餐’拆解为口语化的‘午…午饭’，增加停顿感以匹配犹豫情绪；将‘嗯’替换为更自然的语气词‘呢’，体现试探或轻声询问的口吻，整体更贴合漫画角色的说话方式。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0008-0006",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '午饭呢' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        }
+      ],
+      "rationale": "将‘午餐’拆解为口语化的‘午…午饭’，增加停顿感以匹配犹豫情绪；将‘嗯’替换为更自然的语气词‘呢’，体现试探或轻声询问的口吻，整体更贴合漫画角色的说话方式。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0008-0006",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '午饭呢' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "Translated 'お昼' as '午餐' to convey the meaning of lunch, and 'ねぇ' as '嗯' to capture the hesitant or seeking-attention tone, preserving the semantic content without personalization.",
+      "semantic_text": "午餐…嗯…",
+      "source_text": "お昼…ねぇ…",
+      "speaker_id": null,
+      "translated_text": "午…午饭呢…"
+    },
+    {
+      "bubble_id": "region-0008-0007",
+      "confidence": 0.9,
+      "cultural_strategy": "transliterate",
+      "needs_human_review": true,
+      "page_id": "page_0008",
+      "persona_moves": [
+        "添加亲昵波浪线",
+        "保留省略语气"
+      ],
+      "persona_rationale": "基于亲昵情感，在句尾添加波浪线以强化呼唤的温暖感，同时保留原文省略号表示语气延续，符合漫画对白直接嵌字要求。",
+      "provider_cascade_errors": [],
+      "provider_trace": {
+        "persona": {
+          "model": "mimo-v2.5-pro",
+          "operation": "persona_render",
+          "provider": "mimo",
+          "role": "primary"
+        },
+        "semantic": {
+          "model": "mimo-v2.5-pro",
+          "operation": "semantic_translation",
+          "provider": "mimo",
+          "role": "primary"
+        }
+      },
+      "qa_findings": [
+        {
+          "bubble_id": "region-0008-0007",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '美胡酱' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0008-0007",
+          "category": "cultural.honorific_removed",
+          "confidence": 0.3,
+          "feedback_type": "suggestion",
+          "message": "Honorific 'ちゃん' from source not present in translation",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": ""
+        },
+        {
+          "bubble_id": "region-0008-0007",
+          "category": "cultural.strategy_inconsistent",
+          "confidence": 0.7,
+          "feedback_type": "warning",
+          "message": "Cultural strategy 'transliterate' for term '…美胡ちゃん' is not visible in translation or footnotes",
+          "original_text": "…美胡ちゃん",
+          "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+          "suggested_text": "…美胡ちゃん"
+        }
+      ],
+      "rationale": "基于亲昵情感，在句尾添加波浪线以强化呼唤的温暖感，同时保留原文省略号表示语气延续，符合漫画对白直接嵌字要求。",
+      "repair_plan": [
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0008-0007",
+          "category": "hallucination.possible_invented_name",
+          "confidence": 0.4,
+          "feedback_type": "suggestion",
+          "message": "Name '美胡酱' in translation not found in source or known profiles",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0008-0007",
+          "category": "cultural.honorific_removed",
+          "confidence": 0.3,
+          "feedback_type": "suggestion",
+          "message": "Honorific 'ちゃん' from source not present in translation",
+          "original_text": "",
+          "rationale": "",
+          "suggested_text": "",
+          "target": "semantic"
+        },
+        {
+          "action": "repair_semantic_translation",
+          "bubble_id": "region-0008-0007",
+          "category": "cultural.strategy_inconsistent",
+          "confidence": 0.7,
+          "feedback_type": "warning",
+          "message": "Cultural strategy 'transliterate' for term '…美胡ちゃん' is not visible in translation or footnotes",
+          "original_text": "…美胡ちゃん",
+          "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+          "suggested_text": "…美胡ちゃん",
+          "target": "semantic"
+        }
+      ],
+      "semantic_rationale": "人名“美胡”音译为中文，“ちゃん”意译为表示亲昵的“酱”，符合中文习惯。保留原文省略号表示语气延续。",
+      "semantic_text": "…美胡酱",
+      "source_text": "…美胡ちゃん",
+      "speaker_id": null,
+      "translated_text": "…美胡酱～"
+    }
+  ],
+  "summary": {
+    "avg_confidence": 0.756,
+    "entries_needing_human_review": 33,
+    "pages_needing_human_review": 9,
+    "provider_cascade_errors_total": 5,
+    "qa_findings_total": 57,
+    "repair_plan_total": 57,
+    "repair_targets": {
+      "layout": 1,
+      "semantic": 56
+    },
+    "total_translations": 38
+  }
+}

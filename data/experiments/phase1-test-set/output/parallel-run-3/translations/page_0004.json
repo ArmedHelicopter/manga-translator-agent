@@ -1,0 +1,64 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0004-0000",
+      "reading_order": 0,
+      "source_text": "こんなあたしを見てなお",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "reading_order": 1,
+      "source_text": "お前は人間の側に居続けるつもりかい？",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "reading_order": 2,
+      "source_text": "…あたしはお前とは違う",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "reading_order": 3,
+      "source_text": "いいや違わんさ",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0004",
+  "page_index": 4,
+  "translations": [
+    {
+      "bubble_id": "region-0004-0000",
+      "confidence": 0.8,
+      "footnotes": [],
+      "rationale": "将'即便'调整为'就连'以增强口语感和无奈语气，更贴合漫画对话的流畅节奏，同时完全保留原意和指代。",
+      "text": "就连看到这样的我"
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "confidence": 0.93,
+      "footnotes": [],
+      "rationale": "将‘打算继续留在’调整为更口语化、略带‘试探与追问’意味的‘还要待在’，使语气更贴近漫画对白中角色直接对话的张力。保留了核心术语‘人类一方’及疑问结构，符合角色间质询的语境。",
+      "text": "你还要待在人类一方吗？"
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "保留语义核心；将'我和你'调整为更具对抗性的'我…跟你'；使用'可不一样'加强断言感，符合女性角色 assertive 语气；省略号增强对话节奏与情绪张力。",
+      "text": "我…跟你可不一样"
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "在保持否定核心语义的前提下，通过添加口语语气词「啊」和句尾助词「哦」，使对话更自然流畅，符合漫画口语风格，同时维持情绪中性。",
+      "text": "不啊，不对哦"
+    }
+  ]
+}

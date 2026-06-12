@@ -1,0 +1,50 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0005-0000",
+      "reading_order": 0,
+      "source_text": "悲しいかな",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "reading_order": 1,
+      "source_text": "お前の行く末も",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "reading_order": 2,
+      "source_text": "きっとあたしと同じだよ――…",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0005",
+  "page_index": 5,
+  "translations": [
+    {
+      "bubble_id": "region-0005-0000",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "将语气词'啊'替换为'罢了'，以模拟日语原文'かな'更接近自言自语、略带咏叹与宿命感的语气，使悲伤情绪更深沉内敛，且符合漫画气泡的简洁要求。",
+      "text": "可悲罢了"
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "将“就连你的前程也……”凝练为“你往后的路…”，更符合漫画气泡的简洁要求；保留省略号传递未竟的威胁感；“路”比“前程”更具口语化和视觉化冲击力，与漫画叙事风格契合。未改变第二人称指代或事件逻辑。",
+      "text": "你往后的路…"
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "在保留自信语气的基础上，添加句尾语气词「呢」贴合女性角色口吻，与原文「あたし」的性别暗示一致；省略号保留犹豫/意味未尽的留白感，适合漫画嵌字节奏。",
+      "text": "一定和我一样呢……"
+    }
+  ]
+}

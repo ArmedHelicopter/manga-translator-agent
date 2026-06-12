@@ -1,0 +1,19 @@
+<frozen runpy>:128: RuntimeWarning: 'mga.cli.main' found in sys.modules after import of package 'mga.cli', but prior to execution of 'mga.cli.main'; this may result in unpredictable behaviour
+Translating data/experiments/phase1-test-set/ -> data/experiments/phase1-test-set/output/parallel-run-2/  (ja -> zh)
+Provider pre-check: testing translation provider connectivity...
+Provider pre-check: OK
+Pass 1 skipped. Reusing runtime payload: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\experiments\phase1-test-set\.mga-payload
+Parallel task 0 failed: Semantic translation provider failed for bubble 'region-0001-0000': No provider available for stage 'translation'. Tried: ['mimo']
+Parallel semantic translation failed; falling back to serial mode: 1 tasks failed out of 1
+Traceback (most recent call last):
+  File "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\mga\pipeline\translation_stage.py", line 419, in _execute_semantic_parallel
+    semantic_records = self._parallel_semantic_translation(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\mga\pipeline\translation_stage.py", line 530, in _parallel_semantic_translation
+    return executor.map(list(page.bubbles), translate_one_semantic, context=shared_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\mga\pipeline\parallel_executor.py", line 69, in map
+    raise ParallelExecutionError(
+mga.pipeline.parallel_executor.ParallelExecutionError: 1 tasks failed out of 1
+Incremental translation complete: phase1-test-set
+Done. run.json -> data\experiments\phase1-test-set\output\parallel-run-2\run.json

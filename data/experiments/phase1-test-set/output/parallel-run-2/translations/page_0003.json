@@ -1,0 +1,36 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0003-0000",
+      "reading_order": 0,
+      "source_text": "これが人を愛し 慈しみ信じた者の末路さ",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "reading_order": 1,
+      "source_text": "化け狐",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0003",
+  "page_index": 3,
+  "translations": [
+    {
+      "bubble_id": "region-0003-0000",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "通过添加感叹词‘看吧’和语气词‘吧’使开场更具倾诉感；将‘之人的末路’调整为更口语化的‘的下场’，符合角色无奈叹息的情绪；保留全部关键语义要素（爱、慈心、深信不疑），同时通过句式压缩增强台词节奏感。",
+      "text": "看吧，这就是爱他人、怀慈心、深信不疑的下场。"
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "confidence": 0.85,
+      "footnotes": [],
+      "rationale": "基于语义翻译的'狐妖'术语，保留核心内容不变，通过添加感叹号调整句尾和语气，使其更符合漫画对话中陈述时的戏剧性或强调效果，适合直接嵌字使用。",
+      "text": "狐妖！"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0000-0000",
+      "reading_order": 0,
+      "source_text": "電撃コミックスNEXT",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0000",
+  "page_index": 0,
+  "translations": [
+    {
+      "bubble_id": "region-0000-0000",
+      "confidence": 0.97,
+      "footnotes": [
+        {
+          "original": "コミックス",
+          "translation": "见正文",
+          "type": "loanword"
+        }
+      ],
+      "rationale": "作为出版社/系列名称，直接采用中文通用译名“电击漫画”并保留系列后缀“NEXT”，符合中文漫画出版领域的排版惯例与读者认知。",
+      "text": "电击漫画NEXT"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+Update Pass 1 export defaults and add validation helpers
+
+- Update runtime bridge test assertions for lama_large inpainting and higher detector thresholds used by export-artifact.
+- Add a Pass 1 validation script that locates a 10-page sample, runs export-artifact, and reports text region, fallback, and artifact metrics.
+- Add a visual inspection helper that lists inpainted outputs and builds a 5x2 thumbnail grid for manual review.

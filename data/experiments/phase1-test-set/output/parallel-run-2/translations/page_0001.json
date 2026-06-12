@@ -1,0 +1,22 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0001-0000",
+      "reading_order": 0,
+      "source_text": "CoverDesign：SALIDAS",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0001",
+  "page_index": 1,
+  "translations": [
+    {
+      "bubble_id": "region-0001-0000",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "将“封面设计”名词化为“设计者”更符合漫画标注创作者的语感；使用冒号替代“：”使排版更简洁；保留“萨利达斯”全大写音译体以强化专名视觉特征。",
+      "text": "设计者：萨利达斯"
+    }
+  ]
+}

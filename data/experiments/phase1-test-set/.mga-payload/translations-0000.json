@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "target_lang": "CHS",
+  "translations": [
+    {
+      "region_index": 0,
+      "translation": "電撃コミックスNEXT",
+      "target_lang": "CHS"
+    }
+  ],
+  "footnotes": [
+    {
+      "original": "電撃コミックスNEXT",
+      "translation": "电击Comics NEXT",
+      "type": "loanword"
+    },
+    {
+      "original": "コミックス",
+      "translation": "见正文",
+      "type": "loanword"
+    }
+  ]
+}

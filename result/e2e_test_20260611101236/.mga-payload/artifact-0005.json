@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "page_index": 5,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "-a:--0.00 x: 368 y: 481",
+      "texts": [
+        "-a:--0.00",
+        "x: 368",
+        "y: 481"
+      ],
+      "lines": [
+        [
+          [
+            417,
+            544
+          ],
+          [
+            516,
+            544
+          ],
+          [
+            516,
+            572
+          ],
+          [
+            417,
+            572
+          ]
+        ],
+        [
+          [
+            416,
+            567
+          ],
+          [
+            514,
+            567
+          ],
+          [
+            514,
+            598
+          ],
+          [
+            416,
+            598
+          ]
+        ],
+        [
+          [
+            417,
+            595
+          ],
+          [
+            507,
+            592
+          ],
+          [
+            507,
+            620
+          ],
+          [
+            417,
+            623
+          ]
+        ]
+      ],
+      "font_size": 28,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        255,
+        122,
+        125
+      ],
+      "bg_color": [
+        180,
+        92,
+        97
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.7469946751762151
+    },
+    {
+      "index": 1,
+      "text": "a: -4.75 x: 19 y: 1405",
+      "texts": [
+        "a: -4.75",
+        "x: 19",
+        "y: 1405"
+      ],
+      "lines": [
+        [
+          [
+            288,
+            1569
+          ],
+          [
+            414,
+            1567
+          ],
+          [
+            414,
+            1601
+          ],
+          [
+            288,
+            1603
+          ]
+        ],
+        [
+          [
+            309,
+            1594
+          ],
+          [
+            391,
+            1594
+          ],
+          [
+            391,
+            1628
+          ],
+          [
+            309,
+            1628
+          ]
+        ],
+        [
+          [
+            294,
+            1620
+          ],
+          [
+            406,
+            1617
+          ],
+          [
+            407,
+            1652
+          ],
+          [
+            295,
+            1655
+          ]
+        ]
+      ],
+      "font_size": 34,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        255,
+        126,
+        133
+      ],
+      "bg_color": [
+        196,
+        99,
+        111
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.7932417072462966
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    2750,
+    2750,
+    3
+  ]
+}

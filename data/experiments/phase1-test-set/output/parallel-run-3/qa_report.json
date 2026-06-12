@@ -1,0 +1,1860 @@
+{
+  "findings": [
+    {
+      "bubble_id": "region-0001-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '封面设计' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0001-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '萨利达斯' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0002-0000",
+      "category": "fact.number_missing",
+      "confidence": 0.9,
+      "feedback_type": "error",
+      "message": "Number '32' from source not found in translation",
+      "original_text": "32話",
+      "rationale": "Numeric values must be preserved exactly",
+      "suggested_text": "米卡：出现了……是米拉啊。"
+    },
+    {
+      "bubble_id": "region-0002-0000",
+      "category": "fact.possible_addition",
+      "confidence": 0.6,
+      "feedback_type": "warning",
+      "message": "Translation is much longer than source -- possible addition",
+      "original_text": "32話",
+      "rationale": "Extreme length increase may indicate hallucinated content",
+      "suggested_text": "米卡：出现了……是米拉啊。"
+    },
+    {
+      "bubble_id": "region-0002-0007",
+      "category": "fact.possible_omission",
+      "confidence": 0.6,
+      "feedback_type": "warning",
+      "message": "Translation is much shorter than source -- possible omission",
+      "original_text": "CONTENTS",
+      "rationale": "Extreme length reduction may indicate dropped information",
+      "suggested_text": "目录"
+    },
+    {
+      "bubble_id": "region-0002-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '米卡' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0002-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '出现了' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0002-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '是米拉啊' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0002-0000",
+      "category": "hallucination.numbers_lost",
+      "confidence": 0.5,
+      "feedback_type": "warning",
+      "message": "Source contains numbers but translation has none",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0002-0002",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '罪过啊' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0002-0003",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '幕间啦' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0002-0007",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '目录' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0002-0008",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '描摹太阳' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0002-0010",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '变化' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0002-0011",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '番外篇' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0002-0013",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '后记' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0002-0013",
+      "category": "cultural.strategy_inconsistent",
+      "confidence": 0.7,
+      "feedback_type": "warning",
+      "message": "Cultural strategy 'transliterate' for term 'あとがき' is not visible in translation or footnotes",
+      "original_text": "あとがき",
+      "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+      "suggested_text": "あとがき"
+    },
+    {
+      "bubble_id": "region-0002-0000",
+      "category": "style.overflow_risk",
+      "confidence": 0.6,
+      "feedback_type": "suggestion",
+      "message": "Text may overflow bubble -- high character density detected",
+      "original_text": "32話",
+      "rationale": "Translation text density may not fit in the bubble",
+      "suggested_text": "米卡：出现了……是米拉啊。"
+    },
+    {
+      "bubble_id": "region-0003-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '人的末路' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0003-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '这就是爱' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0003-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '怜悯并信' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0003-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '他人' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0003-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '任他人之' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '妖狐' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0004-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '这样的我' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0004-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '就连看到' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '方吗' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '在人类一' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '你还要待' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '跟你可不' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '一样' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '不啊' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '不对哦' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0005-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '真可悲啊' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '也不会例' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '你的下场' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '肯定和我' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '一样呢' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0006-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '那昔日的' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0006-0000",
+      "category": "cultural.strategy_inconsistent",
+      "confidence": 0.7,
+      "feedback_type": "warning",
+      "message": "Cultural strategy 'coined' for term '【32話】' is not visible in translation or footnotes",
+      "original_text": "【32話】",
+      "rationale": "Strategy 'coined' requires visible handling of the source term.",
+      "suggested_text": "【32話】"
+    },
+    {
+      "bubble_id": "region-0007-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '美胡酱' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '小美胡' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0007-0000",
+      "category": "cultural.honorific_removed",
+      "confidence": 0.3,
+      "feedback_type": "suggestion",
+      "message": "Honorific 'ちゃん' from source not present in translation",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0007-0000",
+      "category": "cultural.strategy_inconsistent",
+      "confidence": 0.7,
+      "feedback_type": "warning",
+      "message": "Cultural strategy 'transliterate' for term '美胡ちゃん' is not visible in translation or footnotes",
+      "original_text": "美胡ちゃん",
+      "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+      "suggested_text": "美胡ちゃん"
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "category": "cultural.honorific_removed",
+      "confidence": 0.3,
+      "feedback_type": "suggestion",
+      "message": "Honorific 'ちゃん' from source not present in translation",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "category": "cultural.strategy_inconsistent",
+      "confidence": 0.7,
+      "feedback_type": "warning",
+      "message": "Cultural strategy 'transliterate' for term '美胡ちゃん' is not visible in translation or footnotes",
+      "original_text": "美胡ちゃん",
+      "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+      "suggested_text": "美胡ちゃん"
+    },
+    {
+      "bubble_id": "region-0008-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '刚才有点' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0008-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '走神了呢' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0008-0002",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '是什么来' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0008-0004",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '怎么办才' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0008-0004",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '都快中午' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0008-0004",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '我在想要' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0008-0004",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '好呢' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0008-0006",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '午饭呢' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0008-0007",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '美胡酱' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0008-0007",
+      "category": "cultural.honorific_removed",
+      "confidence": 0.3,
+      "feedback_type": "suggestion",
+      "message": "Honorific 'ちゃん' from source not present in translation",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": ""
+    },
+    {
+      "bubble_id": "region-0008-0007",
+      "category": "cultural.strategy_inconsistent",
+      "confidence": 0.7,
+      "feedback_type": "warning",
+      "message": "Cultural strategy 'transliterate' for term '…美胡ちゃん' is not visible in translation or footnotes",
+      "original_text": "…美胡ちゃん",
+      "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+      "suggested_text": "…美胡ちゃん"
+    }
+  ],
+  "passed": false,
+  "per_page": {
+    "page_0000": [],
+    "page_0001": [
+      {
+        "bubble_id": "region-0001-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '封面设计' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0001-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '萨利达斯' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      }
+    ],
+    "page_0002": [
+      {
+        "bubble_id": "region-0002-0000",
+        "category": "fact.number_missing",
+        "confidence": 0.9,
+        "feedback_type": "error",
+        "message": "Number '32' from source not found in translation",
+        "original_text": "32話",
+        "rationale": "Numeric values must be preserved exactly",
+        "suggested_text": "米卡：出现了……是米拉啊。"
+      },
+      {
+        "bubble_id": "region-0002-0000",
+        "category": "fact.possible_addition",
+        "confidence": 0.6,
+        "feedback_type": "warning",
+        "message": "Translation is much longer than source -- possible addition",
+        "original_text": "32話",
+        "rationale": "Extreme length increase may indicate hallucinated content",
+        "suggested_text": "米卡：出现了……是米拉啊。"
+      },
+      {
+        "bubble_id": "region-0002-0007",
+        "category": "fact.possible_omission",
+        "confidence": 0.6,
+        "feedback_type": "warning",
+        "message": "Translation is much shorter than source -- possible omission",
+        "original_text": "CONTENTS",
+        "rationale": "Extreme length reduction may indicate dropped information",
+        "suggested_text": "目录"
+      },
+      {
+        "bubble_id": "region-0002-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '米卡' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0002-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '出现了' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0002-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '是米拉啊' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0002-0000",
+        "category": "hallucination.numbers_lost",
+        "confidence": 0.5,
+        "feedback_type": "warning",
+        "message": "Source contains numbers but translation has none",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0002-0002",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '罪过啊' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0002-0003",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '幕间啦' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0002-0007",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '目录' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0002-0008",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '描摹太阳' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0002-0010",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '变化' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0002-0011",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '番外篇' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0002-0013",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '后记' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0002-0013",
+        "category": "cultural.strategy_inconsistent",
+        "confidence": 0.7,
+        "feedback_type": "warning",
+        "message": "Cultural strategy 'transliterate' for term 'あとがき' is not visible in translation or footnotes",
+        "original_text": "あとがき",
+        "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+        "suggested_text": "あとがき"
+      },
+      {
+        "bubble_id": "region-0002-0000",
+        "category": "style.overflow_risk",
+        "confidence": 0.6,
+        "feedback_type": "suggestion",
+        "message": "Text may overflow bubble -- high character density detected",
+        "original_text": "32話",
+        "rationale": "Translation text density may not fit in the bubble",
+        "suggested_text": "米卡：出现了……是米拉啊。"
+      }
+    ],
+    "page_0003": [
+      {
+        "bubble_id": "region-0003-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '人的末路' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0003-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '这就是爱' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0003-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '怜悯并信' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0003-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '他人' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0003-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '任他人之' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0003-0001",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '妖狐' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      }
+    ],
+    "page_0004": [
+      {
+        "bubble_id": "region-0004-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '这样的我' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0004-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '就连看到' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0004-0001",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '方吗' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0004-0001",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '在人类一' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0004-0001",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '你还要待' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0004-0002",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '跟你可不' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0004-0002",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '一样' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0004-0003",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '不啊' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0004-0003",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '不对哦' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      }
+    ],
+    "page_0005": [
+      {
+        "bubble_id": "region-0005-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '真可悲啊' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0005-0001",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '也不会例' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0005-0001",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '你的下场' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0005-0002",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '肯定和我' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0005-0002",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '一样呢' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      }
+    ],
+    "page_0006": [
+      {
+        "bubble_id": "region-0006-0001",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '那昔日的' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0006-0000",
+        "category": "cultural.strategy_inconsistent",
+        "confidence": 0.7,
+        "feedback_type": "warning",
+        "message": "Cultural strategy 'coined' for term '【32話】' is not visible in translation or footnotes",
+        "original_text": "【32話】",
+        "rationale": "Strategy 'coined' requires visible handling of the source term.",
+        "suggested_text": "【32話】"
+      }
+    ],
+    "page_0007": [
+      {
+        "bubble_id": "region-0007-0000",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '美胡酱' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0007-0001",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '小美胡' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0007-0000",
+        "category": "cultural.honorific_removed",
+        "confidence": 0.3,
+        "feedback_type": "suggestion",
+        "message": "Honorific 'ちゃん' from source not present in translation",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0007-0000",
+        "category": "cultural.strategy_inconsistent",
+        "confidence": 0.7,
+        "feedback_type": "warning",
+        "message": "Cultural strategy 'transliterate' for term '美胡ちゃん' is not visible in translation or footnotes",
+        "original_text": "美胡ちゃん",
+        "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+        "suggested_text": "美胡ちゃん"
+      },
+      {
+        "bubble_id": "region-0007-0001",
+        "category": "cultural.honorific_removed",
+        "confidence": 0.3,
+        "feedback_type": "suggestion",
+        "message": "Honorific 'ちゃん' from source not present in translation",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0007-0001",
+        "category": "cultural.strategy_inconsistent",
+        "confidence": 0.7,
+        "feedback_type": "warning",
+        "message": "Cultural strategy 'transliterate' for term '美胡ちゃん' is not visible in translation or footnotes",
+        "original_text": "美胡ちゃん",
+        "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+        "suggested_text": "美胡ちゃん"
+      }
+    ],
+    "page_0008": [
+      {
+        "bubble_id": "region-0008-0001",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '刚才有点' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0008-0001",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '走神了呢' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0008-0002",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '是什么来' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0008-0004",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '怎么办才' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0008-0004",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '都快中午' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0008-0004",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '我在想要' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0008-0004",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '好呢' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0008-0006",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '午饭呢' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0008-0007",
+        "category": "hallucination.possible_invented_name",
+        "confidence": 0.4,
+        "feedback_type": "suggestion",
+        "message": "Name '美胡酱' in translation not found in source or known profiles",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0008-0007",
+        "category": "cultural.honorific_removed",
+        "confidence": 0.3,
+        "feedback_type": "suggestion",
+        "message": "Honorific 'ちゃん' from source not present in translation",
+        "original_text": "",
+        "rationale": "",
+        "suggested_text": ""
+      },
+      {
+        "bubble_id": "region-0008-0007",
+        "category": "cultural.strategy_inconsistent",
+        "confidence": 0.7,
+        "feedback_type": "warning",
+        "message": "Cultural strategy 'transliterate' for term '…美胡ちゃん' is not visible in translation or footnotes",
+        "original_text": "…美胡ちゃん",
+        "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+        "suggested_text": "…美胡ちゃん"
+      }
+    ]
+  },
+  "provider_cascade_calls": [
+    {
+      "bubble_id": "region-0002-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "qa_retranslate",
+      "provider": "mimo",
+      "role": "primary"
+    }
+  ],
+  "repair_plan": [
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0001-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '封面设计' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0001-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '萨利达斯' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0000",
+      "category": "fact.number_missing",
+      "confidence": 0.9,
+      "feedback_type": "error",
+      "message": "Number '32' from source not found in translation",
+      "original_text": "32話",
+      "rationale": "Numeric values must be preserved exactly",
+      "suggested_text": "米卡：出现了……是米拉啊。",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0000",
+      "category": "fact.possible_addition",
+      "confidence": 0.6,
+      "feedback_type": "warning",
+      "message": "Translation is much longer than source -- possible addition",
+      "original_text": "32話",
+      "rationale": "Extreme length increase may indicate hallucinated content",
+      "suggested_text": "米卡：出现了……是米拉啊。",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0007",
+      "category": "fact.possible_omission",
+      "confidence": 0.6,
+      "feedback_type": "warning",
+      "message": "Translation is much shorter than source -- possible omission",
+      "original_text": "CONTENTS",
+      "rationale": "Extreme length reduction may indicate dropped information",
+      "suggested_text": "目录",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '米卡' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '出现了' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '是米拉啊' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0000",
+      "category": "hallucination.numbers_lost",
+      "confidence": 0.5,
+      "feedback_type": "warning",
+      "message": "Source contains numbers but translation has none",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0002",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '罪过啊' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0003",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '幕间啦' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0007",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '目录' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0008",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '描摹太阳' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0010",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '变化' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0011",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '番外篇' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0013",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '后记' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0002-0013",
+      "category": "cultural.strategy_inconsistent",
+      "confidence": 0.7,
+      "feedback_type": "warning",
+      "message": "Cultural strategy 'transliterate' for term 'あとがき' is not visible in translation or footnotes",
+      "original_text": "あとがき",
+      "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+      "suggested_text": "あとがき",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_layout_fit",
+      "bubble_id": "region-0002-0000",
+      "category": "style.overflow_risk",
+      "confidence": 0.6,
+      "feedback_type": "suggestion",
+      "message": "Text may overflow bubble -- high character density detected",
+      "original_text": "32話",
+      "rationale": "Translation text density may not fit in the bubble",
+      "suggested_text": "米卡：出现了……是米拉啊。",
+      "target": "layout"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0003-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '人的末路' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0003-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '这就是爱' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0003-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '怜悯并信' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0003-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '他人' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0003-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '任他人之' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0003-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '妖狐' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0004-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '这样的我' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0004-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '就连看到' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0004-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '方吗' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0004-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '在人类一' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0004-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '你还要待' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0004-0002",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '跟你可不' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0004-0002",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '一样' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0004-0003",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '不啊' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0004-0003",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '不对哦' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0005-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '真可悲啊' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0005-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '也不会例' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0005-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '你的下场' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0005-0002",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '肯定和我' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0005-0002",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '一样呢' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0006-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '那昔日的' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0006-0000",
+      "category": "cultural.strategy_inconsistent",
+      "confidence": 0.7,
+      "feedback_type": "warning",
+      "message": "Cultural strategy 'coined' for term '【32話】' is not visible in translation or footnotes",
+      "original_text": "【32話】",
+      "rationale": "Strategy 'coined' requires visible handling of the source term.",
+      "suggested_text": "【32話】",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0007-0000",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '美胡酱' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0007-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '小美胡' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0007-0000",
+      "category": "cultural.honorific_removed",
+      "confidence": 0.3,
+      "feedback_type": "suggestion",
+      "message": "Honorific 'ちゃん' from source not present in translation",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0007-0000",
+      "category": "cultural.strategy_inconsistent",
+      "confidence": 0.7,
+      "feedback_type": "warning",
+      "message": "Cultural strategy 'transliterate' for term '美胡ちゃん' is not visible in translation or footnotes",
+      "original_text": "美胡ちゃん",
+      "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+      "suggested_text": "美胡ちゃん",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0007-0001",
+      "category": "cultural.honorific_removed",
+      "confidence": 0.3,
+      "feedback_type": "suggestion",
+      "message": "Honorific 'ちゃん' from source not present in translation",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0007-0001",
+      "category": "cultural.strategy_inconsistent",
+      "confidence": 0.7,
+      "feedback_type": "warning",
+      "message": "Cultural strategy 'transliterate' for term '美胡ちゃん' is not visible in translation or footnotes",
+      "original_text": "美胡ちゃん",
+      "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+      "suggested_text": "美胡ちゃん",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0008-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '刚才有点' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0008-0001",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '走神了呢' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0008-0002",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '是什么来' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0008-0004",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '怎么办才' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0008-0004",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '都快中午' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0008-0004",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '我在想要' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0008-0004",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '好呢' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0008-0006",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '午饭呢' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0008-0007",
+      "category": "hallucination.possible_invented_name",
+      "confidence": 0.4,
+      "feedback_type": "suggestion",
+      "message": "Name '美胡酱' in translation not found in source or known profiles",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0008-0007",
+      "category": "cultural.honorific_removed",
+      "confidence": 0.3,
+      "feedback_type": "suggestion",
+      "message": "Honorific 'ちゃん' from source not present in translation",
+      "original_text": "",
+      "rationale": "",
+      "suggested_text": "",
+      "target": "semantic"
+    },
+    {
+      "action": "repair_semantic_translation",
+      "bubble_id": "region-0008-0007",
+      "category": "cultural.strategy_inconsistent",
+      "confidence": 0.7,
+      "feedback_type": "warning",
+      "message": "Cultural strategy 'transliterate' for term '…美胡ちゃん' is not visible in translation or footnotes",
+      "original_text": "…美胡ちゃん",
+      "rationale": "Strategy 'transliterate' requires visible handling of the source term.",
+      "suggested_text": "…美胡ちゃん",
+      "target": "semantic"
+    }
+  ],
+  "total_findings": 57
+}

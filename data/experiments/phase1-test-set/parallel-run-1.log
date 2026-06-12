@@ -1,0 +1,3 @@
+Translating data/experiments/phase1-test-set/ -> data/experiments/phase1-test-set/output/parallel-run-1/  (ja -> zh)
+Provider pre-check: testing translation provider connectivity...
+Error: Provider pre-check failed: No provider available for stage 'translation'. Tried: ['mimo']; cascade_errors=[{'operation': 'chat', 'role': 'primary', 'provider': 'mimo', 'error': "Unknown provider: 'mimo'", 'type': 'ProviderError'}]

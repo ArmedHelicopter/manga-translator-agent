@@ -1,0 +1,490 @@
+{
+  "version": 1,
+  "page_index": 3,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "a: 0.00 x:1j738 y:||42",
+      "texts": [
+        "a: 0.00",
+        "x:1j738",
+        "y:||42"
+      ],
+      "lines": [
+        [
+          [
+            1758,
+            162
+          ],
+          [
+            1859,
+            160
+          ],
+          [
+            1860,
+            189
+          ],
+          [
+            1759,
+            191
+          ]
+        ],
+        [
+          [
+            1755,
+            186
+          ],
+          [
+            1863,
+            183
+          ],
+          [
+            1864,
+            213
+          ],
+          [
+            1756,
+            217
+          ]
+        ],
+        [
+          [
+            1767,
+            213
+          ],
+          [
+            1846,
+            207
+          ],
+          [
+            1848,
+            240
+          ],
+          [
+            1770,
+            246
+          ]
+        ]
+      ],
+      "font_size": 29,
+      "angle": -3.0056578380636694,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        255,
+        124,
+        112
+      ],
+      "bg_color": [
+        161,
+        81,
+        81
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.8690468327037713
+    },
+    {
+      "index": 1,
+      "text": "a: -4.14 x: 1243 y: 101",
+      "texts": [
+        "a: -4.14",
+        "x: 1243",
+        "y: 101"
+      ],
+      "lines": [
+        [
+          [
+            1402,
+            477
+          ],
+          [
+            1524,
+            471
+          ],
+          [
+            1526,
+            502
+          ],
+          [
+            1404,
+            507
+          ]
+        ],
+        [
+          [
+            1407,
+            499
+          ],
+          [
+            1518,
+            495
+          ],
+          [
+            1520,
+            528
+          ],
+          [
+            1408,
+            532
+          ]
+        ],
+        [
+          [
+            1413,
+            525
+          ],
+          [
+            1507,
+            519
+          ],
+          [
+            1509,
+            554
+          ],
+          [
+            1415,
+            560
+          ]
+        ]
+      ],
+      "font_size": 30,
+      "angle": -3.51759729704888,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        255,
+        126,
+        136
+      ],
+      "bg_color": [
+        93,
+        56,
+        72
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9132988753367977
+    },
+    {
+      "index": 2,
+      "text": "x…852",
+      "texts": [
+        "x…852"
+      ],
+      "lines": [
+        [
+          [
+            857,
+            360
+          ],
+          [
+            952,
+            359
+          ],
+          [
+            953,
+            392
+          ],
+          [
+            858,
+            393
+          ]
+        ]
+      ],
+      "font_size": 33,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        255,
+        125,
+        131
+      ],
+      "bg_color": [
+        255,
+        125,
+        131
+      ],
+      "source_lang": "bn",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9556047066033687
+    },
+    {
+      "index": 3,
+      "text": "5.49 72I7 261",
+      "texts": [
+        "5.49",
+        "72I7",
+        "261"
+      ],
+      "lines": [
+        [
+          [
+            744,
+            357
+          ],
+          [
+            811,
+            355
+          ],
+          [
+            813,
+            390
+          ],
+          [
+            745,
+            392
+          ]
+        ],
+        [
+          [
+            748,
+            383
+          ],
+          [
+            804,
+            383
+          ],
+          [
+            804,
+            415
+          ],
+          [
+            748,
+            415
+          ]
+        ],
+        [
+          [
+            747,
+            408
+          ],
+          [
+            804,
+            405
+          ],
+          [
+            805,
+            438
+          ],
+          [
+            749,
+            441
+          ]
+        ]
+      ],
+      "font_size": 32,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        253,
+        125,
+        134
+      ],
+      "bg_color": [
+        253,
+        125,
+        134
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9710538185104605
+    },
+    {
+      "index": 4,
+      "text": "0.00 223 97i",
+      "texts": [
+        "0.00",
+        "223",
+        "97i"
+      ],
+      "lines": [
+        [
+          [
+            245,
+            483
+          ],
+          [
+            307,
+            483
+          ],
+          [
+            307,
+            512
+          ],
+          [
+            245,
+            512
+          ]
+        ],
+        [
+          [
+            246,
+            505
+          ],
+          [
+            306,
+            505
+          ],
+          [
+            306,
+            537
+          ],
+          [
+            246,
+            537
+          ]
+        ],
+        [
+          [
+            254,
+            533
+          ],
+          [
+            294,
+            533
+          ],
+          [
+            294,
+            561
+          ],
+          [
+            254,
+            561
+          ]
+        ]
+      ],
+      "font_size": 28,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        254,
+        126,
+        123
+      ],
+      "bg_color": [
+        192,
+        101,
+        100
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9761387773541503
+    },
+    {
+      "index": 5,
+      "text": "x: 46 y: 462",
+      "texts": [
+        "x: 46",
+        "y: 462"
+      ],
+      "lines": [
+        [
+          [
+            62,
+            784
+          ],
+          [
+            141,
+            784
+          ],
+          [
+            141,
+            817
+          ],
+          [
+            62,
+            817
+          ]
+        ],
+        [
+          [
+            52,
+            810
+          ],
+          [
+            146,
+            807
+          ],
+          [
+            147,
+            840
+          ],
+          [
+            53,
+            843
+          ]
+        ]
+      ],
+      "font_size": 33,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        254,
+        126,
+        130
+      ],
+      "bg_color": [
+        235,
+        116,
+        123
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9888161152070936
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    1360,
+    1920,
+    3
+  ]
+}

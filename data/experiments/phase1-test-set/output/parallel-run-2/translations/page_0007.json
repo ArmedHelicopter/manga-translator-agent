@@ -1,0 +1,62 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0007-0000",
+      "reading_order": 0,
+      "source_text": "美胡ちゃん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "reading_order": 1,
+      "source_text": "美胡ちゃん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0007-0002",
+      "reading_order": 2,
+      "source_text": "へっ？",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0007",
+  "page_index": 7,
+  "translations": [
+    {
+      "bubble_id": "region-0007-0000",
+      "confidence": 0.9,
+      "footnotes": [
+        {
+          "original": "ちゃん",
+          "translation": "酱",
+          "type": "loanword"
+        }
+      ],
+      "rationale": "按照语义翻译规则忠实保留人名音译'美胡'与称呼音译'酱'，语气维持中性陈述，适合直接嵌字。",
+      "text": "美胡酱"
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "confidence": 0.85,
+      "footnotes": [],
+      "rationale": "在严格保留'美胡酱'这一称呼的基础上，通过添加句尾语气词'啦'来模拟角色轻松、叙述性的口吻，使其更符合漫画中角色呼唤或提及他人时的自然口语感，适合直接嵌字。",
+      "text": "美胡酱啦。"
+    },
+    {
+      "bubble_id": "region-0007-0002",
+      "confidence": 0.92,
+      "footnotes": [
+        {
+          "original": "へっ？",
+          "translation": "诶？",
+          "type": "sfx"
+        }
+      ],
+      "rationale": "将原文疑问语气调整为更具冲击力的惊讶反应，通过增加感叹号强化情绪，同时保持口语化拟声词特征，适合漫画中突发情境的嵌字需求。",
+      "text": "诶？！"
+    }
+  ]
+}

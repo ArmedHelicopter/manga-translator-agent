@@ -1,0 +1,207 @@
+{
+  "version": 1,
+  "page_index": 3,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "これが人を愛し 慈しみ信じた者の末路さ",
+      "texts": [
+        "これが",
+        "人を愛し 慈しみ",
+        "信じた者の末路さ"
+      ],
+      "lines": [
+        [
+          [
+            2956,
+            381
+          ],
+          [
+            3110,
+            381
+          ],
+          [
+            3110,
+            764
+          ],
+          [
+            2956,
+            764
+          ]
+        ],
+        [
+          [
+            2783,
+            389
+          ],
+          [
+            2919,
+            389
+          ],
+          [
+            2919,
+            1291
+          ],
+          [
+            2783,
+            1291
+          ]
+        ],
+        [
+          [
+            2604,
+            387
+          ],
+          [
+            2739,
+            387
+          ],
+          [
+            2733,
+            1346
+          ],
+          [
+            2598,
+            1346
+          ]
+        ]
+      ],
+      "font_size": 135,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        2,
+        3,
+        1
+      ],
+      "bg_color": [
+        2,
+        3,
+        1
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9995406698845609
+    },
+    {
+      "index": 1,
+      "text": "32話",
+      "texts": [
+        "32話"
+      ],
+      "lines": [
+        [
+          [
+            177,
+            258
+          ],
+          [
+            535,
+            277
+          ],
+          [
+            525,
+            489
+          ],
+          [
+            166,
+            470
+          ]
+        ]
+      ],
+      "font_size": 212,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        5,
+        9,
+        7
+      ],
+      "bg_color": [
+        5,
+        9,
+        7
+      ],
+      "source_lang": "zh",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9672921154567882
+    },
+    {
+      "index": 2,
+      "text": "化け狐",
+      "texts": [
+        "化け狐"
+      ],
+      "lines": [
+        [
+          [
+            1300,
+            2944
+          ],
+          [
+            1521,
+            2944
+          ],
+          [
+            1521,
+            3479
+          ],
+          [
+            1300,
+            3479
+          ]
+        ]
+      ],
+      "font_size": 221,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        1,
+        0,
+        0
+      ],
+      "bg_color": [
+        1,
+        0,
+        0
+      ],
+      "source_lang": "ja",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9999798423475851
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    5334,
+    3750,
+    3
+  ]
+}

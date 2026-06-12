@@ -1,0 +1,36 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0006-0000",
+      "reading_order": 0,
+      "source_text": "【32話】",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0006-0001",
+      "reading_order": 1,
+      "source_text": "昔日の足音",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0006",
+  "page_index": 6,
+  "translations": [
+    {
+      "bubble_id": "region-0006-0000",
+      "confidence": 1.0,
+      "footnotes": [],
+      "rationale": "章节标题属于叙述性文字，保持原文格式和中括号结构不变。无需调整语气或口癖，直接采用标准漫画标题排版。must_preserve内容完整保留。",
+      "text": "【第32话】"
+    },
+    {
+      "bubble_id": "region-0006-0001",
+      "confidence": 0.92,
+      "footnotes": [],
+      "rationale": "添加'那'字作为引导词，使旁白开场更自然流畅；保留句末省略号强化'wistful'的余韵与停顿感，符合漫画气泡的视觉节奏。",
+      "text": "那昔日的足音……"
+    }
+  ]
+}

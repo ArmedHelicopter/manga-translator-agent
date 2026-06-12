@@ -1,0 +1,578 @@
+{
+  "version": 1,
+  "page_index": 7,
+  "text_regions": [
+    {
+      "index": 0,
+      "text": "a: 0.00 x:|1468 y 115",
+      "texts": [
+        "a: 0.00",
+        "x:|1468",
+        "y 115"
+      ],
+      "lines": [
+        [
+          [
+            1480,
+            248
+          ],
+          [
+            1583,
+            246
+          ],
+          [
+            1583,
+            276
+          ],
+          [
+            1480,
+            278
+          ]
+        ],
+        [
+          [
+            1477,
+            273
+          ],
+          [
+            1585,
+            270
+          ],
+          [
+            1586,
+            300
+          ],
+          [
+            1478,
+            303
+          ]
+        ],
+        [
+          [
+            1481,
+            298
+          ],
+          [
+            1577,
+            291
+          ],
+          [
+            1580,
+            327
+          ],
+          [
+            1484,
+            333
+          ]
+        ]
+      ],
+      "font_size": 30,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        255,
+        123,
+        121
+      ],
+      "bg_color": [
+        202,
+        101,
+        103
+      ],
+      "source_lang": "es",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.888223909910962
+    },
+    {
+      "index": 1,
+      "text": "346 x |200 y",
+      "texts": [
+        "346",
+        "x",
+        "|200",
+        "y"
+      ],
+      "lines": [
+        [
+          [
+            391,
+            285
+          ],
+          [
+            454,
+            285
+          ],
+          [
+            454,
+            316
+          ],
+          [
+            391,
+            316
+          ]
+        ],
+        [
+          [
+            361,
+            290
+          ],
+          [
+            405,
+            290
+          ],
+          [
+            405,
+            316
+          ],
+          [
+            361,
+            316
+          ]
+        ],
+        [
+          [
+            390,
+            309
+          ],
+          [
+            452,
+            309
+          ],
+          [
+            452,
+            343
+          ],
+          [
+            390,
+            343
+          ]
+        ],
+        [
+          [
+            356,
+            316
+          ],
+          [
+            403,
+            306
+          ],
+          [
+            409,
+            339
+          ],
+          [
+            362,
+            348
+          ]
+        ]
+      ],
+      "font_size": 26,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        254,
+        124,
+        92
+      ],
+      "bg_color": [
+        254,
+        124,
+        92
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9638086364122397
+    },
+    {
+      "index": 2,
+      "text": "0.00 a 1381 782",
+      "texts": [
+        "0.00",
+        "a",
+        "1381",
+        "782"
+      ],
+      "lines": [
+        [
+          [
+            1443,
+            889
+          ],
+          [
+            1514,
+            889
+          ],
+          [
+            1514,
+            923
+          ],
+          [
+            1443,
+            923
+          ]
+        ],
+        [
+          [
+            1413,
+            898
+          ],
+          [
+            1441,
+            898
+          ],
+          [
+            1441,
+            919
+          ],
+          [
+            1413,
+            919
+          ]
+        ],
+        [
+          [
+            1443,
+            915
+          ],
+          [
+            1514,
+            915
+          ],
+          [
+            1514,
+            945
+          ],
+          [
+            1443,
+            945
+          ]
+        ],
+        [
+          [
+            1446,
+            938
+          ],
+          [
+            1508,
+            938
+          ],
+          [
+            1508,
+            972
+          ],
+          [
+            1446,
+            972
+          ]
+        ]
+      ],
+      "font_size": 21,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        251,
+        121,
+        127
+      ],
+      "bg_color": [
+        236,
+        114,
+        122
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9880722349044567
+    },
+    {
+      "index": 3,
+      "text": "y: 934",
+      "texts": [
+        "y: 934"
+      ],
+      "lines": [
+        [
+          [
+            1215,
+            1042
+          ],
+          [
+            1316,
+            1036
+          ],
+          [
+            1318,
+            1074
+          ],
+          [
+            1216,
+            1080
+          ]
+        ]
+      ],
+      "font_size": 38,
+      "angle": -3.0127874323378023,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        255,
+        127,
+        129
+      ],
+      "bg_color": [
+        255,
+        126,
+        128
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9943612016810651
+    },
+    {
+      "index": 4,
+      "text": "|a: 0.00 x: 318 |y: 1||731",
+      "texts": [
+        "|a: 0.00",
+        "x: 318",
+        "|y: 1||731"
+      ],
+      "lines": [
+        [
+          [
+            320,
+            1796
+          ],
+          [
+            422,
+            1796
+          ],
+          [
+            422,
+            1829
+          ],
+          [
+            320,
+            1829
+          ]
+        ],
+        [
+          [
+            322,
+            1821
+          ],
+          [
+            420,
+            1818
+          ],
+          [
+            420,
+            1852
+          ],
+          [
+            323,
+            1855
+          ]
+        ],
+        [
+          [
+            315,
+            1845
+          ],
+          [
+            423,
+            1844
+          ],
+          [
+            424,
+            1879
+          ],
+          [
+            316,
+            1881
+          ]
+        ]
+      ],
+      "font_size": 33,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        239,
+        132,
+        122
+      ],
+      "bg_color": [
+        169,
+        102,
+        101
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.8757139507605436
+    },
+    {
+      "index": 5,
+      "text": "x: 2!25",
+      "texts": [
+        "x: 2!25"
+      ],
+      "lines": [
+        [
+          [
+            231,
+            2215
+          ],
+          [
+            330,
+            2211
+          ],
+          [
+            332,
+            2246
+          ],
+          [
+            233,
+            2250
+          ]
+        ]
+      ],
+      "font_size": 35,
+      "angle": -3.2704880219744723,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        252,
+        127,
+        130
+      ],
+      "bg_color": [
+        253,
+        126,
+        130
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9579736645560786
+    },
+    {
+      "index": 6,
+      "text": "x: 120 y:|1854",
+      "texts": [
+        "x: 120",
+        "y:|1854"
+      ],
+      "lines": [
+        [
+          [
+            147,
+            1954
+          ],
+          [
+            242,
+            1952
+          ],
+          [
+            243,
+            1986
+          ],
+          [
+            148,
+            1988
+          ]
+        ],
+        [
+          [
+            137,
+            1982
+          ],
+          [
+            251,
+            1977
+          ],
+          [
+            253,
+            2010
+          ],
+          [
+            139,
+            2015
+          ]
+        ]
+      ],
+      "font_size": 33,
+      "angle": 0.0,
+      "direction": "auto",
+      "alignment": "auto",
+      "fg_color": [
+        252,
+        126,
+        107
+      ],
+      "bg_color": [
+        209,
+        106,
+        98
+      ],
+      "source_lang": "en",
+      "target_lang": "CHS",
+      "line_spacing": 1.0,
+      "letter_spacing": 1.0,
+      "bold": false,
+      "italic": false,
+      "font_weight": 50,
+      "default_stroke_width": 0.2,
+      "prob": 0.9209787672913178
+    }
+  ],
+  "render_config": {
+    "renderer": "default",
+    "font_size": null,
+    "font_size_offset": 0,
+    "font_size_minimum": -1,
+    "no_hyphenation": false,
+    "line_spacing": null
+  },
+  "image_shape": [
+    2400,
+    1700,
+    3
+  ]
+}

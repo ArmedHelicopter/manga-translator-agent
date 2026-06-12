@@ -1,0 +1,345 @@
+[manga-translator.local] Log file created: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\log_20260611094932.txt
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\test\testdata\bboxes\1.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1792x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.42028072476387024 y fg: (249, 128, 95) bg: (249, 128, 95)
+[manga-translator.Model48pxOCR] prob: 0.2400396764278412 X:」 fg: (251, 122, 86) bg: (119, 69, 37)
+[manga-translator.Model48pxOCR] prob: 0.7701131701469421 138 fg: (255, 127, 123) bg: (255, 127, 123)
+[manga-translator.Model48pxOCR] prob: 0.5039852857589722 5O9 fg: (253, 131, 127) bg: (253, 131, 127)
+[manga-translator.Model48pxOCR] prob: 0.9080774784088135 1349 fg: (252, 131, 114) bg: (252, 131, 114)
+[manga-translator.Model48pxOCR] prob: 0.9997535347938538 1733 fg: (246, 123, 132) bg: (246, 123, 132)
+[manga-translator.Model48pxOCR] prob: 0.37808433175086975 」2269 fg: (255, 126, 108) bg: (255, 126, 108)
+[manga-translator.Model48pxOCR] prob: 0.4621714651584625 x: O fg: (254, 124, 130) bg: (254, 123, 130)
+[manga-translator.Model48pxOCR] prob: 0.861813485622406 x: 197 fg: (254, 126, 132) bg: (254, 126, 131)
+[manga-translator.Model48pxOCR] prob: 0.9564601182937622 2008 fg: (252, 123, 129) bg: (252, 123, 129)
+[manga-translator.Model48pxOCR] prob: 0.29407361149787903 X:|2186 fg: (255, 127, 126) bg: (255, 127, 126)
+[manga-translator.Model48pxOCR] prob: 0.9321302771568298 y: 37 fg: (253, 124, 136) bg: (253, 124, 135)
+[manga-translator.Model48pxOCR] prob: 0.45021894574165344 a: O!oo fg: (255, 121, 130) bg: (255, 121, 130)
+[manga-translator.Model48pxOCR] prob: 0.9938033223152161 2293 fg: (254, 128, 131) bg: (198, 104, 111)
+[manga-translator.Model48pxOCR] prob: 0.3802795708179474 a: 0.00 fg: (255, 124, 130) bg: (206, 102, 110)
+[manga-translator.Model48pxOCR] prob: 0.9864242076873779 y: 469 fg: (254, 125, 132) bg: (254, 124, 132)
+[manga-translator.Model48pxOCR] prob: 0.7587845921516418 a: o!oo fg: (255, 123, 128) bg: (255, 123, 129)
+[manga-translator.Model48pxOCR] prob: 0.8654129505157471 a: 0.00 fg: (255, 123, 133) bg: (236, 112, 124)
+[manga-translator.Model48pxOCR] prob: 0.7338493466377258 x: 2144 fg: (255, 126, 127) bg: (255, 126, 127)
+[manga-translator.Model48pxOCR] prob: 0.44362038373947144 a:|0.00 fg: (255, 126, 115) bg: (201, 103, 97)
+[manga-translator.Model48pxOCR] prob: 0.9628270864486694 y: 3205 fg: (251, 125, 127) bg: (252, 125, 127)
+[manga-translator.Model48pxOCR] prob: 0.2786976099014282 g:|0.00 fg: (255, 124, 106) bg: (146, 77, 67)
+[manga-translator.Model48pxOCR] prob: 0.9602434039115906 y: 3234 fg: (255, 127, 133) bg: (193, 100, 112)
+[manga-translator.Model48pxOCR] prob: 0.38279348611831665 x: 1037 fg: (255, 123, 136) bg: (194, 99, 113)
+[manga-translator.Model48pxOCR] prob: 0.5775215029716492 a: -4.04 fg: (255, 127, 132) bg: (117, 65, 81)
+[manga-translator.Model48pxOCR] prob: 0.4878177344799042 a: -10.51 fg: (255, 128, 136) bg: (235, 117, 127)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Removed unpaired bracket from "g:|0.00」2269 X:」"
+[manga-translator.local] Filtered out: 2008 2293
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1296x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\e2e_test_20260611094919\.mga-payload\1.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\test\testdata\bboxes\1_upscaled.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1792x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.588739275932312 a: -10.7E fg: (255, 129, 134) bg: (255, 129, 134)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1296x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\e2e_test_20260611094919\.mga-payload\1_upscaled.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\test\testdata\bboxes\2.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2304x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.9899531602859497 992 fg: (255, 123, 127) bg: (255, 123, 127)
+[manga-translator.Model48pxOCR] prob: 0.6278414726257324 229 fg: (248, 130, 135) bg: (248, 130, 135)
+[manga-translator.Model48pxOCR] prob: 0.3096977770328522 x:165 fg: (255, 127, 108) bg: (215, 111, 96)
+[manga-translator.Model48pxOCR] prob: 0.7729625105857849 1285 fg: (254, 127, 122) bg: (199, 103, 105)
+[manga-translator.Model48pxOCR] prob: 0.41992253065109253 19.65 fg: (255, 132, 118) bg: (255, 132, 118)
+[manga-translator.Model48pxOCR] prob: 0.9773761630058289 y: 886 fg: (255, 123, 129) bg: (255, 123, 129)
+[manga-translator.Model48pxOCR] prob: 0.45657721161842346 y:|142 fg: (255, 123, 112) bg: (146, 77, 71)
+[manga-translator.Model48pxOCR] prob: 0.9816408753395081 y: 944 fg: (254, 126, 129) bg: (254, 125, 129)
+[manga-translator.Model48pxOCR] prob: 0.4464331269264221 x:|522 fg: (255, 129, 111) bg: (186, 100, 89)
+[manga-translator.Model48pxOCR] prob: 0.7345145344734192 x: 847 fg: (255, 124, 130) bg: (219, 108, 118)
+[manga-translator.Model48pxOCR] prob: 0.26587843894958496 a: |5.85| fg: (255, 126, 115) bg: (205, 104, 87)
+[manga-translator.Model48pxOCR] prob: 0.6564041972160339 a: 6!17 fg: (255, 120, 128) bg: (97, 56, 65)
+[manga-translator.Model48pxOCR] prob: 0.3722250163555145 x: 1095 fg: (255, 123, 130) bg: (226, 110, 120)
+[manga-translator.Model48pxOCR] prob: 0.6180427074432373 |a: 10.84 fg: (255, 125, 119) bg: (185, 93, 92)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 19.65 229 992
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: 1285
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1320x1640
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\e2e_test_20260611094919\.mga-payload\2.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\test\testdata\bboxes\3.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2560x2048
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.4605623781681061 97i fg: (254, 127, 105) bg: (254, 127, 105)
+[manga-translator.Model48pxOCR] prob: 0.7859644293785095 311 fg: (255, 125, 124) bg: (103, 60, 78)
+[manga-translator.Model48pxOCR] prob: 0.9978134632110596 261 fg: (255, 132, 136) bg: (255, 132, 136)
+[manga-translator.Model48pxOCR] prob: 0.9981257319450378 166 fg: (255, 122, 123) bg: (24, 28, 44)
+[manga-translator.Model48pxOCR] prob: 0.4489698112010956 72I7 fg: (249, 121, 133) bg: (249, 121, 133)
+[manga-translator.Model48pxOCR] prob: 0.4974304735660553 471 fg: (255, 126, 128) bg: (175, 92, 99)
+[manga-translator.Model48pxOCR] prob: 0.9995523691177368 223 fg: (254, 129, 136) bg: (182, 96, 105)
+[manga-translator.Model48pxOCR] prob: 0.975993812084198 5.49 fg: (255, 122, 132) bg: (255, 122, 132)
+[manga-translator.Model48pxOCR] prob: 0.4579397737979889 .9.32 fg: (255, 129, 131) bg: (214, 109, 115)
+[manga-translator.Model48pxOCR] prob: 0.8179618716239929 0.00 fg: (255, 122, 128) bg: (139, 80, 90)
+[manga-translator.Model48pxOCR] prob: 0.9914842247962952 1651 fg: (254, 120, 128) bg: (254, 120, 128)
+[manga-translator.Model48pxOCR] prob: 0.8769227862358093 x: 46 fg: (255, 124, 128) bg: (255, 123, 128)
+[manga-translator.Model48pxOCR] prob: 0.5194798707962036 y:||42 fg: (255, 126, 94) bg: (224, 109, 78)
+[manga-translator.Model48pxOCR] prob: 0.23816417157649994 -3.02 fg: (255, 123, 106) bg: (129, 71, 61)
+[manga-translator.Model48pxOCR] prob: 0.9266375303268433 y: 101 fg: (255, 123, 138) bg: (101, 60, 75)
+[manga-translator.Model48pxOCR] prob: 0.9284095168113708 y: 462 fg: (254, 127, 131) bg: (215, 109, 118)
+[manga-translator.Model48pxOCR] prob: 0.47816595435142517 x…852 fg: (255, 125, 131) bg: (255, 125, 131)
+[manga-translator.Model48pxOCR] prob: 0.4648134708404541 x: 1243 fg: (255, 128, 137) bg: (128, 73, 88)
+[manga-translator.Model48pxOCR] prob: 0.7811281681060791 a: 0.00 fg: (255, 118, 125) bg: (165, 81, 94)
+[manga-translator.Model48pxOCR] prob: 0.23890633881092072 x:1j738 fg: (255, 127, 118) bg: (95, 53, 70)
+[manga-translator.Model48pxOCR] prob: 0.6608797311782837 a: -4.14 fg: (255, 126, 134) bg: (49, 36, 54)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: -3.02 1651 311
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: .9.32 471 166
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1920x1360
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\e2e_test_20260611094919\.mga-payload\3.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\test\testdata\bboxes\4.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1792x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.993588924407959 495 fg: (251, 121, 122) bg: (251, 121, 122)
+[manga-translator.Model48pxOCR] prob: 0.7592170834541321 =y*=852= fg: (253, 131, 84) bg: (116, 67, 46)
+[manga-translator.Model48pxOCR] prob: 0.3301558792591095 a: 0:00 fg: (255, 116, 121) bg: (255, 115, 121)
+[manga-translator.Model48pxOCR] prob: 0.8717764616012573 a: 0.00 fg: (255, 120, 132) bg: (99, 54, 73)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 495
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 800x1280
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\e2e_test_20260611094919\.mga-payload\4.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\test\testdata\bboxes\5.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2560x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.8410413861274719 x: 19 fg: (255, 127, 133) bg: (255, 126, 132)
+[manga-translator.Model48pxOCR] prob: 0.8441588878631592 x: 368 fg: (255, 123, 121) bg: (186, 94, 97)
+[manga-translator.Model48pxOCR] prob: 0.8556668162345886 y: 1405 fg: (255, 125, 132) bg: (162, 85, 99)
+[manga-translator.Model48pxOCR] prob: 0.44855833053588867 y: 481 fg: (254, 124, 130) bg: (216, 107, 114)
+[manga-translator.Model48pxOCR] prob: 0.3265857696533203 -a:--0.00 fg: (255, 120, 123) bg: (139, 76, 81)
+[manga-translator.Model48pxOCR] prob: 0.4540885090827942 a: -4.75 fg: (255, 126, 133) bg: (170, 86, 103)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 2048x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\e2e_test_20260611094919\.mga-payload\5.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\test\testdata\bboxes\6.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.7595122456550598 |72 fg: (250, 126, 129) bg: (23, 23, 41)
+[manga-translator.Model48pxOCR] prob: 0.7029692530632019 y: 262 fg: (255, 123, 124) bg: (255, 123, 125)
+[manga-translator.Model48pxOCR] prob: 0.34345459938049316 Ey:=650: fg: (255, 129, 73) bg: (141, 78, 39)
+[manga-translator.Model48pxOCR] prob: 0.9298950433731079 Ly: 364 fg: (247, 125, 116) bg: (218, 114, 101)
+[manga-translator.Model48pxOCR] prob: 0.88747638463974 y: 154 fg: (255, 120, 133) bg: (139, 71, 86)
+[manga-translator.Model48pxOCR] prob: 0.3116008937358856 X:-460 fg: (253, 120, 100) bg: (216, 106, 89)
+[manga-translator.Model48pxOCR] prob: 0.37953808903694153 3x:_530 fg: (229, 124, 137) bg: (202, 113, 126)
+[manga-translator.Model48pxOCR] prob: 0.683214008808136 a: 0.00 fg: (254, 116, 131) bg: (135, 67, 82)
+[manga-translator.Model48pxOCR] prob: 0.6766337752342224 |2a: 0.00 fg: (201, 130, 149) bg: (90, 81, 100)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: |72
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1448x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\e2e_test_20260611094919\.mga-payload\6.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\test\testdata\bboxes\7.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.8857735991477966 a fg: (243, 116, 128) bg: (243, 116, 128)
+[manga-translator.Model48pxOCR] prob: 0.972206711769104 y fg: (252, 128, 122) bg: (252, 128, 122)
+[manga-translator.Model48pxOCR] prob: 0.3079165816307068 1106 fg: (255, 129, 107) bg: (255, 129, 107)
+[manga-translator.Model48pxOCR] prob: 0.6492727994918823 x fg: (255, 116, 36) bg: (255, 116, 36)
+[manga-translator.Model48pxOCR] prob: 0.6337286829948425 207 fg: (255, 126, 129) bg: (115, 65, 78)
+[manga-translator.Model48pxOCR] prob: 0.9991689324378967 496 fg: (254, 126, 122) bg: (254, 126, 122)
+[manga-translator.Model48pxOCR] prob: 0.9962690472602844 782 fg: (254, 125, 126) bg: (254, 125, 126)
+[manga-translator.Model48pxOCR] prob: 0.557641863822937 |200 fg: (255, 124, 106) bg: (255, 124, 106)
+[manga-translator.Model48pxOCR] prob: 0.8679763674736023 103 fg: (255, 128, 119) bg: (98, 52, 64)
+[manga-translator.Model48pxOCR] prob: 0.9978914260864258 429 fg: (255, 130, 125) bg: (255, 130, 125)
+[manga-translator.Model48pxOCR] prob: 0.9977914094924927 192 fg: (253, 125, 135) bg: (253, 125, 135)
+[manga-translator.Model48pxOCR] prob: 0.7264870405197144 346 fg: (254, 129, 104) bg: (254, 129, 104)
+[manga-translator.Model48pxOCR] prob: 0.8837343454360962 0.00 fg: (255, 133, 92) bg: (203, 103, 82)
+[manga-translator.Model48pxOCR] prob: 0.7484733462333679 0.00 fg: (255, 117, 129) bg: (255, 117, 129)
+[manga-translator.Model48pxOCR] prob: 0.9517675042152405 0.00 fg: (255, 126, 117) bg: (255, 126, 117)
+[manga-translator.Model48pxOCR] prob: 0.9996723532676697 1381 fg: (251, 125, 124) bg: (193, 98, 105)
+[manga-translator.Model48pxOCR] prob: 0.8225798010826111 0.00 fg: (255, 124, 128) bg: (43, 39, 58)
+[manga-translator.Model48pxOCR] prob: 0.22541217505931854 y 115 fg: (255, 124, 127) bg: (255, 124, 127)
+[manga-translator.Model48pxOCR] prob: 0.9093807339668274 y: 934 fg: (255, 127, 129) bg: (255, 126, 128)
+[manga-translator.Model48pxOCR] prob: 0.5548762679100037 x: 120 fg: (249, 124, 120) bg: (249, 124, 120)
+[manga-translator.Model48pxOCR] prob: 0.4480464458465576 x: 2!25 fg: (252, 127, 130) bg: (253, 126, 130)
+[manga-translator.Model48pxOCR] prob: 0.4637758433818817 x: 318 fg: (255, 126, 130) bg: (221, 111, 118)
+[manga-translator.Model48pxOCR] prob: 0.2940387427806854 |y: 1||731 fg: (226, 128, 112) bg: (127, 90, 90)
+[manga-translator.Model48pxOCR] prob: 0.6644718647003174 |a: 0.00 fg: (237, 141, 123) bg: (160, 104, 95)
+[manga-translator.Model48pxOCR] prob: 0.6193048357963562 a: 0.00 fg: (255, 119, 125) bg: (222, 107, 113)
+[manga-translator.Model48pxOCR] prob: 0.40148016810417175 y:|1854 fg: (255, 127, 94) bg: (169, 87, 76)
+[manga-translator.Model48pxOCR] prob: 0.7099740505218506 x:|1468 fg: (255, 125, 110) bg: (130, 71, 68)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 0.00 496 1106
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: 0.00 192 207
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: 0.00 103 429
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1456x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\e2e_test_20260611094919\.mga-payload\7.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\test\testdata\bboxes\8.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 1792x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.462343692779541 |78 fg: (247, 127, 82) bg: (247, 127, 82)
+[manga-translator.Model48pxOCR] prob: 0.441667377948761 -4311 fg: (255, 130, 99) bg: (209, 112, 92)
+[manga-translator.Model48pxOCR] prob: 0.9979311227798462 234 fg: (255, 127, 122) bg: (255, 127, 122)
+[manga-translator.Model48pxOCR] prob: 0.9991965293884277 519 fg: (255, 129, 129) bg: (255, 129, 129)
+[manga-translator.Model48pxOCR] prob: 0.22971633076667786 i137 fg: (255, 127, 93) bg: (255, 127, 93)
+[manga-translator.Model48pxOCR] prob: 0.9241336584091187 998 fg: (255, 126, 123) bg: (255, 126, 123)
+[manga-translator.Model48pxOCR] prob: 0.6515462398529053 |406 fg: (255, 120, 108) bg: (255, 120, 108)
+[manga-translator.Model48pxOCR] prob: 0.9371137619018555 |167 fg: (252, 130, 104) bg: (71, 54, 25)
+[manga-translator.Model48pxOCR] prob: 0.8663329482078552 |839 fg: (255, 125, 93) bg: (255, 125, 93)
+[manga-translator.Model48pxOCR] prob: 0.9993059635162354 483 fg: (255, 123, 126) bg: (255, 123, 126)
+[manga-translator.Model48pxOCR] prob: 0.8994747996330261 130 fg: (255, 123, 121) bg: (15, 21, 27)
+[manga-translator.Model48pxOCR] prob: 0.8962442874908447 |170 fg: (252, 115, 91) bg: (252, 115, 91)
+[manga-translator.Model48pxOCR] prob: 0.5675751566886902 |529 fg: (255, 130, 126) bg: (255, 130, 126)
+[manga-translator.Model48pxOCR] prob: 0.9560576677322388 537 fg: (252, 129, 117) bg: (252, 129, 117)
+[manga-translator.Model48pxOCR] prob: 0.9991129636764526 438 fg: (255, 126, 127) bg: (255, 126, 127)
+[manga-translator.Model48pxOCR] prob: 0.8359807729721069 |720 fg: (191, 133, 136) bg: (105, 105, 92)
+[manga-translator.Model48pxOCR] prob: 0.4100167453289032 0.00 fg: (255, 119, 127) bg: (255, 119, 127)
+[manga-translator.Model48pxOCR] prob: 0.8457819223403931 0.00 fg: (255, 122, 117) bg: (255, 122, 117)
+[manga-translator.Model48pxOCR] prob: 0.6231014728546143 0.00 fg: (255, 122, 126) bg: (200, 100, 105)
+[manga-translator.Model48pxOCR] prob: 0.9936867356300354 1384 fg: (255, 125, 117) bg: (255, 125, 117)
+[manga-translator.Model48pxOCR] prob: 0.5574786067008972 0.00 fg: (255, 125, 127) bg: (255, 125, 127)
+[manga-translator.Model48pxOCR] prob: 0.5029733180999756 O.OO fg: (255, 120, 123) bg: (255, 120, 123)
+[manga-translator.Model48pxOCR] prob: 0.6709660887718201 0.00 fg: (255, 123, 110) bg: (78, 48, 67)
+[manga-translator.Model48pxOCR] prob: 0.9376745223999023 y:L97 fg: (203, 123, 135) bg: (83, 91, 74)
+[manga-translator.Model48pxOCR] prob: 0.9675913453102112 0.00 fg: (255, 125, 114) bg: (202, 101, 98)
+[manga-translator.Model48pxOCR] prob: 0.6533190608024597 0.00 fg: (255, 122, 123) bg: (255, 122, 123)
+[manga-translator.Model48pxOCR] prob: 0.5358993411064148 y: 4 fg: (236, 129, 134) bg: (127, 106, 109)
+[manga-translator.Model48pxOCR] prob: 0.29075300693511963 x:|912 fg: (214, 132, 136) bg: (199, 138, 126)
+[manga-translator.Model48pxOCR] prob: 0.28082311153411865 x:|978 fg: (212, 125, 135) bg: (195, 130, 124)
+[manga-translator.Model48pxOCR] prob: 0.5720037817955017 x:|993 fg: (208, 128, 132) bg: (198, 135, 120)
+[manga-translator.Model48pxOCR] prob: 0.5952274799346924 x:|636 fg: (210, 126, 129) bg: (162, 117, 107)
+[manga-translator.Model48pxOCR] prob: 0.4739284813404083 y: 1469 fg: (255, 129, 132) bg: (159, 90, 99)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: 0.00 537 |78
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: 0.00 -4311 519
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: 0.00 234 998
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: 0.00 |406 |167
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: |839 130
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: 0.00 |170 1384
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Filtered out: 0.00
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1120x1600
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\e2e_test_20260611094919\.mga-payload\8.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\test\testdata\bboxes\9.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.5357056260108948 y:||9 fg: (255, 131, 88) bg: (218, 112, 73)
+[manga-translator.Model48pxOCR] prob: 0.27139973640441895 X:0 fg: (255, 123, 136) bg: (105, 55, 75)
+[manga-translator.Model48pxOCR] prob: 0.8910154104232788 y: 73 fg: (255, 127, 134) bg: (255, 127, 134)
+[manga-translator.Model48pxOCR] prob: 0.21533386409282684 y:|20' fg: (255, 125, 114) bg: (223, 110, 100)
+[manga-translator.Model48pxOCR] prob: 0.5994712710380554 x: 484 fg: (255, 129, 130) bg: (255, 129, 130)
+[manga-translator.Model48pxOCR] prob: 0.9690935015678406 y: 771 fg: (253, 123, 138) bg: (215, 105, 123)
+[manga-translator.Model48pxOCR] prob: 0.9578163623809814 y: 933 fg: (255, 125, 133) bg: (220, 109, 119)
+[manga-translator.Model48pxOCR] prob: 0.6384310722351074 X: 969 fg: (255, 131, 129) bg: (255, 130, 128)
+[manga-translator.Model48pxOCR] prob: 0.48714226484298706 x: 213 fg: (255, 128, 135) bg: (103, 62, 78)
+[manga-translator.Model48pxOCR] prob: 0.6136308312416077 x: 527 fg: (255, 128, 136) bg: (149, 79, 96)
+[manga-translator.Model48pxOCR] prob: 0.8125951290130615 |y: 803 fg: (220, 119, 120) bg: (139, 82, 90)
+[manga-translator.Model48pxOCR] prob: 0.6038892865180969 x: 866 fg: (255, 124, 131) bg: (221, 108, 117)
+[manga-translator.Model48pxOCR] prob: 0.3128286898136139 y: 1475 fg: (240, 120, 124) bg: (240, 120, 124)
+[manga-translator.Model48pxOCR] prob: 0.24139195680618286 a: 0.00 fg: (255, 124, 113) bg: (103, 53, 71)
+[manga-translator.Model48pxOCR] prob: 0.7566549777984619 a: 0.00 fg: (255, 117, 126) bg: (197, 94, 105)
+[manga-translator.Model48pxOCR] prob: 0.3162229359149933 x: 1|013 fg: (255, 129, 126) bg: (174, 89, 94)
+[manga-translator.Model48pxOCR] prob: 0.4163529574871063 a: -5.28 fg: (255, 124, 134) bg: (94, 55, 68)
+[manga-translator.Model48pxOCR] prob: 0.25530824065208435 a: -9.93 fg: (253, 125, 127) bg: (144, 75, 87)
+[manga-translator.Model48pxOCR] prob: 0.4622737765312195 a: -11.96 fg: (254, 120, 130) bg: (147, 75, 89)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Removed unpaired bracket from "a: 0.00 x: 484 y:|20'"
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1160x1640
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\e2e_test_20260611094919\.mga-payload\9.png"
+[manga-translator.local] Translating: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\test\testdata\bboxes\10.png"
+[manga-translator.local] Loading models
+[manga-translator.local] Running text detection
+[manga-translator.DefaultDetector] Detection resolution: 2048x2560
+[manga-translator.local] Running ocr
+[manga-translator.Model48pxOCR] prob: 0.6780273914337158 1339 fg: (253, 132, 135) bg: (253, 132, 135)
+[manga-translator.Model48pxOCR] prob: 0.9975647926330566 1948 fg: (254, 128, 129) bg: (254, 128, 129)
+[manga-translator.Model48pxOCR] prob: 0.5152098536491394 ||2569 fg: (250, 127, 98) bg: (250, 127, 98)
+[manga-translator.Model48pxOCR] prob: 0.5318620800971985 ||1608 fg: (255, 126, 87) bg: (220, 110, 76)
+[manga-translator.Model48pxOCR] prob: 0.31892529129981995 a: 0.00 fg: (252, 122, 134) bg: (252, 121, 134)
+[manga-translator.Model48pxOCR] prob: 0.3787505328655243 X: 1645 fg: (250, 123, 125) bg: (251, 122, 125)
+[manga-translator.Model48pxOCR] prob: 0.4231502115726471 a: 0.00 fg: (255, 128, 121) bg: (213, 105, 108)
+[manga-translator.Model48pxOCR] prob: 0.20007425546646118 |a: o!oo fg: (252, 128, 120) bg: (220, 127, 111)
+[manga-translator.Model48pxOCR] prob: 0.2087135910987854 _y:_3240 fg: (253, 126, 116) bg: (179, 94, 86)
+[manga-translator.Model48pxOCR] prob: 0.8033088445663452 x: 982 fg: (255, 128, 133) bg: (255, 127, 133)
+[manga-translator.Model48pxOCR] prob: 0.8592870831489563 a: 0.00 fg: (255, 120, 133) bg: (201, 97, 112)
+[manga-translator.Model48pxOCR] prob: 0.6946848630905151 y: 31]86 fg: (255, 127, 111) bg: (172, 84, 98)
+[manga-translator.local] Running textline merge
+[manga-translator.local] Filtered out: ||2569 ||1608
+[manga-translator.local] Reason: Text is not considered valuable.
+[manga-translator.local] Removed unpaired bracket from "|a: o!oo X: 1645 y: 31]86"
+[manga-translator.local] Running post-ocr text reorder
+[manga-translator.local] No pre-translation replacements made.
+[manga-translator.local] Running text translation
+[manga-translator.local] Running mask refinement
+[manga-translator.LamaLargeInpainter] Inpainting resolution: 1448x2048
+[manga-translator.local] Saving "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\e2e_test_20260611094919\.mga-payload\10.png"
+[manga-translator.local] Done. Translated 11 images in 1.5 minutes
+[manga-translator.local] Results saved to: "C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\e2e_test_20260611094919\.mga-payload"

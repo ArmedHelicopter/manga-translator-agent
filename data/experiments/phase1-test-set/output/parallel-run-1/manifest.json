@@ -1,0 +1,396 @@
+{
+  "project_name": "phase1-test-set",
+  "source_lang": "ja",
+  "target_lang": "zh",
+  "page_count": 10,
+  "pages": [
+    {
+      "page_id": "page_0000",
+      "index": 0,
+      "image_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\experiments\\phase1-test-set\\.mga-payload\\.runtime-input\\page-0000.png",
+      "translations": [
+        {
+          "bubble_id": "region-0000-0000",
+          "text": "电击漫画NEXT",
+          "rationale": "该文本为专有名词『电击漫画NEXT』，属于出版品牌名称，在语义翻译中已标记为必须保留。作为中性叙述，无需调整语气或句式，直接保持原样即可适合漫画嵌字。",
+          "confidence": 1.0,
+          "footnotes": [
+            {
+              "original": "電撃コミックスNEXT",
+              "translation": "电击漫画NEXT",
+              "type": "loanword"
+            },
+            {
+              "original": "コミックス",
+              "translation": "见正文",
+              "type": "loanword"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "page_id": "page_0001",
+      "index": 1,
+      "image_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\experiments\\phase1-test-set\\.mga-payload\\.runtime-input\\page-0001.png",
+      "translations": [
+        {
+          "bubble_id": "region-0001-0000",
+          "text": "SALIDAS",
+          "rationale": "作为封面标题，'SALIDAS'是必须保留的专有名词，符合语义层规则中的must_preserve要求。语义翻译为叙述性文本且情感中性，因此直接保留原词，不进行意译或添加额外解释，确保适合漫画嵌字。",
+          "confidence": 0.95,
+          "footnotes": []
+        }
+      ]
+    },
+    {
+      "page_id": "page_0002",
+      "index": 2,
+      "image_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\experiments\\phase1-test-set\\.mga-payload\\.runtime-input\\page-0002.png",
+      "translations": [
+        {
+          "bubble_id": "region-0002-0000",
+          "text": "第32话",
+          "rationale": "QA re-translated: Number '32' from source not found in translation; Translation is much longer than source -- possible addition; Name '切勿再谈' in translation not found in source or known profiles; Name '保重' in translation not found in source or known profiles; Name '之人皆化' in translation not found in source or known profiles; Name '夺取钥匙' in translation not found in source or known profiles; Name '为亡魂' in translation not found in source or known profiles; Name '森罗' in translation not found in source or known profiles; Name '钥匙之事' in translation not found in source or known profiles; Name '根据记载' in translation not found in source or known profiles; Name '今后' in translation not found in source or known profiles; Name '已查实牺' in translation not found in source or known profiles; Name '牲者七名' in translation not found in source or known profiles; Source contains numbers but translation has none; Text may overflow bubble -- high character density detected",
+          "confidence": 0.95,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0002-0001",
+          "text": "昔日的脚步声呢",
+          "rationale": "在保留原句‘昔日的脚步声’语义核心的前提下，通过添加句尾语气词‘呢’，将略显书面的叙述转化为带有回忆与追思感的口语化独白，使其更符合漫画对话中角色喃喃自语或旁白追忆的氛围，同时完全不影响原有指代与事件逻辑。",
+          "confidence": 0.95,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0002-0002",
+          "text": "罪过...",
+          "rationale": "在保留原文核心词汇「罪过」的基础上，通过添加省略号「...」来营造一种低语、忏悔的语气，增强了 guilt/remorse 的情感层次，使其更符合角色内心挣扎时的喃喃自语感。",
+          "confidence": 0.98,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0002-0003",
+          "text": "幕间……",
+          "rationale": "在'幕间'后增加省略号，既保持了原术语的准确性，又通过标点模拟出场景转换的停顿感和叙事留白，更适合漫画分镜的视觉节奏。",
+          "confidence": 0.9,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0002-0004",
+          "text": "社美胡",
+          "rationale": "角色名「社美胡」必须保留，未做语义改变；基于中性叙述语调，适合漫画对话的直接嵌字，无额外调整。",
+          "confidence": 0.85,
+          "footnotes": [
+            {
+              "original": "シャミ子",
+              "translation": "社美子",
+              "type": "loanword"
+            }
+          ]
+        },
+        {
+          "bubble_id": "region-0002-0005",
+          "text": "第34话",
+          "rationale": "QA re-translated: Number '34' from source not found in translation; Translation is much longer than source -- possible addition; Name '这次由我' in translation not found in source or known profiles; Name '小野寺同' in translation not found in source or known profiles; Name '听好了' in translation not found in source or known profiles; Name '停一下' in translation not found in source or known profiles; Name '拍桌' in translation not found in source or known profiles; Name '诸位' in translation not found in source or known profiles; Source contains numbers but translation has none; Text may overflow bubble -- high character density detected",
+          "confidence": 0.95,
+          "footnotes": [
+            {
+              "original": "ドン",
+              "translation": "咚",
+              "type": "sfx"
+            }
+          ]
+        },
+        {
+          "bubble_id": "region-0002-0006",
+          "text": "真是惭愧的辙痕啊。",
+          "rationale": "在保持原意的基础上，添加了语气词'啊'和强调词'真是'，以增强羞耻情绪并使其更口语化，适合漫画对话的嵌字要求。",
+          "confidence": 0.9,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0002-0007",
+          "text": "目录！",
+          "rationale": "将中性翻译调整为更具宣布感的漫画标题语气，通过增加感叹号强化视觉和语气上的提示，使‘内容’更贴近漫画目录或章节页的常见表达，同时未改变其核心指代。",
+          "confidence": 0.85,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0002-0008",
+          "text": "日冕物语",
+          "rationale": "将直译‘为太阳镶边的事物’提炼为更具文学意象的‘日冕’，既准确对应原文中太阳边缘发光的视觉意象，又符合漫画标题常见的诗意简洁风格。‘物语’补充了‘事物’的叙事性内涵，使标题更完整且富有韵律。",
+          "confidence": 0.9,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0002-0009",
+          "text": "第36话的翻译框架和规则我收到了，但原文好像没附上呢。请提供漫画里的日文文本，我会按规则翻译并返回JSON哦。",
+          "rationale": "为了适合漫画嵌字，将原始技术性文本转化为更亲切、直接的口语化请求，保留核心事实（缺少原文、请求提供日文文本），并省略了列表细节以保持紧凑。",
+          "confidence": 0.9,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0002-0010",
+          "text": "变化了",
+          "rationale": "在必须保留的术语'变化'后添加语气助词'了'，使其符合中文口语陈述的节奏，更自然地嵌入漫画对话框，同时未改变核心语义。",
+          "confidence": 0.95,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0002-0011",
+          "text": "番外篇",
+          "rationale": "“番外篇”是中文漫画的标准术语，直接沿用最符合行业习惯与语义要求。语气中性，无需额外修饰，确保与漫画原文字体、排版风格自然融合。",
+          "confidence": 1.0,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0002-0012",
+          "text": "哇！好想吃啊——！ 2",
+          "rationale": "QA re-translated: Number '2' from source not found in translation; Name '肚子好饿' in translation not found in source or known profiles; Source contains numbers but translation has none",
+          "confidence": 0.9,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0002-0013",
+          "text": "第174页后记",
+          "rationale": "将'后记 174'调整为更符合中文阅读习惯的'第174页后记'，使页码引用更清晰自然，同时保持原意。语气更贴近日常叙述，适合嵌字排版。",
+          "confidence": 0.95,
+          "footnotes": []
+        }
+      ]
+    },
+    {
+      "page_id": "page_0003",
+      "index": 3,
+      "image_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\experiments\\phase1-test-set\\.mga-payload\\.runtime-input\\page-0003.png",
+      "translations": [
+        {
+          "bubble_id": "region-0003-0000",
+          "text": "爱过、怜悯并信任过——这就是末路呵。",
+          "rationale": "在保持原意（爱、怜悯、信任的行为与末路）的基础上，通过增补句末语气词‘呵’模仿日语终助词‘さ’的无奈感叹感；使用破折号与断句节奏还原原文中间的停顿与沉重语气，增强角色反思时的沧桑与宿命感。",
+          "confidence": 0.92,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0003-0001",
+          "text": "化け狐",
+          "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0003-0001': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+          "confidence": 0.0,
+          "footnotes": []
+        }
+      ]
+    },
+    {
+      "page_id": "page_0004",
+      "index": 4,
+      "image_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\experiments\\phase1-test-set\\.mga-payload\\.runtime-input\\page-0004.png",
+      "translations": [
+        {
+          "bubble_id": "region-0004-0000",
+          "text": "こんなあたしを見てなお",
+          "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0004-0000': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+          "confidence": 0.0,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0004-0001",
+          "text": "你还打算继续待在人类这边吗？",
+          "rationale": "在语义翻译基础上添加'还'以强化好奇情绪和持续性疑问，保持直接口语化疑问句式，适合漫画嵌字风格，未改变事实或must_preserve内容。",
+          "confidence": 0.95,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0004-0002",
+          "text": "…我跟你，就是不同！",
+          "rationale": "将直译调整为更口语化、强势的漫画对白，增强对抗语气并适合嵌字，同时保持原意和指代。",
+          "confidence": 0.9,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0004-0003",
+          "text": "才不是呢",
+          "rationale": "基于语义翻译的'才不是呢'，保留了源文本的口语化否定风格，符合'casual denial'的emotion；通过'呢'字增强随意口吻，适合漫画对话直接嵌字，未改变事实或逻辑。",
+          "confidence": 0.85,
+          "footnotes": []
+        }
+      ]
+    },
+    {
+      "page_id": "page_0005",
+      "index": 5,
+      "image_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\experiments\\phase1-test-set\\.mga-payload\\.runtime-input\\page-0005.png",
+      "translations": [
+        {
+          "bubble_id": "region-0005-0000",
+          "text": "可悲罢了",
+          "rationale": "将语气词'啊'替换为'罢了'，以模拟日语原文'かな'更接近自言自语、略带咏叹与宿命感的语气，使悲伤情绪更深沉内敛，且符合漫画气泡的简洁要求。",
+          "confidence": 0.95,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0005-0001",
+          "text": "你往后的路…",
+          "rationale": "将“就连你的前程也……”凝练为“你往后的路…”，更符合漫画气泡的简洁要求；保留省略号传递未竟的威胁感；“路”比“前程”更具口语化和视觉化冲击力，与漫画叙事风格契合。未改变第二人称指代或事件逻辑。",
+          "confidence": 0.92,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0005-0002",
+          "text": "一定和我一样呢……",
+          "rationale": "在保留自信语气的基础上，添加句尾语气词「呢」贴合女性角色口吻，与原文「あたし」的性别暗示一致；省略号保留犹豫/意味未尽的留白感，适合漫画嵌字节奏。",
+          "confidence": 0.92,
+          "footnotes": []
+        }
+      ]
+    },
+    {
+      "page_id": "page_0006",
+      "index": 6,
+      "image_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\experiments\\phase1-test-set\\.mga-payload\\.runtime-input\\page-0006.png",
+      "translations": [
+        {
+          "bubble_id": "region-0006-0000",
+          "text": "第32话",
+          "rationale": "标题为中性陈述，且必须保留数字32；标准中文漫画标题格式简洁，无需调整语气或句式以适合直接嵌字。",
+          "confidence": 0.95,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0006-0001",
+          "text": "旧时脚步",
+          "rationale": "将书面化、稍显文雅的‘昔日的足音’调整为更简洁、更具画面感的‘旧时脚步’。这使其更符合漫画对白简洁、直接的嵌字要求，同时保留了‘往昔的时间感’与‘声音意象’，口语化程度增加但情感基调（怀旧）未变。",
+          "confidence": 0.9,
+          "footnotes": []
+        }
+      ]
+    },
+    {
+      "page_id": "page_0007",
+      "index": 7,
+      "image_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\experiments\\phase1-test-set\\.mga-payload\\.runtime-input\\page-0007.png",
+      "translations": [
+        {
+          "bubble_id": "region-0007-0000",
+          "text": "美胡酱",
+          "rationale": "采用中文漫画常见的昵称后缀「酱」本地化日文「ちゃん」，保持中性叙述语气，符合中文读者对漫画角色名称的阅读习惯。",
+          "confidence": 0.95,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0007-0001",
+          "text": "美胡酱",
+          "rationale": "语义翻译已正确保留日语亲昵称呼'ちゃん'的对应形式'酱'，情绪标注为中性陈述，无需额外语气调整。直接采用音译名'美胡酱'作为最终嵌字文本，符合对角色昵称的自然呼唤。",
+          "confidence": 0.95,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0007-0002",
+          "text": "へっ？",
+          "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0007-0002': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+          "confidence": 0.0,
+          "footnotes": [
+            {
+              "original": "へっ",
+              "translation": "嗯",
+              "type": "sfx"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "page_id": "page_0008",
+      "index": 8,
+      "image_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\experiments\\phase1-test-set\\.mga-payload\\.runtime-input\\page-0008.png",
+      "translations": [
+        {
+          "bubble_id": "region-0008-0000",
+          "text": "哎呀，抱歉抱歉",
+          "rationale": "将直译的‘啊’调整为更口语化且带有突然意识到意味的‘哎呀’；将稍显正式的‘对不起对不起’替换为朋友间更常用、语气更轻松的‘抱歉抱歉’，使整体道歉听起来更自然亲切，符合日常口语场景。",
+          "confidence": 0.92,
+          "footnotes": [
+            {
+              "original": "あー",
+              "translation": "啊",
+              "type": "sfx"
+            }
+          ]
+        },
+        {
+          "bubble_id": "region-0008-0001",
+          "text": "ちょっとボーっとしちゃってた",
+          "rationale": "provider failure; human translation required: Persona rendering provider failed for bubble 'region-0008-0001': No provider available for stage 'translation'. Tried: ['mimo']; low confidence; human translation required",
+          "confidence": 0.0,
+          "footnotes": [
+            {
+              "original": "ボー",
+              "translation": "发呆",
+              "type": "sfx"
+            }
+          ]
+        },
+        {
+          "bubble_id": "region-0008-0002",
+          "text": "呃…叫什么来着？",
+          "rationale": "语义翻译已准确传达犹豫和自问的语气，使用'呃…'对应原文短暂停顿，'叫什么来着？'保持口语化回忆功能。微调聚焦于强化漫画对话的自然节奏，通过省略号增强停顿感，适合直接嵌字且不改变语义核心。",
+          "confidence": 0.93,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0008-0003",
+          "text": "嗯",
+          "rationale": "保留原语义中的肯定与简短回应特质，未添加口癖或敬语变化以符合漫画日常对话的简洁性。",
+          "confidence": 0.9,
+          "footnotes": [
+            {
+              "original": "うん",
+              "translation": "嗯",
+              "type": "sfx"
+            }
+          ]
+        },
+        {
+          "bubble_id": "region-0008-0004",
+          "text": "马上中午了，我该怎么办才好呢…",
+          "rationale": "调整语气以增强犹豫感，通过缩短句子和添加口语化结尾词'呢'，使对话更贴合漫画中的口语化和情感表达，同时保留原语义和事件逻辑。",
+          "confidence": 0.9,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0008-0005",
+          "text": "啊...嗯...",
+          "rationale": "基于原音效'啊嗯'的犹豫语义，添加省略号模拟思考停顿，增强漫画对话的节奏感和情感表达，适合直接嵌字。",
+          "confidence": 0.85,
+          "footnotes": [
+            {
+              "original": "あーうん",
+              "translation": "啊嗯",
+              "type": "sfx"
+            }
+          ]
+        },
+        {
+          "bubble_id": "region-0008-0006",
+          "text": "午饭…呢……",
+          "rationale": "将语气词‘呢’后增加省略号长度，更贴合口语中犹豫不决的拖长音感，同时保留核心指代‘午饭’与原句未完成语态。",
+          "confidence": 0.92,
+          "footnotes": []
+        },
+        {
+          "bubble_id": "region-0008-0007",
+          "text": "…美胡酱",
+          "rationale": "直接沿用语义翻译中已音译的“美胡酱”，保留原称呼的发音与亲昵感，符合中文漫画对话习惯，无需额外调整语气或句式。",
+          "confidence": 1.0,
+          "footnotes": []
+        }
+      ]
+    },
+    {
+      "page_id": "page_0009",
+      "index": 9,
+      "image_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\experiments\\phase1-test-set\\.mga-payload\\.runtime-input\\page-0009.png",
+      "translations": []
+    }
+  ]
+}

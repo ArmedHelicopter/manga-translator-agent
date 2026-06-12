@@ -1,0 +1,62 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0007-0000",
+      "reading_order": 0,
+      "source_text": "美胡ちゃん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "reading_order": 1,
+      "source_text": "美胡ちゃん",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0007-0002",
+      "reading_order": 2,
+      "source_text": "へっ？",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0007",
+  "page_index": 7,
+  "translations": [
+    {
+      "bubble_id": "region-0007-0000",
+      "confidence": 0.95,
+      "footnotes": [
+        {
+          "original": "ちゃん",
+          "translation": "酱",
+          "type": "loanword"
+        }
+      ],
+      "rationale": "在原译基础上增加句尾波浪号，营造漫画对话常见的轻柔、亲昵语调，更贴合“ちゃん”原本的亲昵语境与漫画对白风格，同时完全保留核心称呼“美胡酱”。",
+      "text": "美胡酱~"
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "选择「小美胡」作为译法，符合中文漫画对亲近角色名添加「小」前缀的常见习惯，准确传达了原文亲昵的呼唤语气。",
+      "text": "小美胡"
+    },
+    {
+      "bubble_id": "region-0007-0002",
+      "confidence": 0.9,
+      "footnotes": [
+        {
+          "original": "へっ？",
+          "translation": "诶？",
+          "type": "sfx"
+        }
+      ],
+      "rationale": "保持原语义翻译'诶？'，因为它准确传达了源文本'へっ？'的惊讶和疑问语气，符合漫画对话的常见风格。未调整语气、句式或口癖，以避免改变事实或语义核心，确保文本适合直接嵌字。",
+      "text": "诶？"
+    }
+  ]
+}

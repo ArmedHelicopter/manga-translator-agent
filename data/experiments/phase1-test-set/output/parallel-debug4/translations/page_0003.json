@@ -1,0 +1,36 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0003-0000",
+      "reading_order": 0,
+      "source_text": "これが人を愛し 慈しみ信じた者の末路さ",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "reading_order": 1,
+      "source_text": "化け狐",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0003",
+  "page_index": 3,
+  "translations": [
+    {
+      "bubble_id": "region-0003-0000",
+      "confidence": 0.88,
+      "footnotes": [],
+      "rationale": "添加了句首语气词'呵...'来增强画面人物的感慨与停顿感；将'结局'微调为'下场'，更贴合漫画中常见的、带有命运讽刺意味的表达，同时仍保留了'末路'的核心语义；整体句式更口语化，适合角色在特定情境下的感慨陈述。",
+      "text": "呵...这就是爱他人、慈爱并信任他人的下场啊。"
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "直接采用语义翻译推荐的「妖狐」，完整保留了「化け狐」的超自然与变化特征，符合漫画嵌字所需的简洁性与奇幻语境。",
+      "text": "妖狐"
+    }
+  ]
+}

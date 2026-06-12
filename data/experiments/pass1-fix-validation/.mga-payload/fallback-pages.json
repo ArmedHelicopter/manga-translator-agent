@@ -1,0 +1,14 @@
+{
+  "fallback_page_count": 1,
+  "fallback_page_indices": [
+    10
+  ],
+  "fallback_pages": [
+    {
+      "page_index": 10,
+      "image_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\experiments\\pass1-fix-validation\\.mga-payload\\.runtime-input\\page-0010.png",
+      "artifact": "artifact-0010.json",
+      "inpainted": "inpainted-0010.png"
+    }
+  ]
+}

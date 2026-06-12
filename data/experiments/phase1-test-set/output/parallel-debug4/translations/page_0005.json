@@ -1,0 +1,50 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0005-0000",
+      "reading_order": 0,
+      "source_text": "悲しいかな",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "reading_order": 1,
+      "source_text": "お前の行く末も",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "reading_order": 2,
+      "source_text": "きっとあたしと同じだよ――…",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0005",
+  "page_index": 5,
+  "translations": [
+    {
+      "bubble_id": "region-0005-0000",
+      "confidence": 0.88,
+      "footnotes": [],
+      "rationale": "原译‘真悲哀啊’语义准确但稍显书面，‘可悲啊’更贴近漫画角色感叹时的自然口语，语气更贴近日文‘かな’的哀叹韵味，同时‘啊’保留了原句的咏叹感，更利于嵌字与情绪渲染。",
+      "text": "可悲啊"
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "confidence": 0.85,
+      "footnotes": [],
+      "rationale": "将中性、书面的“将来”调整为更具画面感和戏剧性的“下场”，更贴合漫画角色对白张力，同时保持‘も’的追加对比语义。",
+      "text": "你的下场也是。"
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "confidence": 0.91,
+      "footnotes": [],
+      "rationale": "保留了原句的推测语气和女性化口吻，用「呢」字句尾增强 wistful 情感，通过调整标点和语气词让未尽感更自然，适合漫画对话的口语化表达。",
+      "text": "想必…和我一样呢——……"
+    }
+  ]
+}

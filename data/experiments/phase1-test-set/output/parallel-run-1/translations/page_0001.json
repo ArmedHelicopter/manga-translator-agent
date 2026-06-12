@@ -1,0 +1,22 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0001-0000",
+      "reading_order": 0,
+      "source_text": "CoverDesign：SALIDAS",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0001",
+  "page_index": 1,
+  "translations": [
+    {
+      "bubble_id": "region-0001-0000",
+      "confidence": 0.95,
+      "footnotes": [],
+      "rationale": "作为封面标题，'SALIDAS'是必须保留的专有名词，符合语义层规则中的must_preserve要求。语义翻译为叙述性文本且情感中性，因此直接保留原词，不进行意译或添加额外解释，确保适合漫画嵌字。",
+      "text": "SALIDAS"
+    }
+  ]
+}

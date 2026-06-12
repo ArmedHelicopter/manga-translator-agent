@@ -1,0 +1,66 @@
+{
+  "input_mtime_ns": 1781142661950067800,
+  "input_path": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\test\\testdata\\bboxes",
+  "input_size": 4096,
+  "input_suffix": "",
+  "max_pages": null,
+  "page_count": 11,
+  "pages": [
+    {
+      "index": 0,
+      "name": "1.png",
+      "size": 324739
+    },
+    {
+      "index": 1,
+      "name": "10.png",
+      "size": 159039
+    },
+    {
+      "index": 2,
+      "name": "1_upscaled.png",
+      "size": 662783
+    },
+    {
+      "index": 3,
+      "name": "2.png",
+      "size": 135396
+    },
+    {
+      "index": 4,
+      "name": "3.png",
+      "size": 163439
+    },
+    {
+      "index": 5,
+      "name": "4.png",
+      "size": 32097
+    },
+    {
+      "index": 6,
+      "name": "5.png",
+      "size": 78134
+    },
+    {
+      "index": 7,
+      "name": "6.png",
+      "size": 81182
+    },
+    {
+      "index": 8,
+      "name": "7.png",
+      "size": 141193
+    },
+    {
+      "index": 9,
+      "name": "8.png",
+      "size": 107678
+    },
+    {
+      "index": 10,
+      "name": "9.png",
+      "size": 86469
+    }
+  ],
+  "runtime_input": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\test\\testdata\\bboxes"
+}

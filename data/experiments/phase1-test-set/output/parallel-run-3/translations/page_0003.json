@@ -1,0 +1,36 @@
+{
+  "bubbles": [
+    {
+      "bubble_id": "region-0003-0000",
+      "reading_order": 0,
+      "source_text": "これが人を愛し 慈しみ信じた者の末路さ",
+      "speaker_id": null,
+      "speaker_name": null
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "reading_order": 1,
+      "source_text": "化け狐",
+      "speaker_id": null,
+      "speaker_name": null
+    }
+  ],
+  "page_id": "page_0003",
+  "page_index": 3,
+  "translations": [
+    {
+      "bubble_id": "region-0003-0000",
+      "confidence": 0.96,
+      "footnotes": [],
+      "rationale": "在原文陈述句基础上，添加‘啊’与省略号模拟日文终助词‘さ’的感慨语气，句末改用感叹号强化情绪出口。保留‘爱、怜悯、信任’并列结构及‘末路’核心词，仅通过语气和标点优化使台词更贴合漫画人物感叹心境时的口吻。",
+      "text": "啊……这就是爱他人、怜悯并信任他人之人的末路！"
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "confidence": 0.9,
+      "footnotes": [],
+      "rationale": "原文为专有名词指代，无特定情感或语气倾向，直接保留标准译法'妖狐'即可，无需额外修饰。该译法符合中文语境，且字数精简适合漫画气泡。",
+      "text": "妖狐"
+    }
+  ]
+}

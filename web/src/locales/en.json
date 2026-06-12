@@ -1,0 +1,346 @@
+{
+  "app": {
+    "title": "Manga Translate Agent",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip",
+    "search": "Search",
+    "noData": "No data",
+    "copied": "Copied!"
+  },
+  "nav": {
+    "projects": "Projects",
+    "translate": "Translate",
+    "batch": "Batch",
+    "settings": "Settings",
+    "wiki": "Wiki",
+    "help": "Help"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to Manga Translate Agent",
+      "subtitle": "Professional manga translation with AI-powered quality assurance",
+      "description": "This guide will help you set up the application and learn about all available features."
+    },
+    "language": {
+      "title": "Select Your Language",
+      "subtitle": "Choose your preferred language for the interface"
+    },
+    "apiKey": {
+      "title": "Configure API Providers",
+      "subtitle": "Set up translation providers to enable AI-powered features",
+      "description": "You need at least one translation provider to use this application.",
+      "providerTypes": {
+        "primary": "Primary Provider",
+        "fallback": "Fallback Provider",
+        "local": "Local Provider"
+      },
+      "addNew": "Add Provider",
+      "envPlaceholder": "Environment variable (e.g., ${OPENAI_API_KEY})",
+      "directPlaceholder": "Direct API key",
+      "learnMore": "Learn how to get API keys",
+      "warnings": {
+        "primaryRequired": "At least one primary provider is required",
+        "fallbackUnreachable": "Fallback provider is unreachable. Will use local provider if available.",
+        "localUnreachable": "Local provider is unreachable. Will use primary provider only."
+      }
+    },
+    "model": {
+      "title": "Configure Models",
+      "subtitle": "Set up OCR and translation models",
+      "ocrModel": "OCR Model",
+      "translationModel": "Translation Model",
+      "qaModel": "QA Model"
+    },
+    "project": {
+      "title": "Create Your First Project",
+      "subtitle": "Set up a project to organize your translations",
+      "projectName": "Project Name",
+      "sourceLang": "Source Language",
+      "targetLang": "Target Language",
+      "createFirst": "Create your first project"
+    },
+    "complete": {
+      "title": "You're All Set!",
+      "subtitle": "Configuration complete",
+      "description": "You can now start translating manga or configure additional settings.",
+      "startTranslating": "Start Translating",
+      "configureMore": "Configure More Settings"
+    }
+  },
+  "projects": {
+    "title": "Projects",
+    "create": "Create Project",
+    "noProjects": "No projects yet",
+    "createFirst": "Create your first project to get started",
+    "deleteConfirm": "Are you sure you want to delete this project?",
+    "details": {
+      "characters": "Characters",
+      "terms": "Terms",
+      "scenes": "Scenes",
+      "created": "Created",
+      "updated": "Updated"
+    },
+    "form": {
+      "name": "Project Name",
+      "namePlaceholder": "Enter project name",
+      "sourceLang": "Source Language",
+      "targetLang": "Target Language"
+    }
+  },
+  "engine": {
+    "setupTitle": "Translation Engine Setup",
+    "setupSubtitle": "One-time download required",
+    "setupDescription": "Translating manga requires the AI engine (PyTorch, Transformers, OCR models, and the rendering runtime). These are large packages downloaded once and reused afterwards.",
+    "installed": "Installed",
+    "notInstalled": "Not installed",
+    "installNow": "Install Engine Now",
+    "installing": "Installing engine, this may take several minutes...",
+    "installLog": "Installation log",
+    "installFailed": "Installation failed. Check the log above and try again.",
+    "retry": "Retry Installation"
+  },
+  "translate": {
+    "title": "Translate",
+    "selectInput": "Select Input",
+    "selectFolder": "Select folder containing images",
+    "folderPath": "Folder Path",
+    "browse": "Browse",
+    "startTranslate": "Start Translation",
+    "stopTranslate": "Stop",
+    "mode": {
+      "manga": "Manga",
+      "novel": "Novel"
+    },
+    "format": {
+      "images": "Images",
+      "pdf": "PDF",
+      "epub": "EPUB",
+      "cbz": "CBZ"
+    },
+    "progress": {
+      "title": "Translation Progress",
+      "stage": "Stage",
+      "progress": "Progress",
+      "elapsed": "Elapsed",
+      "remaining": "Remaining",
+      "completed": "Completed",
+      "failed": "Failed",
+      "pending": "Pending"
+    },
+    "stages": {
+      "format": "Format Detection",
+      "ocr": "OCR",
+      "vision": "Vision Enrichment",
+      "speaker": "Speaker Attribution",
+      "character": "Character Attribution",
+      "translation": "Translation",
+      "qa": "Quality Assurance",
+      "render": "Rendering",
+      "output": "Output"
+    }
+  },
+  "batch": {
+    "title": "Batch Processing",
+    "create": "Create Batch Job",
+    "noJobs": "No batch jobs",
+    "createFirst": "Create a batch job to process multiple inputs",
+    "job": {
+      "name": "Job Name",
+      "inputPath": "Input Path",
+      "outputPath": "Output Path",
+      "status": "Status",
+      "progress": "Progress",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "Pending",
+      "running": "Running",
+      "completed": "Completed",
+      "failed": "Failed",
+      "paused": "Paused"
+    },
+    "controls": {
+      "startAll": "Start All",
+      "pauseAll": "Pause All",
+      "resumeAll": "Resume All",
+      "clearCompleted": "Clear Completed"
+    }
+  },
+  "characters": {
+    "title": "Character Profiles",
+    "create": "Add Character",
+    "noCharacters": "No characters",
+    "addFirst": "Add your first character profile",
+    "form": {
+      "id": "Character ID",
+      "nameJp": "Japanese Name",
+      "nameZh": "Chinese Name",
+      "nameEn": "English Name",
+      "archetype": "Archetype",
+      "speechPatterns": "Speech Patterns",
+      "catchphrases": "Catchphrases",
+      "toneSpectrum": "Tone Spectrum",
+      "translationNotes": "Translation Notes",
+      "relationships": "Relationships"
+    },
+    "archetypes": {
+      "protagonist": "Protagonist",
+      "antagonist": "Antagonist",
+      "supporting": "Supporting",
+      "minor": "Minor"
+    }
+  },
+  "terms": {
+    "title": "Terminology",
+    "create": "Add Term",
+    "noTerms": "No terminology entries",
+    "addFirst": "Add your first terminology entry",
+    "form": {
+      "source": "Source Term",
+      "target": "Target Translation",
+      "category": "Category",
+      "strategy": "Strategy",
+      "context": "Context",
+      "frequency": "Frequency",
+      "pendingReview": "Pending Review"
+    },
+    "categories": {
+      "character": "Character Name",
+      "location": "Location",
+      "ability": "Ability/Skill",
+      "item": "Item/Object",
+      "organization": "Organization",
+      "cultural": "Cultural Reference",
+      "other": "Other"
+    },
+    "strategies": {
+      "literal": "Literal Translation",
+      "adapt": "Cultural Adaptation",
+      "coined": "Coined Term",
+      "transliterate": "Transliteration",
+      "preserve": "Preserve Original"
+    }
+  },
+  "providers": {
+    "title": "Provider Configuration",
+    "configuredProviders": "Configured Providers",
+    "availableProviders": "Available Providers",
+    "addProvider": "Add New Provider",
+    "stageConfig": "Stage Configuration",
+    "stages": {
+      "vision": "Vision Stage",
+      "translation": "Translation Stage",
+      "qa": "QA Stage"
+    },
+    "provider": {
+      "openai": "OpenAI",
+      "anthropic": "Anthropic",
+      "gemini": "Google Gemini",
+      "deepseek": "DeepSeek",
+      "ollama": "Ollama (Local)",
+      "lmstudio": "LM Studio (Local)",
+      "vllm": "vLLM (Local)",
+      "openrouter": "OpenRouter",
+      "llamacpp": "llama.cpp (Local)",
+      "groq": "Groq",
+      "cohere": "Cohere",
+      "mistral": "Mistral AI"
+    },
+    "settings": {
+      "apiKey": "API Key",
+      "baseUrl": "Base URL",
+      "model": "Model",
+      "visionModel": "Vision Model",
+      "textModel": "Text Model",
+      "maxTokens": "Max Tokens",
+      "temperature": "Temperature"
+    },
+    "testConnection": "Test Connection",
+    "connectionSuccess": "Connection successful",
+    "connectionFailed": "Connection failed"
+  },
+  "wiki": {
+    "title": "Wiki & World Book",
+    "export": "Export Wiki",
+    "exportFormat": "Export Format",
+    "lastExport": "Last Export",
+    "never": "Never",
+    "sync": "Sync Memory",
+    "syncDirection": {
+      "toWiki": "State → Wiki",
+      "fromWiki": "Wiki → State"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "general": {
+      "title": "General",
+      "language": "Language",
+      "theme": "Theme",
+      "autoStart": "Auto-start backend on launch"
+    },
+    "backend": {
+      "title": "Backend",
+      "host": "Host",
+      "port": "Port",
+      "status": "Status",
+      "running": "Running",
+      "stopped": "Stopped",
+      "start": "Start Backend",
+      "stop": "Stop Backend",
+      "autoStart": "Auto-start with application"
+    },
+    "about": {
+      "title": "About",
+      "version": "Version",
+      "documentation": "Documentation",
+      "reportIssue": "Report an Issue"
+    },
+    "reset": {
+      "title": "Reset",
+      "resetTutorial": "Reset Tutorial",
+      "resetTutorialDesc": "Show the onboarding tutorial again",
+      "resetSettings": "Reset All Settings",
+      "resetSettingsDesc": "Restore all settings to default values"
+    }
+  },
+  "help": {
+    "title": "Help & Documentation",
+    "quickStart": "Quick Start Guide",
+    "faq": "Frequently Asked Questions",
+    "keyboard": "Keyboard Shortcuts",
+    "changelog": "Changelog",
+    "showTutorial": "Show Tutorial Again"
+  },
+  "engine": {
+    "setupTitle": "Translation Engine Setup",
+    "setupSubtitle": "First-time setup required",
+    "setupDescription": "The translation engine requires PyTorch, Transformers, and other deep learning libraries (~5 GB). This is a one-time download.",
+    "installed": "Installed",
+    "notInstalled": "Not installed",
+    "installNow": "Download Now",
+    "installing": "Installing...",
+    "installFailed": "Installation failed. Please try again.",
+    "installLog": "Installation Log",
+    "retry": "Retry"
+  },
+  "errors": {
+    "network": "Network error. Please check your connection.",
+    "notFound": "Not found",
+    "serverError": "Server error. Please try again later.",
+    "unauthorized": "Please log in again.",
+    "validation": "Please check your input."
+  }
+}

@@ -1,0 +1,851 @@
+{
+  "error_count": 0,
+  "errors": [],
+  "graph_mode": "translation_graph_v0_linear",
+  "input_format": "images",
+  "input_path": "data/experiments/phase1-test-set/",
+  "output_format": "images",
+  "output_path": "data/experiments/phase1-test-set/output/parallel-run-1/",
+  "page_count": 10,
+  "pipeline_mode": "manga",
+  "provider": "mimo",
+  "provider_cascade_calls": [
+    {
+      "bubble_id": "region-0000-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0000-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0001-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0001-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0001",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0001",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0002",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0002",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0003",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0003",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0004",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0004",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0005",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0005",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0006",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0006",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0007",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0007",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0008",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0008",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0009",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0009",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0010",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0010",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0011",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0011",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0012",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0012",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0013",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0013",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0003-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0003-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "error": "Persona rendering provider failed for bubble 'region-0003-0001': No provider available for stage 'translation'. Tried: ['mimo']",
+      "operation": "persona_render",
+      "provider": "unavailable",
+      "stage": "translation",
+      "type": "StageExecutionError"
+    },
+    {
+      "bubble_id": "region-0004-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0004-0000",
+      "error": "Persona rendering provider failed for bubble 'region-0004-0000': No provider available for stage 'translation'. Tried: ['mimo']",
+      "operation": "persona_render",
+      "provider": "unavailable",
+      "stage": "translation",
+      "type": "StageExecutionError"
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0004-0001",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0004-0002",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0004-0003",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0005-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0005-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0005-0001",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0005-0002",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0006-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0006-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0006-0001",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0006-0001",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0007-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0007-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0007-0001",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0007-0002",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0007-0002",
+      "error": "Persona rendering provider failed for bubble 'region-0007-0002': No provider available for stage 'translation'. Tried: ['mimo']",
+      "operation": "persona_render",
+      "provider": "unavailable",
+      "stage": "translation",
+      "type": "StageExecutionError"
+    },
+    {
+      "bubble_id": "region-0008-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0001",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0001",
+      "error": "Persona rendering provider failed for bubble 'region-0008-0001': No provider available for stage 'translation'. Tried: ['mimo']",
+      "operation": "persona_render",
+      "provider": "unavailable",
+      "stage": "translation",
+      "type": "StageExecutionError"
+    },
+    {
+      "bubble_id": "region-0008-0002",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0002",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0003",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0003",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0004",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0004",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0005",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0005",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0006",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0006",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0007",
+      "model": "mimo-v2.5-pro",
+      "operation": "semantic_translation",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0008-0007",
+      "model": "mimo-v2.5-pro",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation"
+    },
+    {
+      "bubble_id": "region-0002-0000",
+      "model": "mimo-v2.5-pro",
+      "operation": "qa_retranslate",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "qa"
+    },
+    {
+      "bubble_id": "region-0002-0005",
+      "model": "mimo-v2.5-pro",
+      "operation": "qa_retranslate",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "qa"
+    },
+    {
+      "bubble_id": "region-0002-0012",
+      "model": "mimo-v2.5-pro",
+      "operation": "qa_retranslate",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "qa"
+    }
+  ],
+  "provider_cascade_errors": [
+    {
+      "error": "Error code: 404 - {'error': {'code': '404', 'message': 'No endpoints found that support image input', 'param': '', 'type': ''}}",
+      "operation": "vision_structured",
+      "page_id": "page_0000",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "vision",
+      "type": "NotFoundError"
+    },
+    {
+      "error": "Error code: 404 - {'error': {'code': '404', 'message': 'No endpoints found that support image input', 'param': '', 'type': ''}}",
+      "operation": "vision_structured",
+      "page_id": "page_0001",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "vision",
+      "type": "NotFoundError"
+    },
+    {
+      "error": "Error code: 404 - {'error': {'code': '404', 'message': 'No endpoints found that support image input', 'param': '', 'type': ''}}",
+      "operation": "vision_structured",
+      "page_id": "page_0002",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "vision",
+      "type": "NotFoundError"
+    },
+    {
+      "error": "Error code: 404 - {'error': {'code': '404', 'message': 'No endpoints found that support image input', 'param': '', 'type': ''}}",
+      "operation": "vision_structured",
+      "page_id": "page_0003",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "vision",
+      "type": "NotFoundError"
+    },
+    {
+      "error": "Error code: 404 - {'error': {'code': '404', 'message': 'No endpoints found that support image input', 'param': '', 'type': ''}}",
+      "operation": "vision_structured",
+      "page_id": "page_0004",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "vision",
+      "type": "NotFoundError"
+    },
+    {
+      "error": "Error code: 404 - {'error': {'code': '404', 'message': 'No endpoints found that support image input', 'param': '', 'type': ''}}",
+      "operation": "vision_structured",
+      "page_id": "page_0005",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "vision",
+      "type": "NotFoundError"
+    },
+    {
+      "error": "Error code: 404 - {'error': {'code': '404', 'message': 'No endpoints found that support image input', 'param': '', 'type': ''}}",
+      "operation": "vision_structured",
+      "page_id": "page_0006",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "vision",
+      "type": "NotFoundError"
+    },
+    {
+      "error": "Error code: 404 - {'error': {'code': '404', 'message': 'No endpoints found that support image input', 'param': '', 'type': ''}}",
+      "operation": "vision_structured",
+      "page_id": "page_0007",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "vision",
+      "type": "NotFoundError"
+    },
+    {
+      "error": "Error code: 404 - {'error': {'code': '404', 'message': 'No endpoints found that support image input', 'param': '', 'type': ''}}",
+      "operation": "vision_structured",
+      "page_id": "page_0008",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "vision",
+      "type": "NotFoundError"
+    },
+    {
+      "error": "Error code: 404 - {'error': {'code': '404', 'message': 'No endpoints found that support image input', 'param': '', 'type': ''}}",
+      "operation": "vision_structured",
+      "page_id": "page_0009",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "vision",
+      "type": "NotFoundError"
+    },
+    {
+      "error": "Error code: 404 - {'error': {'code': '404', 'message': 'No endpoints found that support image input', 'param': '', 'type': ''}}",
+      "operation": "vision_text_fallback",
+      "page_id": "page_0009",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "vision",
+      "type": "NotFoundError"
+    },
+    {
+      "bubble_id": "region-0003-0001",
+      "error": "Request timed out.",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation",
+      "type": "APITimeoutError"
+    },
+    {
+      "bubble_id": "region-0004-0000",
+      "error": "Request timed out.",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation",
+      "type": "APITimeoutError"
+    },
+    {
+      "bubble_id": "region-0007-0002",
+      "error": "Request timed out.",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation",
+      "type": "APITimeoutError"
+    },
+    {
+      "bubble_id": "region-0008-0001",
+      "error": "Request timed out.",
+      "operation": "persona_render",
+      "provider": "mimo",
+      "role": "primary",
+      "stage": "translation",
+      "type": "APITimeoutError"
+    }
+  ],
+  "provider_routes": {
+    "qa": {
+      "primary": {
+        "model": "mimo-v2.5-pro",
+        "provider": "mimo"
+      }
+    },
+    "translation": {
+      "primary": {
+        "model": "mimo-v2.5-pro",
+        "provider": "mimo"
+      }
+    },
+    "vision": {
+      "primary": {
+        "model": "mimo-v2.5-pro",
+        "provider": "mimo"
+      }
+    }
+  },
+  "runtime": {
+    "artifact_payload_dir": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\experiments\\phase1-test-set\\.mga-payload",
+    "pages_rendered": 10,
+    "render_mode": "render-only",
+    "render_output_dir": "C:\\Users\\Administrator\\.paseo\\worktrees\\manual-afk-gpt-5-manga-translator-agent-local-head\\data\\experiments\\phase1-test-set\\output\\parallel-run-1",
+    "rendered_images": [
+      "page-001.png",
+      "page-002.png",
+      "page-003.png",
+      "page-004.png",
+      "page-005.png",
+      "page-006.png",
+      "page-007.png",
+      "page-008.png",
+      "page-009.png",
+      "page-010.png"
+    ],
+    "type": "external-two-pass"
+  },
+  "source_lang": "ja",
+  "stage_timings": {
+    "character": 0.0,
+    "format": 0.0,
+    "ocr_artifact": 0.0,
+    "ocr_guard": 0.0,
+    "qa": 22.125,
+    "render": 29.735,
+    "speaker_attribution": 0.0,
+    "translation": 1827.078,
+    "vision": 32.797
+  },
+  "stages_completed": [
+    "format",
+    "ocr_artifact",
+    "ocr_guard",
+    "vision",
+    "speaker_attribution",
+    "character",
+    "character_memory",
+    "translation",
+    "qa",
+    "render"
+  ],
+  "status": "completed",
+  "target_lang": "zh",
+  "timestamp": "2026-06-07T05:03:34.069601+00:00",
+  "total_duration": 0.0,
+  "translation_count": 38
+}

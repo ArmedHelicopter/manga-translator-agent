@@ -1,0 +1,19 @@
+{
+  "detector": {
+    "box_threshold": 0.7,
+    "detection_size": 2048,
+    "text_threshold": 0.5,
+    "unclip_ratio": 2.3
+  },
+  "inpainter": {
+    "inpainter": "none",
+    "inpainting_size": 1024
+  },
+  "ocr": {
+    "ocr": "48px"
+  },
+  "translator": {
+    "target_lang": "CHS",
+    "translator": "none"
+  }
+}
