@@ -37,6 +37,7 @@ class PipelineContext(BaseModel):
     artifacts: dict[str, Any] = Field(default_factory=dict)
     errors: list[dict] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
+    ocr_guard_state: dict[str, Any] = Field(default_factory=dict)
 
     model_config = {"arbitrary_types_allowed": True}
 

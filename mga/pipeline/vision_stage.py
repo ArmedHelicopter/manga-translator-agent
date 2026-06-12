@@ -7,6 +7,7 @@ import logging
 from pathlib import Path
 
 from mga.models import BoundingBox, Bubble, ProjectConfig, VisualFootnote
+from mga.ocr import BlankPageDetector, OCRGuardConfig, RecoveryOrchestrator
 from mga.providers import ProviderCascade
 
 from .stages import PipelineContext, PipelineStage
@@ -135,7 +136,38 @@ class OCRArtifactStage(PipelineStage):
             "pages": len(pages_list),
             "regions": total_regions,
         }
+
+        # OCR guard check
+        self._check_ocr_guard(context)
+
         return context
+
+    def _check_ocr_guard(self, context: PipelineContext) -> None:
+        """Check for blank OCR pages and trigger recovery if needed."""
+        cfg: ProjectConfig = context.project_config
+        guard_cfg_raw = getattr(cfg, "ocr_guard", None)
+        if not guard_cfg_raw:
+            return
+
+        guard_cfg = OCRGuardConfig.model_validate(guard_cfg_raw) if isinstance(guard_cfg_raw, dict) else guard_cfg_raw
+        if not guard_cfg.enabled:
+            return
+
+        detector = BlankPageDetector(guard_cfg)
+        sequence = detector.check_sequence(context.pages)
+        if not sequence:
+            return
+
+        context.ocr_guard_state["blank_sequence"] = sequence.model_dump(mode="json")
+        orchestrator = RecoveryOrchestrator(guard_cfg)
+        decision = orchestrator.prompt_user(sequence, context)
+        _, retry = orchestrator.apply_strategy(decision, context)
+        if retry:
+            from mga.exceptions import RestartPipelineSignal
+            raise RestartPipelineSignal(
+                reason="OCR guard triggered pipeline restart",
+                new_ocr_model=decision.new_ocr_model,
+            )
 
 
 class VisionEnrichmentStage(PipelineStage):
