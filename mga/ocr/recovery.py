@@ -18,6 +18,7 @@ _DEFAULT_OCR_MODELS = [
     {"name": "32px", "description": "Lower-resolution OCR model"},
     {"name": "48px_ctc", "description": "CTC OCR variant"},
     {"name": "mocr", "description": "Manga OCR model"},
+    {"name": "tesseract", "description": "Tesseract OCR engine"},
 ]
 
 
@@ -57,13 +58,41 @@ class RecoveryOrchestrator:
             print("Please select a valid option from 1 to 5.")
 
     def apply_strategy(self, decision: RecoveryDecision, context: Any) -> tuple[Any, bool]:
-        """Apply the recovery strategy to the pipeline context."""
+        """Apply the recovery strategy to the pipeline context.
+
+        For SWITCH_OCR_MODEL, resolves the target engine via the OCR engine
+        registry and updates the context metadata with the selected model.
+
+        Returns:
+            (context, needs_restart) — context may be modified in-place;
+            needs_restart is True only for SWITCH_OCR_MODEL (pipeline must
+            restart from the vision stage).
+        """
         state = context.ocr_guard_state
 
         if decision.strategy == RecoveryStrategy.SWITCH_OCR_MODEL:
             state["recovery_applied"] = decision.model_dump(mode="json")
             if decision.new_ocr_model:
                 context.metadata["requested_ocr_model"] = decision.new_ocr_model
+                # Resolve the engine from the registry to validate it exists
+                registry = self._get_engine_registry(context)
+                if registry is not None:
+                    engine = registry.get(decision.new_ocr_model)
+                    if engine is not None and engine.is_available():
+                        context.metadata["ocr_engine"] = decision.new_ocr_model
+                        logger.info("Switched OCR engine to: %s", decision.new_ocr_model)
+                    elif engine is not None:
+                        logger.warning(
+                            "OCR engine '%s' registered but not available, "
+                            "will attempt at runtime",
+                            decision.new_ocr_model,
+                        )
+                    else:
+                        logger.warning(
+                            "OCR engine '%s' not in registry, "
+                            "deferring to runtime model resolution",
+                            decision.new_ocr_model,
+                        )
             return context, True
 
         if decision.strategy == RecoveryStrategy.ADJUST_THRESHOLD:
@@ -247,3 +276,18 @@ class RecoveryOrchestrator:
         if isinstance(raw_sequence, dict):
             return BlankPageSequence.model_validate(raw_sequence)
         return None
+
+    def _get_engine_registry(self, context: Any) -> Any:
+        """Get OCR engine registry from context metadata, or create default.
+
+        Returns the OCREngineRegistry instance if available, else None.
+        """
+        from .engines.base import OCREngineRegistry
+
+        # Check if registry already in context
+        registry = context.metadata.get("ocr_engine_registry")
+        if registry is not None and isinstance(registry, OCREngineRegistry):
+            return registry
+
+        # Create default registry
+        return OCREngineRegistry.default()
