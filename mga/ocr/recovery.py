@@ -278,16 +278,17 @@ class RecoveryOrchestrator:
         return None
 
     def _get_engine_registry(self, context: Any) -> Any:
-        """Get OCR engine registry from context metadata, or create default.
+        """Get OCR engine registry from context metadata, or create and cache a default one.
 
-        Returns the OCREngineRegistry instance if available, else None.
+        Returns an OCREngineRegistry instance (never None).
         """
         from .engines.base import OCREngineRegistry
 
-        # Check if registry already in context
         registry = context.metadata.get("ocr_engine_registry")
         if registry is not None and isinstance(registry, OCREngineRegistry):
             return registry
 
-        # Create default registry
-        return OCREngineRegistry.default()
+        # Create default registry and cache it for future use
+        registry = OCREngineRegistry.default()
+        context.metadata["ocr_engine_registry"] = registry
+        return registry

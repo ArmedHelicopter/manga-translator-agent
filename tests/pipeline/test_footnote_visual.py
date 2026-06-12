@@ -189,7 +189,14 @@ class TestFootnoteVisualRendering:
         result = mt._draw_footnotes(white_page, footnotes)
 
         # Should be a valid numpy array that PIL can handle
-        import cv2
-        pil_img = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
-        assert pil_img.size[0] > 0
-        assert pil_img.size[1] > 0
+        # Use cv2 if available, otherwise just check array properties
+        try:
+            import cv2
+            pil_img = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
+            assert pil_img.size[0] > 0
+            assert pil_img.size[1] > 0
+        except ImportError:
+            # Without cv2, verify it's a valid RGB numpy array
+            assert result.ndim == 3
+            assert result.shape[2] == 3
+            assert result.dtype == np.uint8

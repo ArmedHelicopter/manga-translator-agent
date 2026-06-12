@@ -236,4 +236,4 @@ def test_available_ocr_models_defaults():
 
     models = orchestrator._available_ocr_models(context)
 
-    assert [model["name"] for model in models] == ["48px", "32px", "48px_ctc", "mocr"]
+    assert [model["name"] for model in models] == ["48px", "32px", "48px_ctc", "mocr", "tesseract"]

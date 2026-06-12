@@ -122,7 +122,7 @@ class OCREngineRegistry:
         try:
             from .mocr_engine import MOCREngine
             registry.register(MOCREngine())
-        except Exception:
+        except ImportError:
             logger.debug("MOCR engine not available")
 
         return registry

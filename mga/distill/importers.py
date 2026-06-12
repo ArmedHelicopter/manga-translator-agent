@@ -9,17 +9,21 @@ Supports:
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
-from mga.memory.service import MemoryService, CharacterProfile, TermEntry, SceneContext
-from mga.memory.state import StateManager
-from mga.memory.entities import CharacterState, TermState, SceneState
+from mga.memory.service import MemoryService, CharacterProfile
 
 from .character_card import CharacterCard
 from .lorebook import Lorebook, LorebookEntry
+
+if TYPE_CHECKING:
+    from mga.memory.entities import CharacterState
+
+logger = logging.getLogger(__name__)
 
 
 class HermesSkill(BaseModel):
@@ -138,7 +142,8 @@ class CharacterCardImporter:
                 profile = self.import_file(card_path)
                 profiles.append(profile)
             except Exception as e:
-                # Skip invalid cards
+                # Skip invalid cards, but log the error
+                logger.warning("Skipping invalid card %s: %s", card_path, e)
                 continue
         return profiles
 
@@ -549,7 +554,8 @@ class HermesSkillImporter:
             # Try JSON first, then YAML
             try:
                 return HermesSkill.from_json(skill_data)
-            except (json.JSONDecodeError, ValueError):
+            except json.JSONDecodeError:
+                # Not valid JSON — try YAML
                 return HermesSkill.from_yaml(skill_data)
         raise ValueError(f"Unsupported skill data type: {type(skill_data)}")
 

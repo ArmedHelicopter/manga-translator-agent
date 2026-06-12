@@ -63,7 +63,6 @@ class MOCREngine(OCREngine):
     def is_available(self) -> bool:
         """Check if MOCR model dependencies are available."""
         try:
-            import torch  # noqa: F401
             from manga_ocr import MangaOcr  # noqa: F401
             return True
         except ImportError:
