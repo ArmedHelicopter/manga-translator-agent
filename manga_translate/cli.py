@@ -76,7 +76,8 @@ def build_legacy_provider(raw_config, primary_provider, stage: str = "vision"):
 
     from types import SimpleNamespace
 
-    from mga.providers import ProviderCascadeAdapter, ProviderCandidate, get_provider
+    from mga.cli import _provider as _provider_mod
+    from mga.providers import ProviderCascadeAdapter, ProviderCandidate
 
     errors = []
     providers = []
@@ -91,7 +92,7 @@ def build_legacy_provider(raw_config, primary_provider, stage: str = "vision"):
                     model=str(settings.get("model", "")),
                     settings=settings,
                 ),
-                get_provider(name, **settings),
+                _provider_mod.get_provider(name, **settings),
             ))
         except Exception as exc:  # noqa: BLE001 - legacy benchmark should try fallback routes.
             errors.append({

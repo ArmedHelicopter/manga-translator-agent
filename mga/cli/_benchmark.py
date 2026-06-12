@@ -119,7 +119,66 @@ _legacy_group = click.Group(name="legacy")
 def legacy_benchmark_extraction(input_path: Path, output_path: Path, force: bool):
     """Legacy: extract text from images for benchmark comparison."""
     click.echo("Deprecated: Use `manga-translate benchmark extract` instead")
-    from mga.benchmark.external import extract_text_for_benchmark
 
-    result = extract_text_for_benchmark(input_path, output_path, force=force)
-    click.echo(f"Extracted {result.page_count} pages, {result.bubble_count} bubbles: {output_path}")
+    from PIL import Image
+
+    from mga.artifacts import ArtifactStore
+    from mga.benchmark.evaluate import run_extraction_benchmark
+    from mga.cli._provider import resolve_stage_provider
+    from mga.config.loader import build_project_config
+    from mga.format.manifest import discover_image_paths
+    from mga.models import Page, PageImage
+
+    # Discover provider config next to the input directory (falls back to the
+    # repo default discovery when absent).
+    config_path = None
+    for candidate in (input_path / "providers.toml", input_path.parent / "providers.toml"):
+        if candidate.exists():
+            config_path = str(candidate)
+            break
+
+    project_config, _raw_config = build_project_config(
+        input_path=str(input_path),
+        output_path=str(output_path),
+        provider_override=None,
+        save_json=False,
+        dry_run=False,
+        config_path=config_path,
+    )
+
+    output_dir = Path(output_path)
+    benchmark_dir = output_dir / "benchmark"
+    benchmark_dir.mkdir(parents=True, exist_ok=True)
+
+    pages: list[Page] = []
+    for index, image_path in enumerate(discover_image_paths(input_path)):
+        with Image.open(image_path) as img:
+            width, height = img.size
+        pages.append(
+            Page(
+                page_id=f"page-{index + 1:04d}",
+                page_index=index,
+                image=PageImage(
+                    path=str(image_path.resolve()),
+                    width=width,
+                    height=height,
+                    dpi=96,
+                ),
+                source_lang="ja",
+            )
+        )
+
+    provider = resolve_stage_provider(project_config, "vision")
+
+    result = run_extraction_benchmark(
+        pages=pages,
+        provider=provider,
+        store=ArtifactStore(benchmark_dir),
+        ocr_specs=["tesseract_jpn"],
+    )
+
+    if isinstance(result, dict):
+        page_count = result.get("page_count", len(pages))
+    else:
+        page_count = getattr(result, "page_count", len(pages))
+    click.echo(f"Extracted {page_count} pages: {output_dir}")
