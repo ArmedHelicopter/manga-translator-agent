@@ -6,8 +6,10 @@ All requested features have been implemented to production-ready status. The pre
 
 ## Test Results
 
-**Full Test Suite: 931 tests pass** (1 skipped, 1 pre-existing xfail)
-- +86 new tests added across sessions (845 → 931)
+**Full Test Suite: 985 tests pass** (1 skipped — anthropic optional, 1 pre-existing xfail)
+- Core delivery: 845 tests
+- Follow-up delivery 1: +86 tests (distill +17, OCR engines +18, providers +41, visual footnote +7, +3 misc)
+- Follow-up delivery 2: +54 tests (MIT OCR +11, lazy registry +15, inpaint backend +10, S2T +18)
 - 0 regressions introduced
 - All provider/pipeline/distill/ocr/footnote tests passing
 
@@ -236,6 +238,39 @@ ad4f3ce feat(distill): implement Hermes Agent Skill format with YAML/JSON suppor
 - End-to-end test on real manga images not yet run (requires installed backends)
 - Tesseract binary / manga_ocr model must be present in the runtime environment
 
+### 4. BallonsTranslator-Inspired Improvements (2026-06-18)
+
+Based on [architecture comparison](analysis/ballonstranslator-comparison.md) with the BallonsTranslator project:
+
+#### 4a. MIT OCR Engine Bindings
+- `MITOCREngine` (`mga/ocr/engines/mit_engine.py`) — model-selection marker for 32px/48px/48px_ctc
+- Registers in `OCREngineRegistry.default()` so `SWITCH_OCR_MODEL` recovery can offer them
+- `is_available()` checks runtime model checkpoint existence
+- `extract_text()` raises `NotImplementedError` (inference happens in runtime subprocess)
+- 11 tests in `tests/ocr/test_mit_engine.py`
+
+#### 4b. Lazy Provider Registry
+- `lazy_registry.py` — AST-scan `PROVIDER_METADATA` without importing modules
+- `get_provider_specs()` merges `_PROVIDER_MAP` (class-loading source) with AST metadata (vision/structured/notes)
+- Backward compatible: `_PROVIDER_MAP` and `get_provider()` unchanged
+- `PROVIDER_METADATA` added to openai_provider.py and cohere_provider.py as examples
+- 15 tests in `tests/providers/test_lazy_registry.py`
+
+#### 4c. Inpaint Backend Selection
+- `ProjectConfig.inpaint_backend` field (auto|none|lama_large|lama_mpe|sd|original|default)
+- `run_export_artifact` / `run_render_only` accept `inpaint_backend` param, write to runtime config JSON
+- CLI `--inpaint-backend` option
+- `render_stage.py` passes `cfg.inpaint_backend` to `run_render_only`
+- `config/loader.py` reads `[render]` section
+- 10 tests in `tests/runtime/test_inpaint_backend.py`
+
+#### 4d. S2T Chinese Conversion
+- `S2TConverter` (`mga/cultural/s2t_converter.py`) with opencc + graceful degradation
+- `ProjectConfig.chinese_variant` field (auto|s2t|t2s|tw|hk)
+- CLI `--chinese-variant` option
+- `RenderStage` applies S2T before writing translations.json (cached per stage)
+- 18 tests in `tests/cultural/test_s2t_converter.py`
+
 ---
 
 ## Architecture Summary
@@ -362,7 +397,7 @@ The follow-up delivery closed every gap listed in the original "Next Steps":
   - [x] OCR model inference (Tesseract + MOCR engine bindings)
 - [x] 修复失败测试
   - [x] 5/5 benchmark + web CLI tests fixed
-  - [x] 931 tests passing (full suite)
+  - [x] 985 tests passing (full suite)
 - [x] 测试十页 + 视觉检测输出
   - [x] E2E test: 10-page synthetic manga
   - [x] JSON contract validation

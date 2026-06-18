@@ -201,7 +201,7 @@ manga-translate term list project_dir/
 # Install (editable)
 pip install -e ".[dev]"
 
-# Run all tests (931 passing, 1 provider-optional skip on Windows)
+# Run all tests (985 passing, 1 provider-optional skip on Windows)
 pytest tests/ -v
 
 # Run a single test
