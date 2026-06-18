@@ -12,6 +12,15 @@ from .base import LLMProvider
 
 logger = logging.getLogger(__name__)
 
+# Provider metadata for lazy discovery (see mga/providers/lazy_registry.py).
+PROVIDER_METADATA = {
+    "name": "cohere",
+    "class": "CohereProvider",
+    "vision": True,
+    "structured": "json_mode",
+    "notes": "Cohere Command A+ models, native SDK",
+}
+
 DEFAULT_BASE_URL = "https://api.cohere.ai"
 DEFAULT_MODEL = "command-a-plus-128k"
 

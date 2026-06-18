@@ -18,6 +18,16 @@ from .base import LLMProvider
 
 logger = logging.getLogger(__name__)
 
+# Provider metadata for lazy discovery (see mga/providers/lazy_registry.py).
+# Declared at module level so AST scanning can find it without importing the module.
+PROVIDER_METADATA = {
+    "name": "openai",
+    "class": "OpenAIProvider",
+    "vision": True,
+    "structured": "json_mode",
+    "notes": "Default primary provider",
+}
+
 VISION_MODEL = "gpt-4o"
 TRANSLATE_MODEL = "gpt-4o-mini"
 

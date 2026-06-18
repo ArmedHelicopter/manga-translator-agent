@@ -489,7 +489,21 @@ def get_provider_info(name: str) -> dict[str, Any] | None:
 
     # Check if it's a hardcoded class
     if name in _PROVIDER_MAP:
-        return {"type": "class", "name": name}
+        info: dict[str, Any] = {"type": "class", "name": name}
+        # Augment with lazy-registry metadata if available (vision/structured/notes)
+        try:
+            from .lazy_registry import get_lazy_provider_info
+            lazy = get_lazy_provider_info(name)
+            if lazy is not None:
+                if lazy.get("vision") is not None:
+                    info["vision"] = lazy["vision"]
+                if lazy.get("structured"):
+                    info["structured"] = lazy["structured"]
+                if lazy.get("notes"):
+                    info["notes"] = lazy["notes"]
+        except Exception:
+            pass
+        return info
 
     # Check if it's a profile
     profile = _PROVIDER_PROFILES.get(name)
