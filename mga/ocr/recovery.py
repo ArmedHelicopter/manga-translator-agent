@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 _DEFAULT_OCR_MODELS = [
-    {"name": "48px", "description": "Default external runtime OCR"},
-    {"name": "32px", "description": "Lower-resolution OCR model"},
-    {"name": "48px_ctc", "description": "CTC OCR variant"},
+    {"name": "48px", "description": "MIT 48px OCR (runtime model)"},
+    {"name": "32px", "description": "MIT 32px OCR (runtime model)"},
+    {"name": "48px_ctc", "description": "MIT 48px CTC OCR (runtime model)"},
     {"name": "mocr", "description": "Manga OCR model"},
     {"name": "tesseract", "description": "Tesseract OCR engine"},
 ]

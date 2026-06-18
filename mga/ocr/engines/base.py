@@ -111,7 +111,8 @@ class OCREngineRegistry:
         """Create a registry with all built-in engines registered.
 
         Returns:
-            Registry with TesseractEngine and MOCREngine registered
+            Registry with TesseractEngine, MOCREngine, and MITOCREngine
+            (32px/48px/48px_ctc) registered.
         """
         registry = cls()
 
@@ -124,5 +125,15 @@ class OCREngineRegistry:
             registry.register(MOCREngine())
         except ImportError:
             logger.debug("MOCR engine not available")
+
+        # Register MIT OCR engines (runtime model-selection markers).
+        # These are always registered (like Tesseract); is_available() reports
+        # whether the runtime model checkpoint is present.
+        from .mit_engine import MITOCREngine
+        for model_name in MITOCREngine.supported_models():
+            try:
+                registry.register(MITOCREngine(model_name))
+            except ValueError:
+                logger.debug("MIT OCR model %s not registered", model_name)
 
         return registry

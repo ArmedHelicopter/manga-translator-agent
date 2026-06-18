@@ -21,8 +21,11 @@ __all__ = [
 
 
 def __getattr__(name: str):
-    """Lazy-load MOCREngine only when requested."""
+    """Lazy-load MOCREngine and MITOCREngine only when requested."""
     if name == "MOCREngine":
         from .mocr_engine import MOCREngine
         return MOCREngine
+    if name == "MITOCREngine":
+        from .mit_engine import MITOCREngine
+        return MITOCREngine
     raise AttributeError(name)
