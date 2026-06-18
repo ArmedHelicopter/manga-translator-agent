@@ -90,6 +90,7 @@ class RenderStage(PipelineStage):
             result = run_render_only(
                 payload_dir=payload_path,
                 output_dir=output_dir,
+                inpaint_backend=getattr(cfg, "inpaint_backend", "auto"),
             )
             context.artifacts[self.name] = {
                 "mode": "render-only",
@@ -134,6 +135,12 @@ class RenderStage(PipelineStage):
         translations = []
         footnotes = []
         seen_footnote_keys: set[tuple[str, str]] = set()
+
+        # S2T converter (cached per stage — instantiated once per RenderStage.execute call).
+        # Converts rendered text from simplified to traditional Chinese when
+        # cfg.chinese_variant is set. "auto" disables conversion.
+        s2t_converter = self._get_s2t_converter(cfg)
+
         for t in context.translations:
             if not t.bubble_id.startswith(prefix):
                 continue
@@ -141,9 +148,12 @@ class RenderStage(PipelineStage):
                 region_idx = int(t.bubble_id.split("-")[2])
             except (IndexError, ValueError):
                 continue
+            render_text = self._extract_render_text(t.text)
+            if s2t_converter is not None:
+                render_text = s2t_converter.convert(render_text)
             translations.append({
                 "region_index": region_idx,
-                "translation": self._extract_render_text(t.text),
+                "translation": render_text,
                 "target_lang": _normalize_runtime_lang_code(cfg.target_lang or "CHS"),
             })
 
@@ -319,3 +329,25 @@ class RenderStage(PipelineStage):
                 pass
         s = RenderStage._strip_json_noise(s)
         return s.strip()
+
+    @staticmethod
+    def _get_s2t_converter(cfg: ProjectConfig):
+        """Get a cached S2T converter for the configured Chinese variant.
+
+        Returns None if variant is "auto" (no conversion).
+        The converter is cached on the instance for the stage's lifetime.
+        """
+        variant = getattr(cfg, "chinese_variant", "auto") or "auto"
+        if variant in ("auto", "", None):
+            return None
+        if not hasattr(RenderStage, "_s2t_converter_cache"):
+            RenderStage._s2t_converter_cache = {}
+        cache_key = variant
+        if cache_key not in RenderStage._s2t_converter_cache:
+            try:
+                from mga.cultural.s2t_converter import S2TConverter
+                RenderStage._s2t_converter_cache[cache_key] = S2TConverter(variant)
+            except ImportError:
+                RenderStage._s2t_converter_cache[cache_key] = None
+        return RenderStage._s2t_converter_cache.get(cache_key)
+

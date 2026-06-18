@@ -209,4 +209,13 @@ def build_project_config(
         # Populate translation_config from [translation] TOML section
         translation_config=_load_translation_config(raw_config),
     )
+
+    # Optional [render] section: inpaint_backend, chinese_variant
+    render_section = raw_config.get("render", {})
+    if render_section:
+        if "inpaint_backend" in render_section:
+            project_config.inpaint_backend = render_section["inpaint_backend"]
+        if "chinese_variant" in render_section:
+            project_config.chinese_variant = render_section["chinese_variant"]
+
     return project_config, raw_config

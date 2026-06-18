@@ -56,3 +56,10 @@ class ProjectConfig(BaseModel):
         default=None,
         description="OCR blank-page detection and recovery config.",
     )
+    # Inpaint backend for manga-image-translator runtime.
+    # Maps to the runtime's Inpainter enum: auto|none|lama_large|lama_mpe|sd|original|default
+    inpaint_backend: str = "auto"
+    # Chinese variant conversion: auto|s2t|t2s|tw|hk
+    # auto = no conversion (current behavior). s2t = simplified→traditional. t2s = traditional→simplified.
+    # tw = Taiwan traditional. hk = Hong Kong traditional. Requires opencc.
+    chinese_variant: str = "auto"

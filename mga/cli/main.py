@@ -127,11 +127,14 @@ def _parse_kv(values: tuple[str, ...], name: str) -> dict[str, str]:
 @click.option("--parallel-mode", type=click.Choice(["serial", "parallel", "pipelined", "semantic-parallel"]))
 @click.option("--concurrency", type=int, help="Max pages in flight")
 @click.option("--auto-vision-model", is_flag=True, help="Auto-switch vision model if rejected")
+@click.option("--inpaint-backend", type=click.Choice(["auto", "none", "lama_large", "lama_mpe", "sd", "original", "default"]), default="auto", help="Inpainter backend for manga-image-translator runtime")
+@click.option("--chinese-variant", type=click.Choice(["auto", "s2t", "t2s", "tw", "hk"]), default="auto", help="Convert Chinese variant in rendered output (requires opencc)")
 def translate(
     input_path, output_path, provider, output_format, mode,
     learn_from, learn_only, output_profiles, lang, config_path,
     save_json, bilingual, incremental, chapter_id, dry_run, verbose,
     artifact_payload_dir, parallel_mode, concurrency, auto_vision_model,
+    inpaint_backend, chinese_variant,
 ):
     """Run translation pipeline on INPUT_PATH."""
     if verbose:
@@ -151,6 +154,11 @@ def translate(
     cfg.source_lang, cfg.target_lang = src, tgt
     cfg.pipeline_mode = pipeline_mode
     cfg.save_artifacts = save_json
+
+    if inpaint_backend and inpaint_backend != "auto":
+        cfg.inpaint_backend = inpaint_backend
+    if chinese_variant and chinese_variant != "auto":
+        cfg.chinese_variant = chinese_variant
 
     if parallel_mode:
         cfg.parallel_mode = parallel_mode

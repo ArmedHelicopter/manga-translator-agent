@@ -581,12 +581,23 @@ def run_export_artifact(
     payload_dir: Path,
     repo_dir: Path | None = None,
     config_path: Path | None = None,
+    inpaint_backend: str = "auto",
 ) -> dict[str, Any]:
     """Pass 1: Run detect/OCR/merge/inpaint and export the render payload.
 
     The runtime stops after inpainting and writes artifact.json + inpainted.png
     to *payload_dir*. No translation or rendering happens.
+
+    Args:
+        inpaint_backend: Inpainter to use. "auto" keeps runtime default ("none"
+        for export). Maps to the runtime's Inpainter enum:
+        none|lama_large|lama_mpe|sd|original|default.
     """
+    if inpaint_backend not in ("auto", "none", "lama_large", "lama_mpe", "sd", "original", "default"):
+        raise ValueError(
+            f"Invalid inpaint_backend: {inpaint_backend!r}. "
+            f"Choose from: auto, none, lama_large, lama_mpe, sd, original, default"
+        )
     # Use the project root (which has our modified manga_translator/) rather than
     # the external clone, since --export-artifact is our addition.
     project_root = Path(__file__).resolve().parent.parent.parent
@@ -615,6 +626,9 @@ def run_export_artifact(
                     path.unlink()
     runtime_input = _prepare_runtime_image_input(input_dir, payload_dir)
     export_config_path = payload_dir / "runtime-export-config.json"
+    # "auto" keeps the runtime default ("none" for export pass). Only override
+    # when the user explicitly selects a backend.
+    effective_inpainter = "none" if inpaint_backend == "auto" else inpaint_backend
     export_config_path.write_text(
         json.dumps(
             {
@@ -622,7 +636,7 @@ def run_export_artifact(
                     "detection_size": 1024,
                 },
                 "inpainter": {
-                    "inpainter": "none",
+                    "inpainter": effective_inpainter,
                     "inpainting_size": 1024,
                 },
                 "translator": {
@@ -692,11 +706,22 @@ def run_render_only(
     page_index: int = 0,
     repo_dir: Path | None = None,
     config_path: Path | None = None,
+    inpaint_backend: str = "auto",
 ) -> dict[str, Any]:
     """Pass 2: Load payload + translations and run rendering for one page.
 
     Expects *payload_dir* to contain per-page artifact/inpainted/translations files.
+
+    Args:
+        inpaint_backend: Inpainter to use for re-inpainting. "auto" defers to
+        the runtime default. When not "auto", writes a render config JSON with
+        the selected backend and passes it via --config-file.
     """
+    if inpaint_backend not in ("auto", "none", "lama_large", "lama_mpe", "sd", "original", "default"):
+        raise ValueError(
+            f"Invalid inpaint_backend: {inpaint_backend!r}. "
+            f"Choose from: auto, none, lama_large, lama_mpe, sd, original, default"
+        )
     project_root = Path(__file__).resolve().parent.parent.parent
     if not (project_root / "manga_translator" / "__main__.py").exists():
         resolved_repo = resolve_external_runtime_repo(repo_dir)
@@ -709,6 +734,21 @@ def run_render_only(
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # If an inpaint backend is selected and no explicit config_path is
+    # provided, write a render config JSON with the selected inpainter.
+    render_config_path = config_path
+    if render_config_path is None and inpaint_backend != "auto":
+        render_config_path = output_dir / "runtime-render-config.json"
+        render_config_path.write_text(
+            json.dumps(
+                {"inpainter": {"inpainter": inpaint_backend}},
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
     command = [
         str(external_python),
         "-m", "manga_translator", "local",
@@ -717,8 +757,8 @@ def run_render_only(
         "--overwrite",
         "--render-only", str(payload_dir.resolve()),
     ]
-    if config_path:
-        command.extend(["--config-file", str(config_path)])
+    if render_config_path:
+        command.extend(["--config-file", str(render_config_path.resolve())])
 
     child_env = _build_external_child_env()
     completed = subprocess.run(
