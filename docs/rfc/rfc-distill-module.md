@@ -49,4 +49,6 @@ manga-translator-agent 翻译过程中积累的 memory（角色档案、术语�
 
 ## 待确认
 
-- [ ] Hermes Agent 的 skill 文件格式是什么？
+- [x] Hermes Agent 的 skill 文件格式是什么？
+
+  **已确认 (2026-06-17):** Hermes Agent Skill 采用 YAML/JSON 声明式格式，字段包括 `name`、`description`、`version`、`instruction`、`variables`、`triggers`、`constraints`、`examples`、`metadata`。实现见 `mga/distill/importers.py` 的 `HermesSkill` 和 `HermesSkillImporter`。

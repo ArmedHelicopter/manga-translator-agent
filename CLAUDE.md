@@ -26,6 +26,8 @@ Layer 2: Domain (depends on Layer 0)
   mga/cultural/        — Extended cultural features (honorific, coinage, etc.)
   mga/qa/              — 9 proofreaders + orchestrator
   mga/learning/        — 4-stage translation learning engine
+  mga/distill/         — Knowledge distillation (Character Card, Lorebook, Hermes Skill)
+  mga/ocr/             — Blank page detection + recovery + engine bindings (Tesseract, MOCR)
 
 Layer 3: Orchestration (depends on Layers 0-2)
   mga/pipeline/        — 7-stage pipeline + incremental + batch
@@ -64,7 +66,7 @@ cult_service = CulturalService("./project")
 result = translate_bubble(config, "こんにちは")
 ```
 
-## Providers (9 concrete)
+## Providers (14 concrete)
 
 | Provider | File | Vision | Structured | Notes |
 |----------|------|--------|------------|-------|
@@ -77,6 +79,11 @@ result = translate_bubble(config, "こんにちは")
 | vLLM | `vllm_provider.py` | Yes | JSON mode | OpenAI-compatible local |
 | LM Studio | `lmstudio_provider.py` | Yes | JSON mode | Local, OpenAI-compatible |
 | llama.cpp | `llamacpp_provider.py` | No | JSON mode | Text-only, llama-server |
+| Cohere | `cohere_provider.py` | Yes | JSON mode | Command A+ models |
+| Groq | `groq_provider.py` | No | JSON mode | Fast inference, text-only |
+| Mistral | `mistral_provider.py` | Yes | JSON mode | Pixtral vision models |
+| Mimo | `mimo_provider.py` | Yes | JSON mode | Chinese provider, domain methods |
+| GenericOpenAI | `generic_provider.py` | Auto | JSON mode | Any OpenAI-compatible endpoint |
 
 Registry: `mga/providers/registry.py` — `get_provider(name)`, `select_provider(stage, config)` with primary → fallback → local cascade.
 
@@ -150,6 +157,9 @@ Engine: `mga/learning/engine.py` — `LearningEngine.learn(learn_dir)`.
 Format → Vision → Character+Culture → Translation → QA → Render → Output
 ```
 
+- **Translation modes**: serial (default), `semantic-parallel` (Phase 1), `batch-parallel` (Phase 2)
+- **Page footnotes**: `PageFootnoteService` compiles katakana/cultural/coined/sfx footnotes per page
+- **OCR guard**: `BlankPageDetector` + `RecoveryOrchestrator` with 5 recovery strategies
 - **Incremental** (`incremental.py`) — Load previous chapter context, translate, update profiles
 - **Batch** (`batch.py`) — Multi-chapter parallel processing with resume
 
@@ -191,7 +201,7 @@ manga-translate term list project_dir/
 # Install (editable)
 pip install -e ".[dev]"
 
-# Run all tests (609 passing, 1 provider-optional skip on Windows)
+# Run all tests (931 passing, 1 provider-optional skip on Windows)
 pytest tests/ -v
 
 # Run a single test
