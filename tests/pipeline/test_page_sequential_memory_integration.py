@@ -55,7 +55,11 @@ def test_translation_stage_updates_memory_between_pages(tmp_path, monkeypatch):
     )
 
     context = PipelineContext(
-        project_config=ProjectConfig(working_dir=str(tmp_path), target_lang="zh-CN"),
+        project_config=ProjectConfig(
+            working_dir=str(tmp_path),
+            target_lang="zh-CN",
+            translation_config={"parallel_mode": "serial"},
+        ),
         pages=[
             Page(
                 page_id="p001",
@@ -188,7 +192,11 @@ def test_translation_stage_injects_saved_relationship_graph_context(tmp_path, mo
     )
 
     context = PipelineContext(
-        project_config=ProjectConfig(working_dir=str(tmp_path), target_lang="zh-CN"),
+        project_config=ProjectConfig(
+            working_dir=str(tmp_path),
+            target_lang="zh-CN",
+            translation_config={"parallel_mode": "serial"},
+        ),
         pages=[
             Page(
                 page_id="p001",
@@ -391,7 +399,11 @@ def test_translation_stage_injects_listener_specific_profile_speech_rules(tmp_pa
     )
 
     context = PipelineContext(
-        project_config=ProjectConfig(working_dir=str(tmp_path), target_lang="zh-CN"),
+        project_config=ProjectConfig(
+            working_dir=str(tmp_path),
+            target_lang="zh-CN",
+            translation_config={"parallel_mode": "serial"},
+        ),
         pages=[
             Page(
                 page_id="p001",
@@ -538,7 +550,11 @@ def test_translation_stage_uses_relationship_speech_loaded_by_character_stage(
         lambda name, **settings: provider,
     )
     context = PipelineContext(
-        project_config=ProjectConfig(working_dir=str(tmp_path), target_lang="zh-CN"),
+        project_config=ProjectConfig(
+            working_dir=str(tmp_path),
+            target_lang="zh-CN",
+            translation_config={"parallel_mode": "serial"},
+        ),
         pages=[
             Page(
                 page_id="p001",

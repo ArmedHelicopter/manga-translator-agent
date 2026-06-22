@@ -5,7 +5,11 @@ primary = "mimo"
 primary = "mimo"
 
 [translation]
-parallel_mode = "serial"
+# semantic-parallel: parallelises semantic-translation LLM calls per page
+# (ThreadPoolExecutor, max_concurrent_requests workers) while keeping persona
+# rendering serial for memory consistency. Default flipped from "serial" because
+# translation is 87% of pipeline runtime (2114s/2437s on 10-page e2e).
+parallel_mode = "semantic-parallel"
 max_concurrent_requests = 5
 semantic_timeout = 60
 

@@ -67,9 +67,16 @@ class TranslationStage(PipelineStage):
         provider_cascade = ProviderCascade(cfg, "translation")
         project_dir = Path(cfg.working_dir) if cfg.working_dir else Path(".")
 
-        # Determine parallel mode from config
+        # Determine parallel mode from config.
+        # Default to semantic-parallel: translation is 87% of pipeline runtime
+        # (2114s/2437s on the 10-page e2e) because ~147 LLM calls run serial.
+        # semantic-parallel parallelises the semantic-translation LLM calls per
+        # page (ThreadPoolExecutor, max_concurrent_requests workers) while keeping
+        # persona rendering serial for memory consistency. A ParallelExecutionError
+        # fallback to serial (:129) guarantees this can never be worse than serial.
+        # If left serial, the pipeline is ~8x slower than the PRD target.
         parallel_config = cfg.translation_config or {}
-        parallel_mode = parallel_config.get("parallel_mode", "serial")
+        parallel_mode = parallel_config.get("parallel_mode", "semantic-parallel")
 
         # Use optimized services if available in metadata
         memory_service = context.metadata.get("memory_service")
