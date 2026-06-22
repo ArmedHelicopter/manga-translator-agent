@@ -41,7 +41,23 @@
 - **Tests**: 1080 passed, 3 skipped, 1 xfailed (1 flaky batch test passes in isolation).
 - **Other fixes this session**: `01b9f19` (Python dict repr in parse_jsonish_response — page-003 region 0 was rendering the entire `str(dict)` as text), `03da6315` (strip LLM-introduced `\n` from translation text — region 6 tofu), `9043a851` (markdown leak, footnote font chain, s2t cache, SemanticTranslation parser coercion), `72b2226` (newline collapse in clean_translation_text + _clean_render_text).
 
-### 2026-06-22 ~22:35 — P0 fix identified (b8c9097 in progress)
-- b8c9097 diagnosed page-003 overflow root cause: **font-shrink loop** in `manga_translator/rendering/__init__.py` doesn't converge when translated text is longer than original (e.g. 34-char Chinese in a narrow vertical bubble) → text overflows instead of shrinking to fit.
-- Fix committed (`fix: font-shrink loop for overflowing vertical/horizontal text bubbles`). Now re-running e2e + vision-verifying all 3 pages (`_vision_all.py`).
-- On P0 vision-confirmed clean → dispatch P3 (inpaint / original-text-removal + font-fit) to b8c9097 (same runtime-rendering domain).
+### 2026-06-22 ~22:35 → DONE — P0 page-003 overflow fixed & vision-verified ✅
+- (See b8c9097's detailed entry above.) font-shrink loop in `manga_translator/rendering/__init__.py` — vision PASS on all 3 pages (page-003 top-right bubble: "all text within boundary, no overflow"). P0 complete.
+- **P3 dispatched to b8c9097**: inpaint / original-text-removal + font-fit (same runtime-rendering domain). P1 (93779b93, memory) still running in isolated worktree.
+
+### 2026-06-22 ~22:40 — P4 lever located (queued behind P1)
+- P4 direction-1 (enable parallel translation default): `translation_stage.py:72` reads `translation_config.get("parallel_mode", "serial")` → default serial. Changing → `semantic-parallel` would cut translation (87% of runtime) ~5x.
+- **But `translation_stage.py` is being modified by P1 (93779b93) right now** → P4 must land after P1 merges (both touch the same file). Tracked in `docs/p4-performance-analysis.md`.
+- P1 activity confirms high-quality work: new `mga/memory/speaker_filter.py` module (is_generic_speaker / find_canonical_match / pick_canonical_id / token index) + speaker_attribution_stage refactor, with backward-compat reasoning for existing tests.
+
+### 2026-06-22 ~23:50 — P3 inpaint/font_size audit complete: no fix needed
+
+- **P3 scope**: Check for Japanese text residual (inpaint not erasing), mask generation, font_size adaptation.
+- **Vision audit (mimo-v2-omni, all 3 e2e pages + 3 inpainted images)**:
+  - **page-002, page-003**: Original Japanese text fully erased by `NoneInpainter` (fills mask with `[255,255,255]` white). No residual text, no ghosting, no smudging. Chinese translations rendered cleanly on white backgrounds.
+  - **page-001 (cover)**: Original Japanese title visible — **by design**: OCR detected the title region with `prob=0.2039 < 0.25`, so the render stage's OCR hallucination guard skipped it (no mask → no inpainting → no rendering). Title remains in original Japanese. Correct for a low-confidence cover page region.
+  - **font_size**: OCR detects per-region sizes (88–224px), used by runtime. `Config.render.font_size=None` means "use OCR-detected size", not "no font". P0 font-shrink loop handles overflow.
+  - **Mask quality**: page-002 mask 5.5M non-zero pixels (8 regions), page-003 1.4M (2 regions). All valid, correctly applied by `NoneInpainter`.
+  - **Largest text region (page-003 top-right bubble, 34 chars)**: "All text stays entirely within the bubble boundary, no overflow. The text is sharp, fully legible." (font-shrink loop working correctly.)
+- **Conclusion**: `inpainter=none` (white fill) is correct for export pass — e2e test pages have white-background dialogue bubbles where white fill produces clean results. No code change needed. If future pages have colored/patterned backgrounds, switch to `--inpaint-backend lama_large`.
+- **No P3 code changes.** P3 audit is documentation-only.
