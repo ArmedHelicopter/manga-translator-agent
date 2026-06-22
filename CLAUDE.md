@@ -231,6 +231,8 @@ Python: `>=3.10, <3.13`. Pydantic v2.
 
 **End-to-end testing**: See `docs/e2e-testing.md`. E2E = full pipeline run on `data/input/e2e-3pages/`. Results MUST be evaluated by a **vision-capable model looking directly at the rendered PNGs** — never by pixel diff or unit tests alone (the **proxy problem**: a green suite while the images are broken). Runtime edits and e2e re-runs go through the local `manga_translator/`.
 
+**Code comments — explain why, not what**: When a change encodes a non-obvious decision or fixes a real bug, the comment must state both (1) **why** it is written this way (the constraint or root-cause decision) and (2) **what breaks** if done the naive way (the failure mode that was hit, or would be). This is defensive: without the trap written down, future agents and humans re-derive the same wrong "obvious" solution and the bug returns. Do not comment mechanics (`# increment i`); comment landmines. Tie non-obvious code to the doc/handoff that records the failure it prevents. Example: the cold-start creation branch in `mga/pipeline/speaker_attribution_stage.py` says *why* it creates a character on a non-generic hint with no match — because without it a fresh work never assigns any `speaker_id` and memory stays empty for the entire run (`docs/handoff-2026-06-22-memory-reassessment.md`).
+
 ## Skill routing
 
 When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.

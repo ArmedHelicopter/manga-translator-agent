@@ -64,6 +64,20 @@ L0 not started · L1 module + mock tests · L2 integration tests · L3 vision-e2
 | Per-page time | < 30s | ~244s | ❌ ~8× over |
 | OCR accuracy | > 98% | 47% (47/100 regions) | ❌ |
 
+## Repository state & history
+
+- **`afk-gpt-5` is live on origin** (2026-06-22). History was rewritten with `git filter-repo`
+  to strip the entire `models/` runtime-weight directory (3 `.ckpt` files >100MB, mis-committed
+  in `83d5ef6` "wip: mga-layer-bootstrap WIP snapshot", which blocked push). All commit content
+  preserved; only `models/` paths removed, hashes changed. See
+  `docs/handoff-2026-06-22-history-rewrite.md`.
+- **Local aligned** to `origin/afk-gpt-5` (HEAD `b83a545b`). The other worktree agent's unpushed
+  commit (dict-repr fix) was cherry-picked back onto the new history, then pushed.
+- **`models/` is a symlink, not in git**: `models` → main repo's `models/` (old history still
+  has the weights). Runtime needs it for e2e. `.gitignore` `/models` keeps it untracked.
+  **Runtime model weights are managed externally, never committed** — a fresh clone must restore
+  `models/` (symlink or copy from the main repo, or re-download).
+
 ## Current focus
 
 Rendering-layer e2e quality closure — eliminating recurring markdown-leak + footnote-tofu via

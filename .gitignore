@@ -128,8 +128,8 @@ data/input/
 data/output/
 data/models/
 
-# Runtime model weights (manga-image-translator) -- never commit
-models/
+# Runtime model weights (manga-image-translator) -- never commit (dir or symlink)
+/models
 
 # External runtime clone (manga-image-translator, kept out of tree)
 external/
