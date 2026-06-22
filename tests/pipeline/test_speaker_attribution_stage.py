@@ -48,7 +48,7 @@ def test_speaker_attribution_promotes_exact_known_profile_match(tmp_path):
     assert result.pages[0].bubbles[1].speaker_id == "akari"
     trace = result.artifacts["speaker_attribution"]["trace"]
     assert trace[0]["accepted"] is True
-    assert trace[0]["reason"] == "speaker hint exactly matches existing character profile"
+    assert trace[0]["reason"] == "speaker hint matched existing character via name token"
     assert trace[1]["accepted"] is True
     assert trace[1]["reason"] == "same-page speaker hint already matched a known character"
 
