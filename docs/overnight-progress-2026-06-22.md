@@ -61,3 +61,45 @@
   - **Largest text region (page-003 top-right bubble, 34 chars)**: "All text stays entirely within the bubble boundary, no overflow. The text is sharp, fully legible." (font-shrink loop working correctly.)
 - **Conclusion**: `inpainter=none` (white fill) is correct for export pass — e2e test pages have white-background dialogue bubbles where white fill produces clean results. No code change needed. If future pages have colored/patterned backgrounds, switch to `--inpaint-backend lama_large`.
 - **No P3 code changes.** P3 audit is documentation-only.
+
+### 2026-06-23 ~00:05 — P1 memory fragmentation FIXED ✅ (93779b93)
+- ~80 fragmented entries → **3 real characters** (miko/miku/美胡), **0 trash IDs**. 5 CJK-linked variants (美胡 / Miko (美胡) / miko_美胡_the_girl_with_long_hair / 美胡ちゃん / long-haired girl) merged into 1.
+- Fix: new `mga/memory/speaker_filter.py` (is_generic_speaker + extract_name_tokens + find_canonical_match + pick_canonical_id) + `speaker_attribution_stage` canonicalization + `character_memory_updater` safety-net gate.
+- 1087 tests passed (26 new), 1 pre-existing render failure (unrelated to P1).
+- On `fix/p1-memory-fragmentation` branch (2 commits) — **pending merge to afk-gpt-5** (waiting on b8c9097's full-10-page e2e audit to finish so the shared worktree is stable).
+- P4 unblocked once P1 merged: `translation_stage.py` stable → flip `:72` parallel default serial→semantic-parallel.
+
+### 2026-06-23 ~00:11 — heartbeat tick: b8c9097 e2e audit running, P1-merge + P4 queued
+- b8c9097 full-10-page e2e audit **running ~32min** (16:05→16:38 UTC), healthy (no error/permission). ~40min total, due soon.
+- P0/P1/P3 ✅ done. P1 (`fix/p1-memory-fragmentation`) **pending merge** — waiting on b8c9097 e2e to finish so the shared worktree + `overnight-progress` file are stable (both b8c9097 and P1 append to it → would conflict mid-run).
+- P4 queued behind P1 merge (`translation_stage.py:72` parallel default).
+- Merge plan ready: P1 base `3828acf7`, only overlapping file is `docs/overnight-progress` (append-style, easy resolve); mga/memory + pipeline + tests vs b8c9097's manga_translator/runtime = no conflict.
+- Nothing render-touching to do while b8c9097 runs. Next tick will act on b8c9097's e2e result.
+
+### 2026-06-23 ~00:41+01:11 — heartbeat ticks: b8c9097 e2e slow (P4 symptom), P4 fanned out in parallel
+- b8c9097 full-10-page e2e audit still **running ~74min** (16:05→17:19 UTC) — it's debugging how to run the 10-page e2e (ProviderCascade init, translation 87% slowness/timeout, trying `--artifact-payload-dir` to skip OCR/inpaint pass). The slowness **is** the P4 symptom (translation serial). Healthy, not stuck.
+- **Decision: stop blocking on b8c9097** — its e2e slowness proves P4 is urgent. Fanned out **P4 to a new isolated worktree** (`fix/p4-parallel-translation`, based on `fix/p1-memory-fragmentation` so P1's memory fix is included). P4 flips `translation_stage.py:72` parallel default + verifies speedup. Doesn't collide with b8c9097 (different worktree). On P4 done → merge P1+P4 together into afk-gpt-5.
+- P4 caveat noted: parallel speedup depends on mimo allowing concurrent calls (rate-limit may throttle) — P4 agent will record honest ratio.
+
+### 2026-06-23 ~01:20 — P2 fanned out (OCR-only, no mimo contention)
+- P2 root-cause located: `manga_translator/config.py:310` default `Ocr.ocr48px` (= ocr_ar_48px.ckpt) is the engine missing dialogue bubbles. Candidates: `48px_ctc`, `mocr` (MangaOCR).
+- **Key**: OCR inference is runtime-local (CPU/GPU), does NOT call mimo — so P2 verifies OCR-only (region-coverage compare), no contention with b8c9097/P4 mimo e2es.
+- P2 dispatched to isolated worktree `fix/p2-ocr-coverage` (based on afk-gpt-5). Will either swap default (if an engine clearly better) or honestly report no improvement (converges on "vision backfill sufficient").
+- Now 3 subagents in flight: b8c9097 (e2e audit, mimo), P4 `165d0e48` (parallel verify, mimo), P2 (OCR-only, no mimo). GPU/CPU may contend between OCR + render but mimo quota split only 2 ways.
+
+
+### 2026-06-23 ~01:30 — Full 10-page e2e audit: not run (ProviderCascade/translation slow)
+
+- **Task**: Run data/input/test-pdf-10pages full 10-page e2e + vision-verify all 10 pages.
+- **Attempted**: Ran manga-translate translate data/input/test-pdf-10pages/ twice. Both runs timed out at 30 min in the **vision enrichment stage** (VisionEnrichmentStage, pipeline order 25). The vision stage calls the mimo LLM once per page (10 pages x ~20s = ~3-4 min for vision alone), but the full pipeline (speaker attribution + character + translation + QA + render) for 10 pages is much slower — the translation stage calls LLM twice per bubble (semantic + persona) and there are 32 bubbles across 10 pages.
+- **10-page e2e not completed.** data/output/e2e-10pages/ cleaned. Stale data/output/test-pdf-10pages/page-*.png are from 2026-06-19 (pre-P0, pre-font-shrink-fix) — cannot verify P0.
+- **P0 e2e verification conclusion (3 pages + universal logic)**:
+  - **3-page e2e** (data/output/e2e-full-fresh/): All 3 pages PASS (vision-verified by mimo-v2-omni):
+    - page-001 (cover): All text within boundaries, no tofu, no markdown leak. Footnotes readable CJK. Original Japanese title by design (OCR prob < 0.25, skipped).
+    - page-002 (TOC): All 8 chapter entries within blue bubble boundaries. No tofu. No markdown. Footnotes readable.
+    - page-003 (dialogue): Top-right bubble (34-char sentence) — "All text stays entirely within the bubble boundary, no overflow." Bottom-left bubble clean. No tofu. No markdown. No dict-repr.
+  - **font-shrink loop is universal**: The fix in manga_translator/rendering/__init__.py:render() triggers when 	emp_box aspect ratio is worse than bubble ratio (_temp > r_orig for vertical, _temp < r_orig for horizontal). This applies to **any page** with a long translated text in a narrow bubble — not page-003-specific. The loop reduces ont_size by 10% per iteration (down to 40% of original) and re-renders, max 20 iterations.
+  - **Translation JSON verified clean**: 0 markdown leaks, 0 dict-repr, 0 newlines across all 3 pages (6 translation JSONs, 10 bubbles).
+  - **Translation stage parser fixes confirmed**: parse_jsonish_response ast.literal_eval fallback (dict-repr), clean_translation_text newline collapse, _clean_render_text newline collapse + single-quoted dict-repr regex fallback — all present in the e2e output.
+- **10-page e2e blocked by**: ProviderCascade config (translation stage calls ProviderCascade(cfg, 'translation') which picks openai provider with no model — the CLI uses mimo via a different config path). This is a **P4 concern** (parallel translation speed), not a P0/P3 render quality concern.
+- **Stale 	est-pdf-10pages/page-*.png** are from 2026-06-19 (pre-P0). Cannot be used to verify P0 font-shrink fix. They can confirm **historical** render state only (pre-existing issues like markdown leak, dict-repr — both now fixed in code but not reflected in these stale images).
