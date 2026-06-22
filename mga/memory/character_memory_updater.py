@@ -8,6 +8,12 @@ from typing import TYPE_CHECKING, Any
 
 from mga.memory.entities import CharacterState
 from mga.memory.profile_loader import get_profile_as_dict
+from mga.memory.speaker_filter import (
+    build_token_index,
+    find_canonical_match,
+    is_generic_speaker,
+    pick_canonical_id,
+)
 from mga.memory.state import StateManager
 
 if TYPE_CHECKING:
@@ -36,6 +42,10 @@ class CharacterMemoryUpdater:
     ) -> None:
         self.project_dir = project_dir
         self._memory_service = memory_service
+        # Lazily-built token index for canonical matching.  Invalidated on
+        # every upsert so newly-created characters are visible to subsequent
+        # calls.
+        self._token_index: dict[str, str] | None = None
 
     def _get_profile(self, speaker: str) -> CharacterState | None:
         """Get character profile via MemoryService cache or StateManager."""
@@ -69,6 +79,25 @@ class CharacterMemoryUpdater:
         prompt: str,
     ) -> CharacterMemoryUpdate:
         """Persist memory for one translated bubble and return audit data."""
+        # Generic/trash speaker IDs (Narrator, Female character, Girl with hand
+        # to mouth, …) must not pollute character memory.  This is the safety-net
+        # gate; speaker_attribution_stage is the primary gate.
+        # (docs/handoff-2026-06-22-memory-reassessment.md)
+        if is_generic_speaker(speaker):
+            return CharacterMemoryUpdate(
+                memory_after={},
+                trace_item={
+                    "page_id": page_id,
+                    "speaker_id": speaker,
+                    "bubble_id": bubble.bubble_id,
+                    "source_text": bubble.source_text,
+                    "translated_text": translated_text,
+                    "memory_before": memory_before,
+                    "memory_after": {},
+                    "prompt_excerpt": prompt[:500],
+                    "skipped": "generic_speaker",
+                },
+            )
         memory_after = self._update_character_memory(
             speaker=speaker,
             bubble=bubble,
@@ -106,6 +135,13 @@ class CharacterMemoryUpdater:
                 profiles[speaker] = profile
         return profiles
 
+    def _get_token_index(self) -> dict[str, str]:
+        """Lazily build (and cache) the {token → character_id} lookup."""
+        if self._token_index is None:
+            characters = StateManager.list_characters(self.project_dir)
+            self._token_index = build_token_index(characters)
+        return self._token_index
+
     def _update_character_memory(
         self,
         *,
@@ -115,9 +151,28 @@ class CharacterMemoryUpdater:
         translated_text: str,
     ) -> dict[str, Any]:
         profile = self._get_profile(speaker)
+
         if profile is None:
+            # Safety-net canonicalisation: if speaker_attribution didn't run or
+            # missed a variant, try to merge with an existing character via
+            # name-token matching.  Without this, "Miko (美胡)" and "美胡" would
+            # create separate entries when speaker_attribution is bypassed.
+            canonical = find_canonical_match(speaker, self._get_token_index())
+            if canonical and canonical != speaker:
+                profile = self._get_profile(canonical)
+                if profile is not None:
+                    # Record the variant as an alias so future calls match faster
+                    aliases = list(profile.provenance.get("aliases", []))
+                    if speaker not in aliases:
+                        aliases.append(speaker)
+                    profile.provenance["aliases"] = aliases
+
+        if profile is None:
+            # Use a clean canonical ID (e.g. "美胡" instead of "miko(美胡)") so
+            # that variant descriptions on later pages merge via token matching.
+            clean_id = pick_canonical_id(speaker)
             profile = CharacterState(
-                character_id=speaker,
+                character_id=clean_id,
                 name_jp=bubble.speaker_name or speaker,
             )
 
@@ -154,6 +209,9 @@ class CharacterMemoryUpdater:
         }
 
         StateManager.upsert_character(self.project_dir, profile)
+        # Invalidate token index cache so newly-created characters are visible
+        # to subsequent find_canonical_match calls.
+        self._token_index = None
         return get_profile_as_dict(profile)
 
 
