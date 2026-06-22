@@ -42,6 +42,8 @@
 - **intelligence proprietary**：把角色一致性、关系约束、学习与审查做成 `mga` 自己的核心资产
 - **single runtime focus**：停止把 internal runtime 作为产品实现主线，避免双线消耗
 
+> **修订 —— runtime 不再是黑盒。** 「runtime commodity」指默认**复用** runtime，而非**禁止**改它。当 runtime 的真实 bug 卡住交付（例：`_draw_footnotes` 硬编码 Linux Noto 字体 → Windows 脚注 tofu 乱码，且反复回归），**允许直接修改本地 runtime `manga_translator/`**（mga 以 `cwd=project_root` 调用 `python -m manga_translator`，用的就是这份 worktree 本地副本）。优先 mga 侧修；不行就改 `manga_translator/`。详见 `docs/render_purity_contract.md`（Edit scope）。
+
 ### 1.3 目标用户
 
 | 用户类型 | 场景 | 核心需求 |

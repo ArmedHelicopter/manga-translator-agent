@@ -227,6 +227,10 @@ Python: `>=3.10, <3.13`. Pydantic v2.
 
 **PipelineContext memory shape**: `context.memory_context = {"character_profiles": {speaker: profile}, "page_profiles": {page_id: {speaker: profile}}}`.
 
+**Runtime editability**: The runtime mga invokes is the **worktree-local `manga_translator/`** (`run_export_artifact`/`run_render_only` run `python -m manga_translator` with `cwd=project_root`). It is directly editable — modifying the local runtime is **allowed** when a real runtime bug blocks delivery (PRD §1.2.2; `docs/render_purity_contract.md`). Prefer mga-side fixes; otherwise patch `manga_translator/`.
+
+**End-to-end testing**: See `docs/e2e-testing.md`. E2E = full pipeline run on `data/input/e2e-3pages/`. Results MUST be evaluated by a **vision-capable model looking directly at the rendered PNGs** — never by pixel diff or unit tests alone (the **proxy problem**: a green suite while the images are broken). Runtime edits and e2e re-runs go through the local `manga_translator/`.
+
 ## Skill routing
 
 When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.
