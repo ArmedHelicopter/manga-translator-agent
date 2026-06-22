@@ -201,8 +201,8 @@ manga-translate term list project_dir/
 # Install (editable)
 pip install -e ".[dev]"
 
-# Run all tests (985 passing, 1 provider-optional skip on Windows)
-pytest tests/ -v
+# Run all tests (counts drift — see docs/STATUS.md for the dated snapshot; do not trust hardcoded numbers)
+pytest tests/ -q
 
 # Run a single test
 pytest tests/qa/test_orchestrator.py -k test_name

@@ -47,7 +47,7 @@ class SpeakerAttributionStage(PipelineStage):
         for page in context.pages:
             page_assignments: dict[str, str] = {}
             for bubble in page.bubbles:
-                item = self._attribute_bubble(bubble, candidates, page_assignments)
+                item = self._attribute_bubble(bubble, candidates, page_assignments, project_dir)
                 item["page_id"] = page.page_id
                 item["bubble_id"] = bubble.bubble_id
                 trace.append(item)
@@ -69,6 +69,7 @@ class SpeakerAttributionStage(PipelineStage):
         bubble: object,
         candidates: list[_SpeakerCandidate],
         page_assignments: dict[str, str],
+        project_dir: Path,
     ) -> dict:
         if getattr(bubble, "speaker_id", None):
             return self._trace_item(
@@ -118,6 +119,21 @@ class SpeakerAttributionStage(PipelineStage):
                     reason="speaker hint exactly matches existing character profile",
                 )
 
+        # Cold-start creation: a non-generic hint with no known match registers a candidate
+        # character so translation/QA/memory have an anchor. Without this, a fresh work
+        # (empty memory) never assigns any speaker_id, leaving memory/character profiles
+        # empty for the entire run (docs/handoff-2026-06-19-pipeline-run.md).
+        if len(normalized_hint) >= 2:
+            new_id = self._create_candidate_character(project_dir, hint)
+            page_assignments[normalized_hint] = new_id
+            return self._trace_item(
+                bubble=bubble,
+                assigned_speaker_id=new_id,
+                confidence=0.6,
+                accepted=True,
+                reason="cold-start: created new character from non-generic speaker hint",
+            )
+
         return self._trace_item(
             bubble=bubble,
             assigned_speaker_id=None,
@@ -125,6 +141,27 @@ class SpeakerAttributionStage(PipelineStage):
             accepted=False,
             reason="speaker hint did not match existing character profile",
         )
+
+    def _create_candidate_character(self, project_dir: Path, hint: str) -> str:
+        """Cold-start: register a candidate character from a non-generic speaker hint.
+
+        Idempotent — a later bubble/page with the same hint reuses the existing id
+        instead of creating a duplicate.
+        """
+        character_id = self._normalize_label(hint)
+        existing = StateManager.get_character(project_dir, character_id)
+        if existing is not None:
+            return existing.character_id
+        StateManager.upsert_character(
+            project_dir,
+            CharacterState(
+                character_id=character_id,
+                name_jp=hint,
+                name_zh=hint,
+                provenance={"source": "cold_start_speaker_hint"},
+            ),
+        )
+        return character_id
 
     def _load_candidates(self, project_dir: Path) -> list[_SpeakerCandidate]:
         candidates: list[_SpeakerCandidate] = []
