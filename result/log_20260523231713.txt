@@ -1,3 +1,0 @@
-[manga-translator.local] Log file created: /home/exusiai/_dev/manga-translator-agent/result/log_20260523231713.txt
-[manga-translator.local] Rendered page 1 -> /home/exusiai/_dev/manga-translator-agent/data/output/page-002-ruby-boundary-check-20260523/page-001.png
-[manga-translator.local] Render-only complete. Output in: /home/exusiai/_dev/manga-translator-agent/data/output/page-002-ruby-boundary-check-20260523

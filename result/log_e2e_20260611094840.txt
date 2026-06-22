@@ -1,4 +1,0 @@
-Usage: manga-translate [OPTIONS] COMMAND [ARGS]...
-Try 'manga-translate --help' for help.
-
-Error: No such command 'test/testdata/bboxes/'.

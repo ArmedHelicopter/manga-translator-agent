@@ -1,5 +1,0 @@
-[manga-translator.local] Log file created: /home/exusiai/_dev/manga-translator-agent/result/log_20260523213855.txt
-[manga-translator.local] Translating: "/home/exusiai/_dev/manga-translator-agent/data/input/pdf-test-10page-0523/page-010.png"
-[manga-translator.local] Loading models
-[31mERROR:[39m [manga-translator.local] Language not supported for SugoiTranslator: "CHS". Supported languages: "JPN,ENG"
-[31mERROR:[39m [manga-translator.local] LanguageUnsupportedException: Language not supported for SugoiTranslator: "CHS". Supported languages: "JPN,ENG"

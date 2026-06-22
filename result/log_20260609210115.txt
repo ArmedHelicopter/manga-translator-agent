@@ -1,3 +1,0 @@
-[manga-translator.local] Log file created: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\log_20260609210115.txt
-[manga-translator.local] Rendered page 1 -> C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-1-page-final\page-001.png
-[manga-translator.local] Render-only complete. Output in: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\data\output\test-1-page-final

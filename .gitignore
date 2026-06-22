@@ -45,10 +45,16 @@ mga.toml
 # Cache
 .cache/
 .pytest_cache/
+.mga_cache/
 temp/
 
 # Legacy
 legacy/
+
+# Run artifacts / logs
+result/
+*.log
+data/review_*/
 
 # Misc
 uv.lock

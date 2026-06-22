@@ -1,2 +1,0 @@
-[manga-translator.local] Log file created: C:\Users\Administrator\.paseo\worktrees\manual-afk-gpt-5-manga-translator-agent-local-head\result\log_20260609092951.txt
-[31mERROR:[39m [manga-translator.local] UnboundLocalError: cannot access local variable 'sys' where it is not associated with a value
