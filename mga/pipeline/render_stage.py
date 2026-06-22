@@ -464,7 +464,12 @@ class RenderStage(PipelineStage):
 
     @staticmethod
     def _extract_render_text(raw_text: str) -> str:
-        """Extract translatable text from plain text or JSON-like model output."""
+        """Extract translatable text from plain text or JSON-like model output.
+
+        Handles JSON objects, Python dict reprs (single-quoted), and
+        JSON embedded in surrounding text. Falls back to regex extraction
+        of a ``"text"`` field, then noise stripping.
+        """
         text = (raw_text or "").strip()
         if not text:
             return text
@@ -480,6 +485,16 @@ class RenderStage(PipelineStage):
                 parsed = json.loads(text)
             except Exception:
                 parsed = None
+            # Fallback: LLMs sometimes return Python dict repr (single
+            # quotes) instead of valid JSON.
+            if parsed is None:
+                try:
+                    import ast
+                    evaluated = ast.literal_eval(text)
+                    if isinstance(evaluated, dict):
+                        parsed = evaluated
+                except (ValueError, SyntaxError):
+                    pass
         else:
             start = text.find("{")
             end = text.rfind("}")
@@ -488,6 +503,14 @@ class RenderStage(PipelineStage):
                     parsed = json.loads(text[start : end + 1])
                 except Exception:
                     parsed = None
+                if parsed is None:
+                    try:
+                        import ast
+                        evaluated = ast.literal_eval(text[start : end + 1])
+                        if isinstance(evaluated, dict):
+                            parsed = evaluated
+                    except (ValueError, SyntaxError):
+                        pass
 
         if isinstance(parsed, dict):
             extracted = parsed.get("text") or parsed.get("translation")
@@ -495,6 +518,7 @@ class RenderStage(PipelineStage):
                 return RenderStage._clean_render_text(extracted.strip())
 
         # Fallback: extract text field from malformed JSON-like output.
+        # Handles both JSON ("text": "...") and Python dict repr ('text': '...').
         m = re.search(r'"text"\s*:\s*"((?:\\.|[^"\\])*)"', text, flags=re.DOTALL)
         if m:
             try:
@@ -503,6 +527,11 @@ class RenderStage(PipelineStage):
                     return RenderStage._clean_render_text(extracted.strip())
             except Exception:
                 pass
+        m = re.search(r"'text'\s*:\s*'((?:\\.|[^'\\])*)'", text, flags=re.DOTALL)
+        if m:
+            extracted = m.group(1).replace("\\'", "'")
+            if extracted.strip():
+                return RenderStage._clean_render_text(extracted.strip())
 
         text = RenderStage._strip_json_noise(text)
         return RenderStage._clean_render_text(text)

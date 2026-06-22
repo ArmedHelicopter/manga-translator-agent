@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 from typing import Any
@@ -15,7 +16,15 @@ from mga.models.translation import (
 
 
 def parse_jsonish_response(raw: str) -> tuple[str, dict | None]:
-    """Parse LLM response - handles both plain text and JSON formats."""
+    """Parse LLM response - handles both plain text and JSON formats.
+
+    Handles three cases:
+    1. Plain text (no JSON) → returns (text, None)
+    2. Valid JSON object → returns (text, parsed_dict)
+    3. Python dict repr (single-quoted, e.g. ``{'text': '...'}``) →
+       falls back to ``ast.literal_eval`` to recover the dict, so that
+       LLMs returning Python repr instead of JSON still parse correctly.
+    """
     text = raw.strip()
     if text.startswith("```"):
         lines = text.splitlines()
@@ -28,6 +37,16 @@ def parse_jsonish_response(raw: str) -> tuple[str, dict | None]:
             parsed = json.loads(text)
         except ValueError:
             parsed = None
+        # Fallback: LLMs sometimes return Python dict repr (single quotes,
+        # bare True/False/None) instead of valid JSON. ast.literal_eval safely
+        # evaluates literals without executing code.
+        if parsed is None:
+            try:
+                evaluated = ast.literal_eval(text)
+                if isinstance(evaluated, dict):
+                    parsed = evaluated
+            except (ValueError, SyntaxError):
+                parsed = None
     else:
         start = text.find("{")
         end = text.rfind("}")
@@ -36,6 +55,13 @@ def parse_jsonish_response(raw: str) -> tuple[str, dict | None]:
                 parsed = json.loads(text[start : end + 1])
             except ValueError:
                 parsed = None
+            if parsed is None:
+                try:
+                    evaluated = ast.literal_eval(text[start : end + 1])
+                    if isinstance(evaluated, dict):
+                        parsed = evaluated
+                except (ValueError, SyntaxError):
+                    parsed = None
     return text, parsed if isinstance(parsed, dict) else None
 
 
