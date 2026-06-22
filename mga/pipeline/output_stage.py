@@ -9,6 +9,7 @@ from pathlib import Path
 from mga.format import get_adapter
 from mga.models import ProjectConfig, TranslatedPage
 
+from .parsers import clean_translation_text
 from .stages import PipelineContext, PipelineStage
 
 
@@ -25,6 +26,13 @@ class OutputStage(PipelineStage):
 
     def execute(self, context: PipelineContext) -> PipelineContext:
         cfg: ProjectConfig = context.project_config
+
+        # Normalize translation text: strip any LLM chatter / markdown labels so
+        # neither the translation JSON nor downstream repacked output ever
+        # contains them (defense-in-depth alongside the render-stage strip).
+        for translation in context.translations:
+            if translation.text:
+                translation.text = clean_translation_text(translation.text)
 
         if cfg.pipeline_mode == "novel":
             return self._execute_novel(cfg, context)

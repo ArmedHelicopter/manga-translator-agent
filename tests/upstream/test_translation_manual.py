@@ -1,4 +1,14 @@
+import os
+
 import pytest
+
+# Live upstream translator tests — see test_translation.py for the opt-in gate.
+if not os.environ.get("RUN_UPSTREAM_TRANSLATOR_TESTS"):
+    pytest.skip(
+        "live upstream translator tests skipped "
+        "(opt in with RUN_UPSTREAM_TRANSLATOR_TESTS=1)",
+        allow_module_level=True,
+    )
 
 from manga_translator.translators import (
     TranslatorChain,

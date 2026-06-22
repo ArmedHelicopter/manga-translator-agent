@@ -39,6 +39,43 @@ def parse_jsonish_response(raw: str) -> tuple[str, dict | None]:
     return text, parsed if isinstance(parsed, dict) else None
 
 
+_LEADING_BOLD_LABEL_RE = re.compile(r"^\s*\*\*[^*\n：:]{1,40}[:：]\*\*[\s]*")
+_LEADING_PLAIN_LABEL_RE = re.compile(
+    r"^\s*(?:Translation|Corrected\s+Translation|Final\s+Translation|"
+    r"译文|修正翻译|最终译文|最终翻译|翻译)\s*[:：]\s*",
+    re.IGNORECASE,
+)
+
+
+def clean_translation_text(text: str) -> str:
+    """Strip LLM chatter / markdown labels that leak into translation output.
+
+    Manga dialogue never opens with a bold markdown label or a 'Translation:'
+    header, so stripping these leading markers is safe. Applied at every point
+    translation text is stored or written (qa re-translate, output writer,
+    render) so neither the rendered image nor the translation JSON contains
+    markdown like '**Corrected Translation:**'. Conservative: only removes
+    unambiguous chatter markers (markdown labels, code fences, wrapping bold);
+    never strips dialogue content.
+    """
+    s = (text or "").strip()
+    if not s:
+        return s
+    # Strip a leading code fence wrapping the whole response.
+    if s.startswith("```"):
+        lines = s.splitlines()
+        if len(lines) >= 3 and lines[-1].strip().startswith("```"):
+            s = "\n".join(lines[1:-1]).strip()
+    # Leading markdown bold label, e.g. '**Corrected Translation:**'.
+    s = _LEADING_BOLD_LABEL_RE.sub("", s).strip()
+    # Leading plain label followed by a colon.
+    s = _LEADING_PLAIN_LABEL_RE.sub("", s).strip()
+    # Whole-string markdown bold wrapping the translation, e.g. '**第35话**'.
+    if s.startswith("**") and s.endswith("**") and s.count("**") == 2:
+        s = s[2:-2].strip()
+    return s
+
+
 JP_HONORIFIC_PATTERN = re.compile(r"([ぁ-ゖァ-ヺー・]{1,12})(?:ちゃん|さん|くん|君|様)")
 ZH_NAME_SUFFIX_PATTERN = re.compile(r"([一-鿿]{1,6})(?:酱|醬)")
 RATIONALE_TERM_RE = re.compile(r"[「『\"]([^「」『』\"]{1,20})[」』\"]")
@@ -226,11 +263,18 @@ def parse_semantic_response(bubble_id: str, raw: str) -> SemanticTranslation:
                 footnotes.append(FootnoteEntry(**fn))
         # Accept all footnote types now (including coined, cultural, fictional)
         footnotes = [fn for fn in footnotes if fn.type in {"loanword", "sfx", "coined", "cultural", "fictional"}]
+        # Coerce non-string speech_act/emotion (LLM sometimes returns [] or null)
+        speech_act = parsed.get("speech_act")
+        if not isinstance(speech_act, str):
+            speech_act = None
+        emotion = parsed.get("emotion")
+        if not isinstance(emotion, str):
+            emotion = None
         return SemanticTranslation(
             bubble_id=bubble_id,
             text=parsed.get("text", parsed.get("translation", text)),
-            speech_act=parsed.get("speech_act"),
-            emotion=parsed.get("emotion"),
+            speech_act=speech_act,
+            emotion=emotion,
             must_preserve=[str(item) for item in parsed.get("must_preserve", [])],
             footnotes=footnotes,
             rationale=parsed.get("rationale", ""),

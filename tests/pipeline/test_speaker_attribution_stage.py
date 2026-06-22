@@ -145,3 +145,82 @@ def test_translation_stage_does_not_persist_bare_speaker_name(tmp_path, monkeypa
     assert "character_memory" in result.artifacts
     assert result.artifacts["character_memory"] == []
     assert StateManager.list_characters(tmp_path) == []
+
+
+def test_speaker_attribution_creates_character_on_cold_start(tmp_path):
+    """Non-generic hint + empty memory creates a CharacterState and assigns speaker_id.
+
+    Without cold-start creation, a fresh work leaves memory empty for the whole run
+    (docs/handoff-2026-06-19-pipeline-run.md). This locks that path so it cannot regress.
+    """
+    page = Page(
+        page_id="p001",
+        bubbles=[
+            Bubble(bubble_id="b1", source_text="おはよう。", provisional_speaker="灯里"),
+            Bubble(bubble_id="b2", source_text="またね。", provisional_speaker="灯里"),
+        ],
+    )
+    ctx = PipelineContext(
+        project_config=ProjectConfig(working_dir=str(tmp_path)),
+        pages=[page],
+    )
+
+    result = SpeakerAttributionStage().execute(ctx)
+
+    created_id = result.pages[0].bubbles[0].speaker_id
+    assert created_id is not None
+    # second bubble with the same hint reuses the created id (no duplicate)
+    assert result.pages[0].bubbles[1].speaker_id == created_id
+    characters = StateManager.list_characters(tmp_path)
+    assert len(characters) == 1
+    assert characters[0].name_jp == "灯里"
+    assert characters[0].provenance.get("source") == "cold_start_speaker_hint"
+    trace = result.artifacts["speaker_attribution"]["trace"]
+    assert trace[0]["accepted"] is True
+    assert trace[0]["reason"] == "cold-start: created new character from non-generic speaker hint"
+    assert trace[1]["reason"] == "same-page speaker hint already matched a known character"
+
+
+def test_speaker_attribution_cold_start_skips_generic_and_short_hints(tmp_path):
+    """Generic and single-char hints must not trigger cold-start creation."""
+    page = Page(
+        page_id="p001",
+        bubbles=[
+            Bubble(bubble_id="b1", source_text="大丈夫？", provisional_speaker="girl-near-door"),
+            Bubble(bubble_id="b2", source_text="うん。", provisional_speaker="あ"),
+        ],
+    )
+    ctx = PipelineContext(
+        project_config=ProjectConfig(working_dir=str(tmp_path)),
+        pages=[page],
+    )
+
+    SpeakerAttributionStage().execute(ctx)
+
+    assert StateManager.list_characters(tmp_path) == []
+
+
+def test_speaker_attribution_cold_start_then_warm_start_reuses(tmp_path):
+    """A later page with the same hint reuses the cold-started character (no duplicate)."""
+    stage = SpeakerAttributionStage()
+    for page_id in ("p001", "p002"):
+        ctx = PipelineContext(
+            project_config=ProjectConfig(working_dir=str(tmp_path)),
+            pages=[
+                Page(
+                    page_id=page_id,
+                    bubbles=[
+                        Bubble(
+                            bubble_id=f"{page_id}_b1",
+                            source_text="こんにちは。",
+                            provisional_speaker="akari",
+                        )
+                    ],
+                )
+            ],
+        )
+        stage.execute(ctx)
+
+    characters = StateManager.list_characters(tmp_path)
+    assert len(characters) == 1
+    assert characters[0].character_id == "akari"

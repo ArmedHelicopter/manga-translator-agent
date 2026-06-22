@@ -41,6 +41,24 @@ class ProviderCascade:
         self.errors: list[dict[str, str]] = []
         self.calls: list[dict[str, str]] = []
 
+    def supports_vision(self) -> bool:
+        """Return True if the first resolvable candidate provider accepts images.
+
+        Cheap probe (no API call): resolves the first candidate via
+        ``get_provider`` (the same seam tests monkeypatch) and reads its
+        ``supports_vision`` flag. Duck-typed providers that don't declare the
+        flag default to True so vision enrichment isn't silently disabled.
+        Returns False only when the flag is explicitly False or no candidate
+        resolves. Never raises.
+        """
+        for candidate in self.candidates:
+            try:
+                provider = get_provider(candidate.provider, **(candidate.settings or {}))
+            except Exception:  # noqa: BLE001 - probe must never raise.
+                continue
+            return bool(getattr(provider, "supports_vision", True))
+        return False
+
     def call_chat(
         self,
         messages: list[dict],

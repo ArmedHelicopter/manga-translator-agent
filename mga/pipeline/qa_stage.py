@@ -7,6 +7,7 @@ from mga.providers import ProviderCascade
 from mga.qa import QAOrchestrator
 from mga.qa.base import QAFeedbackType
 
+from .parsers import clean_translation_text
 from .stages import PipelineContext, PipelineStage
 
 
@@ -213,7 +214,7 @@ class QAStage(PipelineStage):
                     trace_context={"bubble_id": bubble_id},
                 )
                 if raw and raw.strip():
-                    candidate.text = raw.strip()
+                    candidate.text = clean_translation_text(raw)
                     candidate.rationale = f"QA re-translated: {feedback_summary}"
             except Exception:
                 pass

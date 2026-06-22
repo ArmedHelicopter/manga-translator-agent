@@ -783,13 +783,28 @@ class MangaTranslator:
         pil_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
         draw = ImageDraw.Draw(pil_img)
 
-        try:
-            font = ImageFont.truetype("/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc", font_size)
-        except (OSError, IOError):
+        # CJK-capable font chain so footnote text (katakana/CJK terms) renders
+        # as real glyphs instead of tofu boxes. Prefer repo-bundled fonts
+        # (OS-independent), then Windows system fonts, then Linux Noto, and
+        # only fall back to PIL's bitmap default as a last resort.
+        _repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        font = None
+        for _font_path in (
+            os.path.join(_repo_root, "fonts", "msyh.ttc"),
+            os.path.join(_repo_root, "fonts", "Arial-Unicode-Regular.ttf"),
+            os.path.join(_repo_root, "fonts", "msgothic.ttc"),
+            "C:/Windows/Fonts/msyh.ttc",
+            "C:/Windows/Fonts/msyhbd.ttc",
+            "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+            "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        ):
             try:
-                font = ImageFont.truetype("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", font_size)
+                font = ImageFont.truetype(_font_path, font_size)
+                break
             except (OSError, IOError):
-                font = ImageFont.load_default()
+                continue
+        if font is None:
+            font = ImageFont.load_default()
 
         # Wrap long footnote lines so explanations stay within the page width.
         max_text_w = max(1, int(w * 0.45))
