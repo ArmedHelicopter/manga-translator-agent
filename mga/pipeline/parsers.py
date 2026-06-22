@@ -73,6 +73,11 @@ def clean_translation_text(text: str) -> str:
     # Whole-string markdown bold wrapping the translation, e.g. '**第35话**'.
     if s.startswith("**") and s.endswith("**") and s.count("**") == 2:
         s = s[2:-2].strip()
+    # Collapse LLM-introduced line breaks into single spaces. Manga dialogue
+    # text should be a single line — the runtime handles text wrapping.
+    s = re.sub(r"\s*\n\s*", " ", s).strip()
+    # Collapse runs of 2+ spaces (often left after newline removal) into one.
+    s = re.sub(r" {2,}", " ", s)
     return s
 
 

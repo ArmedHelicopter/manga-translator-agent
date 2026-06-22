@@ -511,9 +511,14 @@ class RenderStage(PipelineStage):
     def _clean_render_text(text: str) -> str:
         """Final render-text cleaning: strip LLM chatter/markdown labels, then
         inline footnote noise. Applied on every extraction path."""
-        return RenderStage._strip_inline_footnote_noise(
+        s = RenderStage._strip_inline_footnote_noise(
             RenderStage._strip_llm_chatter(text)
         )
+        # Collapse LLM-introduced line breaks and extra spaces. Manga dialogue
+        # text should be a single line — the runtime handles wrapping.
+        s = re.sub(r"\s*\n\s*", " ", s).strip()
+        s = re.sub(r" {2,}", " ", s)
+        return s
 
     @staticmethod
     def _strip_llm_chatter(text: str) -> str:
