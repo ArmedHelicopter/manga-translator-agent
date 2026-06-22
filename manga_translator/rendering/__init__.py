@@ -482,8 +482,54 @@ def render(
     h, w, _ = temp_box.shape
     r_temp = w / h
 
+    # Font-shrink loop: when the rendered text box overflows the bubble
+    # (temp_box wider than the bubble for vertical text, or taller for
+    # horizontal text), progressively reduce font_size and re-render until
+    # the text fits. Without this, long translated text (e.g. a 34-char
+    # Chinese sentence in a narrow vertical bubble) renders at the original
+    # font size and overflows the bubble boundary after perspective warp.
+    # We shrink in steps of 10% down to 40% of the original size.
+    _font_shrink_attempts = 0
+    _max_shrink = max(1, int(region.font_size * 0.4))
+    while _font_shrink_attempts < 20 and region.font_size > _max_shrink:
+        _overflow = False
+        if not region.horizontal and r_temp > r_orig:
+            # Vertical: temp_box is wider than tall relative to bubble ratio.
+            _overflow = True
+        elif region.horizontal and r_temp < r_orig:
+            # Horizontal: temp_box is taller than wide relative to bubble ratio.
+            _overflow = True
+        if not _overflow:
+            break
+        region.font_size = max(_max_shrink, int(region.font_size * 0.9))
+        _font_shrink_attempts += 1
+        if render_horizontally:
+            temp_box = text_render.put_text_horizontal(
+                region.font_size,
+                region.get_translation_for_rendering(),
+                round(norm_h[0]),
+                round(norm_v[0]),
+                region.alignment,
+                region.direction == 'hl',
+                fg, bg,
+                region.target_lang,
+                hyphenate,
+                line_spacing,
+            )
+        else:
+            temp_box = text_render.put_text_vertical(
+                region.font_size,
+                region.get_translation_for_rendering(),
+                round(norm_v[0]),
+                region.alignment,
+                fg, bg,
+                line_spacing,
+            )
+        h, w, _ = temp_box.shape
+        r_temp = w / h
+
     # Extend temporary box so that it has same ratio as original
-    box = None  
+    box = None
     #print("\n" + "="*50)  
     #print(f"Processing text: \"{region.get_translation_for_rendering()}\"")  
     #print(f"Text direction: {'Horizontal' if region.horizontal else 'Vertical'}")  
