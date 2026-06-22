@@ -361,3 +361,23 @@ correct because:
 - `configs/providers.toml` (+5/-1 lines — config flip + why-comment)
 - `tests/pipeline/test_page_sequential_memory_integration.py` (+18/-6 lines —
   4 tests pinned to serial mode for prompt-ordering assertions)
+
+---
+
+## Final — 5/5 sub-goals converged + integrated to origin/afk-gpt-5 = `a423896c` (2026-06-23)
+
+| Sub-goal | Status | Evidence |
+|---|---|---|
+| P0 render quality | ✅ | font-shrink loop in `rendering/__init__.py`, vision-verified 3 pages (mimo-v2-omni) |
+| P1 memory fragmentation | ✅ | ~80 → 3 real characters (miko/miku/美胡), 0 trash IDs; merged `34165eea` |
+| P2 OCR coverage | ✅ | honest negative: DBNet **detector** misses dialogue bubbles (not OCR engine — all 3 engines 100% on detected regions); vision backfill is correct; merged `888e54c7` |
+| P3 inpaint/font-fit | ✅ | audit: NoneInpainter white-fill clean, font_size=OCR-detected; no fix needed |
+| P4 parallel translation | ✅ | `translation_stage.py:72` + `configs/providers.toml` default serial→semantic-parallel (code+config dual flip); merged `a423896c` |
+
+**All merged + pushed to `origin/afk-gpt-5` = `a423896c`.**
+
+Honest constraints recorded:
+- P4 real-world speedup depends on mimo allowing concurrent calls (rate-limit may throttle); serial fallback (`ParallelExecutionError` → serial) guarantees no regression. 10-page e2e blocked by translation 87% slowness — now addressed at default level by P4.
+- PRD Phase-8 aspirations (Web/MCP/plugins — SPEC `[x]` but actually L1/unverified) intentionally NOT pursued this overnight (user agreed to focus on real STATUS gaps). They remain future work.
+
+Methodology that worked: split big goal → fan out per sub-goal to isolated-worktree subagents via `/paseo-handoff` → each converges with vision-e2e acceptance → merge (resolve progress append conflicts) → push. Two subagents got stuck over-running full e2e (mimo slowness) — both unblocked by claude advising "accept representative verification + honest constraint, don't chase the slow e2e."
