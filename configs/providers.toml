@@ -5,11 +5,14 @@ primary = "mimo"
 primary = "mimo"
 
 [translation]
-# semantic-parallel: parallelises semantic-translation LLM calls per page
-# (ThreadPoolExecutor, max_concurrent_requests workers) while keeping persona
-# rendering serial for memory consistency. Default flipped from "serial" because
-# translation is 87% of pipeline runtime (2114s/2437s on 10-page e2e).
-parallel_mode = "semantic-parallel"
+# SERIAL by default: mimo token-plan has a low concurrency limit, so
+# semantic-parallel's 5 workers exceed it → concurrent calls fail with
+# "No provider available", burn the 60s semantic_timeout, then fall back to
+# serial anyway. Serial default avoids that wasted timeout on every page.
+# Set "semantic-parallel" only with a provider that allows real concurrency
+# (OpenAI/Gemini) — but NOTE: parallel speedup is UNVERIFIED on any high-concurrency
+# provider (only mimo tested, which throttles). See docs/p4-performance-analysis.md.
+parallel_mode = "serial"
 max_concurrent_requests = 5
 semantic_timeout = 60
 

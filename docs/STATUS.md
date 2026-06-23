@@ -63,6 +63,7 @@ L0 not started · L1 module + mock tests · L2 integration tests · L3 vision-e2
 |---|---|---|---|
 | Per-page time | < 30s | ~244s | ❌ ~8× over |
 | OCR accuracy | > 98% | 47% (47/100 regions) | ❌ |
+| Translation parallel speedup | ~5× (semantic-parallel) | **UNVERIFIED** — mimo token-plan throttles concurrency (default reverted to serial); no high-concurrency provider tested | ⚠️ theoretical only |
 
 ## Repository state & history
 

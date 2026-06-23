@@ -68,15 +68,18 @@ class TranslationStage(PipelineStage):
         project_dir = Path(cfg.working_dir) if cfg.working_dir else Path(".")
 
         # Determine parallel mode from config.
-        # Default to semantic-parallel: translation is 87% of pipeline runtime
-        # (2114s/2437s on the 10-page e2e) because ~147 LLM calls run serial.
-        # semantic-parallel parallelises the semantic-translation LLM calls per
-        # page (ThreadPoolExecutor, max_concurrent_requests workers) while keeping
-        # persona rendering serial for memory consistency. A ParallelExecutionError
-        # fallback to serial (:129) guarantees this can never be worse than serial.
-        # If left serial, the pipeline is ~8x slower than the PRD target.
+        # Default to SERIAL: the configured translation provider (mimo token-plan)
+        # has a low concurrency limit, so semantic-parallel's max_concurrent_requests
+        # workers (5) exceed it → concurrent calls fail with "No provider available",
+        # burn the 60s semantic_timeout, then fall back to serial anyway. Serial by
+        # default avoids that wasted timeout on every page. semantic-parallel remains
+        # available via config for providers that allow real concurrency (OpenAI/Gemini);
+        # a ParallelExecutionError fallback to serial (:129) guarantees it can never be
+        # worse than serial when explicitly enabled.
+        # (Background: translation is 87% of runtime — parallel would help ~5x IF the
+        # provider allows concurrency; mimo token-plan does not. docs/p4-performance-analysis.md)
         parallel_config = cfg.translation_config or {}
-        parallel_mode = parallel_config.get("parallel_mode", "semantic-parallel")
+        parallel_mode = parallel_config.get("parallel_mode", "serial")
 
         # Use optimized services if available in metadata
         memory_service = context.metadata.get("memory_service")
