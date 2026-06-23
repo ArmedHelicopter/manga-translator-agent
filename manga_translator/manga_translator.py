@@ -564,6 +564,24 @@ class MangaTranslator:
 
         # -- Mask refinement
         # (Delayed to take advantage of the region filtering done after ocr and translation)
+        # Drop low-confidence OCR regions before mask refinement. region.prob is the
+        # OCR recognition confidence (ocr/model_48px.py:165 and siblings set
+        # cur_region.prob = prob). mga's render guard (render_stage ocr_min_prob=0.25)
+        # already skips translating low-prob regions; if they still reach mask
+        # refinement they get inpainted (erased to white) but no translation renders
+        # on top, leaving a blank patch where the original text was erased
+        # (e2e-full-fresh page-001 idx0 prob=0.20 -> erased but untranslated -> blank).
+        # Filter them out here so the original text is preserved. 0.25 mirrors the
+        # mga render_stage default; keep the two in sync.
+        if ctx.text_regions:
+            _kept = [r for r in ctx.text_regions if (getattr(r, 'prob', None) or 1.0) >= 0.25]
+            if len(_kept) < len(ctx.text_regions):
+                logger.info(
+                    "Mask: dropped %d low-prob OCR region(s) (prob<0.25) - "
+                    "preserving original text instead of erase+blank",
+                    len(ctx.text_regions) - len(_kept),
+                )
+            ctx.text_regions = _kept
         if ctx.mask is None:
             await self._report_progress('mask-generation')
             try:
