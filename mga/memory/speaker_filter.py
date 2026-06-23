@@ -72,6 +72,12 @@ _GENERIC_PATTERNS: list[re.Pattern[str]] = [
         r"^(girl|boy|man|woman)\s+with\s+hand",
         # "(environmental)", "(narrator)", "(unknown)", "(none)", "(n/a)" in parens
         r".*\((environmental|narrator|unknown|none|n/?a)\)",
+        # "Hooded Figure", "Cloaked Man", "Masked Person", "Shadowy Figure"
+        # What breaks if missing: "Hooded Figure" matched no pattern + had
+        # extract_name_tokens={figure,hooded} → not generic → became a character.
+        r"^(hooded|cloaked|masked|goggled|veiled|bandaged|shadowy|hood)\s+(figure|man|woman|girl|boy|person|character|silhouette|shadow)",
+        # Bare "Figure" / "Silhouette" / "Shadow" / "Form" (descriptive, not a name)
+        r"^(figure|silhouette|shadow|form)$",
         # Backward-compat with original _GENERIC_SPEAKER_RE (hyphenated forms)
         r"^unknown[-_ ].+",
         r".*[-_ ]near[-_ ].+",
@@ -134,6 +140,20 @@ _GENERIC_LATIN = frozenset({
     "his", "her", "their", "with", "in", "on", "at", "by",
     # Generic forms
     "na",
+    # Descriptive nouns/adjectives that are NOT names — these leaked as fake
+    # "name tokens" before this stoplist covered them, so descriptive labels
+    # like "Character (likely the one with the braided hair)" / "Hooded Figure"
+    # passed is_generic_speaker and became characters. Root cause:
+    # extract_name_tokens / _has_name_tokens treated any non-stoplist Latin
+    # word as a name. See docs/handoff-2026-06-22-memory-reassessment.md.
+    "figure", "silhouette", "shadow", "form", "hooded", "hood", "cloak",
+    "cloaked", "cape", "masked", "veiled", "bandaged", "goggled", "shadowy",
+    "braided", "braid", "ponytail", "ponytailed", "glasses",
+    # Number / ordinal words (not names)
+    "one", "two", "three", "four", "first", "second", "third",
+    # Vague reference words (not names)
+    "other", "another", "same", "nearby", "young", "old", "tall", "small",
+    "large", "big", "little", "several", "some",
 })
 
 
