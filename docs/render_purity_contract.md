@@ -25,9 +25,9 @@ render(P_n) = RenderStep( I_n ,  T_n ,  artifact_n )
 The `mga` render layer (`mga/pipeline/render_stage.py`) guarantees:
 
 1. **No persistent state.** The S2T converter memo is instance-scoped (`self._s2t_converter_cache`), not class-level. A freshly constructed `RenderStage` carries no inherited mutable state, so output never depends on process history or prior runs.
-2. **Per-page isolation.** `_write_page_translations(page_idx)` consumes only translations whose `bubble_id` matches `region-{page_idx:04d}-` and only the matching `Page` object. Page `n`'s output is independent of page `m`'s translations, pages, or state.
+2. **Per-page isolation.** Pass 1 exports each source page in isolation and installs the result into the matching global slot (`artifact-NNNN.json`, `inpainted-NNNN.png`). `_write_page_translations(page_idx)` then consumes only translations whose `bubble_id` matches `region-{page_idx:04d}-` or vision seats injected for that page. Page `n`'s output is independent of page `m`'s translations, pages, or runtime control-flow exits.
 3. **Determinism.** Given `(I_n, T_n, artifact_n)`, the written `translations-NNNN.json` is byte-identical across separate `RenderStage` instances.
-4. **`I_n`-faithful render decisions (anti-hallucination, PRD §3.1 P1).** The OCR hallucination guard drops translations whose OCR region lands on a blank area of `I_n`. This is a *render decision* (what to render), not a geometry override — it does not alter the authoritative artifact. It makes the output respect `I_n`'s actual content.
+4. **`I_n`-faithful render decisions (anti-hallucination, PRD §3.1 P1).** The OCR hallucination guard drops translations whose **OCR** region lands on a blank area of `I_n`. This is a *render decision* (what to render), not a geometry override — it does not alter the authoritative artifact. Vision-injected seats are intentionally excluded from the OCR blank-region guard because real contents-page text can sit on a white background; applying the OCR guard there deletes valid TOC translations. Vision injection itself is fallback-only: `_inject_vision_regions` appends a seat only when the artifact has zero OCR `text_regions` — on OCR-populated pages it is a no-op, so loose host-side vision bboxes never overlay real OCR geometry (the recon-fresh-v4 text-outside-bubbles regression; fix commit `de1642cd`).
 
 ## Image-level reproducibility (proven)
 
@@ -40,6 +40,9 @@ The rendered **image** — not just the intermediate JSON — is reproducible. T
    - R3: artifact v2, pin OFF
 
    Result: `sha256(R1) == sha256(R2)` (the pin neutralized the artifact change) and `sha256(R1) != sha256(R3)` (without the pin, the change propagates). So with pinning on (the default), the rendered image is invariant to OCR-artifact changes — `g(I_n)` is pinned and `render(P_n) = f(I_n, T_n)` holds across runs at the real image level.
+
+3. **Fresh 10-page alignment proof** (`data/output/recon-fresh-20260624-v4`, 2026-06-24) → TE-01..TE-04 passed. `pages.json` maps page indices 0..9 to `artifact-0000.json`..`artifact-0009.json`; `minimax-m3` vision verification confirms no -1 shift (`page-003` is shaved-ice cover; `page-004` is contents) and no tail base-plate reuse (`page-009` and `page-010` are distinct).
+4. **Fallback-only vision injection verified** (2026-06-25) → render-only re-run of the v4 payload with the guard: the pin restored OCR-only artifacts (page-005 6→4, page-006 4→3 regions, vision seats dropped), and full-resolution vision QA confirmed translated text sits inside speech bubbles with no white occlusion boxes. Output: `data/output/e2e-fix-20260625`.
 
 ## Closing the `g(I_n)` gap: content-addressed artifact pinning
 
