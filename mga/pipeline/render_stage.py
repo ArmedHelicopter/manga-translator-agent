@@ -208,6 +208,155 @@ class RenderStage(PipelineStage):
         return meta
 
     @staticmethod
+    def _inject_vision_regions(
+        payload_path: Path, page_idx: int, context: PipelineContext
+    ) -> dict[str, int]:
+        """Inject vision-detected bubbles as text_regions, but ONLY as a fallback
+        when the runtime OCR found zero regions for the page.
+
+        Runtime OCR geometry is authoritative (docs/render_purity_contract.md).
+        When OCR already populated one or more ``text_regions``, vision bboxes
+        must NOT be appended on top of them: vision bboxes are loose host-side
+        estimates that frequently cover artwork, and an injected seat paints a
+        white bg_color box ([255,255,255]) with an oversized font_size directly
+        over the art, dropping text onto character faces. This was the
+        recon-fresh-20260624-v4 regression: every OCR page (001-009) had extra
+        prob:null vision seats appended past the OCR regions, with font_size up
+        to 1875 and white backgrounds, producing full-page white occlusion
+        boxes and text outside bubbles. So if ``text_regions`` is non-empty this
+        returns ``{}`` immediately and touches nothing.
+
+        The fallback path runs only when OCR found nothing (a no-text or
+        vision-only page): vision bubbles carry a host-side bbox but no runtime
+        seat, so without injection render_only() silently drops their
+        translations (``0 <= idx < len(text_regions)`` fails,
+        manga_translator.py:749). One seat per vision bubble is then appended
+        starting at index 0 and the artifact is written back to disk.
+
+        Returns a ``{bubble_id: region_index}`` map for the injected seats so
+        the caller can emit translations keyed to the correct index. Idempotent
+        under the default ``pin_artifacts=True``: on re-run the pin store
+        restores the OCR-only artifact, and this method re-derives the
+        (fallback-only) vision seats — so it must be called every render, after
+        ``resolve_pinned_artifact``.
+
+        Sharp edge (non-default ``pin_artifacts=False``): the non-empty guard
+        keys off raw ``text_regions`` length, so a re-run whose on-disk artifact
+        still holds vision seats from a prior run treats those stale seats as
+        OCR regions, suppresses re-emission of their translations, and the
+        runtime renders the leftover seat with stale text. Pinning is the
+        supported re-render path; keying the guard off real OCR-authored
+        regions (e.g. a ``source: vision`` marker) rather than list length is a
+        tracked follow-up, not needed for the default flow.
+
+        Vision bubbles without a usable bbox (zero area) are skipped with a
+        warning: a seat with no geometry cannot be rendered, and emitting one
+        would crash the runtime's font-size resolver.
+        """
+        page = next((p for p in context.pages if p.page_index == page_idx), None)
+        if page is None:
+            return {}
+
+        vision_bubbles = [
+            b for b in page.bubbles
+            if (b.bubble_id.startswith("vision-")
+                or getattr(b, "detection_source", None) == "vision")
+        ]
+        if not vision_bubbles:
+            return {}
+
+        suffix = f"-{page_idx:04d}"
+        artifact_file = payload_path / f"artifact{suffix}.json"
+        if not artifact_file.exists():
+            artifact_file = payload_path / "artifact.json"
+        if not artifact_file.exists():
+            logger.warning(
+                "render: cannot inject vision regions for page %d — "
+                "artifact missing", page_idx,
+            )
+            return {}
+        try:
+            artifact = json.loads(artifact_file.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as e:
+            logger.warning("render: cannot read artifact for vision injection (%s)", e)
+            return {}
+
+        regions = artifact.setdefault("text_regions", [])
+        if regions:
+            logger.info(
+                "render: skipping vision region injection for page %d because "
+                "runtime OCR already provided %d text region(s)",
+                page_idx, len(regions),
+            )
+            return {}
+
+        # Fallback path: OCR found zero regions (the early return above
+        # guarantees regions is empty here), so vision seats start at index 0.
+        # There are no OCR seats for vision indices to collide with — the
+        # region_index collision bug (FIX_PLAN.md §1.1) cannot occur here.
+        next_index = len(regions)
+        injected: dict[str, int] = {}
+        appended = 0
+        for b in vision_bubbles:
+            bbox = b.bbox
+            if bbox is None or bbox.width <= 0 or bbox.height <= 0:
+                logger.info(
+                    "render: vision bubble %s on page %d has no usable bbox — "
+                    "skipping (cannot render without geometry)",
+                    b.bubble_id, page_idx,
+                )
+                continue
+            x, y, w, h = (
+                float(bbox.x), float(bbox.y), float(bbox.width), float(bbox.height),
+            )
+            # lines = quadrilateral polygon [[x,y],[x+w,y],[x+w,y+h],[x,y+h]];
+            # the runtime's text renderer uses lines to position + size text.
+            region = {
+                "index": next_index,
+                "text": b.source_text or "",
+                "texts": [b.source_text or ""],
+                "lines": [[[x, y], [x + w, y], [x + w, y + h], [x, y + h]]],
+                # font_size: use bbox height (matches OCR detector convention where
+                # font_size ≈ text height). -1 = auto-calc, but the runtime's
+                # _fit_font_size_to_region binary-searches up to 2×bbox height
+                # (e.g. 1822px for a 911px-tall vision bubble), and freetype's
+                # set_pixel_sizes(0, 1822) raises FT_Exception: raster overflow.
+                # Using bbox height caps the starting font size to a sane value.
+                "font_size": max(8, int(round(h))),
+                "angle": 0.0,
+                "direction": "auto",
+                "alignment": "auto",
+                "fg_color": [0, 0, 0],
+                "bg_color": [255, 255, 255],
+                "source_lang": "ja",
+                "target_lang": "CHS",
+                "line_spacing": 1.0,
+                "letter_spacing": 1.0,
+                "bold": False,
+                "italic": False,
+                "font_weight": 50,
+                "default_stroke_width": 0.2,
+                "prob": None,
+            }
+            regions.append(region)
+            injected[b.bubble_id] = next_index
+            next_index += 1
+            appended += 1
+
+        if appended:
+            artifact_file.write_text(
+                json.dumps(artifact, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            logger.info(
+                "render: injected %d vision region(s) into artifact-%s.json "
+                "(indices %d..%d)",
+                appended, suffix,
+                len(regions) - appended, len(regions) - 1,
+            )
+        return injected
+
+    @staticmethod
     def _bbox_from_lines(lines: Any) -> tuple[int, int, int, int] | None:
         """Compute an axis-aligned bbox (x, y, w, h) from OCR ``lines`` polygons.
 
@@ -343,13 +492,41 @@ class RenderStage(PipelineStage):
 
         region_meta = self._load_region_metadata(payload_path, page_idx)
 
+        # Inject vision-detected bubbles as text_regions — FALLBACK ONLY. When
+        # OCR already populated text_regions for the page, NO vision seats are
+        # added (runtime OCR geometry is authoritative; injecting loose vision
+        # bboxes on top paints white boxes over art — the recon-fresh-v4
+        # regression, docs/render_purity_contract.md). Vision seats are appended
+        # only on OCR-empty pages so vision-only/no-text bubbles still get a
+        # render seat; without one render_only() drops their translations
+        # (0 <= idx < len(text_regions) fails, manga_translator.py:749).
+        # See FIX_PLAN.md §1.3 / handoff-2026-06-19 Bug 4.
+        vision_region_index = self._inject_vision_regions(
+            payload_path, page_idx, context
+        )
+
+        # Reload region metadata so it reflects the freshly-injected vision seats
+        # (their bboxes are needed for the blank-region hallucination guard below).
+        if vision_region_index:
+            region_meta = self._load_region_metadata(payload_path, page_idx)
+
         for t in context.translations:
-            if not t.bubble_id.startswith(prefix):
+            if t.bubble_id not in vision_region_index and not t.bubble_id.startswith(prefix):
                 continue
-            try:
-                region_idx = int(t.bubble_id.split("-")[2])
-            except (IndexError, ValueError):
-                continue
+            # OCR region bubbles (region-NNNN-NNNN): index is the 3rd segment.
+            # Vision bubbles (vision-NNNN-NNNN): index is the fallback-injected
+            # seat. On a given render pass a page is either OCR-populated (no
+            # vision seat injected) or OCR-empty (vision seats at index 0), so
+            # the two index spaces don't collide. (Under the default pinned path;
+            # see the _inject_vision_regions sharp-edge note for pin=False.)
+            is_vision_injected = t.bubble_id in vision_region_index
+            if is_vision_injected:
+                region_idx = vision_region_index[t.bubble_id]
+            else:
+                try:
+                    region_idx = int(t.bubble_id.split("-")[2])
+                except (IndexError, ValueError):
+                    continue
 
             # Fix 2: drop low-confidence OCR detections (prob below threshold).
             meta = region_meta.get(region_idx)
@@ -363,9 +540,18 @@ class RenderStage(PipelineStage):
                     )
                     continue
 
-            # Fix 1: skip regions whose bbox lands on a blank/background area of
-            # the input image (OCR hallucination on pure-white TOC/cover areas).
-            if meta is not None and input_image_path and meta.get("bbox") is not None:
+            # Fix 1: skip OCR regions whose bbox lands on a blank/background area
+            # of the input image. Vision-injected seats are excluded: their bboxes
+            # come from the page-level vision payload rather than runtime OCR, and
+            # contents pages place real red text on a white background. Applying the
+            # OCR hallucination guard to those seats deletes every TOC translation
+            # and recreates the RECON_TICKET.md page-004 blank-render failure.
+            if (
+                not is_vision_injected
+                and meta is not None
+                and input_image_path
+                and meta.get("bbox") is not None
+            ):
                 bbox = meta["bbox"]
                 if self._is_blank_region(input_image_path, bbox):
                     logger.warning(
@@ -411,7 +597,7 @@ class RenderStage(PipelineStage):
                 })
         else:
             for t in context.translations:
-                if not t.bubble_id.startswith(prefix):
+                if t.bubble_id not in vision_region_index and not t.bubble_id.startswith(prefix):
                     continue
                 for fn in t.footnotes:
                     original = self._sanitize_footnote_text(fn.original)
