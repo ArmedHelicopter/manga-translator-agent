@@ -50,6 +50,8 @@ from .prompts import (
 class TranslationStage(PipelineStage):
     """Translate each bubble using LLM with character and cultural context."""
 
+    _RENDERABLE_VISION_BOX_TYPES = {"dialogue", "speech", "thought", "narration", "narrator"}
+
     def __init__(self) -> None:
         self._logger = logging.getLogger(__name__)
         self._memory_lock = threading.Lock()
@@ -422,7 +424,7 @@ class TranslationStage(PipelineStage):
         scene_context = scene_contexts.get(page.page_id, {})
         cult_page = context.cultural_context.get(page.page_id, {})
 
-        bubbles = list(page.bubbles)
+        bubbles = self._translatable_bubbles(page)
         if not bubbles:
             return [], []
 
@@ -705,7 +707,7 @@ class TranslationStage(PipelineStage):
         scene_context = scene_contexts.get(page.page_id, {})
         cult_page = context.cultural_context.get(page.page_id, {})
 
-        for bubble in page.bubbles:
+        for bubble in self._translatable_bubbles(page):
             speaker = bubble.speaker_id or ""
             char_mem = mem_page.get(speaker, {})
             vision_ctx = self._build_vision_context(page, bubble)
@@ -929,6 +931,37 @@ class TranslationStage(PipelineStage):
         if page_hints:
             ctx["page_voice_hints"] = [str(h) for h in page_hints if str(h).strip()]
         return ctx
+
+    @classmethod
+    def _translatable_bubbles(cls, page: object) -> list[object]:
+        bubbles = list(getattr(page, "bubbles", []) or [])
+        page_is_contents = any(
+            "contents" in str(getattr(bubble, "source_text", "") or "").lower()
+            for bubble in bubbles
+        )
+        return [
+            bubble
+            for bubble in bubbles
+            if cls._is_translatable_bubble(bubble, page_is_contents=page_is_contents)
+        ]
+
+    @classmethod
+    def _is_translatable_bubble(cls, bubble: object, *, page_is_contents: bool = False) -> bool:
+        if not (
+            str(getattr(bubble, "bubble_id", "") or "").startswith("vision-")
+            or getattr(bubble, "detection_source", None) == "vision"
+        ):
+            return True
+        box_type = str(getattr(bubble, "box_type", "") or "dialogue").strip().lower()
+        if not box_type:
+            return True
+        if page_is_contents and box_type not in {"sfx", "graffiti"}:
+            return True
+        # Vision reports all visible text, including SFX, page numbers, signs,
+        # and chapter labels. Translating those as dialogue recreates the
+        # page-009 regression: Chinese SFX/page-number text is rendered onto art
+        # instead of staying as a footnote or non-dialogue page element.
+        return box_type in cls._RENDERABLE_VISION_BOX_TYPES
 
     def _build_relationship_context(
         self,

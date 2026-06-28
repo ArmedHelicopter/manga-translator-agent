@@ -34,6 +34,16 @@ def _artifact(idx: int, text: str = "x") -> dict:
     }
 
 
+def _empty_artifact(idx: int) -> dict:
+    return {
+        "version": 1,
+        "page_index": idx,
+        "text_regions": [],
+        "render_config": {},
+        "image_shape": [100, 100, 3],
+    }
+
+
 class TestImageSha256:
     def test_deterministic_for_same_bytes(self, tmp_path: Path) -> None:
         a = _write_img(tmp_path / "a.png", b"abc")
@@ -107,6 +117,25 @@ class TestResolvePinnedArtifact:
         # And it's written back to the payload file (subprocess + guard agree).
         on_disk = json.loads(art_file.read_text(encoding="utf-8"))
         assert on_disk["text_regions"][0]["text"] == "original"
+
+    def test_empty_pin_does_not_override_current_non_empty_artifact(self, tmp_path: Path) -> None:
+        """A stale empty pin is lower-value than a current artifact with OCR
+        geometry. Keeping the empty pin erases the render seats while inpaint has
+        already removed source text, producing empty speech bubbles."""
+        img = _write_img(tmp_path / "page.png", b"img-bytes")
+        art_file = tmp_path / "artifact-0000.json"
+        store_path = tmp_path / "pin.json"
+
+        image_hash = image_sha256(img)
+        ArtifactPin(store_path).put(image_hash, _empty_artifact(0))
+        art_file.write_text(json.dumps(_artifact(0, "fresh-ocr")), encoding="utf-8")
+
+        store = ArtifactPin(store_path)
+        art, was_pinned = resolve_pinned_artifact(tmp_path, 0, img, store)
+
+        assert was_pinned is False
+        assert art["text_regions"][0]["text"] == "fresh-ocr"
+        assert store.get(image_hash)["text_regions"][0]["text"] == "fresh-ocr"
 
     def test_different_images_pinned_independently(self, tmp_path: Path) -> None:
         """Two distinct input images each get their own pinned artifact."""

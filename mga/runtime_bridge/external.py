@@ -9,6 +9,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tempfile
 from typing import Any
 
 from ..artifacts import ArtifactStore
@@ -163,6 +164,46 @@ def _write_empty_runtime_artifact(payload_dir: Path, image_path: Path, page_inde
     suffix = f"-{page_index:04d}"
     (payload_dir / f"artifact{suffix}.json").write_text(
         json.dumps(artifact, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _normalize_single_page_runtime_artifact(payload_dir: Path, page_index: int) -> None:
+    """Rename a single-page runtime export to the expected global page slot."""
+
+    suffix = f"-{page_index:04d}"
+    for stem, ext in (("artifact", ".json"), ("inpainted", ".png"), ("mask", ".png")):
+        target = payload_dir / f"{stem}{suffix}{ext}"
+        candidates = [payload_dir / f"{stem}-0000{ext}", payload_dir / f"{stem}{ext}"]
+        for candidate in candidates:
+            if candidate.exists() and candidate != target:
+                candidate.replace(target)
+                break
+
+    artifact_path = payload_dir / f"artifact{suffix}.json"
+    if artifact_path.exists():
+        try:
+            artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+            artifact["page_index"] = page_index
+            artifact_path.write_text(
+                json.dumps(artifact, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+        except (OSError, json.JSONDecodeError):
+            pass
+
+
+def _write_pages_manifest(payload_dir: Path, page_count: int) -> None:
+    pages_list = []
+    for index in range(page_count):
+        suffix = f"-{index:04d}"
+        pages_list.append({
+            "page_index": index,
+            "artifact": f"artifact{suffix}.json",
+            "inpainted": f"inpainted{suffix}.png",
+        })
+    (payload_dir / "pages.json").write_text(
+        json.dumps(pages_list, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
 
@@ -575,6 +616,35 @@ def run_external_translation_runtime(
     }
 
 
+def _run_export_artifact_command(
+    *,
+    external_python: Path,
+    resolved_repo: Path,
+    runtime_input: Path,
+    output_dir: Path,
+    payload_dir: Path,
+    export_config_path: Path,
+) -> subprocess.CompletedProcess[str]:
+    command = [
+        str(external_python),
+        "-m", "manga_translator", "local",
+        "-i", str(runtime_input.resolve()),
+        "-o", str(output_dir.resolve()),
+        "--overwrite",
+        "--export-artifact", str(payload_dir.resolve()),
+        "--config-file", str(export_config_path.resolve()),
+    ]
+
+    return subprocess.run(
+        command,
+        cwd=resolved_repo,
+        env=_build_external_child_env(),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
 def run_export_artifact(
     *,
     input_dir: Path,
@@ -589,8 +659,9 @@ def run_export_artifact(
     to *payload_dir*. No translation or rendering happens.
 
     Args:
-        inpaint_backend: Inpainter to use. "auto" keeps runtime default ("none"
-        for export). Maps to the runtime's Inpainter enum:
+        inpaint_backend: Inpainter to use. "auto" selects lama_large (background
+        reconstruction) so text regions are erased cleanly instead of painted
+        white. Maps to the runtime's Inpainter enum:
         none|lama_large|lama_mpe|sd|original|default.
     """
     if inpaint_backend not in ("auto", "none", "lama_large", "lama_mpe", "sd", "original", "default"):
@@ -612,23 +683,25 @@ def run_export_artifact(
 
     payload_dir.mkdir(parents=True, exist_ok=True)
     input_path = input_dir.resolve()
-    if not _has_matching_runtime_input_manifest(payload_dir, input_path):
-        for pattern in (
-            "artifact*.json",
-            "inpainted*.png",
-            "mask*.png",
-            "pages.json",
-            "translations-*.json",
-            "runtime-export-config.json",
-        ):
-            for path in payload_dir.glob(pattern):
-                if path.is_file():
-                    path.unlink()
+    for pattern in (
+        "artifact*.json",
+        "inpainted*.png",
+        "mask*.png",
+        "pages.json",
+        "translations-*.json",
+        "runtime-export-config.json",
+    ):
+        for path in payload_dir.glob(pattern):
+            if path.is_file():
+                path.unlink()
     runtime_input = _prepare_runtime_image_input(input_dir, payload_dir)
     export_config_path = payload_dir / "runtime-export-config.json"
-    # "auto" keeps the runtime default ("none" for export pass). Only override
-    # when the user explicitly selects a backend.
-    effective_inpainter = "none" if inpaint_backend == "auto" else inpaint_backend
+    # "auto" uses lama_large (background reconstruction) for the export pass so
+    # text regions are erased cleanly instead of filled white (none.py paints
+    # mask>0 white, leaving blank patches on TOC/cover pages — page-003 white-page
+    # regression). lama_large_512px.ckpt ships in models/inpainting/ (no download).
+    # Only override when the user explicitly selects a different backend.
+    effective_inpainter = "lama_large" if inpaint_backend == "auto" else inpaint_backend
     export_config_path.write_text(
         json.dumps(
             {
@@ -652,50 +725,60 @@ def run_export_artifact(
         encoding="utf-8",
     )
 
-    command = [
-        str(external_python),
-        "-m", "manga_translator", "local",
-        "-i", str(runtime_input.resolve()),
-        "-o", str(payload_dir.resolve()),
-        "--overwrite",
-        "--export-artifact", str(payload_dir.resolve()),
-        "--config-file", str(export_config_path.resolve()),
-    ]
+    image_paths = [runtime_input] if runtime_input.is_file() else discover_image_paths(runtime_input)
+    last_completed: subprocess.CompletedProcess[str] | None = None
 
-    child_env = _build_external_child_env()
-    completed = subprocess.run(
-        command,
-        cwd=resolved_repo,
-        env=child_env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    # Export every input page in isolation, then install it into the expected
+    # global slot. The runtime's multi-page export names artifacts with an
+    # internal counter that advances only after several early-return branches;
+    # when any page exits early, artifact JSON and inpainted PNG queues shift and
+    # the tail can reuse a base plate (docs/issues/recon-ticket-pipeline-index-shift.md).
+    # Isolating each page
+    # makes artifact-N/inpainted-N derive from source image N, not from runtime
+    # control-flow order.
+    with tempfile.TemporaryDirectory(prefix="mga-pass1-") as tmp_root:
+        tmp_root_path = Path(tmp_root)
+        for index, image_path in enumerate(image_paths):
+            page_payload = tmp_root_path / f"payload-{index:04d}"
+            page_output = tmp_root_path / f"output-{index:04d}"
+            page_payload.mkdir(parents=True, exist_ok=True)
+            completed = _run_export_artifact_command(
+                external_python=external_python,
+                resolved_repo=resolved_repo,
+                runtime_input=image_path,
+                output_dir=page_output,
+                payload_dir=page_payload,
+                export_config_path=export_config_path,
+            )
+            last_completed = completed
+            output_tail = f"{completed.stdout[-4000:]}\n{completed.stderr[-4000:]}"
+            if completed.returncode != 0 or "ERROR:" in output_tail or "Traceback" in output_tail:
+                raise RuntimeError(
+                    f"Export artifact failed for page {index} (exit {completed.returncode}).\n"
+                    f"stdout: {_sanitize_subprocess_output(completed.stdout[-2000:])}\n"
+                    f"stderr: {_sanitize_subprocess_output(completed.stderr[-2000:])}"
+                )
 
-    output_tail = f"{completed.stdout[-4000:]}\n{completed.stderr[-4000:]}"
-    if completed.returncode != 0 or "ERROR:" in output_tail or "Traceback" in output_tail:
-        raise RuntimeError(
-            f"Export artifact failed (exit {completed.returncode}).\n"
-            f"stdout: {_sanitize_subprocess_output(completed.stdout[-2000:])}\n"
-            f"stderr: {_sanitize_subprocess_output(completed.stderr[-2000:])}"
-        )
+            _complete_runtime_artifacts(page_payload, image_path)
+            _normalize_single_page_runtime_artifact(page_payload, index)
+            suffix = f"-{index:04d}"
+            for stem, ext in (("artifact", ".json"), ("inpainted", ".png"), ("mask", ".png")):
+                source = page_payload / f"{stem}{suffix}{ext}"
+                if source.exists():
+                    shutil.copy2(source, payload_dir / source.name)
 
-    # Check for either per-page or single-file artifact format. Fill empty pages
-    # that the runtime skips when no text was detected.
-    has_artifact = _complete_runtime_artifacts(payload_dir, runtime_input) or (
-        (payload_dir / "pages.json").exists()
-        or (payload_dir / "artifact.json").exists()
-        or (payload_dir / "artifact-0000.json").exists()
-    )
+    _write_pages_manifest(payload_dir, len(image_paths))
+    has_artifact = bool(image_paths)
     if not has_artifact:
+        stdout = last_completed.stdout[-2000:] if last_completed else ""
         raise RuntimeError(
             f"Export artifact completed but no artifact files found in {payload_dir}.\n"
-            f"stdout: {completed.stdout[-2000:]}"
+            f"stdout: {stdout}"
         )
 
     return {
         "payload_dir": str(payload_dir),
-        "returncode": completed.returncode,
+        "returncode": last_completed.returncode if last_completed else 0,
     }
 
 

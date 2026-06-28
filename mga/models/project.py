@@ -63,3 +63,8 @@ class ProjectConfig(BaseModel):
     # auto = no conversion (current behavior). s2t = simplified→traditional. t2s = traditional→simplified.
     # tw = Taiwan traditional. hk = Hong Kong traditional. Requires opencc.
     chinese_variant: str = "auto"
+    # Keep explanatory footnote data in translation artifacts, but do not pass
+    # it to the runtime renderer by default. Runtime footnotes append a footer
+    # strip to page PNGs; doing that implicitly caused page-height drift and
+    # bottom text pollution in e2e manga output.
+    render_footnotes: bool = False

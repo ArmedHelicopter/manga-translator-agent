@@ -70,6 +70,19 @@ class ArtifactPin:
         return image_hash in self._data
 
 
+def _valid_region_count(artifact: dict[str, Any] | None) -> int:
+    if not isinstance(artifact, dict):
+        return 0
+    regions = artifact.get("text_regions", [])
+    if not isinstance(regions, list):
+        return 0
+    count = 0
+    for region in regions:
+        if isinstance(region, dict):
+            count += 1
+    return count
+
+
 def resolve_pinned_artifact(
     payload_path: Path,
     page_idx: int,
@@ -93,8 +106,12 @@ def resolve_pinned_artifact(
     if not artifact_file.exists():
         artifact_file = payload_path / "artifact.json"
 
+    artifact = json.loads(artifact_file.read_text(encoding="utf-8"))
     cached = store.get(image_hash)
     if cached is not None:
+        if _valid_region_count(cached) < _valid_region_count(artifact):
+            store.put(image_hash, artifact)
+            return artifact, False
         # Reuse the pinned artifact: write it back so subprocess + guard agree.
         artifact_file.write_text(
             json.dumps(cached, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
@@ -102,6 +119,5 @@ def resolve_pinned_artifact(
         return cached, True
 
     # First-seen: read the current artifact and pin it for this I_n.
-    artifact = json.loads(artifact_file.read_text(encoding="utf-8"))
     store.put(image_hash, artifact)
     return artifact, False

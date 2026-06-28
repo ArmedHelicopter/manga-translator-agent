@@ -100,6 +100,23 @@ def update_catchphrases(
     return profile
 
 
+def _toml_safe(value):
+    """Return a TOML-serializable copy with ``None`` entries removed.
+
+    Profile enrichment can preserve optional provider fields such as footnote
+    explanations as ``None``. JSON state accepts that, but TOML has no null type;
+    passing the raw nested structure to ``tomli_w`` crashes after a successful E2E
+    render during profile save (docs/issues/recon-ticket-pipeline-index-shift.md TE-04). Dropping null leaves the
+    human-readable projection faithful to the populated facts without aborting the
+    pipeline.
+    """
+    if isinstance(value, dict):
+        return {k: _toml_safe(v) for k, v in value.items() if v is not None}
+    if isinstance(value, list):
+        return [_toml_safe(v) for v in value if v is not None]
+    return value
+
+
 def save_profile(project_dir: Path, profile: CharacterState) -> None:
     """Save a character profile to memory state."""
     StateManager.upsert_character(project_dir, profile)
@@ -131,7 +148,7 @@ def _write_profile_toml(project_dir: Path, profile: CharacterState) -> Path | No
     if profile.voice_evolutions:
         payload["voice_evolution"] = profile.voice_evolutions
     out_path = out_dir / f"{profile.character_id}.toml"
-    out_path.write_text(tomli_w.dumps(payload), encoding="utf-8")
+    out_path.write_text(tomli_w.dumps(_toml_safe(payload)), encoding="utf-8")
     return out_path
 
 

@@ -317,13 +317,10 @@ class VisionEnrichmentStage(PipelineStage):
         has_ocr_bubbles = any(page.bubbles for page in context.pages)
         if has_ocr_bubbles:
             return self._enrich_with_vision(context, cfg, source="ocr-artifact")
-        if context.metadata.get("artifact_payload_dir"):
-            context.artifacts[self.name] = {
-                "source": "ocr-artifact",
-                "enrichment": "skipped",
-                "note": "Runtime OCR artifact contained no text regions; skipping vision fallback.",
-            }
-            return context
+        # An OCR payload with zero text_regions is not enough to render: Pass 1
+        # may still have erased the source text, and render_only() needs bbox
+        # seats. Falling through to vision-only extraction gives no-text OCR
+        # pages recoverable geometry instead of producing empty speech bubbles.
         return self._execute_from_llm(context, cfg)
 
     @staticmethod

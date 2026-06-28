@@ -197,11 +197,16 @@ def resize_regions_to_font_size(
         # print("-" * 50)
         # logger.debug(f"Calculated target font size: {target_font_size} for text '{region.translation}'")  
 
-        # Single-axis text box expansion
-        single_axis_expanded = False
-        dst_points = None
+        # Keep rendering inside the OCR/vision seat. Older expansion branches
+        # enlarge dst_points when translated text needs more rows/columns; on
+        # real vertical manga bubbles that pushes text outside the balloon
+        # (e2e page-007 left leak). The font-fit step above is the safe place to
+        # adapt long translations; the target polygon must remain bounded.
+        allow_region_expansion = False
+        single_axis_expanded = True
+        dst_points = region.min_rect
         
-        if region.horizontal: 
+        if allow_region_expansion and region.horizontal:
             used_rows = len(region.texts)
             # logger.debug(f"Horizontal text - used rows: {used_rows}")
             
@@ -237,7 +242,7 @@ def resize_regions_to_font_size(
                     # logger.error(f"Failed to expand horizontal text: {e}")  
                     pass
                     
-        if region.vertical:
+        if allow_region_expansion and region.vertical:
             used_cols = len(region.texts)
             # logger.debug(f"Vertical text - used columns: {used_cols}")
             

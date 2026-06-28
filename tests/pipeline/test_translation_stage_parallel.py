@@ -72,6 +72,200 @@ def test_translation_stage_semantic_parallel_mode_translates_page(tmp_path, monk
     assert artifact["dialogue_realization"]["semantic_count"] == 2
 
 
+def test_translation_stage_skips_non_renderable_vision_text(tmp_path, monkeypatch) -> None:
+    calls: list[str] = []
+
+    class RecordingProvider:
+        def chat(self, messages, **kwargs):
+            prompt = messages[-1]["content"]
+            calls.append(prompt)
+            if prompt.startswith("## Semantic Translation"):
+                source = prompt.rsplit("Source:", 1)[-1].splitlines()[0].strip()
+                return (
+                    '{"text":"semantic:' + source + '","speech_act":"statement",'
+                    '"emotion":"calm","must_preserve":[],"footnotes":[],'
+                    '"rationale":"ok","confidence":0.9}'
+                )
+            return (
+                '{"text":"final","persona_moves":["naturalize"],'
+                '"rationale":"ok","confidence":0.9}'
+            )
+
+    monkeypatch.setattr(
+        "mga.providers.cascade.get_provider",
+        lambda name, **settings: RecordingProvider(),
+    )
+    ctx = PipelineContext(
+        project_config=ProjectConfig(
+            working_dir=str(tmp_path),
+            target_lang="zh-CN",
+            provider_routes={
+                "translation": StageProviderConfig(primary=ProviderRoute(provider="fake")),
+            },
+        ),
+        pages=[
+            Page(
+                page_id="p1",
+                bubbles=[
+                    Bubble(
+                        bubble_id="vision-0008-0000",
+                        source_text="御子ちゃん",
+                        detection_source="vision",
+                        box_type="dialogue",
+                        reading_order=0,
+                    ),
+                    Bubble(
+                        bubble_id="vision-0008-0001",
+                        source_text="ガタッ",
+                        detection_source="vision",
+                        box_type="sfx",
+                        reading_order=1,
+                    ),
+                    Bubble(
+                        bubble_id="vision-0008-0002",
+                        source_text="7",
+                        detection_source="vision",
+                        box_type="other",
+                        reading_order=2,
+                    ),
+                ],
+            )
+        ],
+    )
+
+    result = TranslationStage().execute(ctx)
+
+    assert [candidate.bubble_id for candidate in result.translations] == ["vision-0008-0000"]
+    joined_calls = "\n".join(calls)
+    assert "御子ちゃん" in joined_calls
+    assert "ガタッ" not in joined_calls
+    assert "Source: 7" not in joined_calls
+
+
+def test_translation_stage_allows_contents_page_vision_entries(tmp_path, monkeypatch) -> None:
+    calls: list[str] = []
+
+    class RecordingProvider:
+        def chat(self, messages, **kwargs):
+            prompt = messages[-1]["content"]
+            calls.append(prompt)
+            return (
+                '{"text":"final","persona_moves":["naturalize"],'
+                '"rationale":"ok","confidence":0.9}'
+            )
+
+    monkeypatch.setattr(
+        "mga.providers.cascade.get_provider",
+        lambda name, **settings: RecordingProvider(),
+    )
+    ctx = PipelineContext(
+        project_config=ProjectConfig(
+            working_dir=str(tmp_path),
+            target_lang="zh-CN",
+            provider_routes={
+                "translation": StageProviderConfig(primary=ProviderRoute(provider="fake")),
+            },
+        ),
+        pages=[
+            Page(
+                page_id="p1",
+                bubbles=[
+                    Bubble(
+                        bubble_id="vision-0003-0000",
+                        source_text="CONTENTS",
+                        detection_source="vision",
+                        box_type="other",
+                        reading_order=0,
+                    ),
+                    Bubble(
+                        bubble_id="vision-0003-0001",
+                        source_text="昔日の足音 003",
+                        detection_source="vision",
+                        box_type="other",
+                        reading_order=1,
+                    ),
+                ],
+            )
+        ],
+    )
+
+    result = TranslationStage().execute(ctx)
+
+    assert [candidate.bubble_id for candidate in result.translations] == [
+        "vision-0003-0000",
+        "vision-0003-0001",
+    ]
+    joined_calls = "\n".join(calls)
+    assert "CONTENTS" in joined_calls
+    assert "昔日の足音 003" in joined_calls
+
+
+def test_semantic_parallel_skips_non_renderable_vision_text(tmp_path, monkeypatch) -> None:
+    seen_sources: list[str] = []
+
+    class RecordingProvider:
+        def chat(self, messages, **kwargs):
+            prompt = messages[-1]["content"]
+            if prompt.startswith("## Semantic Translation"):
+                source = prompt.rsplit("Source:", 1)[-1].splitlines()[0].strip()
+                seen_sources.append(source)
+                return (
+                    '{"text":"semantic:' + source + '","speech_act":"statement",'
+                    '"emotion":"calm","must_preserve":[],"footnotes":[],'
+                    '"rationale":"ok","confidence":0.9}'
+                )
+            return (
+                '{"text":"final","persona_moves":["naturalize"],'
+                '"rationale":"ok","confidence":0.9}'
+            )
+
+    monkeypatch.setattr(
+        "mga.providers.cascade.get_provider",
+        lambda name, **settings: RecordingProvider(),
+    )
+    ctx = PipelineContext(
+        project_config=ProjectConfig(
+            working_dir=str(tmp_path),
+            target_lang="zh-CN",
+            translation_config={
+                "parallel_mode": "semantic-parallel",
+                "max_concurrent_requests": 2,
+                "semantic_timeout": 30,
+            },
+            provider_routes={
+                "translation": StageProviderConfig(primary=ProviderRoute(provider="fake")),
+            },
+        ),
+        pages=[
+            Page(
+                page_id="p1",
+                bubbles=[
+                    Bubble(
+                        bubble_id="vision-0008-0000",
+                        source_text="御子ちゃん",
+                        detection_source="vision",
+                        box_type="dialogue",
+                        reading_order=0,
+                    ),
+                    Bubble(
+                        bubble_id="vision-0008-0001",
+                        source_text="ガタッ",
+                        detection_source="vision",
+                        box_type="sfx",
+                        reading_order=1,
+                    ),
+                ],
+            )
+        ],
+    )
+
+    result = TranslationStage().execute(ctx)
+
+    assert [candidate.bubble_id for candidate in result.translations] == ["vision-0008-0000"]
+    assert seen_sources == ["御子ちゃん"]
+    assert result.artifacts["translation"]["dialogue_realization"]["semantic_count"] == 1
+
+
 def test_fallback_to_serial_clears_contaminated_state(tmp_path, monkeypatch) -> None:
     """When parallel execution fails, fallback should clear partial state."""
     call_count = {"semantic_parallel": 0, "serial": 0}

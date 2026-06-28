@@ -197,3 +197,23 @@ def test_save_profile_writes_relationship_speech_toml_asset(tmp_path):
 
     assert loaded is not None
     assert loaded.relationship_speech == relationship_speech
+
+
+def test_save_profile_drops_nested_none_values_for_toml(tmp_path):
+    """TOML has no null; nested None from provider notes must not crash save."""
+    profile = CharacterState(
+        character_id="nullable_notes",
+        voice_evolutions=[
+            {"chapter": "ch1", "observations": [{"term": "ボー", "explanation": None}, None]},
+        ],
+    )
+
+    save_profile(tmp_path, profile)
+
+    profile_toml = (tmp_path / "character_profiles" / "nullable_notes.toml").read_text(
+        encoding="utf-8"
+    )
+    assert "nullable_notes" in profile_toml
+    assert "voice_evolution" in profile_toml
+    assert "observations" in profile_toml
+    assert "explanation" not in profile_toml

@@ -39,8 +39,8 @@ class TestProjectConfigInpaintBackend:
 class TestRunExportArtifactInpaintBackend:
     """Tests for run_export_artifact inpaint_backend parameter."""
 
-    def test_auto_inpaint_backend_writes_none(self, tmp_path: Path, monkeypatch):
-        """'auto' (default) writes 'none' to export config (Pass 1 doesn't inpaint)."""
+    def test_auto_inpaint_backend_writes_lama_large(self, tmp_path: Path, monkeypatch):
+        """'auto' uses LaMa in Pass 1 so erased regions are reconstructed."""
         image = tmp_path / "page.png"
         from PIL import Image
         Image.new("RGB", (8, 8), "white").save(image)
@@ -55,7 +55,7 @@ class TestRunExportArtifactInpaintBackend:
         run_export_artifact(input_dir=image, payload_dir=payload_dir)
 
         export_config = json.loads((payload_dir / "runtime-export-config.json").read_text(encoding="utf-8"))
-        assert export_config["inpainter"]["inpainter"] == "none"
+        assert export_config["inpainter"]["inpainter"] == "lama_large"
 
     def test_custom_inpaint_backend_writes_selected(self, tmp_path: Path, monkeypatch):
         """Custom inpaint_backend writes the selected backend to export config."""

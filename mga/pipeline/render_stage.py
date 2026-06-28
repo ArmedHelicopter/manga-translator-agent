@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+import unicodedata
 from pathlib import Path
 from typing import Any
 
@@ -208,46 +209,688 @@ class RenderStage(PipelineStage):
         return meta
 
     @staticmethod
+    def _load_artifact_region_indices(payload_path: Path, page_idx: int) -> set[int] | None:
+        """Return explicit artifact region indices, or None if no artifact exists."""
+        suffix = f"-{page_idx:04d}"
+        artifact_file = payload_path / f"artifact{suffix}.json"
+        if not artifact_file.exists():
+            artifact_file = payload_path / "artifact.json"
+        if not artifact_file.exists():
+            return None
+        try:
+            artifact = json.loads(artifact_file.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return None
+
+        regions = artifact.get("text_regions", [])
+        if not isinstance(regions, list):
+            return set()
+        indices: set[int] = set()
+        for fallback_idx, region in enumerate(regions):
+            if not isinstance(region, dict):
+                continue
+            try:
+                idx = int(region.get("index", fallback_idx))
+            except (TypeError, ValueError):
+                continue
+            indices.add(idx)
+        return indices
+
+    @staticmethod
+    def _load_artifact(payload_path: Path, page_idx: int) -> dict[str, Any] | None:
+        suffix = f"-{page_idx:04d}"
+        artifact_file = payload_path / f"artifact{suffix}.json"
+        if not artifact_file.exists():
+            artifact_file = payload_path / "artifact.json"
+        if not artifact_file.exists():
+            return None
+        try:
+            return json.loads(artifact_file.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return None
+
+    @staticmethod
+    def _write_artifact(payload_path: Path, page_idx: int, artifact: dict[str, Any]) -> None:
+        suffix = f"-{page_idx:04d}"
+        artifact_file = payload_path / f"artifact{suffix}.json"
+        if not artifact_file.exists():
+            artifact_file = payload_path / "artifact.json"
+        artifact_file.write_text(
+            json.dumps(artifact, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+    @staticmethod
+    def _inpainted_path(payload_path: Path, page_idx: int) -> Path:
+        suffix = f"-{page_idx:04d}"
+        inpainted_file = payload_path / f"inpainted{suffix}.png"
+        if not inpainted_file.exists():
+            inpainted_file = payload_path / "inpainted.png"
+        return inpainted_file
+
+    @staticmethod
+    def _restore_removed_regions(
+        payload_path: Path,
+        page_idx: int,
+        removed_regions: list[dict[str, Any]],
+        input_image_path: str | None,
+    ) -> None:
+        """Paste original-image pixels back where Pass 1 inpainted dropped regions.
+
+        The runtime consumes the already-inpainted image in render-only mode.
+        If render_stage later suppresses a region but leaves the Pass 1 inpaint
+        behind, cover/contents/chapter pages turn into blank white holes even
+        though translations are empty. Restoring those bboxes keeps filtered
+        non-dialogue pages visually identical to the input instead of preserving
+        stale inpaint damage.
+        """
+        if not removed_regions or not input_image_path:
+            return
+        inpainted_file = RenderStage._inpainted_path(payload_path, page_idx)
+        if not inpainted_file.exists():
+            return
+        try:
+            from PIL import Image
+
+            with Image.open(input_image_path).convert("RGB") as original:
+                with Image.open(inpainted_file).convert("RGB") as inpainted:
+                    for region in removed_regions:
+                        bbox = RenderStage._bbox_from_lines(region.get("lines"))
+                        if bbox is None:
+                            continue
+                        x, y, w, h = bbox
+                        x0 = max(0, x)
+                        y0 = max(0, y)
+                        x1 = min(original.width, inpainted.width, x + w)
+                        y1 = min(original.height, inpainted.height, y + h)
+                        if x1 <= x0 or y1 <= y0:
+                            continue
+                        inpainted.paste(original.crop((x0, y0, x1, y1)), (x0, y0))
+                    inpainted.save(inpainted_file)
+        except Exception as e:  # pragma: no cover - restoration is best-effort
+            logger.warning(
+                "render: could not restore suppressed regions on page %d (%s)",
+                page_idx,
+                e,
+            )
+
+    @staticmethod
+    def _prune_artifact_to_rendered_regions(
+        payload_path: Path,
+        page_idx: int,
+        translations: list[dict[str, Any]],
+        input_image_path: str | None,
+    ) -> None:
+        artifact = RenderStage._load_artifact(payload_path, page_idx)
+        if not artifact:
+            return
+        regions = artifact.get("text_regions", [])
+        if not isinstance(regions, list):
+            return
+
+        kept_old_indices = [
+            int(t["region_index"])
+            for t in translations
+            if isinstance(t.get("region_index"), int)
+        ]
+        keep_set = set(kept_old_indices)
+        kept_regions: list[dict[str, Any]] = []
+        removed_regions: list[dict[str, Any]] = []
+        old_to_new: dict[int, int] = {}
+
+        for fallback_idx, region in enumerate(regions):
+            if not isinstance(region, dict):
+                continue
+            # render_only indexes text_regions by list position. Use fallback_idx
+            # here, not region["index"], so artifact pruning remaps the exact
+            # runtime index space and cannot recreate page-010-style mismatches.
+            if fallback_idx in keep_set:
+                new_idx = len(kept_regions)
+                old_to_new[fallback_idx] = new_idx
+                region["index"] = new_idx
+                kept_regions.append(region)
+            else:
+                removed_regions.append(region)
+
+        if len(kept_regions) == len(regions):
+            return
+
+        for t in translations:
+            old_idx = int(t["region_index"])
+            if old_idx in old_to_new:
+                t["region_index"] = old_to_new[old_idx]
+
+        artifact["text_regions"] = kept_regions
+        RenderStage._write_artifact(payload_path, page_idx, artifact)
+        RenderStage._restore_removed_regions(payload_path, page_idx, removed_regions, input_image_path)
+
+    @staticmethod
+    def _artifact_texts(artifact: dict[str, Any] | None) -> set[str]:
+        if not isinstance(artifact, dict):
+            return set()
+        regions = artifact.get("text_regions", [])
+        if not isinstance(regions, list):
+            return set()
+        texts: set[str] = set()
+        for region in regions:
+            if not isinstance(region, dict):
+                continue
+            text = RenderStage._source_text_key(region.get("text"))
+            if text:
+                texts.add(text)
+        return texts
+
+    @staticmethod
+    def _page_source_texts(context: PipelineContext, page_idx: int) -> set[str]:
+        page = next((p for p in context.pages if p.page_index == page_idx), None)
+        if page is None:
+            return set()
+        texts: set[str] = set()
+        for bubble in getattr(page, "bubbles", []) or []:
+            text = RenderStage._source_text_key(getattr(bubble, "source_text", ""))
+            if text:
+                texts.add(text)
+        return texts
+
+    @staticmethod
+    def _source_text_key(text: Any) -> str:
+        """Normalize source text for OCR/vision de-duplication.
+
+        OCR and vision often return the same Japanese text with different line
+        breaks or spacing. Treating those as distinct caused page-005 to render
+        a duplicate vision seat outside the speech bubble even though OCR had
+        already provided the correct geometry.
+        """
+        if text is None:
+            return ""
+        normalized = unicodedata.normalize("NFKC", str(text))
+        return re.sub(r"\s+", "", normalized)
+
+    @staticmethod
+    def _source_text_similarity_key(text: Any) -> str:
+        """Normalize long source text for near-duplicate OCR/vision suppression.
+
+        Exact source matching missed page-007: OCR had the correct bubble seat
+        for a sentence ending in a dash/ellipsis, while vision added the same
+        sentence with different punctuation on the page border. Keep this key
+        empty for short SFX so repeated one-letter sounds are not collapsed.
+        """
+        key = RenderStage._source_text_key(text)
+        if len(key) < 8:
+            return ""
+        return re.sub(r"[^\w\u3040-\u30ff\u3400-\u9fff]", "", key)
+
+    @staticmethod
+    def _source_text_short_name_key(text: Any) -> str:
+        """Normalize short character-name calls for OCR/vision duplicate checks.
+
+        Page-009 hit a shorter failure than the page-007 punctuation drift:
+        OCR already had the speech balloon ``美胡ちゃん``, while vision emitted
+        a loose face/body bbox with ``美湖ちゃん``. Exact keys differ by one
+        character, and the long-text key intentionally ignores short strings, so
+        the duplicate rendered on top of the artwork. This key is only used as a
+        conservative OCR-vs-vision suppression signal, not as a general merge.
+        """
+        key = RenderStage._source_text_key(text)
+        if not key:
+            return ""
+        key = re.sub(r"(さん|ちゃん|くん|君|様|さま)$", "", key)
+        key = re.sub(r"[^\w\u3040-\u30ff\u3400-\u9fff]", "", key)
+        if 2 <= len(key) <= 8:
+            return key
+        return ""
+
+    @staticmethod
+    def _short_name_keys_nearly_match(a: str, b: str) -> bool:
+        if not a or not b:
+            return False
+        if a == b:
+            return True
+        if abs(len(a) - len(b)) > 1:
+            return False
+        if len(a) == len(b) == 2 and a[0] == b[0]:
+            return True
+        shared = len(set(a) & set(b))
+        return shared >= max(2, min(len(a), len(b)) - 1)
+
+    @staticmethod
+    def _looks_like_non_dialogue_text(text: Any) -> bool:
+        key = RenderStage._source_text_key(text).lower()
+        if not key:
+            return False
+        if key.isdigit():
+            return True
+        if any(token in key for token in (
+            "contents", "coverdesign", "コミックス", "comics", "next",
+            "あとがき", "番外編", "幕間",
+        )):
+            return True
+        return re.search(r"\d+話", key) is not None
+
+    @staticmethod
+    def _page_box_types(context: PipelineContext | None, page_idx: int) -> set[str]:
+        if context is None:
+            return set()
+        page = next((p for p in context.pages if p.page_index == page_idx), None)
+        if page is None:
+            return set()
+        return {
+            str(getattr(bubble, "box_type", "") or "").lower()
+            for bubble in getattr(page, "bubbles", []) or []
+            if getattr(bubble, "box_type", None)
+        }
+
+    @staticmethod
+    def _is_renderable_vision_box_type(box_type: Any) -> bool:
+        normalized = str(box_type or "dialogue").strip().lower()
+        if not normalized:
+            return True
+        return normalized in {"dialogue", "speech", "thought", "narration", "narrator"}
+
+    @staticmethod
+    def _page_is_contents(context: PipelineContext | None, page_idx: int) -> bool:
+        if context is None:
+            return False
+        page = next((p for p in context.pages if p.page_index == page_idx), None)
+        if page is None:
+            return False
+        return any(
+            "contents" in str(getattr(bubble, "source_text", "") or "").lower()
+            for bubble in getattr(page, "bubbles", []) or []
+        )
+
+    @staticmethod
+    def _artifact_is_contents(payload_path: Path, page_idx: int) -> bool:
+        artifact = RenderStage._load_artifact(payload_path, page_idx)
+        if not artifact:
+            return False
+        regions = artifact.get("text_regions", [])
+        if not isinstance(regions, list):
+            return False
+        return any(
+            isinstance(region, dict)
+            and "contents" in RenderStage._source_text_key(region.get("text")).lower()
+            for region in regions
+        )
+
+    @staticmethod
+    def _contents_red_text_columns(image_path: str | None) -> list[tuple[float, float, float, float]]:
+        """Detect vertical red TOC columns in the original page image.
+
+        Vision bboxes on contents pages have repeatedly landed in a resized-page
+        coordinate space; rendering them directly puts Chinese text in the page
+        margin. The original TOC is red text on white paper, so use the input
+        pixels to recover the real column seats. If this detector cannot find
+        enough columns, the caller falls back to the ordinary vision bbox path.
+        """
+        if not image_path:
+            return []
+        try:
+            from PIL import Image
+            import numpy as np
+
+            with Image.open(image_path).convert("RGB") as img:
+                arr = np.asarray(img)
+        except Exception:
+            return []
+        red = (
+            (arr[:, :, 0] > 150)
+            & (arr[:, :, 1] < 190)
+            & (arr[:, :, 2] < 200)
+            & ((arr[:, :, 0] - arr[:, :, 1]) > 25)
+            & ((arr[:, :, 0] - arr[:, :, 2]) > 20)
+        )
+        ys, xs = np.nonzero(red)
+        if len(xs) < 100:
+            return []
+
+        # Keep the body of the TOC and ignore the heading/dot where possible.
+        h = arr.shape[0]
+        body = ys > int(h * 0.28)
+        xs = xs[body]
+        ys = ys[body]
+        if len(xs) < 100:
+            return []
+
+        bins = np.arange(0, arr.shape[1] + 1, 24)
+        hist, edges = np.histogram(xs, bins=bins)
+        active = hist > 25
+        groups: list[tuple[int, int]] = []
+        start: int | None = None
+        for i, is_active in enumerate(active):
+            if is_active and start is None:
+                start = i
+            elif not is_active and start is not None:
+                groups.append((start, i))
+                start = None
+        if start is not None:
+            groups.append((start, len(active)))
+
+        candidates: list[tuple[float, float, float, float, int]] = []
+        for start_i, end_i in groups:
+            x0 = edges[start_i]
+            x1 = edges[end_i]
+            in_group = (xs >= x0) & (xs < x1)
+            if int(in_group.sum()) < 80:
+                continue
+            gx = xs[in_group]
+            gy = ys[in_group]
+            col_x0 = float(gx.min())
+            col_x1 = float(gx.max())
+            col_y0 = float(gy.min())
+            col_y1 = float(gy.max())
+            width = max(40.0, col_x1 - col_x0 + 1.0)
+            height = max(80.0, col_y1 - col_y0 + 1.0)
+            candidates.append((col_x0, col_y0, width, height, int(in_group.sum())))
+
+        if not candidates:
+            return []
+
+        median_height = float(np.median([box[3] for box in candidates]))
+        min_body_height = max(160.0, median_height * 0.35)
+        min_area = max(500.0, float(arr.shape[0] * arr.shape[1]) * 0.00003)
+        columns = [
+            (x - 6.0, y - 6.0, w + 12.0, h + 12.0)
+            for x, y, w, h, count in candidates
+            if h >= min_body_height and count >= min_area
+        ]
+        if not columns:
+            columns = [
+                (x - 6.0, y - 6.0, w + 12.0, h + 12.0)
+                for x, y, w, h, _count in candidates
+            ]
+
+        return sorted(columns, key=lambda box: box[0], reverse=True)
+
+    @staticmethod
+    def _contents_existing_region_indices(
+        regions: list[Any],
+        contents_columns: list[tuple[float, float, float, float]],
+    ) -> list[int]:
+        """Return existing OCR TOC seats in right-to-left visual order.
+
+        Contents pages often already have accurate Pass 1 OCR geometry, while
+        the vision bboxes are in a loose/resized coordinate space. Reusing the
+        existing seats preserves the original layout and avoids appending new
+        white boxes over the art; falling back to vision geometry is only safe
+        when OCR found no TOC seats at all.
+        """
+        column_matches: list[tuple[int, int, float]] = []
+        fallback: list[tuple[float, int]] = []
+        for fallback_idx, region in enumerate(regions):
+            if not isinstance(region, dict):
+                continue
+            bbox = RenderStage._bbox_from_lines(region.get("lines"))
+            if bbox is None:
+                continue
+            try:
+                region_idx = int(region.get("index", fallback_idx))
+            except (TypeError, ValueError):
+                continue
+            x, _y, w, _h = bbox
+            fallback.append((float(x), region_idx))
+            for column_idx, column in enumerate(contents_columns):
+                overlap = RenderStage._bbox_overlap_coverage(bbox, column)
+                if overlap > 0.2:
+                    column_matches.append((column_idx, region_idx, overlap))
+                    break
+
+        if column_matches:
+            best_by_column: dict[int, tuple[int, float]] = {}
+            for column_idx, region_idx, overlap in column_matches:
+                current = best_by_column.get(column_idx)
+                if current is None or overlap > current[1]:
+                    best_by_column[column_idx] = (region_idx, overlap)
+            return [
+                region_idx
+                for column_idx, (region_idx, _overlap) in sorted(best_by_column.items())
+            ]
+
+        return [region_idx for _x, region_idx in sorted(fallback, reverse=True)]
+
+    @staticmethod
+    def _contents_region_is_title_candidate(region: dict[str, Any] | None) -> bool:
+        if not isinstance(region, dict):
+            return False
+        key = RenderStage._source_text_key(region.get("text"))
+        if not key:
+            return False
+        if "contents" in key.lower():
+            return False
+        if key.isdigit():
+            return False
+        bbox = RenderStage._bbox_from_lines(region.get("lines"))
+        if bbox is None:
+            return False
+        _x, _y, w, h = bbox
+        if w <= 0 or h <= 0:
+            return False
+        # TOC OCR regions can be wide because the detector groups chapter
+        # number, title, and page number into one seat. Requiring a narrow
+        # vertical aspect ratio deleted every real page-004 entry and left the
+        # contents page untranslated. Keep only obvious heading/page-number
+        # noise out; column overlap below still constrains placement.
+        return h >= 80 and w >= 10
+
+    @staticmethod
+    def _contents_region_overlaps_columns(
+        region: dict[str, Any] | None,
+        contents_columns: list[tuple[float, float, float, float]],
+    ) -> bool:
+        if not contents_columns:
+            return True
+        if not isinstance(region, dict):
+            return False
+        bbox = RenderStage._bbox_from_lines(region.get("lines"))
+        if bbox is None:
+            return False
+        return any(
+            RenderStage._bbox_overlap_coverage(bbox, column) > 0.2
+            for column in contents_columns
+        )
+
+    @staticmethod
+    def _contents_chapter_number_key(text: Any) -> str:
+        key = RenderStage._source_text_key(text)
+        match = re.search(r"(\d+)(?:話|Ԓ|话)", key)
+        if not match:
+            return ""
+        return match.group(1)
+
+    @staticmethod
+    def _contents_region_lacks_title(text: Any) -> bool:
+        key = RenderStage._source_text_key(text)
+        if not key:
+            return False
+        chapter = RenderStage._contents_chapter_number_key(key)
+        if not chapter:
+            return False
+        remainder = re.sub(rf"^{re.escape(chapter)}(?:話|Ԓ|话)", "", key)
+        remainder = re.sub(r"\d+$", "", remainder)
+        return not remainder
+
+    @staticmethod
+    def _contents_translation_lacks_title(text: Any) -> bool:
+        key = RenderStage._source_text_key(text)
+        if not key:
+            return False
+        match = re.search(r"(?:第)?(\d+)(?:話|Ԓ|话)", key)
+        if not match:
+            return False
+        remainder = key[match.end():]
+        remainder = re.sub(r"\d+$", "", remainder)
+        return not remainder
+
+    @staticmethod
+    def _contents_title_supplement(
+        context: PipelineContext,
+        page_idx: int,
+        region_source_text: Any,
+        current_render_text: str,
+    ) -> str:
+        """Recover TOC titles that OCR split away from the chapter number.
+
+        Page-004 can produce an authoritative OCR seat containing only
+        ``34話`` while the vision pass sees the following title column
+        (``慟愧の鞭``). Rendering only the OCR translation leaves that contents
+        entry titleless. Limit this recovery to contents pages and to chapter
+        numbers whose OCR/source translation both lack a title, so ordinary
+        dialogue pages and complete TOC entries are untouched.
+        """
+        if not RenderStage._contents_region_lacks_title(region_source_text):
+            return current_render_text
+        chapter = RenderStage._contents_chapter_number_key(region_source_text)
+        if not chapter or not RenderStage._contents_translation_lacks_title(current_render_text):
+            return current_render_text
+
+        page = next((p for p in context.pages if p.page_index == page_idx), None)
+        if page is None:
+            return current_render_text
+        page_bubbles = list(getattr(page, "bubbles", []) or [])
+        translation_by_id = {
+            t.bubble_id: RenderStage._extract_render_text(t.text)
+            for t in context.translations
+        }
+        for idx, bubble in enumerate(page_bubbles):
+            if not str(getattr(bubble, "bubble_id", "") or "").startswith("vision-"):
+                continue
+            if RenderStage._contents_chapter_number_key(getattr(bubble, "source_text", "")) != chapter:
+                continue
+            for next_bubble in page_bubbles[idx + 1:]:
+                next_id = str(getattr(next_bubble, "bubble_id", "") or "")
+                if not next_id.startswith("vision-"):
+                    break
+                next_source = getattr(next_bubble, "source_text", "")
+                if RenderStage._looks_like_non_dialogue_text(next_source):
+                    continue
+                title = translation_by_id.get(next_id, "")
+                if not title or RenderStage._looks_like_non_dialogue_text(title):
+                    continue
+                if title in current_render_text:
+                    return current_render_text
+                return f"{current_render_text} {title}"
+        return current_render_text
+
+    @staticmethod
+    def _artifact_regions_by_index(payload_path: Path, page_idx: int) -> dict[int, dict[str, Any]]:
+        artifact = RenderStage._load_artifact(payload_path, page_idx)
+        if not artifact:
+            return {}
+        regions = artifact.get("text_regions", [])
+        if not isinstance(regions, list):
+            return {}
+        result: dict[int, dict[str, Any]] = {}
+        for fallback_idx, region in enumerate(regions):
+            if not isinstance(region, dict):
+                continue
+            try:
+                idx = int(region.get("index", fallback_idx))
+            except (TypeError, ValueError):
+                continue
+            result[idx] = region
+        return result
+
+    @staticmethod
+    def _suppressed_region_indices(
+        payload_path: Path, page_idx: int, context: PipelineContext | None = None
+    ) -> dict[int, str]:
+        artifact = RenderStage._load_artifact(payload_path, page_idx)
+        if not artifact:
+            return {}
+        regions = artifact.get("text_regions", [])
+        if not isinstance(regions, list):
+            return {}
+
+        suppressed: dict[int, str] = {}
+        ocr_similarity_keys: set[str] = set()
+        ocr_short_name_keys: set[str] = set()
+        region_texts = [
+            RenderStage._source_text_key(region.get("text")).lower()
+            for region in regions
+            if isinstance(region, dict)
+        ]
+        page_box_types = RenderStage._page_box_types(context, page_idx)
+        # Cover and contents page metadata are not speech-balloon render targets.
+        # Do not suppress an entire chapter-title page just because it has a
+        # chapter marker: page-008 is a real title page the product expects to
+        # translate, and whole-page suppression left it untranslated.
+        page_is_contents = any("contents" in text for text in region_texts) or RenderStage._page_is_contents(context, page_idx)
+        page_has_cover_marker = any(
+            isinstance(region, dict)
+            and any(token in RenderStage._source_text_key(region.get("text")).lower()
+                    for token in ("coverdesign", "コミックス", "comics", "next"))
+            for region in regions
+        )
+        for fallback_idx, region in enumerate(regions):
+            if not isinstance(region, dict):
+                continue
+            try:
+                idx = int(region.get("index", fallback_idx))
+            except (TypeError, ValueError):
+                continue
+            text = region.get("text")
+            if region.get("source") != "vision":
+                near_key = RenderStage._source_text_similarity_key(text)
+                if near_key:
+                    ocr_similarity_keys.add(near_key)
+                short_name_key = RenderStage._source_text_short_name_key(text)
+                if short_name_key:
+                    ocr_short_name_keys.add(short_name_key)
+                if page_is_contents:
+                    continue
+                if RenderStage._looks_like_non_dialogue_text(text):
+                    suppressed[idx] = "non-dialogue OCR text"
+                elif page_has_cover_marker:
+                    suppressed[idx] = "cover OCR text"
+
+        for fallback_idx, region in enumerate(regions):
+            if not isinstance(region, dict) or region.get("source") != "vision":
+                continue
+            try:
+                idx = int(region.get("index", fallback_idx))
+            except (TypeError, ValueError):
+                continue
+            text = region.get("text")
+            near_key = RenderStage._source_text_similarity_key(text)
+            if near_key and near_key in ocr_similarity_keys:
+                suppressed[idx] = "near-duplicate vision text"
+                continue
+            short_name_key = RenderStage._source_text_short_name_key(text)
+            if short_name_key and any(
+                RenderStage._short_name_keys_nearly_match(short_name_key, ocr_key)
+                for ocr_key in ocr_short_name_keys
+            ):
+                suppressed[idx] = "near-duplicate vision name"
+                continue
+            if page_is_contents:
+                continue
+            if RenderStage._looks_like_non_dialogue_text(text):
+                suppressed[idx] = "non-dialogue vision text"
+                continue
+            if page_has_cover_marker:
+                suppressed[idx] = "cover vision text"
+        return suppressed
+
+    @staticmethod
     def _inject_vision_regions(
         payload_path: Path, page_idx: int, context: PipelineContext
     ) -> dict[str, int]:
-        """Inject vision-detected bubbles as text_regions, but ONLY as a fallback
-        when the runtime OCR found zero regions for the page.
+        """Inject safe vision-detected bubbles as text_regions.
 
         Runtime OCR geometry is authoritative (docs/render_purity_contract.md).
-        When OCR already populated one or more ``text_regions``, vision bboxes
-        must NOT be appended on top of them: vision bboxes are loose host-side
-        estimates that frequently cover artwork, and an injected seat paints a
-        white bg_color box ([255,255,255]) with an oversized font_size directly
-        over the art, dropping text onto character faces. This was the
-        recon-fresh-20260624-v4 regression: every OCR page (001-009) had extra
-        prob:null vision seats appended past the OCR regions, with font_size up
-        to 1875 and white backgrounds, producing full-page white occlusion
-        boxes and text outside bubbles. So if ``text_regions`` is non-empty this
-        returns ``{}`` immediately and touches nothing.
-
-        The fallback path runs only when OCR found nothing (a no-text or
-        vision-only page): vision bubbles carry a host-side bbox but no runtime
-        seat, so without injection render_only() silently drops their
-        translations (``0 <= idx < len(text_regions)`` fails,
-        manga_translator.py:749). One seat per vision bubble is then appended
-        starting at index 0 and the artifact is written back to disk.
+        Vision bboxes are loose host-side estimates, and the recon-fresh-
+        20260624-v4 regression showed that blindly appending all of them paints
+        large white bg_color boxes over art. The safe compromise is to keep OCR
+        seats untouched, skip any vision bbox that overlaps OCR geometry, and
+        append seats only for uncovered vision bubbles. This keeps OCR+vision
+        mixed pages from dropping translations without reintroducing white
+        occlusion boxes.
 
         Returns a ``{bubble_id: region_index}`` map for the injected seats so
         the caller can emit translations keyed to the correct index. Idempotent
-        under the default ``pin_artifacts=True``: on re-run the pin store
-        restores the OCR-only artifact, and this method re-derives the
-        (fallback-only) vision seats — so it must be called every render, after
-        ``resolve_pinned_artifact``.
-
-        Sharp edge (non-default ``pin_artifacts=False``): the non-empty guard
-        keys off raw ``text_regions`` length, so a re-run whose on-disk artifact
-        still holds vision seats from a prior run treats those stale seats as
-        OCR regions, suppresses re-emission of their translations, and the
-        runtime renders the leftover seat with stale text. Pinning is the
-        supported re-render path; keying the guard off real OCR-authored
-        regions (e.g. a ``source: vision`` marker) rather than list length is a
-        tracked follow-up, not needed for the default flow.
+        across re-runs: already-injected seats are tagged with
+        ``source: vision`` and ``bubble_id`` so they are reused instead of
+        appended again.
 
         Vision bubbles without a usable bbox (zero area) are skipped with a
         warning: a seat with no geometry cannot be rendered, and emitting one
@@ -282,22 +925,118 @@ class RenderStage(PipelineStage):
             return {}
 
         regions = artifact.setdefault("text_regions", [])
-        if regions:
-            logger.info(
-                "render: skipping vision region injection for page %d because "
-                "runtime OCR already provided %d text region(s)",
-                page_idx, len(regions),
-            )
-            return {}
+        existing_vision: dict[str, int] = {}
+        used_indices: set[int] = set()
+        for i, region in enumerate(regions):
+            if not isinstance(region, dict):
+                continue
+            try:
+                region_idx = int(region.get("index", i))
+            except (TypeError, ValueError):
+                continue
+            used_indices.add(region_idx)
+            if region.get("source") == "vision" and region.get("bubble_id"):
+                existing_vision[str(region["bubble_id"])] = region_idx
+        occupied_bboxes = [
+            bbox
+            for region in regions
+            if isinstance(region, dict) and region.get("source") != "vision"
+            for bbox in [RenderStage._bbox_from_lines(region.get("lines"))]
+            if bbox is not None
+        ]
+        occupied_texts = {
+            key
+            for region in regions
+            if isinstance(region, dict) and region.get("source") != "vision"
+            for key in [RenderStage._source_text_key(region.get("text"))]
+            if key
+        }
+        occupied_similarity_texts = {
+            key
+            for region in regions
+            if isinstance(region, dict) and region.get("source") != "vision"
+            for key in [RenderStage._source_text_similarity_key(region.get("text"))]
+            if key
+        }
+        occupied_short_name_texts = {
+            key
+            for region in regions
+            if isinstance(region, dict) and region.get("source") != "vision"
+            for key in [RenderStage._source_text_short_name_key(region.get("text"))]
+            if key
+        }
 
-        # Fallback path: OCR found zero regions (the early return above
-        # guarantees regions is empty here), so vision seats start at index 0.
-        # There are no OCR seats for vision indices to collide with — the
-        # region_index collision bug (FIX_PLAN.md §1.1) cannot occur here.
-        next_index = len(regions)
+        next_index = max(used_indices, default=-1) + 1
         injected: dict[str, int] = {}
         appended = 0
+        page_is_contents = (
+            RenderStage._page_is_contents(context, page_idx)
+            or RenderStage._artifact_is_contents(payload_path, page_idx)
+        )
+        contents_columns: list[tuple[float, float, float, float]] = []
+        contents_existing_indices: list[int] = []
+        contents_column_idx = 0
+        contents_existing_idx = 0
+        if page_is_contents:
+            contents_columns = RenderStage._contents_red_text_columns(
+                RenderStage._page_input_image_path(context, page_idx)
+            )
+            contents_existing_indices = RenderStage._contents_existing_region_indices(
+                regions, contents_columns
+            )
         for b in vision_bubbles:
+            if b.bubble_id in existing_vision:
+                injected[b.bubble_id] = existing_vision[b.bubble_id]
+                continue
+            box_type = str(getattr(b, "box_type", "") or "dialogue").strip().lower()
+            is_contents_entry = page_is_contents and box_type not in {"sfx", "graffiti"}
+            if is_contents_entry and "contents" in RenderStage._source_text_key(b.source_text).lower():
+                continue
+            if is_contents_entry and contents_existing_idx < len(contents_existing_indices):
+                injected[b.bubble_id] = contents_existing_indices[contents_existing_idx]
+                contents_existing_idx += 1
+                continue
+            if not is_contents_entry and not RenderStage._is_renderable_vision_box_type(box_type):
+                logger.info(
+                    "render: skipping vision bubble %s on page %d because "
+                    "box_type=%s is not a speech-balloon render target",
+                    b.bubble_id, page_idx, getattr(b, "box_type", None),
+                )
+                continue
+            source_key = RenderStage._source_text_key(b.source_text)
+            if source_key and source_key in occupied_texts:
+                logger.info(
+                    "render: skipping vision bubble %s on page %d because "
+                    "OCR already has the same source text",
+                    b.bubble_id, page_idx,
+                )
+                continue
+            similarity_key = RenderStage._source_text_similarity_key(b.source_text)
+            if similarity_key and similarity_key in occupied_similarity_texts:
+                logger.info(
+                    "render: skipping vision bubble %s on page %d because "
+                    "OCR already has the same sentence with punctuation drift",
+                    b.bubble_id, page_idx,
+                )
+                continue
+            short_name_key = RenderStage._source_text_short_name_key(b.source_text)
+            if short_name_key and any(
+                RenderStage._short_name_keys_nearly_match(short_name_key, ocr_key)
+                for ocr_key in occupied_short_name_texts
+            ):
+                logger.info(
+                    "render: skipping vision bubble %s on page %d because "
+                    "OCR already has the same short name with minor OCR drift",
+                    b.bubble_id, page_idx,
+                )
+                continue
+            if not is_contents_entry and RenderStage._looks_like_non_dialogue_text(b.source_text):
+                logger.info(
+                    "render: skipping vision bubble %s on page %d because "
+                    "it looks like cover/contents/chapter metadata, not dialogue",
+                    b.bubble_id, page_idx,
+                )
+                continue
             bbox = b.bbox
             if bbox is None or bbox.width <= 0 or bbox.height <= 0:
                 logger.info(
@@ -306,13 +1045,27 @@ class RenderStage(PipelineStage):
                     b.bubble_id, page_idx,
                 )
                 continue
-            x, y, w, h = (
-                float(bbox.x), float(bbox.y), float(bbox.width), float(bbox.height),
-            )
+            if is_contents_entry and contents_column_idx < len(contents_columns):
+                x, y, w, h = contents_columns[contents_column_idx]
+                contents_column_idx += 1
+            else:
+                x, y, w, h = (
+                    float(bbox.x), float(bbox.y), float(bbox.width), float(bbox.height),
+                )
+            vision_bbox = (x, y, w, h)
+            if any(RenderStage._bbox_conflicts(vision_bbox, occupied) for occupied in occupied_bboxes):
+                logger.info(
+                    "render: skipping vision bubble %s on page %d because "
+                    "it overlaps existing OCR geometry",
+                    b.bubble_id, page_idx,
+                )
+                continue
             # lines = quadrilateral polygon [[x,y],[x+w,y],[x+w,y+h],[x,y+h]];
             # the runtime's text renderer uses lines to position + size text.
             region = {
                 "index": next_index,
+                "source": "vision",
+                "bubble_id": b.bubble_id,
                 "text": b.source_text or "",
                 "texts": [b.source_text or ""],
                 "lines": [[[x, y], [x + w, y], [x + w, y + h], [x, y + h]]],
@@ -322,7 +1075,7 @@ class RenderStage(PipelineStage):
                 # (e.g. 1822px for a 911px-tall vision bubble), and freetype's
                 # set_pixel_sizes(0, 1822) raises FT_Exception: raster overflow.
                 # Using bbox height caps the starting font size to a sane value.
-                "font_size": max(8, int(round(h))),
+                "font_size": max(8, int(round(min(w, h) * 0.45))),
                 "angle": 0.0,
                 "direction": "auto",
                 "alignment": "auto",
@@ -355,6 +1108,53 @@ class RenderStage(PipelineStage):
                 len(regions) - appended, len(regions) - 1,
             )
         return injected
+
+    @staticmethod
+    def _bbox_conflicts(
+        bbox_a: tuple[float, float, float, float],
+        bbox_b: tuple[int, int, int, int],
+    ) -> bool:
+        coverage = RenderStage._bbox_overlap_coverage(bbox_a, bbox_b)
+        if coverage > 0.8:
+            return True
+        ax, ay, aw, ah = bbox_a
+        bx, by, bw, bh = bbox_b
+        if aw <= 0 or ah <= 0 or bw <= 0 or bh <= 0:
+            return False
+        x1 = max(ax, bx)
+        y1 = max(ay, by)
+        x2 = min(ax + aw, bx + bw)
+        y2 = min(ay + ah, by + bh)
+        if x2 <= x1 or y2 <= y1:
+            return False
+        inter = (x2 - x1) * (y2 - y1)
+        area_a = aw * ah
+        area_b = bw * bh
+        union = area_a + area_b - inter
+        if union <= 0:
+            return False
+        iou = inter / union
+        return iou > 0.3
+
+    @staticmethod
+    def _bbox_overlap_coverage(
+        bbox_a: tuple[float, float, float, float] | tuple[int, int, int, int],
+        bbox_b: tuple[float, float, float, float] | tuple[int, int, int, int],
+    ) -> float:
+        ax, ay, aw, ah = bbox_a
+        bx, by, bw, bh = bbox_b
+        if aw <= 0 or ah <= 0 or bw <= 0 or bh <= 0:
+            return 0.0
+        x1 = max(ax, bx)
+        y1 = max(ay, by)
+        x2 = min(ax + aw, bx + bw)
+        y2 = min(ay + ah, by + bh)
+        if x2 <= x1 or y2 <= y1:
+            return 0.0
+        inter = (x2 - x1) * (y2 - y1)
+        area_a = aw * ah
+        area_b = bw * bh
+        return inter / min(area_a, area_b)
 
     @staticmethod
     def _bbox_from_lines(lines: Any) -> tuple[int, int, int, int] | None:
@@ -474,6 +1274,10 @@ class RenderStage(PipelineStage):
         # Pass 1 artifact so we can drop hallucinated blank-background regions and
         # low-confidence detections before the render subprocess runs.
         input_image_path = self._page_input_image_path(context, page_idx)
+        page_is_contents = (
+            RenderStage._page_is_contents(context, page_idx)
+            or RenderStage._artifact_is_contents(payload_path, page_idx)
+        )
 
         # Pin the OCR artifact to I_n by content hash so g(I_n) is deterministic
         # across runs (runtime OCR is otherwise non-deterministic). The pin store
@@ -482,25 +1286,37 @@ class RenderStage(PipelineStage):
         # renders against the same geometry. Default ON (reproducibility goal).
         if self.pin_artifacts and input_image_path:
             try:
-                from mga.runtime_bridge.artifact_cache import ArtifactPin, resolve_pinned_artifact
+                from mga.runtime_bridge.artifact_cache import ArtifactPin, image_sha256, resolve_pinned_artifact
                 wd = getattr(cfg, "working_dir", "") or ""
                 pin_root = Path(wd) if wd else payload_path
                 store = ArtifactPin(pin_root / ".mga_cache" / "artifact-pin.json")
-                resolve_pinned_artifact(payload_path, page_idx, input_image_path, store)
+                current_artifact = self._load_artifact(payload_path, page_idx)
+                pinned_artifact, was_pinned = resolve_pinned_artifact(payload_path, page_idx, input_image_path, store)
+                if was_pinned and current_artifact:
+                    page_texts = self._page_source_texts(context, page_idx)
+                    pinned_texts = self._artifact_texts(pinned_artifact)
+                    current_texts = self._artifact_texts(current_artifact)
+                    if (
+                        page_texts
+                        and pinned_texts
+                        and current_texts
+                        and pinned_texts.isdisjoint(page_texts)
+                        and not current_texts.isdisjoint(page_texts)
+                    ):
+                        logger.warning(
+                            "render: replacing stale pinned artifact for page %d",
+                            page_idx,
+                        )
+                        store.put(image_sha256(input_image_path), current_artifact)
+                        self._write_artifact(payload_path, page_idx, current_artifact)
             except Exception as e:  # pragma: no cover — pinning must never break render
                 logger.debug("render: artifact pin skipped for page %d (%s)", page_idx, e)
 
         region_meta = self._load_region_metadata(payload_path, page_idx)
 
-        # Inject vision-detected bubbles as text_regions — FALLBACK ONLY. When
-        # OCR already populated text_regions for the page, NO vision seats are
-        # added (runtime OCR geometry is authoritative; injecting loose vision
-        # bboxes on top paints white boxes over art — the recon-fresh-v4
-        # regression, docs/render_purity_contract.md). Vision seats are appended
-        # only on OCR-empty pages so vision-only/no-text bubbles still get a
-        # render seat; without one render_only() drops their translations
-        # (0 <= idx < len(text_regions) fails, manga_translator.py:749).
-        # See FIX_PLAN.md §1.3 / handoff-2026-06-19 Bug 4.
+        # Inject vision-detected bubbles only where OCR did not already provide
+        # geometry. Blind injection caused the recon-fresh-v4 white-box
+        # regression, while no injection drops uncovered vision translations.
         vision_region_index = self._inject_vision_regions(
             payload_path, page_idx, context
         )
@@ -509,16 +1325,22 @@ class RenderStage(PipelineStage):
         # (their bboxes are needed for the blank-region hallucination guard below).
         if vision_region_index:
             region_meta = self._load_region_metadata(payload_path, page_idx)
+        valid_region_indices = self._load_artifact_region_indices(payload_path, page_idx)
+        artifact_regions_by_index = self._artifact_regions_by_index(payload_path, page_idx)
+        contents_columns = (
+            RenderStage._contents_red_text_columns(input_image_path)
+            if page_is_contents
+            else []
+        )
+        suppressed_region_indices = self._suppressed_region_indices(payload_path, page_idx, context)
+        emitted_region_indices: set[int] = set()
 
         for t in context.translations:
             if t.bubble_id not in vision_region_index and not t.bubble_id.startswith(prefix):
                 continue
             # OCR region bubbles (region-NNNN-NNNN): index is the 3rd segment.
-            # Vision bubbles (vision-NNNN-NNNN): index is the fallback-injected
-            # seat. On a given render pass a page is either OCR-populated (no
-            # vision seat injected) or OCR-empty (vision seats at index 0), so
-            # the two index spaces don't collide. (Under the default pinned path;
-            # see the _inject_vision_regions sharp-edge note for pin=False.)
+            # Vision bubbles (vision-NNNN-NNNN): use the tagged seat appended by
+            # _inject_vision_regions when OCR geometry did not cover the bbox.
             is_vision_injected = t.bubble_id in vision_region_index
             if is_vision_injected:
                 region_idx = vision_region_index[t.bubble_id]
@@ -527,6 +1349,38 @@ class RenderStage(PipelineStage):
                     region_idx = int(t.bubble_id.split("-")[2])
                 except (IndexError, ValueError):
                     continue
+
+            if valid_region_indices is not None and region_idx not in valid_region_indices:
+                logger.warning(
+                    "render: skipping translation for missing region %d on page %d",
+                    region_idx, page_idx,
+                )
+                continue
+
+            if region_idx in emitted_region_indices:
+                logger.info(
+                    "render: skipping duplicate translation for region %d on page %d",
+                    region_idx, page_idx,
+                )
+                continue
+
+            content_region = artifact_regions_by_index.get(region_idx)
+            if page_is_contents and (
+                not self._contents_region_is_title_candidate(content_region)
+                or not self._contents_region_overlaps_columns(content_region, contents_columns)
+            ):
+                logger.info(
+                    "render: skipping contents non-title region %d on page %d",
+                    region_idx, page_idx,
+                )
+                continue
+
+            if region_idx in suppressed_region_indices:
+                logger.warning(
+                    "render: skipping region %d on page %d (%s)",
+                    region_idx, page_idx, suppressed_region_indices[region_idx],
+                )
+                continue
 
             # Fix 2: drop low-confidence OCR detections (prob below threshold).
             meta = region_meta.get(region_idx)
@@ -541,13 +1395,13 @@ class RenderStage(PipelineStage):
                     continue
 
             # Fix 1: skip OCR regions whose bbox lands on a blank/background area
-            # of the input image. Vision-injected seats are excluded: their bboxes
-            # come from the page-level vision payload rather than runtime OCR, and
-            # contents pages place real red text on a white background. Applying the
-            # OCR hallucination guard to those seats deletes every TOC translation
-            # and recreates the RECON_TICKET.md page-004 blank-render failure.
+            # of the input image. Vision-injected seats are excluded because their
+            # bboxes come from page-level vision rather than runtime OCR. Contents
+            # pages rely on those vision seats for real red text on white paper;
+            # applying this OCR guard there deletes every TOC translation.
             if (
                 not is_vision_injected
+                and not page_is_contents
                 and meta is not None
                 and input_image_path
                 and meta.get("bbox") is not None
@@ -561,6 +1415,13 @@ class RenderStage(PipelineStage):
                     continue
 
             render_text = self._extract_render_text(t.text)
+            if page_is_contents and content_region is not None:
+                render_text = self._contents_title_supplement(
+                    context,
+                    page_idx,
+                    content_region.get("text"),
+                    render_text,
+                )
             if s2t_converter is not None:
                 render_text = s2t_converter.convert(render_text)
             translations.append({
@@ -568,6 +1429,7 @@ class RenderStage(PipelineStage):
                 "translation": render_text,
                 "target_lang": _normalize_runtime_lang_code(cfg.target_lang or "CHS"),
             })
+            emitted_region_indices.add(region_idx)
 
             # Name footnotes are intentionally disabled by product rule.
 
@@ -635,6 +1497,22 @@ class RenderStage(PipelineStage):
                     "type": "visual",
                     "kind": fn.kind,
                 })
+
+        # render_only uses text_regions to drive both masking/inpainted content
+        # and text placement. If we only suppress translations, non-dialogue
+        # pages still render from Pass 1's inpainted holes: page-001/page-003
+        # became mostly white even with translations=[]. Keep artifact,
+        # inpainted image, and translations in one index space.
+        self._prune_artifact_to_rendered_regions(
+            payload_path,
+            page_idx,
+            translations,
+            input_image_path,
+        )
+        if page_is_contents or not translations:
+            footnotes = []
+        elif not getattr(cfg, "render_footnotes", False):
+            footnotes = []
 
         payload = {
             "version": 1,

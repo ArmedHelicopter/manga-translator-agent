@@ -177,22 +177,39 @@ def test_vision_enrichment_uses_fallback_provider_and_records_trace(tmp_path, mo
     ]
 
 
-def test_vision_skips_llm_fallback_when_runtime_payload_has_no_text(tmp_path, monkeypatch):
-    def fail_get_provider(name, **settings):
-        raise AssertionError("vision provider should not be loaded")
+def test_vision_fallback_runs_when_runtime_payload_has_no_text(tmp_path, monkeypatch):
+    class VisionProvider:
+        def vision_structured(self, messages, images, schema):
+            return {
+                "bubbles": [
+                    {
+                        "source_text": "うん",
+                        "bbox": {"x": 100, "y": 120, "width": 80, "height": 140},
+                        "confidence": 0.9,
+                    }
+                ],
+                "visual_footnotes": [],
+                "voice_hints": [],
+                "scene_summary": "OCR missed a bubble.",
+            }
 
-    monkeypatch.setattr("mga.providers.cascade.get_provider", fail_get_provider)
+    monkeypatch.setattr(
+        "mga.providers.cascade.get_provider",
+        lambda name, **settings: VisionProvider(),
+    )
 
     ctx = PipelineContext(
         project_config=ProjectConfig(),
-        pages=[Page(page_id="p1", image=PageImage(path=__file__))],
+        pages=[Page(page_id="p1", page_index=9, image=PageImage(path=__file__, width=500, height=700))],
         metadata={"artifact_payload_dir": str(tmp_path / "payload")},
     )
 
     result = VisionEnrichmentStage().execute(ctx)
 
-    assert result.artifacts["vision"]["enrichment"] == "skipped"
-    assert "no text regions" in result.artifacts["vision"]["note"]
+    assert result.artifacts["vision"]["mode"] == "vision-only-degraded"
+    assert result.pages[0].bubbles[0].bubble_id == "vision-0009-0000"
+    assert result.pages[0].bubbles[0].detection_source == "vision"
+    assert result.pages[0].bubbles[0].source_text == "うん"
 
 
 def test_vision_enrichment_preserves_existing_page_level_metadata(monkeypatch):
@@ -298,7 +315,28 @@ def test_semantic_and_persona_prompts_keep_vision_roles_separate():
     assert "polite, hesitant" in persona_prompt
 
 
-def test_render_stage_writes_visual_footnotes(tmp_path):
+def test_render_stage_omits_visual_footnotes_by_default(tmp_path):
+    payload = tmp_path / "payload"
+    payload.mkdir()
+    page = Page(page_id="page_0000", page_index=0)
+    page.bubbles.append(Bubble(bubble_id="region-0000-0000", source_text="source"))
+    page.visual_footnotes.append(
+        VisualFootnote(source_text="sign", translation_hint="clinic", kind="sign")
+    )
+    ctx = PipelineContext(
+        project_config=ProjectConfig(target_lang="zh-CN"),
+        pages=[page],
+        translations=[TranslationCandidate(bubble_id="region-0000-0000", text="ok")],
+    )
+
+    RenderStage()._write_page_translations(payload, ctx, ctx.project_config, 0)
+
+    data = json.loads((payload / "translations-0000.json").read_text(encoding="utf-8"))
+    assert data["translations"][0]["translation"] == "ok"
+    assert data["footnotes"] == []
+
+
+def test_render_stage_writes_visual_footnotes_when_enabled(tmp_path):
     payload = tmp_path / "payload"
     payload.mkdir()
     page = Page(page_id="page_0000", page_index=0)
@@ -307,7 +345,7 @@ def test_render_stage_writes_visual_footnotes(tmp_path):
         VisualFootnote(source_text="保健室", translation_hint="医务室", kind="sign")
     )
     ctx = PipelineContext(
-        project_config=ProjectConfig(target_lang="zh-CN"),
+        project_config=ProjectConfig(target_lang="zh-CN", render_footnotes=True),
         pages=[page],
         translations=[TranslationCandidate(bubble_id="region-0000-0000", text="你没事吧？")],
     )

@@ -429,6 +429,33 @@ class MangaTranslator:
 
         return ctx
 
+    def _serialize_render_payload_for_current_page(self, config: Config, ctx: Context) -> None:
+        from .pipeline.contract import serialize_render_payload
+
+        if getattr(self, '_payload_dir', None):
+            page_idx = getattr(self, '_payload_page_counter', 0)
+            self._payload_page_counter = page_idx + 1
+            serialize_render_payload(ctx, config, self._payload_dir, page_index=page_idx)
+
+        if getattr(self, '_export_artifact_dir', None):
+            page_idx = getattr(self, '_export_page_counter', 0)
+            self._export_page_counter = page_idx + 1
+            serialize_render_payload(ctx, config, self._export_artifact_dir, page_index=page_idx)
+
+    def _serialize_empty_render_payload_for_current_page(self, config: Config, ctx: Context) -> None:
+        if not getattr(self, '_payload_dir', None) and not getattr(self, '_export_artifact_dir', None):
+            return
+
+        # No-text pages must still consume their pass-1 payload slot. If a silent
+        # source page returns before artifact export, the next text-bearing page is
+        # written as artifact-N for the silent page and render-only mounts every
+        # later base plate on the previous output pointer
+        # (docs/issues/recon-ticket-pipeline-index-shift.md §1).
+        ctx.text_regions = []
+        ctx.img_inpainted = ctx.img_rgb
+        ctx.mask = None
+        self._serialize_render_payload_for_current_page(config, ctx)
+
     async def _translate(self, config: Config, ctx: Context) -> Context:
         # Start the background cleanup job once if not already started.
         if self._detector_cleanup_task is None:
@@ -483,6 +510,7 @@ class MangaTranslator:
             await self._report_progress('skip-no-regions', True)
             # If no text was found result is intermediate image product
             ctx.result = ctx.upscaled
+            self._serialize_empty_render_payload_for_current_page(config, ctx)
             return await self._revert_upscale(config, ctx)
 
         if self.verbose:
@@ -505,6 +533,7 @@ class MangaTranslator:
             await self._report_progress('skip-no-text', True)
             # If no text was found result is intermediate image product
             ctx.result = ctx.upscaled
+            self._serialize_empty_render_payload_for_current_page(config, ctx)
             return await self._revert_upscale(config, ctx)
 
         ctx.raw_ocr_textlines = list(ctx.textlines)
@@ -575,13 +604,21 @@ class MangaTranslator:
         # mga render_stage default; keep the two in sync.
         if ctx.text_regions:
             _kept = [r for r in ctx.text_regions if (getattr(r, 'prob', None) or 1.0) >= 0.25]
-            if len(_kept) < len(ctx.text_regions):
+            # Only apply the filter when at least one region survives. Filtering down
+            # to empty crashes mask refinement (complete_mask: np.argmax of empty
+            # sequence). When ALL regions are low-prob (e.g. a cover page whose only
+            # detected region is a prob=0.20 label), keep the originals rather than
+            # crash — the low-prob erase+blank issue is a lesser evil than aborting
+            # the whole pipeline. What breaks if this guard is missing: Pass 1 export
+            # aborts -> OCR guard sees all-blank -> interactive prompt EOF in non-tty
+            # -> e2e dies (regression introduced by the initial page-001 fix).
+            if len(_kept) < len(ctx.text_regions) and _kept:
                 logger.info(
                     "Mask: dropped %d low-prob OCR region(s) (prob<0.25) - "
                     "preserving original text instead of erase+blank",
                     len(ctx.text_regions) - len(_kept),
                 )
-            ctx.text_regions = _kept
+                ctx.text_regions = _kept
         if ctx.mask is None:
             await self._report_progress('mask-generation')
             try:
@@ -620,20 +657,14 @@ class MangaTranslator:
                 logger.error(f"Error saving inpainted.png debug image: {e}")
                 logger.debug(f"Exception details: {traceback.format_exc()}")
 
-        if getattr(self, '_payload_dir', None):
-            from .pipeline.contract import serialize_render_payload
-            page_idx = getattr(self, '_payload_page_counter', 0)
-            self._payload_page_counter = page_idx + 1
-            serialize_render_payload(ctx, config, self._payload_dir, page_index=page_idx)
+        self._serialize_render_payload_for_current_page(config, ctx)
 
         # -- Export artifact (two-pass mode: stop before rendering)
         if getattr(self, '_export_artifact_dir', None):
-            from .pipeline.contract import serialize_render_payload
-            page_idx = getattr(self, '_export_page_counter', 0)
-            self._export_page_counter = page_idx + 1
-            serialize_render_payload(ctx, config, self._export_artifact_dir, page_index=page_idx)
             from PIL import Image
-            ctx.result = Image.fromarray(cv2.cvtColor(ctx.img_inpainted, cv2.COLOR_RGB2BGR))
+            # ctx.img_inpainted is RGB. Only cv2.imwrite paths need RGB->BGR;
+            # converting before PIL Image.fromarray swaps red/blue on color pages.
+            ctx.result = Image.fromarray(ctx.img_inpainted)
             return await self._revert_upscale(config, ctx)
 
         # -- Rendering
@@ -757,7 +788,9 @@ class MangaTranslator:
                 ctx.img_rendered = self._draw_footnotes(ctx.img_rendered, footnotes_data)
 
             from PIL import Image
-            ctx.result = Image.fromarray(cv2.cvtColor(ctx.img_rendered, cv2.COLOR_RGB2BGR))
+            # ctx.img_rendered is RGB. Only cv2.imwrite paths need RGB->BGR;
+            # converting before PIL Image.fromarray swaps red/blue on color pages.
+            ctx.result = Image.fromarray(ctx.img_rendered)
 
             if out_path:
                 out_path.mkdir(parents=True, exist_ok=True)
@@ -855,37 +888,19 @@ class MangaTranslator:
         box_w = max_line_w + margin * 2
         box_h = len(lines) * line_height + margin * 2
 
-        # Candidate anchors: left-bottom, right-bottom
-        candidates = [
-            (margin, h - box_h - margin),
-            (w - box_w - margin, h - box_h - margin),
-        ]
-
-        # Prefer corner regions that are mostly blank (bright)
-        arr_gray = cv2.cvtColor(np.array(pil_img), cv2.COLOR_BGR2GRAY)
-        chosen = None
-        best_score = -1.0
-        for x, y in candidates:
-            if x < 0 or y < 0 or x + box_w > w or y + box_h > h:
-                continue
-            patch = arr_gray[y : y + box_h, x : x + box_w]
-            if patch.size == 0:
-                continue
-            score = float(patch.mean())
-            if score > best_score:
-                best_score = score
-                chosen = (x, y)
-
-        # If no usable corner blank area, fallback to footer strip as before
-        if chosen is None or best_score < 180.0:
-            footer_h = box_h + margin
-            new_h = h + footer_h
-            result = np.ones((new_h, w, 3), dtype=np.uint8) * 255
-            result[:h, :, :] = cv2.cvtColor(np.array(pil_img), cv2.COLOR_BGR2RGB)
-            pil_img = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
-            draw = ImageDraw.Draw(pil_img)
-            chosen = (margin, h + margin)
-            h = new_h
+        # Always place footnotes on a dedicated footer strip appended below the
+        # image, never on the manga art itself. The earlier corner-placement
+        # heuristic (pick the brightest bottom corner) covered manga content on
+        # dense pages, producing footnotes that intruded on the artwork. The PRD
+        # design is a separate extended page below the image, so we always extend.
+        footer_h = box_h + margin
+        new_h = h + footer_h
+        result = np.ones((new_h, w, 3), dtype=np.uint8) * 255
+        result[:h, :, :] = cv2.cvtColor(np.array(pil_img), cv2.COLOR_BGR2RGB)
+        pil_img = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
+        draw = ImageDraw.Draw(pil_img)
+        chosen = (margin, h + margin)
+        h = new_h
 
         x0, y0 = chosen
         # Draw semi-opaque white panel for readability

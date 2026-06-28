@@ -18,6 +18,7 @@ import pytest
 from PIL import Image
 
 from mga.models import Bubble, BoundingBox, Page, PageImage, ProjectConfig, TranslationCandidate
+from mga.models.translation import FootnoteEntry
 from mga.pipeline.render_stage import RenderStage
 from mga.pipeline.stages import PipelineContext
 
@@ -316,6 +317,73 @@ class TestWritePageTranslationsOcrGuard:
             translations=translations,
         )
 
+    def test_footnotes_omitted_from_runtime_payload_by_default(self, tmp_path: Path) -> None:
+        img = _make_text_png(tmp_path / "page-005.png", width=500, height=500)
+        _write_artifact(tmp_path, page_idx=4, text_regions=[
+            {
+                "index": 0,
+                "text": "real text",
+                "lines": [[[0, 100], [500, 100], [500, 400], [0, 400]]],
+                "prob": 0.95,
+            },
+        ])
+        translation = TranslationCandidate(
+            bubble_id="region-0004-0000",
+            text="dialogue",
+            footnotes=[
+                FootnoteEntry(
+                    original="term",
+                    translation="note",
+                    type="loanword",
+                    explanation="explanation",
+                )
+            ],
+        )
+        ctx = self._make_context(page_idx=4, input_image_path=str(img), translations=[translation])
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=4)
+
+        out = json.loads((tmp_path / "translations-0004.json").read_text(encoding="utf-8"))
+        assert out["translations"] == [{"region_index": 0, "translation": "dialogue", "target_lang": "CHS"}]
+        assert out["footnotes"] == []
+
+    def test_footnotes_preserved_when_runtime_rendering_enabled(self, tmp_path: Path) -> None:
+        img = _make_text_png(tmp_path / "page-005.png", width=500, height=500)
+        _write_artifact(tmp_path, page_idx=4, text_regions=[
+            {
+                "index": 0,
+                "text": "real text",
+                "lines": [[[0, 100], [500, 100], [500, 400], [0, 400]]],
+                "prob": 0.95,
+            },
+        ])
+        translation = TranslationCandidate(
+            bubble_id="region-0004-0000",
+            text="dialogue",
+            footnotes=[
+                FootnoteEntry(
+                    original="term",
+                    translation="note",
+                    type="loanword",
+                    explanation="explanation",
+                )
+            ],
+        )
+        ctx = self._make_context(page_idx=4, input_image_path=str(img), translations=[translation])
+        cfg = ProjectConfig(render_footnotes=True)
+
+        RenderStage()._write_page_translations(tmp_path, ctx, cfg, page_idx=4)
+
+        out = json.loads((tmp_path / "translations-0004.json").read_text(encoding="utf-8"))
+        assert out["footnotes"] == [
+            {
+                "original": "term",
+                "translation": "note",
+                "type": "loanword",
+                "explanation": "explanation",
+            }
+        ]
+
     def test_blank_region_skipped(self, tmp_path: Path) -> None:
         """A translation whose OCR region is on a blank/white area is skipped."""
         img = _make_white_png(tmp_path / "page-004.png", width=500, height=500)
@@ -446,8 +514,13 @@ class TestWritePageTranslationsOcrGuard:
         RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=7)
         out = json.loads((tmp_path / "translations-0007.json").read_text(encoding="utf-8"))
         assert len(out["translations"]) == 1
-        assert out["translations"][0]["region_index"] == 1
+        assert out["translations"][0]["region_index"] == 0
         assert out["translations"][0]["translation"] == "真实"
+
+        artifact = json.loads((tmp_path / "artifact-0007.json").read_text(encoding="utf-8"))
+        assert len(artifact["text_regions"]) == 1
+        assert artifact["text_regions"][0]["text"] == "real text"
+        assert artifact["text_regions"][0]["index"] == 0
 
     def test_no_artifact_keeps_all_translations(self, tmp_path: Path) -> None:
         """When the artifact file is missing, no filtering occurs (fail open)."""
@@ -497,6 +570,51 @@ class TestWritePageTranslationsOcrGuard:
         assert len(out["translations"]) == 1
         assert out["translations"][0]["region_index"] == 0
 
+    def test_existing_empty_artifact_drops_region_translations(self, tmp_path: Path) -> None:
+        """If an artifact explicitly has no render seats, do not emit region
+        translations whose indices cannot be rendered. This prevents payloads
+        like page-010's empty artifact plus translations 0..8."""
+        img = _make_text_png(tmp_path / "page.png", width=500, height=500)
+        _write_artifact(tmp_path, page_idx=9, text_regions=[])
+        ctx = self._make_context(
+            page_idx=9,
+            input_image_path=str(img),
+            translations=[TranslationCandidate(bubble_id="region-0009-0000", text="missing")],
+        )
+
+        RenderStage(pin_artifacts=False)._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=9)
+
+        out = json.loads((tmp_path / "translations-0009.json").read_text(encoding="utf-8"))
+        assert out["translations"] == []
+
+    def test_empty_final_translations_clear_artifact_and_restore_inpainted_image(self, tmp_path: Path) -> None:
+        original = Image.new("RGB", (100, 100), (20, 40, 60))
+        original.save(tmp_path / "page-001.png")
+        Image.new("RGB", (100, 100), (255, 255, 255)).save(tmp_path / "inpainted-0000.png")
+        _write_artifact(tmp_path, page_idx=0, text_regions=[
+            {
+                "index": 0,
+                "text": "CoverDesign",
+                "lines": [[[0, 0], [100, 0], [100, 100], [0, 100]]],
+                "prob": 0.99,
+            },
+        ])
+        ctx = self._make_context(
+            page_idx=0,
+            input_image_path=str(tmp_path / "page-001.png"),
+            translations=[TranslationCandidate(bubble_id="region-0000-0000", text="cover")],
+        )
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=0)
+
+        out = json.loads((tmp_path / "translations-0000.json").read_text(encoding="utf-8"))
+        artifact = json.loads((tmp_path / "artifact-0000.json").read_text(encoding="utf-8"))
+        restored = Image.open(tmp_path / "inpainted-0000.png").convert("RGB")
+        assert out["translations"] == []
+        assert out["footnotes"] == []
+        assert artifact["text_regions"] == []
+        assert restored.getpixel((50, 50)) == (20, 40, 60)
+
     def test_page_004_toc_hallucination_scenario(self, tmp_path: Path) -> None:
         """Reproduces the e2e bug from data/output/test-pdf-10pages-e2e-test.
 
@@ -539,7 +657,7 @@ class TestWritePageTranslationsOcrGuard:
         RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=3)
         out = json.loads((tmp_path / "translations-0003.json").read_text(encoding="utf-8"))
         # Hallucinated region 0 dropped; real region 1 survives.
-        assert [t["region_index"] for t in out["translations"]] == [1]
+        assert [t["region_index"] for t in out["translations"]] == [0]
         assert out["translations"][0]["translation"] == "狐妖"
 
 
@@ -549,11 +667,11 @@ class TestWritePageTranslationsOcrGuard:
 
 
 class TestVisionRegionInjection:
-    """Vision render seats are fallback-only.
+    """Vision render seats are injected only when OCR did not cover that bbox.
 
-    Runtime OCR geometry is authoritative. If OCR text_regions already exist,
-    vision bboxes must not be injected into the render artifact because they can
-    be loose and cover manga art with large white text boxes.
+    Runtime OCR geometry is authoritative for OCR-detected bubbles. Vision
+    bboxes that overlap OCR regions are skipped, while non-overlapping vision
+    bubbles get render seats so mixed OCR+vision pages do not drop them.
     """
 
     def _make_ctx_with_vision(
@@ -606,7 +724,7 @@ class TestVisionRegionInjection:
             {"region_index": 0, "translation": "VISION", "target_lang": "CHS"}
         ]
 
-    def test_vision_region_not_injected_when_ocr_regions_exist(self, tmp_path: Path) -> None:
+    def test_only_non_overlapping_vision_regions_injected_when_ocr_regions_exist(self, tmp_path: Path) -> None:
         img = _make_text_png(tmp_path / "page-002.png", width=500, height=500)
         _write_artifact(tmp_path, page_idx=1, text_regions=[
             {"index": 0, "text": "ocr0",
@@ -614,10 +732,16 @@ class TestVisionRegionInjection:
             {"index": 1, "text": "ocr1",
              "lines": [[[250, 100], [500, 100], [500, 400], [250, 400]]], "prob": 0.9},
         ])
-        vision_bubble = Bubble(
+        overlapping_vision = Bubble(
             bubble_id="vision-0001-0000",
             bbox=BoundingBox(x=10, y=150, width=80, height=30),
             source_text="vision",
+            detection_source="vision",
+        )
+        uncovered_vision = Bubble(
+            bubble_id="vision-0001-0001",
+            bbox=BoundingBox(x=10, y=10, width=80, height=30),
+            source_text="uncovered",
             detection_source="vision",
         )
         ctx = self._make_ctx_with_vision(
@@ -627,20 +751,124 @@ class TestVisionRegionInjection:
                 TranslationCandidate(bubble_id="region-0001-0000", text="OCR0"),
                 TranslationCandidate(bubble_id="region-0001-0001", text="OCR1"),
             ],
-            vision_bubbles=[vision_bubble],
-            vision_translations=[TranslationCandidate(bubble_id="vision-0001-0000", text="VISION")],
+            vision_bubbles=[overlapping_vision, uncovered_vision],
+            vision_translations=[
+                TranslationCandidate(bubble_id="vision-0001-0000", text="OVERLAP"),
+                TranslationCandidate(bubble_id="vision-0001-0001", text="VISION"),
+            ],
         )
 
         RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=1)
 
         artifact = json.loads((tmp_path / "artifact-0001.json").read_text(encoding="utf-8"))
-        assert len(artifact["text_regions"]) == 2
+        assert len(artifact["text_regions"]) == 3
         assert artifact["text_regions"][0]["text"] == "ocr0"
         assert artifact["text_regions"][1]["text"] == "ocr1"
+        assert artifact["text_regions"][2]["source"] == "vision"
+        assert artifact["text_regions"][2]["bubble_id"] == "vision-0001-0001"
 
         out = json.loads((tmp_path / "translations-0001.json").read_text(encoding="utf-8"))
         by_idx = {t["region_index"]: t["translation"] for t in out["translations"]}
-        assert by_idx == {0: "OCR0", 1: "OCR1"}
+        assert by_idx == {0: "OCR0", 1: "OCR1", 2: "VISION"}
+
+    def test_same_source_vision_region_skipped_even_when_bbox_misses_ocr(self, tmp_path: Path) -> None:
+        img = _make_text_png(tmp_path / "page-002.png", width=500, height=500)
+        _write_artifact(tmp_path, page_idx=1, text_regions=[
+            {"index": 0, "text": "これが人を愛し 慈しみ信じた者の末路さ",
+             "lines": [[[250, 100], [500, 100], [500, 400], [250, 400]]], "prob": 0.9},
+        ])
+        duplicate_vision = Bubble(
+            bubble_id="vision-0001-0000",
+            bbox=BoundingBox(x=10, y=10, width=80, height=30),
+            source_text="これが人を愛し慈しみ信じた者の末路さ",
+            detection_source="vision",
+        )
+        ctx = self._make_ctx_with_vision(
+            page_idx=1,
+            input_image_path=str(img),
+            region_translations=[
+                TranslationCandidate(bubble_id="region-0001-0000", text="OCR"),
+            ],
+            vision_bubbles=[duplicate_vision],
+            vision_translations=[
+                TranslationCandidate(bubble_id="vision-0001-0000", text="DUP"),
+            ],
+        )
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=1)
+
+        artifact = json.loads((tmp_path / "artifact-0001.json").read_text(encoding="utf-8"))
+        assert len(artifact["text_regions"]) == 1
+        out = json.loads((tmp_path / "translations-0001.json").read_text(encoding="utf-8"))
+        assert out["translations"] == [
+            {"region_index": 0, "translation": "OCR", "target_lang": "CHS"}
+        ]
+
+    def test_near_same_source_vision_region_skipped_for_punctuation_drift(self, tmp_path: Path) -> None:
+        img = _make_text_png(tmp_path / "page-007.png", width=500, height=500)
+        _write_artifact(tmp_path, page_idx=6, text_regions=[
+            {"index": 0, "text": "きっとあたしと同じだよ――…",
+             "lines": [[[250, 100], [500, 100], [500, 400], [250, 400]]], "prob": 0.892},
+        ])
+        duplicate_vision = Bubble(
+            bubble_id="vision-0006-0000",
+            bbox=BoundingBox(x=10, y=10, width=80, height=30),
+            source_text="きっとあたしと同じだよ……！",
+            detection_source="vision",
+        )
+        ctx = self._make_ctx_with_vision(
+            page_idx=6,
+            input_image_path=str(img),
+            region_translations=[
+                TranslationCandidate(bubble_id="region-0006-0000", text="OCR"),
+            ],
+            vision_bubbles=[duplicate_vision],
+            vision_translations=[
+                TranslationCandidate(bubble_id="vision-0006-0000", text="LEAK"),
+            ],
+        )
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=6)
+
+        artifact = json.loads((tmp_path / "artifact-0006.json").read_text(encoding="utf-8"))
+        assert len(artifact["text_regions"]) == 1
+        out = json.loads((tmp_path / "translations-0006.json").read_text(encoding="utf-8"))
+        assert out["translations"] == [
+            {"region_index": 0, "translation": "OCR", "target_lang": "CHS"}
+        ]
+
+    def test_short_name_vision_region_skipped_for_near_duplicate_ocr_name(self, tmp_path: Path) -> None:
+        img = _make_text_png(tmp_path / "page-009.png", width=500, height=500)
+        _write_artifact(tmp_path, page_idx=8, text_regions=[
+            {"index": 0, "text": "\u7f8e\u80e1\u3061\u3083\u3093",
+             "lines": [[[350, 50], [450, 50], [450, 200], [350, 200]]], "prob": 0.999},
+        ])
+        duplicate_vision = Bubble(
+            bubble_id="vision-0008-0001",
+            bbox=BoundingBox(x=100, y=180, width=90, height=70),
+            source_text="\u7f8e\u6e56\u3061\u3083\u3093",
+            detection_source="vision",
+        )
+        ctx = self._make_ctx_with_vision(
+            page_idx=8,
+            input_image_path=str(img),
+            region_translations=[
+                TranslationCandidate(bubble_id="region-0008-0000", text="OCR"),
+            ],
+            vision_bubbles=[duplicate_vision],
+            vision_translations=[
+                TranslationCandidate(bubble_id="vision-0008-0001", text="LEAK"),
+            ],
+        )
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=8)
+
+        artifact = json.loads((tmp_path / "artifact-0008.json").read_text(encoding="utf-8"))
+        assert len(artifact["text_regions"]) == 1
+        out = json.loads((tmp_path / "translations-0008.json").read_text(encoding="utf-8"))
+        assert out["translations"] == [
+            {"region_index": 0, "translation": "OCR", "target_lang": "CHS"}
+        ]
 
     def test_vision_bubble_zero_bbox_skipped(self, tmp_path: Path) -> None:
         img = _make_text_png(tmp_path / "page-003.png", width=500, height=500)
@@ -666,6 +894,265 @@ class TestVisionRegionInjection:
         out = json.loads((tmp_path / "translations-0002.json").read_text(encoding="utf-8"))
         assert out["translations"] == []
 
+    def test_vision_sfx_bubble_is_not_injected(self, tmp_path: Path) -> None:
+        img = _make_text_png(tmp_path / "page-009.png", width=500, height=500)
+        _write_artifact(tmp_path, page_idx=8, text_regions=[])
+        sfx_bubble = Bubble(
+            bubble_id="vision-0008-0001",
+            bbox=BoundingBox(x=40, y=120, width=80, height=180),
+            source_text="ガタン",
+            detection_source="vision",
+            box_type="sfx",
+        )
+        ctx = self._make_ctx_with_vision(
+            page_idx=8,
+            input_image_path=str(img),
+            region_translations=[],
+            vision_bubbles=[sfx_bubble],
+            vision_translations=[TranslationCandidate(bubble_id="vision-0008-0001", text="哐啷")],
+        )
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=8)
+
+        artifact = json.loads((tmp_path / "artifact-0008.json").read_text(encoding="utf-8"))
+        out = json.loads((tmp_path / "translations-0008.json").read_text(encoding="utf-8"))
+        assert artifact["text_regions"] == []
+        assert out["translations"] == []
+
+    def test_contents_page_vision_entries_are_renderable(self, tmp_path: Path) -> None:
+        img = Image.new("RGB", (500, 500), (255, 255, 255))
+        px = img.load()
+        # Page-004 has short red page-number/ornament clusters outside the TOC
+        # body. They must not be consumed before the real vertical title column.
+        for y in range(420, 455):
+            for x in range(40, 95):
+                px[x, y] = (220, 40, 55)
+        for x0 in (320, 220):
+            for y in range(180, 360):
+                for x in range(x0, x0 + 18):
+                    px[x, y] = (220, 40, 55)
+        img_path = tmp_path / "page-004.png"
+        img.save(img_path)
+        _write_artifact(tmp_path, page_idx=3, text_regions=[])
+        contents_marker = Bubble(
+            bubble_id="vision-0003-0000",
+            bbox=BoundingBox(x=150, y=90, width=120, height=30),
+            source_text="CONTENTS",
+            detection_source="vision",
+            box_type="other",
+        )
+        toc_entry = Bubble(
+            bubble_id="vision-0003-0001",
+            bbox=BoundingBox(x=210, y=170, width=40, height=160),
+            source_text="昔日の足音 003",
+            detection_source="vision",
+            box_type="other",
+        )
+        ctx = self._make_ctx_with_vision(
+            page_idx=3,
+            input_image_path=str(img_path),
+            region_translations=[],
+            vision_bubbles=[contents_marker, toc_entry],
+            vision_translations=[
+                TranslationCandidate(bubble_id="vision-0003-0001", text="往日的足音 003"),
+            ],
+        )
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=3)
+
+        artifact = json.loads((tmp_path / "artifact-0003.json").read_text(encoding="utf-8"))
+        out = json.loads((tmp_path / "translations-0003.json").read_text(encoding="utf-8"))
+        assert len(artifact["text_regions"]) == 1
+        assert artifact["text_regions"][0]["source"] == "vision"
+        assert artifact["text_regions"][0]["bubble_id"] == "vision-0003-0001"
+        assert artifact["text_regions"][0]["lines"][0][0][0] >= 300
+        assert out["footnotes"] == []
+        assert out["translations"] == [
+            {"region_index": 0, "translation": "往日的足音 003", "target_lang": "CHS"}
+        ]
+
+    def test_contents_red_text_columns_ignore_short_noise(self, tmp_path: Path) -> None:
+        img = Image.new("RGB", (800, 900), (255, 255, 255))
+        px = img.load()
+        for y in range(720, 760):
+            for x in range(60, 140):
+                px[x, y] = (220, 40, 55)
+        for x0 in (610, 470, 330):
+            for y in range(280, 760):
+                for x in range(x0, x0 + 22):
+                    px[x, y] = (220, 40, 55)
+        img_path = tmp_path / "contents.png"
+        img.save(img_path)
+
+        columns = RenderStage._contents_red_text_columns(str(img_path))
+
+        assert len(columns) == 3
+        assert [round(box[0]) for box in columns] == [604, 464, 324]
+
+    def test_contents_page_reuses_existing_ocr_seats(self, tmp_path: Path) -> None:
+        img = Image.new("RGB", (800, 900), (255, 255, 255))
+        px = img.load()
+        for x0 in (610, 470):
+            for y in range(280, 760):
+                for x in range(x0, x0 + 22):
+                    px[x, y] = (220, 40, 55)
+        img_path = tmp_path / "page-004.png"
+        img.save(img_path)
+        _write_artifact(tmp_path, page_idx=3, text_regions=[
+            {"index": 0, "text": "toc-right", "lines": [[[610, 280], [632, 280], [632, 760], [610, 760]]]},
+            {"index": 1, "text": "toc-left", "lines": [[[470, 280], [492, 280], [492, 760], [470, 760]]]},
+        ])
+        contents_marker = Bubble(
+            bubble_id="vision-0003-0000",
+            bbox=BoundingBox(x=150, y=90, width=120, height=30),
+            source_text="CONTENTS",
+            detection_source="vision",
+            box_type="other",
+        )
+        right_entry = Bubble(
+            bubble_id="vision-0003-0001",
+            bbox=BoundingBox(x=200, y=100, width=40, height=160),
+            source_text="entry-right",
+            detection_source="vision",
+            box_type="other",
+        )
+        left_entry = Bubble(
+            bubble_id="vision-0003-0002",
+            bbox=BoundingBox(x=120, y=100, width=40, height=160),
+            source_text="entry-left",
+            detection_source="vision",
+            box_type="other",
+        )
+        ctx = self._make_ctx_with_vision(
+            page_idx=3,
+            input_image_path=str(img_path),
+            region_translations=[],
+            vision_bubbles=[contents_marker, right_entry, left_entry],
+            vision_translations=[
+                TranslationCandidate(bubble_id="vision-0003-0001", text="RIGHT"),
+                TranslationCandidate(bubble_id="vision-0003-0002", text="LEFT"),
+            ],
+        )
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=3)
+
+        artifact = json.loads((tmp_path / "artifact-0003.json").read_text(encoding="utf-8"))
+        out = json.loads((tmp_path / "translations-0003.json").read_text(encoding="utf-8"))
+        assert len(artifact["text_regions"]) == 2
+        assert out["translations"] == [
+            {"region_index": 0, "translation": "RIGHT", "target_lang": "CHS"},
+            {"region_index": 1, "translation": "LEFT", "target_lang": "CHS"},
+        ]
+        assert out["footnotes"] == []
+
+    def test_contents_page_keeps_wide_ocr_title_entries(self, tmp_path: Path) -> None:
+        img = Image.new("RGB", (800, 900), (255, 255, 255))
+        px = img.load()
+        for y in range(260, 620):
+            for x in range(560, 700):
+                px[x, y] = (220, 40, 55)
+        img_path = tmp_path / "page-004.png"
+        img.save(img_path)
+        _write_artifact(tmp_path, page_idx=3, text_regions=[
+            {
+                "index": 0,
+                "text": "32 chapter title 003",
+                "lines": [[[560, 260], [700, 260], [700, 620], [560, 620]]],
+                "prob": 0.99,
+            },
+            {
+                "index": 1,
+                "text": "CONTENTS",
+                "lines": [[[300, 150], [450, 150], [450, 190], [300, 190]]],
+                "prob": 0.99,
+            },
+        ])
+        page = Page(
+            page_id="page_3",
+            page_index=3,
+            image=PageImage(path=str(img_path), width=800, height=900),
+            bubbles=[
+                Bubble(bubble_id="region-0003-0000", source_text="32 chapter title 003"),
+                Bubble(bubble_id="region-0003-0001", source_text="CONTENTS"),
+            ],
+        )
+        ctx = PipelineContext(
+            project_config=ProjectConfig(),
+            pages=[page],
+            translations=[
+                TranslationCandidate(bubble_id="region-0003-0000", text="Chapter 32 Title 003"),
+                TranslationCandidate(bubble_id="region-0003-0001", text="Contents"),
+            ],
+        )
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=3)
+
+        out = json.loads((tmp_path / "translations-0003.json").read_text(encoding="utf-8"))
+        assert out["translations"] == [
+            {"region_index": 0, "translation": "Chapter 32 Title 003", "target_lang": "CHS"},
+        ]
+        assert out["footnotes"] == []
+
+    def test_contents_chapter_number_uses_following_vision_title(self, tmp_path: Path) -> None:
+        img = Image.new("RGB", (800, 900), (255, 255, 255))
+        px = img.load()
+        for y in range(260, 620):
+            for x in range(500, 560):
+                px[x, y] = (220, 40, 55)
+        img_path = tmp_path / "page-004.png"
+        img.save(img_path)
+        _write_artifact(tmp_path, page_idx=3, text_regions=[
+            {
+                "index": 0,
+                "text": "34話",
+                "lines": [[[500, 260], [560, 260], [560, 620], [500, 620]]],
+                "prob": 0.99,
+            },
+            {
+                "index": 1,
+                "text": "CONTENTS",
+                "lines": [[[250, 120], [380, 120], [380, 150], [250, 150]]],
+                "prob": 0.99,
+            },
+        ])
+        page = Page(
+            page_id="page_3",
+            page_index=3,
+            image=PageImage(path=str(img_path), width=800, height=900),
+            bubbles=[
+                Bubble(bubble_id="region-0003-0000", source_text="34話"),
+                Bubble(
+                    bubble_id="vision-0003-0003",
+                    source_text="34話",
+                    detection_source="vision",
+                    box_type="other",
+                ),
+                Bubble(
+                    bubble_id="vision-0003-0004",
+                    source_text="慟愧の鞭",
+                    detection_source="vision",
+                    box_type="other",
+                ),
+            ],
+        )
+        ctx = PipelineContext(
+            project_config=ProjectConfig(),
+            pages=[page],
+            translations=[
+                TranslationCandidate(bubble_id="region-0003-0000", text="第34话"),
+                TranslationCandidate(bubble_id="region-0003-0001", text="目录"),
+                TranslationCandidate(bubble_id="vision-0003-0003", text="第34话"),
+                TranslationCandidate(bubble_id="vision-0003-0004", text="恸愧之鞭"),
+            ],
+        )
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=3)
+
+        out = json.loads((tmp_path / "translations-0003.json").read_text(encoding="utf-8"))
+        assert out["translations"] == [
+            {"region_index": 0, "translation": "第34话 恸愧之鞭", "target_lang": "CHS"},
+        ]
+
     def test_no_vision_bubbles_is_noop(self, tmp_path: Path) -> None:
         img = _make_text_png(tmp_path / "page-004.png", width=500, height=500)
         _write_artifact(tmp_path, page_idx=3, text_regions=[
@@ -689,7 +1176,7 @@ class TestVisionRegionInjection:
         artifact = json.loads((tmp_path / "artifact-0003.json").read_text(encoding="utf-8"))
         assert len(artifact["text_regions"]) == 1
 
-    def test_vision_region_on_blank_area_kept_for_contents_pages(self, tmp_path: Path) -> None:
+    def test_vision_region_on_blank_area_skipped_for_contents_pages(self, tmp_path: Path) -> None:
         img = _make_white_png(tmp_path / "page-005.png", width=500, height=500)
         _write_artifact(tmp_path, page_idx=4, text_regions=[])
         vision_bubble = Bubble(
@@ -709,8 +1196,112 @@ class TestVisionRegionInjection:
         RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=4)
 
         out = json.loads((tmp_path / "translations-0004.json").read_text(encoding="utf-8"))
+        assert out["translations"] == []
+
+    def test_existing_contents_page_ocr_regions_render_only_title_columns(self, tmp_path: Path) -> None:
+        img = Image.new("RGB", (500, 500), (255, 255, 255))
+        px = img.load()
+        for y in range(180, 420):
+            for x in range(260, 310):
+                px[x, y] = (220, 40, 55)
+        img_path = tmp_path / "page-004.png"
+        img.save(img_path)
+        _write_artifact(tmp_path, page_idx=3, text_regions=[
+            {"index": 0, "text": "32Ԓ ���դ����� 0",
+             "lines": [[[260, 180], [310, 180], [310, 420], [260, 420]]], "prob": 0.98},
+            {"index": 1, "text": "CONTENTS",
+             "lines": [[[150, 150], [220, 150], [220, 170], [150, 170]]], "prob": 0.99},
+            {"index": 2, "text": "059",
+             "lines": [[[120, 180], [130, 180], [130, 200], [120, 200]]], "prob": 0.99},
+            {"index": 3, "text": "afterword",
+             "lines": [[[40, 40], [60, 40], [60, 180], [40, 180]]], "prob": 0.99},
+        ])
+        page = Page(
+            page_id="page_3",
+            page_index=3,
+            image=PageImage(path=str(img_path), width=500, height=500),
+            bubbles=[],
+        )
+        ctx = PipelineContext(
+            project_config=ProjectConfig(),
+            pages=[page],
+            translations=[
+                TranslationCandidate(bubble_id="region-0003-0000", text="Chapter 32"),
+                TranslationCandidate(bubble_id="region-0003-0001", text="Contents"),
+                TranslationCandidate(bubble_id="region-0003-0002", text="059"),
+                TranslationCandidate(bubble_id="region-0003-0003", text="Afterword"),
+            ],
+        )
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=3)
+
+        out = json.loads((tmp_path / "translations-0003.json").read_text(encoding="utf-8"))
         assert out["translations"] == [
-            {"region_index": 0, "translation": "CONTENTS", "target_lang": "CHS"}
+            {"region_index": 0, "translation": "Chapter 32", "target_lang": "CHS"},
+        ]
+
+    def test_chapter_marker_is_not_rendered_but_title_text_is_preserved(self, tmp_path: Path) -> None:
+        img = _make_text_png(tmp_path / "page-008.png", width=500, height=500)
+        _write_artifact(tmp_path, page_idx=7, text_regions=[
+            {"index": 0, "text": "昔日の足音",
+             "lines": [[[0, 100], [200, 100], [200, 400], [0, 400]]], "prob": 0.99},
+            {"index": 1, "source": "vision", "bubble_id": "vision-0007-0000", "text": "32話",
+             "lines": [[[250, 100], [330, 100], [330, 180], [250, 180]]], "prob": None},
+        ])
+        page = Page(
+            page_id="page_7",
+            page_index=7,
+            image=PageImage(path=str(img), width=500, height=500),
+            bubbles=[Bubble(
+                bubble_id="vision-0007-0000",
+                bbox=BoundingBox(x=250, y=100, width=80, height=80),
+                source_text="32話",
+                detection_source="vision",
+            )],
+        )
+        ctx = PipelineContext(
+            project_config=ProjectConfig(),
+            pages=[page],
+            translations=[
+                TranslationCandidate(bubble_id="region-0007-0000", text="Chapter title"),
+                TranslationCandidate(bubble_id="vision-0007-0000", text="Episode number"),
+            ],
+        )
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=7)
+
+        out = json.loads((tmp_path / "translations-0007.json").read_text(encoding="utf-8"))
+        assert out["translations"] == [
+            {"region_index": 0, "translation": "Chapter title", "target_lang": "CHS"}
+        ]
+
+    def test_single_ocr_chapter_title_region_is_rendered_by_box_type(self, tmp_path: Path) -> None:
+        img = _make_text_png(tmp_path / "page-008.png", width=500, height=500)
+        _write_artifact(tmp_path, page_idx=7, text_regions=[
+            {"index": 0, "text": "���դ�����",
+             "lines": [[[300, 80], [320, 80], [320, 180], [300, 180]]], "prob": 0.99},
+        ])
+        page = Page(
+            page_id="page_7",
+            page_index=7,
+            image=PageImage(path=str(img), width=500, height=500),
+            bubbles=[Bubble(
+                bubble_id="region-0007-0000",
+                source_text="���դ�����",
+                box_type="chapter_title",
+            )],
+        )
+        ctx = PipelineContext(
+            project_config=ProjectConfig(),
+            pages=[page],
+            translations=[TranslationCandidate(bubble_id="region-0007-0000", text="Chapter title")],
+        )
+
+        RenderStage()._write_page_translations(tmp_path, ctx, ProjectConfig(), page_idx=7)
+
+        out = json.loads((tmp_path / "translations-0007.json").read_text(encoding="utf-8"))
+        assert out["translations"] == [
+            {"region_index": 0, "translation": "Chapter title", "target_lang": "CHS"}
         ]
 
     def test_injection_idempotent_across_reruns(self, tmp_path: Path) -> None:
@@ -758,6 +1349,45 @@ class TestVisionRegionInjection:
         RenderStage(pin_artifacts=True)._write_page_translations(payload2, ctx2, ProjectConfig(), 0)
         a2 = json.loads((payload2 / "artifact-0000.json").read_text(encoding="utf-8"))
         assert len(a2["text_regions"]) == 1
+
+    def test_stale_wrong_page_pin_replaced_when_current_artifact_matches_page_source(self, tmp_path: Path) -> None:
+        img = _make_text_png(tmp_path / "page-007.png", width=500, height=500)
+        cfg = ProjectConfig(working_dir=str(tmp_path / "project"))
+        pin_dir = Path(cfg.working_dir) / ".mga_cache"
+        pin_dir.mkdir(parents=True)
+
+        from mga.runtime_bridge.artifact_cache import ArtifactPin, image_sha256
+
+        ArtifactPin(pin_dir / "artifact-pin.json").put(image_sha256(img), {
+            "version": 1,
+            "page_index": 0,
+            "text_regions": [
+                {"index": 0, "text": "wrong-page", "lines": [[[0, 100], [500, 100], [500, 400], [0, 400]]]},
+            ],
+            "render_config": {},
+            "image_shape": [500, 500, 3],
+        })
+        _write_artifact(tmp_path, page_idx=0, text_regions=[
+            {"index": 0, "text": "current-page", "lines": [[[0, 100], [500, 100], [500, 400], [0, 400]]]},
+        ])
+        page = Page(
+            page_id="page_0",
+            page_index=0,
+            image=PageImage(path=str(img), width=500, height=500),
+            bubbles=[Bubble(bubble_id="region-0000-0000", source_text="current-page")],
+        )
+        ctx = PipelineContext(
+            project_config=cfg,
+            pages=[page],
+            translations=[TranslationCandidate(bubble_id="region-0000-0000", text="CURRENT")],
+        )
+
+        RenderStage(pin_artifacts=True)._write_page_translations(tmp_path, ctx, cfg, 0)
+
+        artifact = json.loads((tmp_path / "artifact-0000.json").read_text(encoding="utf-8"))
+        assert artifact["text_regions"][0]["text"] == "current-page"
+        stored = ArtifactPin(pin_dir / "artifact-pin.json").get(image_sha256(img))
+        assert stored["text_regions"][0]["text"] == "current-page"
 
 
 class TestExtractRenderTextLeak:
