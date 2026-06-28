@@ -301,7 +301,6 @@ rg "^class [A-Z]\w+.*:" mga/ --type py -A 1 | grep -v '"""' | grep "class"
 - [ ] 无新增跨层导入
 - [ ] 无硬编码密钥或绝对路径泄露
 - [ ] 新增公共 API 有类型注解和 docstring
-- [ ] `CHANGELOG.md` 已更新
 - [ ] 如有重大更改，`docs/SPEC.md` 或 `CLAUDE.md` 已更新
 
 ---
@@ -325,4 +324,4 @@ python scripts/pre_review_check.py --all
 
 ## 历史审查报告
 
-- [2026-06-06 全量代码审查](./code-reviews/2026-06-06-full-review.md) — 6 个严重问题，已全部修复
+- [2026-06-06 全量代码审查](./archive/2026-06-06-full-review.md) — 6 个严重问题，已全部修复

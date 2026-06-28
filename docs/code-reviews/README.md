@@ -49,7 +49,7 @@ scripts/
 - ⚠️ torch 未安装（10 个测试受影响）
 - ⚠️ 45 个裸异常捕获（待重构）
 
-详见 [完整报告](./2026-06-06-full-review.md)
+详见 [完整报告](../archive/2026-06-06-full-review.md)
 
 ## 自动化检查
 
@@ -165,7 +165,7 @@ git commit -m "docs: add code review report for YYYY-MM-DD"
 
 | 日期 | 审查者 | 问题数 | 修复数 | 报告 |
 |------|--------|-------|--------|------|
-| 2026-06-06 | Kiro (代理链) | 32 | 6 | [📄](./2026-06-06-full-review.md) |
+| 2026-06-06 | Kiro (代理链) | 32 | 6 | [📄](../archive/2026-06-06-full-review.md) |
 
 ## 相关文档
 

@@ -178,7 +178,10 @@ pytest tests/ocr/ -v               # OCR guard and recovery
 
 ## Related Docs
 
+- [docs/STATUS.md](docs/STATUS.md) — Authoritative current state (dated test/metric snapshots)
 - [docs/SPEC.md](docs/SPEC.md) — Full system specification
 - [docs/PRD.md](docs/PRD.md) — Product requirements
 - [docs/ROADMAP.md](docs/ROADMAP.md) — Module delivery roadmap
 - [CLAUDE.md](CLAUDE.md) — Developer guidance for Claude Code
+- [CONTRIBUTING.md](CONTRIBUTING.md) — Contribution rules (notably: never commit model weights)
+- [docs/archive/](docs/archive/) — Historical process docs (handoffs, progress logs, completed plans); not maintained

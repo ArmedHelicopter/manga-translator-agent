@@ -151,7 +151,7 @@ def test_speaker_attribution_creates_character_on_cold_start(tmp_path):
     """Non-generic hint + empty memory creates a CharacterState and assigns speaker_id.
 
     Without cold-start creation, a fresh work leaves memory empty for the whole run
-    (docs/handoff-2026-06-19-pipeline-run.md). This locks that path so it cannot regress.
+    (docs/archive/handoff-2026-06-19-pipeline-run.md). This locks that path so it cannot regress.
     """
     page = Page(
         page_id="p001",

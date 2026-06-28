@@ -4,8 +4,8 @@
 > re-run the command for current values. Do **not** hardcode these numbers in CLAUDE.md,
 > README, or SPEC; reference this file instead.
 >
-> For aspirations (what we *want* true) use `docs/CLAIMS.md`. For the audit that produced
-> this file and the doc-trust ranking, see memory `doc-trust-hierarchy`.
+> Keep aspirations (what we *want* true) out of this file — record only verified facts here.
+> For the audit that produced this file and the doc-trust ranking, see memory `doc-trust-hierarchy`.
 
 Last verified: 2026-06-28
 
@@ -54,7 +54,7 @@ L0 not started · L1 module + mock tests · L2 integration tests · L3 vision-e2
 | Re-inpaint Pass 2 + artifact pin + per-page payload alignment | 3 | `recon-fresh-20260624-v4` TE-01..TE-04 passed: no -1 shift, no tail base-plate reuse. `e2e-overflow-fix-20260627-v5` closes the follow-up fallout for stale empty pins, OCR/vision near-duplicates, non-dialogue artifact/inpaint pruning, page-007 left-side leak, page-009 body/SFX overlay, page-010 mass empty bubbles, and RGB channel order. `e2e-render-current-20260628-footnotes-on-v2` verifies page-004 contents title recovery, page-005/page-008 translated render, and explicit footnotes-on output |
 | Learning engine (L1–L4) | 1 | modules + mock tests; real hot-start loop unverified (PRD §4.2.1) |
 | Memory / wiki + CharacterGraph | 2 | active — `CharacterMemoryUpdater` writes real profiles (美胡/Miku, 2026-06-21 e2e) |
-| **Character consistency (headline value)** | 2 | memory non-empty & updater active; **new gap: ID fragmentation + generic-trash IDs** (see `docs/handoff-2026-06-22-memory-reassessment.md`) |
+| **Character consistency (headline value)** | 2 | memory non-empty & updater active; ID fragmentation + generic-trash IDs addressed by `mga/memory/speaker_filter.py` (2026-06-22) |
 | Web UI | 2 | 3255 lines FastAPI + React; undocumented in CLAUDE.md |
 | MCP server / plugin system | 1 | files exist; SPEC Phase-8 `[x]` unverified |
 | Incremental / batch as CLI entry | 1 | modules exist; not the default main chain (ROADMAP) |
@@ -84,8 +84,8 @@ Artifacts: `te-verification-summary.json`, `te-vision-verification-minimax-m3.js
 - **`afk-gpt-5` is live on origin** (2026-06-22). History was rewritten with `git filter-repo`
   to strip the entire `models/` runtime-weight directory (3 `.ckpt` files >100MB, mis-committed
   in `83d5ef6` "wip: mga-layer-bootstrap WIP snapshot", which blocked push). All commit content
-  preserved; only `models/` paths removed, hashes changed. See
-  `docs/handoff-2026-06-22-history-rewrite.md`.
+  preserved; only `models/` paths removed, hashes changed. The never-commit-weights rule and the
+  big-blob pre-push scan are in `CONTRIBUTING.md`.
 - **Local aligned** to `origin/afk-gpt-5` (HEAD `b83a545b`). The other worktree agent's unpushed
   commit (dict-repr fix) was cherry-picked back onto the new history, then pushed.
 - **`models/` is a symlink, not in git**: `models` → main repo's `models/` (old history still
@@ -100,6 +100,6 @@ Rendering-layer e2e quality closure is now verified for the 10-page alignment fi
 ## Governance rules
 
 1. **Don't hardcode counts in prose docs.** Reference this file or the reproduce command.
-2. **CLAIMS vs STATUS separation.** Aspirations → `docs/CLAIMS.md`; only verified facts here.
+2. **Verified facts only.** Keep aspirations out of this file; record only what a command or rendered-output check confirms.
 3. **Maturity label, not `[x]`.** SPEC's `[x]` re-interprets as L1/L2 here; only vision-e2e-verified features reach L3.
 4. **CI guard (proposed):** a check that runs `pytest --collect-only -q tests/` and diffs the count against the latest snapshot row above, failing on drift — prevents silent staleness returning.

@@ -61,3 +61,23 @@ Per the Edit scope (`docs/render_purity_contract.md`; PRD §1.2.2), modifying th
 - **Why not mga-side**: The erase happens in Pass 1 (runtime detection→mask→inpaint→serialize). By the time mga's render-only pass runs, `img_inpainted` already has the blank — mga can't un-erase. The filter must be at the source (mask refinement).
 - **Keep in sync**: the 0.25 threshold here mirrors `mga/pipeline/render_stage.py` `ocr_min_prob` — change both together.
 - **Verified by**: `region.prob` source confirmed = OCR prob; logic verified by reading the mask-refinement ordering (`:566` comment confirms it runs after OCR/translation). Real-e2e re-verify (page-001 idx0 original text preserved) pending.
+
+## Known Runtime Limitations (not patched)
+
+Runtime behaviors that affect output but are resolved by configuration, are upstream OCR behavior not fixable at the mga level, or are expected behavior. Salvaged from the 2026-06-19 pipeline-run handoff so the gotchas survive without the dated narrative.
+
+### `inpainter: none` — no text erasure
+- **Cause**: `run_export_artifact` sets `effective_inpainter = "none"` when `inpaint_backend == "auto"`. The runtime generates masks but does not inpaint, so original text stays partially visible under the rendered translation.
+- **Resolution**: config, not code — run Pass 1 with `--inpaint-backend original` (OpenCV simple fill, no model needed) or download the `lama_large`/`lama_mpe` weights. Re-run Pass 1 for it to take effect.
+
+### OCR direction `auto` → horizontal for vertical text
+- **Cause**: `Model48pxOCR` reports `direction: auto` for all regions; vertical Japanese (e.g. table-of-contents pages) then renders horizontally.
+- **Resolution**: not fixable at the mga level (runtime OCR behavior). Workaround: post-process `artifact-*.json` to force `direction: vertical` for the affected pages.
+
+### `font_size: None` / `font_size_minimum: -1`
+- **Cause**: artifact `render_config` carries `font_size: None`, `font_size_minimum: -1`; the runtime falls back to a basic sans-serif instead of a manga-appropriate font.
+- **Resolution**: config change in `render_config`, not mga code.
+
+### Memory / character profiles empty when no speakers detected
+- **Cause**: when `speaker_attribution` finds every bubble with `speaker_id=None`, `_update_profiles` skips and no profiles/state are produced.
+- **Status**: expected behavior when speaker info is absent — not a bug. Enhancement: add speaker detection in vision enrichment.
