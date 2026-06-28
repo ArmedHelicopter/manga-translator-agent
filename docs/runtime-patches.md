@@ -15,7 +15,12 @@ Per the Edit scope (`docs/render_purity_contract.md`; PRD §1.2.2), modifying th
 - **Verified by**: <how the fix was confirmed against rendered output>
 ```
 
-## Entries
+### 2026-06-24 — Silent pages consume Pass 1 payload slots
+- **File**: `manga_translator/manga_translator.py` (`_serialize_empty_render_payload_for_current_page`, `_translate` early no-region/no-text branches)
+- **Upstream behavior**: No-text or no-region pages returned before serializing a render payload. In a multi-page export, the runtime's internal artifact counter advanced only for pages that reached serialization, so a silent page left its slot unconsumed. Later pages shifted forward by one payload slot, and the tail could reuse a base plate.
+- **Patch**: Added a shared payload serializer and an empty-payload serializer. The no-region/no-text early-return branches now write `artifact-NNNN.json` with `text_regions: []` plus matching `inpainted-NNNN.png` before returning, so every source page consumes exactly one payload slot.
+- **Why not mga-side**: The slot loss happens inside the runtime before the host layer receives the payload directory. `mga` can fill missing artifacts later, but it cannot know whether a runtime artifact was skipped or shifted unless every runtime page consumes its own slot at export time.
+- **Verified by**: Fresh 10-page run `data/output/recon-fresh-20260624-v4/`; `te-verification-summary.json` reports all pages aligned and `minimax-m3` confirms no -1 shift / no tail base-plate reuse.
 
 ### 2026-06-22 — Footnote font chain (CJK tofu fix)
 - **File**: `manga_translator/manga_translator.py:754-807` (`_draw_footnotes`)
@@ -34,6 +39,12 @@ Per the Edit scope (`docs/render_purity_contract.md`; PRD §1.2.2), modifying th
 - **Patch**: Added a font-shrink loop between text rendering and box padding. When the rendered `temp_box` has a worse aspect ratio than the bubble (`r_temp > r_orig` for vertical, `r_temp < r_orig` for horizontal), the loop reduces `font_size` by 10% per iteration (down to 40% of the original) and re-renders. This gives `calc_vertical` / `calc_horizontal` fewer characters per column/line, producing a narrower `temp_box` that fits within the bubble. The loop runs at most 20 iterations. Without this fix, long translated text in narrow bubbles overflows the bubble boundary — the text spills out past the edge and is visually broken. With the fix, the font auto-shrinks until the text fits, and the perspective warp maps it cleanly within the bubble.
 - **Why not mga-side**: The overflow happens inside the runtime's `render` function during perspective warping. mga has no control over how the runtime sizes and warps text boxes — it only passes translation text and footnote metadata. The font-shrink loop must be inside `render` where `temp_box` dimensions are known.
 - **Verified by**: Rendered page-003 via RenderStage with the fix. Vision model (mimo-v2-omni) confirmed: "All text stays entirely within the bubble boundary; there is no overflow to the right or any other edge. The text is sharp, fully legible." Before the fix, the same bubble showed text overflowing past the right edge.
+
+### 2026-06-27 — Keep fitted text inside the original render seat
+- **File**: `manga_translator/rendering/__init__.py` (`resize_regions_to_font_size`)
+- **Upstream behavior**: After font fitting, the runtime still had single-axis/general region expansion branches that could enlarge `dst_points` to satisfy extra rows or columns. On the 10-page e2e fixture this moved the page-007 left-bottom vertical dialogue outside the speech balloon even though the font-fit loop had already run.
+- **Patch**: Disabled the post-fit target-region expansion and kept `dst_points = region.min_rect`. Long translations must adapt by font fitting and wrapping inside the detected OCR/vision seat; the target polygon must not grow beyond the balloon.
+- **Verified by**: `tests/runtime/test_rendering_fit.py::test_resize_regions_does_not_expand_target_polygon_for_long_vertical_text` and visual inspection of `data/output/e2e-overflow-fix-20260627-v4/_crop_page007_bottom_left.png`.
 
 ### 2026-06-22 — P3 inpaint/font_size audit: no fix needed (design works as intended)
 - **Finding**: Vision audit of all 3 e2e pages (mimo-v2-omni) confirmed:

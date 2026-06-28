@@ -38,7 +38,7 @@
 **交付物**:
 - ✅ `docs/architecture/phase1-semantic-parallel.md` (架构设计)
 - ✅ `docs/architecture/phase1-handoff.md` (交付清单)
-- ✅ `experiments/phase1-test-plan.md` (实验计划)
+- ✅ `docs/experiments/phase1-test-plan.md` (实验计划)
 - ✅ `mga/pipeline/parallel_executor.py` (并行调度器)
 - ✅ `tests/pipeline/test_parallel_executor.py` (单元测试)
 - ✅ 所有代码实现完成，720个测试通过
@@ -270,7 +270,7 @@ persona_timeout = 30              # Persona翻译超时（秒）
 - 2026-06-07: 阶段1架构设计完成，交付给实现者
   - 产出: `docs/architecture/phase1-semantic-parallel.md` (20KB，完整技术设计)
   - 产出: `docs/architecture/phase1-handoff.md` (交付清单)
-  - 产出: `experiments/phase1-test-plan.md` (实验验证计划)
+  - 产出: `docs/experiments/phase1-test-plan.md` (实验验证计划)
 - 2026-06-07: 阶段1实现完成
   - 代码: ParallelExecutor、TranslationStage扩展、ProviderCascade线程安全
   - 测试: 720个测试全部通过（609现有 + 11新增）

@@ -24,7 +24,7 @@ As of 2026-06-04, the AFK verification branch has:
 | Verify tests | Done | `.venv\Scripts\python.exe -m pytest tests -v` |
 | Verify CLI entrypoint | Done | `.venv\Scripts\manga-translate.exe --help` |
 | Update developer guidance | Done | `CLAUDE.md` current test count |
-| PR description draft | Done | `PR_DESCRIPTION.md` |
+| PR description draft | Done | `docs/PR_DESCRIPTION.md` |
 
 ## Architecture Shipping In This Branch
 
@@ -55,6 +55,6 @@ mga/
 
 ## Local PR Prep
 
-- Use `PR_DESCRIPTION.md` as the draft PR body.
+- Use `docs/PR_DESCRIPTION.md` as the draft PR body.
 - Keep commits on an AFK branch/worktree until the user explicitly chooses commit organization and any remote action.
 - Before any final commit or PR, rerun `pip install -e ".[dev]"`, `pytest tests -v`, and `manga-translate --help` in a Python 3.10-3.12 environment.

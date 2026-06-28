@@ -11,8 +11,8 @@
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ Layer 1: Infrastructure (depends on Layer 0)                                │
 │   config/ — TOML config loading, provider route resolution                 │
-│   format/ — FormatAdapter ABC + 6 adapters (images, PDF, EPUB, CBZ, MOBI)  │
-│   providers/ — LLMProvider ABC + 9 providers + factory + cascade           │
+│   format/ — FormatAdapter ABC + concrete adapters                          │
+│   providers/ — LLMProvider ABC + registry/factory/cascade                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ Layer 2: Intelligence (depends on Layers 0-1)                                │
 │   memory/ — Dual-structure state (JSON) + wiki projection (Markdown)       │
@@ -44,8 +44,8 @@
 - **Cultural Adaptation** — 7 strategies: literal, adapt, coined, transliterate, contextual, preserve, hybrid. Includes terminology DB, honorific compensator, coinage detector.
 - **Learning Engine** — 4-stage pipeline: L1 Align → L2 Dual Vision → L3 Pattern Extractor → L4 Validator.
 - **Incremental/Batch Processing** — Load previous chapter context, translate, update profiles. Multi-chapter parallel processing with resume.
-- **9 LLM Providers** — OpenAI, Anthropic, Gemini, DeepSeek, OpenRouter, Ollama, vLLM, LM Studio, llama.cpp
-- **6 Format Adapters** — Images, PDF, EPUB, CBZ/CBR, MOBI, Bilingual PDF
+- **LLM Providers** — Stage-aware provider registry/factory with cascade fallback; see `docs/STATUS.md` for dated counts.
+- **Format Adapters** — Images, PDF, EPUB, CBZ/CBR, MOBI, Bilingual PDF, and additional adapters; see `docs/STATUS.md` for dated counts.
 - **Vision Capability Pre-check** — Opt-in auto-switch when configured provider lacks vision support.
 
 ## Quick Start
@@ -55,13 +55,13 @@
 pip install -e ".[dev]"
 
 # Translate (cold start)
-manga-translate input/ -o output/
+manga-translate translate input/ -o output/
 
 # Hot start: learn from existing translations
-manga-translate ch11/ --learn-from ch01_to_10_translated/ -o output/
+manga-translate translate ch11/ --learn-from ch01_to_10_translated/ -o output/
 
 # Bilingual output
-manga-translate input.pdf --bilingual -o bilingual.pdf
+manga-translate translate input.pdf --bilingual -o bilingual.pdf
 
 # Run tests
 pytest tests/ -v
@@ -77,13 +77,13 @@ mga/
 ├── cli/             # Click CLI (translate, benchmark, legacy, memory, profile, term)
 ├── config/          # TOML config loading, provider route resolution
 ├── cultural/        # Problem classification, strategies, terminology, honorific, coinage
-├── format/          # FormatAdapter ABC + 6 adapters (images, PDF, EPUB, CBZ, MOBI, bilingual)
+├── format/          # FormatAdapter registry (images, PDF, EPUB, CBZ/CBR, MOBI, bilingual, ...)
 ├── learning/        # 4-stage translation learning engine (L1-L4)
 ├── memory/          # Dual-structure state + wiki + graph + profiles + evolution tracker
 ├── models/          # Pydantic v2 data models
-├── ocr/            # OCR guard, recovery strategies, detector
-├── pipeline/        # 7-stage pipeline + incremental + batch + streamlined translation
-├── providers/       # LLMProvider ABC + 9 providers + factory + cascade
+├── ocr/             # OCR guard, recovery strategies, detector
+├── pipeline/        # Manga/novel pipeline stages + incremental + batch
+├── providers/       # LLMProvider ABC + concrete providers + factory + cascade
 ├── qa/              # 9 proofreaders + orchestrator
 ├── review/          # Review diff tools
 ├── runtime_bridge/  # External runtime subprocess integration
@@ -101,9 +101,9 @@ Format → OCR Artifact → Vision Enrichment → Speaker Attribution → Charac
 
 When the external runtime (`manga-image-translator`) is available:
 
-1. **Pass 1** — Runtime runs detect/OCR/merge/inpaint, exports `artifact.json` + `inpainted.png`
+1. **Pass 1** — Runtime runs detect/OCR/merge/inpaint per source page, exports `artifact-NNNN.json` + `inpainted-NNNN.png`, and records `pages.json` so output page `N` mounts payload `N`.
 2. **Enrichment + Intelligence** — mga reads OCR text regions, runs Vision enrichment for box types, visual footnotes, and provisional voice hints, then runs character/cultural adaptation, translation, and QA
-3. **Pass 2** — Runtime loads mga translations and renders them onto the inpainted image
+3. **Pass 2** — Runtime loads mga per-page `translations-NNNN.json` and renders them onto the matching inpainted image
 
 ### OCR/Runtime Authority
 
@@ -134,11 +134,11 @@ Supported providers: `openai`, `anthropic`, `gemini`, `deepseek`, `openrouter`, 
 
 | Command | Description |
 |---------|-------------|
-| `manga-translate input/ -o output/` | Translate manga |
-| `manga-translate input/ --learn-from dir/` | Warm start from existing translations |
-| `manga-translate --bilingual` | Output bilingual PDF |
-| `manga-translate --save-json` | Save translation report + debug artifacts |
-| `manga-translate --artifact-payload-dir dir/` | Reuse exported runtime payload |
+| `manga-translate translate input/ -o output/` | Translate manga |
+| `manga-translate translate input/ --learn-from dir/ -o output/` | Warm start from existing translations |
+| `manga-translate translate input/ --bilingual -o output/` | Output bilingual PDF |
+| `manga-translate translate input/ --save-json -o output/` | Save translation report + debug artifacts |
+| `manga-translate translate input/ --artifact-payload-dir dir/ -o output/` | Reuse exported runtime payload |
 | `manga-translate benchmark-external` | Run external runtime benchmark |
 | `manga-translate legacy benchmark-extraction` | Legacy extraction benchmark |
 | `manga-translate memory init/sync` | Memory management |

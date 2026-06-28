@@ -1,5 +1,7 @@
 # Pass 1 三问题修复方案
 
+> 2026-06-24 update: the page-to-payload shift/tail-base reuse part is resolved by per-page Pass 1 export plus empty-payload serialization for runtime no-text/no-region early returns. Verified output: `data/output/recon-fresh-20260624-v4/te-verification-summary.json` (TE-01..TE-04 passed). The detection/inpainter quality discussion below is historical analysis and not the final alignment fix.
+
 ## 问题汇总
 
 1. **OCR检出率低**：10页仅38个text_regions（典型50-200），大量文字气泡遗漏

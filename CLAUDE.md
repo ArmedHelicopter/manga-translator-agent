@@ -169,16 +169,16 @@ Orchestrator: `mga/pipeline/orchestrator.py` — `PipelineOrchestrator.run(input
 
 ```bash
 # Translate (default: external-core runtime)
-manga-translate input/ -o output/
+manga-translate translate input/ -o output/
 
 # Hot start: learn from existing translations
-manga-translate ch11/ --learn-from ch01_to_10_translated/ -o output/
+manga-translate translate ch11/ --learn-from ch01_to_10_translated/ -o output/
 
 # Learn only (no translation)
-manga-translate --learn-only existing_translations/ --output-profiles profiles/
+manga-translate translate existing_translations/ --learn-only --output-profiles profiles/
 
 # Bilingual output
-manga-translate input.pdf --bilingual -o bilingual.pdf
+manga-translate translate input.pdf --bilingual -o bilingual.pdf
 
 # External benchmark
 manga-translate benchmark-external input/ -o output/
@@ -219,7 +219,7 @@ Python: `>=3.10, <3.13`. Pydantic v2.
 
 **Config split**: Runtime uses OmegaConf in `manga_translator/config.py`. Host layer uses TOML in `mga/config/loader.py` with env var override via `MANGA_TRANSLATE_CONFIG`.
 
-**Artifact contract**: `output/manifest.json`, `external-baseline-summary.json`, `external-baseline-text.txt`, `external-baseline-text-normalized.json`, `run.json`.
+**Artifact contract**: `output/manifest.json`, `external-baseline-summary.json`, `external-baseline-text.txt`, `external-baseline-text-normalized.json`, `run.json`; two-pass render payloads use `.mga-payload/pages.json` plus per-page `artifact-NNNN.json`, `inpainted-NNNN.png`, and `translations-NNNN.json`.
 
 **Monkeypatching**: `manga_translate/cli.py` uses lazy function wrappers so tests can monkeypatch at `manga_translate.cli.*` paths. The actual implementations live in `mga.*` modules.
 
@@ -229,9 +229,11 @@ Python: `>=3.10, <3.13`. Pydantic v2.
 
 **Runtime editability**: The runtime mga invokes is the **worktree-local `manga_translator/`** (`run_export_artifact`/`run_render_only` run `python -m manga_translator` with `cwd=project_root`). It is directly editable — modifying the local runtime is **allowed** when a real runtime bug blocks delivery (PRD §1.2.2; `docs/render_purity_contract.md`). Prefer mga-side fixes; otherwise patch `manga_translator/`.
 
-**End-to-end testing**: See `docs/e2e-testing.md`. E2E = full pipeline run on `data/input/e2e-3pages/`. Results MUST be evaluated by a **vision-capable model looking directly at the rendered PNGs** — never by pixel diff or unit tests alone (the **proxy problem**: a green suite while the images are broken). Runtime edits and e2e re-runs go through the local `manga_translator/`.
+**End-to-end testing**: See `docs/e2e-testing.md`. E2E = full pipeline run on `data/input/e2e-3pages/` for quick smoke and `data/input/test-pdf-10pages/` for page-to-payload alignment regressions. Invoke through `manga-translate translate ...`. Results MUST be evaluated by a **vision-capable model looking directly at the rendered PNGs** — never by pixel diff or unit tests alone (the **proxy problem**: a green suite while the images are broken). Runtime edits and e2e re-runs go through the local `manga_translator/`.
 
 **Code comments — explain why, not what**: When a change encodes a non-obvious decision or fixes a real bug, the comment must state both (1) **why** it is written this way (the constraint or root-cause decision) and (2) **what breaks** if done the naive way (the failure mode that was hit, or would be). This is defensive: without the trap written down, future agents and humans re-derive the same wrong "obvious" solution and the bug returns. Do not comment mechanics (`# increment i`); comment landmines. Tie non-obvious code to the doc/handoff that records the failure it prevents. Example: the cold-start creation branch in `mga/pipeline/speaker_attribution_stage.py` says *why* it creates a character on a non-generic hint with no match — because without it a fresh work never assigns any `speaker_id` and memory stays empty for the entire run (`docs/handoff-2026-06-22-memory-reassessment.md`).
+
+**Resources on disk — check before asking**: Before claiming a model weight, dependency, or file "needs to be downloaded" or asking the user whether to fetch it, check the local disk first. Runtime models live under `models/` (a symlink to the repo root models dir — e.g. `models/inpainting/lama_large_512px.ckpt` for LaMa inpainting, `models/detection/*.ckpt`, `models/ocr/*.ckpt`). `manga_translator/config.py` `InpainterConfig` defaults already point at these. Don't assert a download is needed when the file is sitting on disk — verify with `ls`/`find` on the `models/` tree first. This applies to any external resource: config defaults, installed packages, cached weights, and symlinked dirs should all be inspected before proposing a fetch.
 
 ## Skill routing
 

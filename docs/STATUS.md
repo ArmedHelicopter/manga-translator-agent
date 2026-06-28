@@ -7,7 +7,7 @@
 > For aspirations (what we *want* true) use `docs/CLAIMS.md`. For the audit that produced
 > this file and the doc-trust ranking, see memory `doc-trust-hierarchy`.
 
-Last verified: 2026-06-25
+Last verified: 2026-06-28
 
 ## Tests
 
@@ -48,10 +48,10 @@ L0 not started · L1 module + mock tests · L2 integration tests · L3 vision-e2
 | Format adapters (documented 6) | 3 | all present |
 | Novel adapters (undocumented 4) | 2 | exist, lighter tests |
 | QA proofreaders (9) | 2 | wired; markdown-leak slipped through → e2e guard needed |
-| Page footnotes | 2 | CJK tofu on Windows fixed 2026-06-22 |
+| Page footnotes | 2 | CJK tofu on Windows fixed 2026-06-22; default render omits footnotes, explicit `render_footnotes=True` visually verified 2026-06-28 |
 | OCR guard + recovery | 2 | module + tests; real-corpus accuracy 47% vs >98% target |
 | Distill (Card / Lorebook / Hermes) | 2 | exporters + importers present |
-| Re-inpaint Pass 2 + artifact pin + per-page payload alignment | 3 | `recon-fresh-20260624-v4` TE-01..TE-04 passed: no -1 shift, no tail base-plate reuse. **Fallback-only vision injection** (commit `de1642cd`): render-only re-verify 2026-06-25 — OCR-only artifacts restored (page-005 6→4, page-006 4→3 regions), vision QA confirms text inside bubbles, no white blocks |
+| Re-inpaint Pass 2 + artifact pin + per-page payload alignment | 3 | `recon-fresh-20260624-v4` TE-01..TE-04 passed: no -1 shift, no tail base-plate reuse. `e2e-overflow-fix-20260627-v5` closes the follow-up fallout for stale empty pins, OCR/vision near-duplicates, non-dialogue artifact/inpaint pruning, page-007 left-side leak, page-009 body/SFX overlay, page-010 mass empty bubbles, and RGB channel order. `e2e-render-current-20260628-footnotes-on-v2` verifies page-004 contents title recovery, page-005/page-008 translated render, and explicit footnotes-on output |
 | Learning engine (L1–L4) | 1 | modules + mock tests; real hot-start loop unverified (PRD §4.2.1) |
 | Memory / wiki + CharacterGraph | 2 | active — `CharacterMemoryUpdater` writes real profiles (美胡/Miku, 2026-06-21 e2e) |
 | **Character consistency (headline value)** | 2 | memory non-empty & updater active; **new gap: ID fragmentation + generic-trash IDs** (see `docs/handoff-2026-06-22-memory-reassessment.md`) |
@@ -65,6 +65,9 @@ L0 not started · L1 module + mock tests · L2 integration tests · L3 vision-e2
 |---|---|---|---|---|
 | 2026-06-24 | `data/input/test-pdf-10pages` | `data/output/recon-fresh-20260624-v4` | vision `icompify/minimax-m3`, translation `icompify/deepseek-v4-pro`, CLI concurrency 8 | TE-01..TE-04 passed; page-003 shaved-ice cover, page-004 contents, page-009/010 distinct base plates |
 | 2026-06-25 (render-only re-verify) | `data/input/test-pdf-10pages` | `data/output/e2e-fix-20260625` | current code, **no re-translation** (`run_render_only` from the v4 payload; `ICOMPIFY_API_KEY` unset) | fallback-only guard proven: OCR-only artifacts restored (vision seats dropped), full-res vision QA — translated text inside speech bubbles on pages 005/006, no white occlusion boxes |
+| 2026-06-26 | `data/input/test-pdf-10pages` | `data/output/e2e-verify-20260626-v2` | `icompify`, semantic-parallel concurrency 8 | Partial closure only. It fixed the stale-empty-pin symptom on page-010, but later review found the claim incomplete: page-007 near-duplicate vision text and no-translation artifact/inpaint fallout still needed explicit coverage |
+| 2026-06-27 | `data/input/test-pdf-10pages` | `data/output/e2e-overflow-fix-20260627-v5` | `icompify`, semantic-parallel concurrency 8 | Render regression proof for page-007 leak, page-009 SFX/body overlay, page-010 mass empty bubbles, no-translation artifact/inpaint fallout, and RGB channel order. Later title/contents coverage is tracked separately by the 2026-06-28 render-only proof |
+| 2026-06-28 (render-only) | `data/input/test-pdf-10pages` | `data/output/e2e-render-current-20260628-footnotes-on-v2` | current payload/code, explicit `render_footnotes=True` | Current title/contents and footnote visual proof: page-004 renders `第34话 恸愧之鞭`, page-005 and page-008 render translated text, page-007 has no left text leak, page-009 has no body/face text leak, page-010 has no mass empty bubbles, and pages 005/009/010 footers are readable CJK with no tofu/`??` |
 
 Artifacts: `te-verification-summary.json`, `te-vision-verification-minimax-m3.json`, and `verification_contact_sheet.png` in the output directory.
 
@@ -92,7 +95,7 @@ Artifacts: `te-verification-summary.json`, `te-vision-verification-minimax-m3.js
 
 ## Current focus
 
-Rendering-layer e2e quality closure is now verified for the 10-page alignment fixture: `recon-fresh-20260624-v4` passed TE-01..TE-04 with native vision evaluation. The v4 run also exposed a **text-outside-bubbles regression** (host-side vision bboxes injected onto OCR-populated pages → white occlusion boxes); fixed by fallback-only vision injection (commit `de1642cd`) and re-verified 2026-06-25 via render-only re-run with full-res vision QA. Continue to treat rendered PNG vision review as the binding signal for future render changes — the **proxy problem** remains a governance rule even when unit tests are green (`docs/e2e-testing.md`).
+Rendering-layer e2e quality closure is now verified for the 10-page alignment fixture: `recon-fresh-20260624-v4` passed TE-01..TE-04 with native vision evaluation, `e2e-overflow-fix-20260627-v5` closes the leak/overlay/empty-bubble/color fallout, and `e2e-render-current-20260628-footnotes-on-v2` closes the title/contents and explicit-footnote follow-up. The v4 run exposed a **text-outside-bubbles regression** (host-side vision bboxes injected onto OCR-populated pages -> white occlusion boxes), the 2026-06-26 run exposed stale-empty-pin behavior on page-010, the 2026-06-27 review caught the missing page-007 punctuation-drift duplicate plus no-translation artifact/inpaint fallout, and the 2026-06-28 review caught page-004/page-008 title suppression. The current fix is conservative mixed vision injection, near-duplicate source suppression, empty-pin recovery, artifact/inpaint pruning for suppressed regions, and contents-page title supplement using OCR geometry. Continue to treat rendered PNG vision review as the binding signal for future render changes; the **proxy problem** remains a governance rule even when unit tests are green (`docs/e2e-testing.md`).
 
 ## Governance rules
 

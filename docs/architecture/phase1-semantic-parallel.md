@@ -708,7 +708,7 @@ class ProviderCascade:
 
 ### 文档
 
-- [ ] `experiments/phase1-test-plan.md`（实验计划）
+- [ ] `docs/experiments/phase1-test-plan.md`（实验计划）
 - [ ] `experiments/phase1-results.md`（实验结果，由实验员产出）
 - [ ] `PARALLEL_TRANSLATION_PLAN.md`（更新状态为"阶段1完成"）
 

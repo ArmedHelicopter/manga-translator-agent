@@ -32,7 +32,7 @@ Latest e2e run: `data/output/e2e-full/` — 3 pages (cover + TOC + content), 11 
 - **Action**: force a genuinely fresh re-run into a NEW output dir; verify the markdown is gone in the NEW rendered images. Do not trust the stale `e2e-full`.
 
 ### Regression 2 — garbled footnotes (tofu / 乱码) on all images
-- **Root cause** (per `FIX_PLAN.md` §4.1): footnotes are DRAWN by the runtime in `manga_translator/manga_translator.py::_draw_footnotes` (fonts at ~L787-792: two hardcoded Linux Noto paths → on Windows `ImageFont.load_default()` → tofu boxes). This is the top-level `manga_translator/` copy that mga actually invokes. The CJK font `fonts/msyh.ttc` (≈19.6 MB) IS present in the repo root; the bubble renderer's `FALLBACK_FONTS` (`text_render.py`) already uses it.
+- **Root cause** (per `docs/plans/e2e-render-fix-plan-2026-06-22.md` §4.1): footnotes are DRAWN by the runtime in `manga_translator/manga_translator.py::_draw_footnotes` (fonts at ~L787-792: two hardcoded Linux Noto paths → on Windows `ImageFont.load_default()` → tofu boxes). This is the top-level `manga_translator/` copy that mga actually invokes. The CJK font `fonts/msyh.ttc` (≈19.6 MB) IS present in the repo root; the bubble renderer's `FALLBACK_FONTS` (`text_render.py`) already uses it.
 - **Constraint**: modifying the local runtime is **allowed** (PRD §1.2.2; `docs/render_purity_contract.md` Edit scope). You may directly patch `manga_translator/manga_translator.py::_draw_footnotes` (e.g. font chain → `fonts/msyh.ttc` → `Arial-Unicode-Regular.ttf` → `msgothic.ttc` → `C:/Windows/Fonts/msyh.ttc` → Linux Noto → `load_default()`). Prefer an mga-side fix when feasible (pass font_path via the runtime `render_config`/payload, or post-render overlay); otherwise patch `manga_translator/`.
 
 ## Relevant files
@@ -44,19 +44,19 @@ Latest e2e run: `data/output/e2e-full/` — 3 pages (cover + TOC + content), 11 
 - `manga_translator/manga_translator.py::_draw_footnotes` (RUNTIME actually invoked — top-level `manga_translator/`, run via `python -m manga_translator`; fonts ~L787-792) — footnote font. Modifying the local runtime is allowed; prefer mga-side, else patch here.
 - `docs/render_purity_contract.md` — the runtime-authoritative contract (Edit scope: modifying the local runtime is allowed).
 - `docs/handoff-2026-06-19-pipeline-run.md` — earlier handoff (5 bugs fixed in parsers/render_stage/external/cli).
-- `FIX_PLAN.md` — comprehensive 5-category root-cause plan (untracked).
+- `docs/plans/e2e-render-fix-plan-2026-06-22.md` — comprehensive 5-category root-cause plan.
 - `data/output/e2e-full/` — the failing output (`translations/page_000*.json`, `.mga-payload/translations-000*.json`, `manifest.json`, `run.json`, `qa_report.json`, `page-00*.png`).
 
 ## Current state
 - Uncommitted: `render_stage.py` (+278), `vision_stage.py` (+497), `.mga_cache/llm_cache.db`, `test/testdata/render/default1.png`.
-- Untracked: `FIX_PLAN.md`, `docs/render_purity_contract.md`, `docs/handoff-2026-06-19-pipeline-run.md`, `mga/runtime_bridge/artifact_cache.py`, `verify_reinpaint.py`, several new tests (`tests/pipeline/test_render_stage_*.py`, `tests/runtime_bridge/test_artifact_cache.py`, …).
+- Then-untracked: `FIX_PLAN.md` (now `docs/plans/e2e-render-fix-plan-2026-06-22.md`), `docs/render_purity_contract.md`, `docs/handoff-2026-06-19-pipeline-run.md`, `mga/runtime_bridge/artifact_cache.py`, `verify_reinpaint.py` (now `scripts/verification/verify_reinpaint.py`), several new tests (`tests/pipeline/test_render_stage_*.py`, `tests/runtime_bridge/test_artifact_cache.py`, …).
 - Suite was reported “237 passing, no regression” — **green tests do NOT imply clean output** (tests were green while images still leaked markdown). Do not trust test-green alone; always eyeball the rendered PNGs.
 
 ## What was tried
 - `_clean_render_text` / `_strip_llm_chatter` added to strip markdown labels at render time (uncommitted). The regex handles `**Corrected Translation:**` correctly in isolation — but was never validated against a fresh e2e render because the re-run was cache-skipped.
 - Artifact pinning + OCR hallucination guard added (render-purity work).
 - Earlier (2026-06-19): `_clean_translation_text` in parsers.py; `_page_bubble_id` matching both `region-` and `vision-` prefixes; `ast.literal_eval` fallback; RATIONALE_TERM_RE Unicode fix.
-- Footnote font fix was PLANNED (`FIX_PLAN.md` §4.1) as a `manga_translator.py::_draw_footnotes` edit (the correct, invoked file) but never landed — blocked by the old mga-only contract. That constraint is now lifted: patch `manga_translator/manga_translator.py::_draw_footnotes` directly.
+- Footnote font fix was PLANNED (`docs/plans/e2e-render-fix-plan-2026-06-22.md` §4.1) as a `manga_translator.py::_draw_footnotes` edit (the correct, invoked file) but never landed — blocked by the old mga-only contract. That constraint is now lifted: patch `manga_translator/manga_translator.py::_draw_footnotes` directly.
 
 ## Decisions / constraints
 - **Edit scope**: `mga/` is primary, but modifying the local runtime (`manga_translator/`) is **allowed** when a real runtime bug blocks delivery. Prefer mga-side; else patch `manga_translator/`. Runtime remains authoritative for **geometry** (OCR artifact); mga = intelligence.

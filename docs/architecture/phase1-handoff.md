@@ -10,7 +10,7 @@
 
 - ✅ `PARALLEL_TRANSLATION_PLAN.md` - 总体计划（3阶段路线图）
 - ✅ `docs/architecture/phase1-semantic-parallel.md` - 详细架构设计
-- ✅ `experiments/phase1-test-plan.md` - 实验验证计划
+- ✅ `docs/experiments/phase1-test-plan.md` - 实验验证计划
 
 ---
 

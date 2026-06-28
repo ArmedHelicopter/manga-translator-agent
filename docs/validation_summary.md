@@ -137,7 +137,7 @@ Page 10: 0 regions (fallback - 额外补偿页)
 3. ⏸️ 暂缓提交代码，等待验证结果
 
 ### 如果人工验证确认检出率确实低
-1. 在 `.experiments.json` 记录此次验证结果（47 regions, 未达目标）
+1. 在 `docs/experiments/registry.json` 记录此次验证结果（47 regions, 未达目标）
 2. 设计 Pass 2 调优方案（更激进参数或更换检测器）
 3. 重新运行 full-flow 链路
 
