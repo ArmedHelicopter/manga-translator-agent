@@ -14,7 +14,7 @@ OCR 47% vs 目标 >98%，约 244s/页 vs 目标 <30s。平行加速是 UNVERIFIE
 
 - 本地 `afk-gpt-5-main`、origin `afk-gpt-5`：产品代码。本 README 在这条线上。
 - origin `main`：上游 manga-image-translator 镜像。不是产品。
-- 不要 unfork。还要留一个小的上游 PR 通道。
+- 不要 unfork。上游小 PR：https://github.com/zyddnys/manga-image-translator/pull/1168 （`pr/keep-text-inside-balloons`）。GitHub 默认分支已改成 `afk-gpt-5`。不点 Archive，方便这条 PR 还推得动。
 
 读 GitHub 时先确认分支。fork 的 `main` 看起来像 manga-image-translator，那是对的。
 
