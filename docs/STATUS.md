@@ -1,5 +1,7 @@
 # Project STATUS — Single Source of Truth
 
+> 结题快照：2026-08-31。指标不再更新。以本文件 2026-06-28 行为准。
+
 > This is the **authoritative fact source**. Numbers are dated snapshots, not promises —
 > re-run the command for current values. Do **not** hardcode these numbers in CLAUDE.md,
 > README, or SPEC; reference this file instead.
