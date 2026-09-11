@@ -40,7 +40,7 @@ _PROVIDER_PROFILES: dict[str, dict[str, Any]] = {
     # ── Official Providers ──────────────────────────────────────────────────────
     "mimo": {
         "provider_type": "mimo",
-        "api_key": "REMOVED_CREDENTIAL",
+        "api_key_env": "MIMO_API_KEY",
         "base_url": "https://token-plan-cn.xiaomimimo.com/v1",
         "vision_model": "mimo-v2.5-pro",
         "text_model": "mimo-v2.5-pro",

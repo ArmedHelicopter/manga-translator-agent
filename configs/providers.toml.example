@@ -192,7 +192,7 @@ model = "llama-3.3-70b-versatile"
 
 [providers.mimo]
 provider_type = "mimo"
-api_key = "REMOVED_CREDENTIAL"
+api_key = "${MIMO_API_KEY}"
 base_url = "https://token-plan-cn.xiaomimimo.com/v1"
 vision_model = "mimo-v2.5-pro"
 text_model = "mimo-v2.5-pro"
