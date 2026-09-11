@@ -14,6 +14,8 @@ from .stages import PipelineContext, PipelineStage
 
 logger = logging.getLogger(__name__)
 
+_PAGE_TEXT_BOX_TYPES = {"cover_title", "chapter_title", "sign", "letter"}
+
 
 def _compute_iou(bbox_a: "BoundingBox", bbox_b: "BoundingBox") -> float:
     """Axis-aligned bounding box IoU."""
@@ -165,7 +167,7 @@ def _build_vision_prompt() -> str:
         "For EACH text region you can see (dialogue bubbles, narration boxes, SFX, signs, "
         "whispered text, small text, handwritten notes, chapter titles, cover titles), provide:\n"
         "- source_text: the Japanese/Chinese text exactly as written\n"
-        "- bbox: {x, y, width, height} in pixel coordinates relative to the full image\n"
+        "- bbox: {x, y, width, height} in pixel coordinates relative to the image you receive\n"
         "- box_type: dialogue, narration, sfx, sign, letter, graffiti, chapter_title, "
         "cover_title, or other\n"
         "- provisional_speaker: visible speaker label if identifiable\n"
@@ -175,11 +177,26 @@ def _build_vision_prompt() -> str:
         "- tone: emotional tone if visually inferable\n"
         "- notes: any relevant context\n\n"
         "IMPORTANT: Report ALL text you can see, even small or stylized text. Do not skip any.\n"
-        "For cover pages: identify the main title as 'cover_title' with a SINGLE bounding box "
-        "covering the ENTIRE title phrase, even if it spans multiple visual clusters. "
-        "The full title text should be in a single source_text field for coherent translation.\n"
+        "For cover pages: identify main title text as 'cover_title'. Split the title into "
+        "separate boxes when it spans distant columns, clusters, or character groups, so each "
+        "bbox tightly covers only the visible strokes it represents. Keep the source_text for "
+        "each box exact and preserve reading_order across the split title.\n"
         "Also report visual_footnotes for author-drawn elements that need translation context.\n\n"
         "Return JSON: {bubbles: [...], visual_footnotes: [...], voice_hints: [...], scene_summary: str}"
+    )
+
+
+def _build_cover_title_focus_prompt() -> str:
+    return (
+        "This is a cropped region from a manga cover. If two images are provided, "
+        "the first image is a high-contrast black-on-white OCR preprocessing of "
+        "the title strokes and the second image is the original crop. Identify "
+        "only the large main cover title text visible in this crop.\n"
+        "Return every title column or phrase you can read. Ignore volume numbers, "
+        "publisher logos, author names, romanized side text, and decorative marks.\n"
+        "For each title phrase, provide source_text exactly as written and bbox "
+        "relative to the original crop. Use box_type='cover_title'.\n"
+        "Return JSON: {bubbles: [...]}"
     )
 
 
@@ -422,7 +439,13 @@ class VisionEnrichmentStage(PipelineStage):
             try:
                 result = self._extract_page(provider_cascade, page, cfg)
                 enrichments.append({"page_id": page.page_id, "result": result})
-                self._apply_enrichment_to_page(page, result, all_pages_ocr=all_pages_ocr)
+                self._apply_enrichment_to_page(
+                    page,
+                    result,
+                    all_pages_ocr=all_pages_ocr,
+                    provider_cascade=provider_cascade,
+                    cfg=cfg,
+                )
                 provider_errors.extend(provider_cascade.errors)
                 provider_cascade.errors.clear()
                 provider_calls.extend(provider_cascade.calls)
@@ -663,6 +686,8 @@ class VisionEnrichmentStage(PipelineStage):
         if not source_text:
             logger.debug("vision: dropping bubble with empty source_text")
             return None
+        box_type = str(raw.get("box_type", "") or "").strip().lower()
+        is_page_text = box_type in _PAGE_TEXT_BOX_TYPES
 
         bbox = cls._extract_bbox_from_raw(raw)
         if bbox.width <= 0 or bbox.height <= 0:
@@ -705,7 +730,7 @@ class VisionEnrichmentStage(PipelineStage):
 
         # Hallucination guard: long sentence with no OCR-level textual support
         # on this page is likely a bleed from another page.
-        if page_ocr_text and len(source_text) > 10:
+        if page_ocr_text and len(source_text) > 10 and not is_page_text:
             cleaned = source_text.strip()
             if not any(
                 _text_overlap(cleaned, ocr_line) >= 0.2
@@ -720,7 +745,7 @@ class VisionEnrichmentStage(PipelineStage):
 
         # Cross-page bleed guard: reject text that has stronger phrase-level
         # overlap with a different page than the current one.
-        if all_pages_ocr and current_page_id and len(source_text) > 10:
+        if all_pages_ocr and current_page_id and len(source_text) > 10 and not is_page_text:
             bleed_from = _cross_page_bleed_check(
                 source_text,
                 current_page_id,
@@ -745,6 +770,8 @@ class VisionEnrichmentStage(PipelineStage):
         result: dict,
         *,
         all_pages_ocr: dict[str, set[str]] | None = None,
+        provider_cascade: ProviderCascade | None = None,
+        cfg: ProjectConfig | None = None,
     ) -> None:
         by_id = {bubble.bubble_id: bubble for bubble in page.bubbles}
         by_order: dict[int, Bubble] = {}
@@ -826,14 +853,18 @@ class VisionEnrichmentStage(PipelineStage):
                     height=shrunk_h,
                 )
 
-            # Skip bubbles that largely overlap an existing OCR region.
-            max_iou = 0.0
-            for existing in page.bubbles:
-                if existing.bbox and existing.bbox.width > 0 and existing.bbox.height > 0:
-                    iou = _compute_iou(vision_bbox, existing.bbox)
-                    max_iou = max(max_iou, iou)
-            if max_iou > 0.3:
-                continue
+            # Skip bubbles that largely overlap an existing OCR region. Page
+            # text such as cover titles and signs is allowed to overlap artwork
+            # or loose OCR seats because it still needs its own renderable seat.
+            box_type = str(raw.get("box_type", "") or "").strip().lower()
+            if box_type not in _PAGE_TEXT_BOX_TYPES:
+                max_iou = 0.0
+                for existing in page.bubbles:
+                    if existing.bbox and existing.bbox.width > 0 and existing.bbox.height > 0:
+                        iou = _compute_iou(vision_bbox, existing.bbox)
+                        max_iou = max(max_iou, iou)
+                if max_iou > 0.3:
+                    continue
 
             page_idx = getattr(page, "page_index", 0)
             new_bubble = Bubble(
@@ -858,9 +889,390 @@ class VisionEnrichmentStage(PipelineStage):
         except ValueError:
             object.__setattr__(page, "_vision_supplemented", supplemented)
 
+        self._merge_cover_title_fragments(page)
+        if provider_cascade is not None and cfg is not None:
+            self._supplement_missing_cover_title_columns(page, provider_cascade, cfg)
+            self._apply_cover_title_corrections(page, cfg)
         self._apply_page_level_enrichment(page, result)
         if result.get("scene_summary"):
             page.scene_summary = result["scene_summary"]
+
+    @staticmethod
+    def _detect_cover_title_columns(image_path: str, expected: int = 2) -> list[tuple[int, int, int, int]]:
+        try:
+            from PIL import Image
+            import numpy as np
+
+            with Image.open(image_path).convert("RGB") as image:
+                arr = np.asarray(image)
+        except Exception:
+            return []
+        if arr.size == 0:
+            return []
+        height, width = arr.shape[:2]
+        maxc = arr.max(axis=2)
+        minc = arr.min(axis=2)
+        white_mask = (maxc > 238) & (minc > 215) & ((maxc - minc) < 55)
+        density = white_mask.mean(axis=0)
+        threshold = 0.04
+        min_width = max(36, int(width * 0.035))
+        max_gap = max(8, int(width * 0.008))
+        runs: list[tuple[int, int]] = []
+        start: int | None = None
+        last_seen: int | None = None
+        for x, active in enumerate(density > threshold):
+            if active:
+                if start is None:
+                    start = x
+                last_seen = x
+            elif start is not None and last_seen is not None and x - last_seen > max_gap:
+                runs.append((start, last_seen + 1))
+                start = None
+                last_seen = None
+        if start is not None and last_seen is not None:
+            runs.append((start, last_seen + 1))
+
+        candidates: list[tuple[float, tuple[int, int, int, int]]] = []
+        for x0, x1 in runs:
+            if x1 - x0 < min_width:
+                continue
+            if not (x0 < width * 0.28 or x1 > width * 0.72):
+                continue
+            run_mask = white_mask[:, x0:x1]
+            row_density = run_mask.mean(axis=1)
+            ys = np.where(row_density > threshold)[0]
+            if ys.size == 0:
+                continue
+            y0 = max(0, int(ys[0]) - 12)
+            y1 = min(height, int(ys[-1]) + 13)
+            if y1 - y0 < height * 0.2:
+                continue
+            candidates.append((float(density[x0:x1].mean()) * float(x1 - x0), (x0, y0, x1, y1)))
+
+        side_best: dict[str, tuple[float, tuple[int, int, int, int]]] = {}
+        for score, box in candidates:
+            x0, _, x1, _ = box
+            side = "left" if (x0 + x1) / 2.0 < width / 2.0 else "right"
+            if side not in side_best or score > side_best[side][0]:
+                side_best[side] = (score, box)
+        boxes = [item[1] for item in side_best.values()]
+        boxes.sort(key=lambda box: (box[0] + box[2]) / 2.0, reverse=True)
+        return boxes[:expected]
+
+    @staticmethod
+    def _preprocess_cover_title_crop_for_ocr(crop: object) -> bytes | None:
+        """Return black-on-white OCR bytes for white title strokes in *crop*."""
+        try:
+            from PIL import Image
+            import io
+            import numpy as np
+
+            image = crop.convert("RGB")
+            arr = np.asarray(image)
+            if arr.size == 0:
+                return None
+            maxc = arr.max(axis=2)
+            minc = arr.min(axis=2)
+            white_mask = (maxc > 225) & (minc > 190) & ((maxc - minc) < 80)
+            if float(white_mask.mean()) < 0.002:
+                return None
+            bw = np.where(white_mask, 0, 255).astype("uint8")
+            ys, xs = np.where(bw < 128)
+            if xs.size == 0 or ys.size == 0:
+                return None
+            pad = 30
+            x0 = max(0, int(xs.min()) - pad)
+            y0 = max(0, int(ys.min()) - pad)
+            x1 = min(image.width, int(xs.max()) + pad + 1)
+            y1 = min(image.height, int(ys.max()) + pad + 1)
+            processed = Image.fromarray(bw, "L").crop((x0, y0, x1, y1))
+            scale = 2 if max(processed.size) < 9000 else 1
+            if scale > 1:
+                processed = processed.resize((processed.width * scale, processed.height * scale))
+            buffer = io.BytesIO()
+            processed.save(buffer, format="PNG", optimize=True)
+            return buffer.getvalue()
+        except Exception:
+            return None
+
+    @staticmethod
+    def _main_cover_title_bubbles(page: object) -> list[Bubble]:
+        bubbles: list[Bubble] = []
+        for bubble in getattr(page, "bubbles", []) or []:
+            if str(getattr(bubble, "box_type", "") or "").strip().lower() != "cover_title":
+                continue
+            text = str(getattr(bubble, "source_text", "") or "").strip()
+            if len(text) < 3:
+                continue
+            if any(ch.isdigit() for ch in text):
+                continue
+            if any("A" <= ch.upper() <= "Z" for ch in text):
+                continue
+            if not any("\u3040" <= ch <= "\u30ff" for ch in text):
+                continue
+            bubbles.append(bubble)
+        return bubbles
+
+    @staticmethod
+    def _cover_title_column_bubbles(page: object) -> list[Bubble]:
+        bubbles: list[Bubble] = []
+        for bubble in getattr(page, "bubbles", []) or []:
+            if str(getattr(bubble, "box_type", "") or "").strip().lower() != "cover_title":
+                continue
+            text = str(getattr(bubble, "source_text", "") or "").strip()
+            if not text:
+                continue
+            if any(ch.isdigit() for ch in text):
+                continue
+            if any("A" <= ch.upper() <= "Z" for ch in text):
+                continue
+            if not any("\u3040" <= ch <= "\u30ff" for ch in text):
+                continue
+            bubbles.append(bubble)
+        return bubbles
+
+    def _apply_cover_title_corrections(self, page: object, cfg: ProjectConfig) -> None:
+        corrections = ((cfg.plugins or {}).get("cover_title_corrections") or {})
+        if not isinstance(corrections, dict):
+            return
+        pages = corrections.get("pages") or {}
+        if not isinstance(pages, dict):
+            return
+        page_keys = [
+            str(getattr(page, "page_id", "") or ""),
+            f"page_{int(getattr(page, 'page_index', 0) or 0):04d}",
+            str(int(getattr(page, "page_index", 0) or 0)),
+        ]
+        page_config = None
+        for key in page_keys:
+            candidate = pages.get(key)
+            if isinstance(candidate, dict):
+                page_config = candidate
+                break
+        if not page_config:
+            return
+        source_texts = page_config.get("source_texts") or []
+        if not isinstance(source_texts, list) or not source_texts:
+            return
+        image_path = str(getattr(getattr(page, "image", None), "path", "") or "")
+        columns = self._detect_cover_title_columns(image_path, expected=len(source_texts))
+        if len(columns) < len(source_texts):
+            return
+
+        corrected_boxes = [
+            BoundingBox(x=x0, y=y0, width=x1 - x0, height=y1 - y0)
+            for x0, y0, x1, y1 in columns[:len(source_texts)]
+        ]
+        kept: list[Bubble] = []
+        for bubble in getattr(page, "bubbles", []) or []:
+            if str(getattr(bubble, "box_type", "") or "").strip().lower() == "cover_title":
+                source = str(getattr(bubble, "source_text", "") or "")
+                has_kana = any("\u3040" <= ch <= "\u30ff" for ch in source)
+                bbox = getattr(bubble, "bbox", None)
+                if has_kana or (
+                    bbox is not None and any(_compute_iou(bbox, box) > 0.05 for box in corrected_boxes)
+                ):
+                    continue
+            kept.append(bubble)
+
+        page_idx = int(getattr(page, "page_index", 0) or 0)
+        start_order = min((getattr(b, "reading_order", 0) for b in kept), default=0)
+        for idx, (source_text, bbox) in enumerate(zip(source_texts, corrected_boxes)):
+            text = str(source_text or "").strip()
+            if not text:
+                continue
+            kept.append(Bubble(
+                bubble_id=f"vision-{page_idx:04d}-cover-title-corrected-{idx:02d}",
+                bbox=bbox,
+                source_text=text,
+                reading_order=start_order + idx,
+                detection_source="manual_correction",
+                vision_confidence=1.0,
+                box_type="cover_title",
+                notes="local cover-title correction",
+            ))
+        kept.sort(key=lambda b: getattr(b, "reading_order", 0))
+        page.bubbles = kept
+
+    def _supplement_missing_cover_title_columns(
+        self,
+        page: object,
+        provider_cascade: ProviderCascade,
+        cfg: ProjectConfig,
+    ) -> None:
+        image_path = str(getattr(getattr(page, "image", None), "path", "") or "")
+        if not image_path:
+            return
+        columns = self._detect_cover_title_columns(image_path, expected=2)
+        if len(columns) < 2:
+            return
+        existing_titles = self._main_cover_title_bubbles(page)
+        column_titles = self._cover_title_column_bubbles(page)
+
+        try:
+            from PIL import Image
+            import io
+
+            with Image.open(image_path).convert("RGB") as image:
+                for column in columns:
+                    x0, y0, x1, y1 = column
+                    overlaps_existing = False
+                    for bubble in column_titles:
+                        bbox = getattr(bubble, "bbox", None)
+                        if bbox is None:
+                            continue
+                        if _compute_iou(
+                            BoundingBox(x=x0, y=y0, width=x1 - x0, height=y1 - y0),
+                            bbox,
+                        ) > 0.1:
+                            overlaps_existing = True
+                            break
+                    if overlaps_existing:
+                        continue
+                    crop = image.crop((x0, y0, x1, min(image.height, y1)))
+                    buffer = io.BytesIO()
+                    crop.save(buffer, format="PNG", optimize=True)
+                    images = []
+                    processed = self._preprocess_cover_title_crop_for_ocr(crop)
+                    if processed:
+                        images.append(processed)
+                    images.append(buffer.getvalue())
+                    result, _candidate = provider_cascade.call_vision_structured(
+                        messages=[{"role": "user", "content": _build_cover_title_focus_prompt()}],
+                        images=images,
+                        schema={
+                            "type": "object",
+                            "properties": {
+                                "bubbles": {"type": "array"},
+                            },
+                        },
+                        operation="vision_cover_title_focus",
+                        trace_context={"page_id": getattr(page, "page_id", "")},
+                    )
+                    for raw in result.get("bubbles", []) or []:
+                        raw_text = str(raw.get("source_text", "") or "").strip()
+                        if not raw_text:
+                            continue
+                        if any(ch.isdigit() for ch in raw_text):
+                            continue
+                        if any("A" <= ch.upper() <= "Z" for ch in raw_text):
+                            continue
+                        if not any("\u3040" <= ch <= "\u30ff" for ch in raw_text):
+                            continue
+                        raw_bbox = self._extract_bbox_from_raw(raw)
+                        if raw_bbox.width > 0 and raw_bbox.height > 0:
+                            bbox = BoundingBox(
+                                x=x0 + raw_bbox.x,
+                                y=y0 + raw_bbox.y,
+                                width=raw_bbox.width,
+                                height=raw_bbox.height,
+                            )
+                        else:
+                            bbox = BoundingBox(x=x0, y=y0, width=x1 - x0, height=y1 - y0)
+                        page_idx = int(getattr(page, "page_index", 0) or 0)
+                        page.bubbles.append(Bubble(
+                            bubble_id=f"vision-{page_idx:04d}-cover-title-focus-{len(existing_titles):02d}",
+                            bbox=bbox,
+                            source_text=raw_text,
+                            reading_order=len(getattr(page, "bubbles", []) or []),
+                            detection_source="vision",
+                            vision_confidence=raw.get("confidence"),
+                            box_type="cover_title",
+                            notes="focused cover-title supplement",
+                        ))
+                        existing_titles.append(page.bubbles[-1])
+                        column_titles.append(page.bubbles[-1])
+                        break
+                    covered_columns = 0
+                    for covered_column in columns:
+                        cx0, cy0, cx1, cy1 = covered_column
+                        column_box = BoundingBox(x=cx0, y=cy0, width=cx1 - cx0, height=cy1 - cy0)
+                        if any(
+                            _compute_iou(column_box, bubble.bbox) > 0.1
+                            for bubble in column_titles
+                        ):
+                            covered_columns += 1
+                    if covered_columns >= len(columns):
+                        break
+        except Exception as exc:  # noqa: BLE001 - focus supplement is best-effort.
+            logger.debug(
+                "vision: cover-title focus supplement skipped on page %s (%s)",
+                getattr(page, "page_id", ""),
+                exc,
+            )
+
+    @staticmethod
+    def _is_cover_title_fragment(bubble: Bubble) -> bool:
+        if str(getattr(bubble, "box_type", "") or "").strip().lower() != "cover_title":
+            return False
+        text = str(getattr(bubble, "source_text", "") or "").strip()
+        if not text:
+            return False
+        if any(ch.isdigit() for ch in text):
+            return False
+        if any("A" <= ch.upper() <= "Z" for ch in text):
+            return False
+        if len(text) <= 2:
+            return True
+        return len(text) <= 4 and any("\u3040" <= ch <= "\u30ff" for ch in text)
+
+    @staticmethod
+    def _merge_cover_title_fragments(page: object) -> None:
+        bubbles = list(getattr(page, "bubbles", []) or [])
+        fragments = [
+            bubble for bubble in bubbles
+            if VisionEnrichmentStage._is_cover_title_fragment(bubble)
+        ]
+        if len(fragments) < 3:
+            return
+
+        clusters: list[list[Bubble]] = []
+        for bubble in sorted(fragments, key=lambda b: (b.bbox.x + b.bbox.width / 2.0, b.reading_order)):
+            center_x = bubble.bbox.x + bubble.bbox.width / 2.0
+            placed = False
+            for cluster in clusters:
+                cluster_center = sum(b.bbox.x + b.bbox.width / 2.0 for b in cluster) / len(cluster)
+                if abs(center_x - cluster_center) <= max(140.0, bubble.bbox.width * 1.8):
+                    cluster.append(bubble)
+                    placed = True
+                    break
+            if not placed:
+                clusters.append([bubble])
+
+        replacements: list[Bubble] = []
+        replaced_ids: set[str] = set()
+        page_idx = int(getattr(page, "page_index", 0) or 0)
+        group_idx = 0
+        for cluster in clusters:
+            cluster.sort(key=lambda b: b.reading_order)
+            text = "".join(str(b.source_text or "") for b in cluster).strip()
+            if len(cluster) < 2 or len(text) < 3:
+                continue
+            x0 = min(b.bbox.x for b in cluster)
+            y0 = min(b.bbox.y for b in cluster)
+            x1 = max(b.bbox.x + b.bbox.width for b in cluster)
+            y1 = max(b.bbox.y + b.bbox.height for b in cluster)
+            replacements.append(Bubble(
+                bubble_id=f"vision-{page_idx:04d}-cover-title-{group_idx:02d}",
+                bbox=BoundingBox(x=x0, y=y0, width=x1 - x0, height=y1 - y0),
+                source_text=text,
+                reading_order=min(b.reading_order for b in cluster),
+                detection_source="vision",
+                vision_confidence=min(
+                    (b.vision_confidence for b in cluster if b.vision_confidence is not None),
+                    default=None,
+                ),
+                box_type="cover_title",
+            ))
+            group_idx += 1
+            replaced_ids.update(b.bubble_id for b in cluster)
+
+        if not replacements:
+            return
+        kept = [bubble for bubble in bubbles if bubble.bubble_id not in replaced_ids]
+        kept.extend(replacements)
+        kept.sort(key=lambda b: b.reading_order)
+        page.bubbles = kept
 
     def _match_enrichment_bubble(
         self,
@@ -869,6 +1281,9 @@ class VisionEnrichmentStage(PipelineStage):
         by_order: dict[int, Bubble],
         fallback_order: int,
     ) -> Bubble | None:
+        box_type = str(raw.get("box_type", "") or "").strip().lower()
+        if box_type in _PAGE_TEXT_BOX_TYPES:
+            return None
         raw_id = str(raw.get("bubble_id", ""))
         if raw_id in by_id:
             return by_id[raw_id]

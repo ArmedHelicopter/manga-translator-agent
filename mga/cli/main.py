@@ -124,7 +124,7 @@ def _parse_kv(values: tuple[str, ...], name: str) -> dict[str, str]:
 @click.option("--dry-run", is_flag=True, help="Show config and exit")
 @click.option("-v", "--verbose", is_flag=True)
 @click.option("--artifact-payload-dir", type=click.Path(exists=True), help="Reuse existing payload")
-@click.option("--parallel-mode", type=click.Choice(["serial", "parallel", "pipelined", "semantic-parallel"]))
+@click.option("--parallel-mode", type=click.Choice(["serial", "parallel", "pipelined", "semantic-parallel", "batch-parallel"]))
 @click.option("--concurrency", type=int, help="Max pages in flight")
 @click.option("--auto-vision-model", is_flag=True, help="Auto-switch vision model if rejected")
 @click.option("--inpaint-backend", type=click.Choice(["auto", "none", "lama_large", "lama_mpe", "sd", "original", "default"]), default="auto", help="Inpainter backend for manga-image-translator runtime")
@@ -162,8 +162,15 @@ def translate(
 
     if parallel_mode:
         cfg.parallel_mode = parallel_mode
+        cfg.translation_config["parallel_mode"] = parallel_mode
     if concurrency is not None:
         cfg.pipeline_concurrency = concurrency
+        cfg.translation_max_workers = concurrency
+        if cfg.translation_config.get("parallel_mode") == "batch-parallel":
+            cfg.translation_config["batch_size"] = concurrency
+            cfg.translation_config.setdefault("max_concurrent_requests", concurrency)
+        else:
+            cfg.translation_config["max_concurrent_requests"] = concurrency
     if output_format:
         cfg.output_format = output_format
     elif pipeline_mode == "novel":

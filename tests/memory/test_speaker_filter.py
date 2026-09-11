@@ -1,6 +1,6 @@
 """Tests for speaker ID filtering and canonicalisation.
 
-Three acceptance criteria from docs/archive/handoff-2026-06-22-memory-reassessment.md:
+Three acceptance criteria from docs/handoff-2026-06-22-memory-reassessment.md:
   (a) descriptive/placeholder hints are rejected (not persisted as characters)
   (b) same-character variant descriptions merge to one canonical id
   (c) real names still create characters normally

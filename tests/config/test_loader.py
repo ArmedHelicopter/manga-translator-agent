@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from mga.config.loader import build_project_config
+import os
+
+from mga.config.loader import build_project_config, load_provider_settings
 
 
 def test_build_project_config_resolves_qa_route_and_env_placeholders(tmp_path, monkeypatch):
@@ -34,6 +36,49 @@ def test_build_project_config_resolves_qa_route_and_env_placeholders(tmp_path, m
     assert cfg.provider_routes["qa"].primary.provider == "deepseek"
     assert cfg.provider_routes["qa"].fallback.provider == "gemini"
     assert cfg.provider_routes["qa"].primary.model == "deepseek-chat"
+
+
+def test_load_provider_settings_loads_local_dotenv_without_overwriting_env(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("EXISTING_COMPAT_KEY", "process-key")
+    (tmp_path / ".env").write_text(
+        "\n".join(
+            [
+                "LOCAL_COMPAT_KEY='dotenv-key'",
+                "EXISTING_COMPAT_KEY=dotenv-should-not-win",
+                "LOCAL_COMPAT_BASE_URL=http://compatible.local/v1",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    config_dir = tmp_path / "configs"
+    config_dir.mkdir()
+    config_path = config_dir / "providers.toml"
+    config_path.write_text(
+        '[stages.vision]\nprimary = "compatible"\n\n'
+        '[stages.translation]\nprimary = "compatible"\n\n'
+        '[providers.compatible]\n'
+        'provider_type = "openai"\n'
+        'api_key_env = "LOCAL_COMPAT_KEY"\n'
+        'base_url_env = "LOCAL_COMPAT_BASE_URL"\n'
+        'vision_model = "compatible-vision"\n'
+        'text_model = "compatible-text"\n\n'
+        '[providers.existing]\n'
+        'provider_type = "openai"\n'
+        'api_key_env = "EXISTING_COMPAT_KEY"\n'
+        'base_url = "http://existing.local/v1"\n'
+        'model = "existing-model"\n',
+        encoding="utf-8",
+    )
+
+    raw = load_provider_settings(str(config_path))
+
+    assert raw["providers"]["compatible"]["api_key_env"] == "LOCAL_COMPAT_KEY"
+    assert raw["providers"]["compatible"]["base_url_env"] == "LOCAL_COMPAT_BASE_URL"
+    assert raw["providers"]["existing"]["api_key_env"] == "EXISTING_COMPAT_KEY"
+    assert os.environ["LOCAL_COMPAT_KEY"] == "dotenv-key"
+    assert os.environ["LOCAL_COMPAT_BASE_URL"] == "http://compatible.local/v1"
+    assert os.environ["EXISTING_COMPAT_KEY"] == "process-key"
 
 
 def test_build_project_config_defaults_qa_to_translation_route(tmp_path):
@@ -170,4 +215,37 @@ def test_build_project_config_preserves_plugin_configuration(tmp_path):
     assert cfg.plugins["renderer"] == {
         "class": "custom_renderers:Renderer",
         "marker": "project-renderer",
+    }
+
+
+def test_build_project_config_preserves_ocr_guard_configuration(tmp_path):
+    config_path = tmp_path / "providers.toml"
+    config_path.write_text(
+        '[stages.vision]\nprimary = "openai"\n\n'
+        '[stages.translation]\nprimary = "gemini"\n\n'
+        '[providers.openai]\napi_key = "openai-key"\nvision_model = "gpt-4o"\ntext_model = "gpt-4o-mini"\n\n'
+        '[providers.gemini]\napi_key = "gemini-key"\nvision_model = "gemini-vision"\ntext_model = "gemini-text"\n\n'
+        "[ocr_guard]\n"
+        "enabled = true\n"
+        "consecutive_blank_threshold = 3\n"
+        'auto_recovery_strategy = "continue"\n',
+        encoding="utf-8",
+    )
+    input_path = tmp_path / "input"
+    input_path.mkdir()
+
+    cfg, raw = build_project_config(
+        input_path=str(input_path),
+        output_path=str(tmp_path / "out"),
+        provider_override=None,
+        save_json=False,
+        dry_run=False,
+        config_path=str(config_path),
+    )
+
+    assert raw["ocr_guard"]["auto_recovery_strategy"] == "continue"
+    assert cfg.ocr_guard == {
+        "enabled": True,
+        "consecutive_blank_threshold": 3,
+        "auto_recovery_strategy": "continue",
     }

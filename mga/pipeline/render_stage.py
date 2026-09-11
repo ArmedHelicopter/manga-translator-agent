@@ -6,6 +6,7 @@ import json
 import logging
 import re
 import unicodedata
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
@@ -39,6 +40,12 @@ _BLANK_VARIANCE_STD = 15.0
 # mutable state. The converter is deterministic and memoized only to avoid
 # rebuilding it once per page.
 _S2T_CONVERTER_CACHE: dict[str, Any] = {}
+
+_FOOTNOTE_PAGE_TEXT_BOX_TYPES = {"sign", "letter"}
+_RENDERABLE_PAGE_TEXT_BOX_TYPES: set[str] = set()
+_TITLE_FOOTNOTE_BOX_TYPES = {"cover_title", "chapter_title"}
+_PAGE_TEXT_FONT_SIZE_MAX = 96
+_COVER_TITLE_OVERLAY_SUFFIX = "cover-title-overlays"
 
 
 class RenderStage(PipelineStage):
@@ -141,11 +148,18 @@ class RenderStage(PipelineStage):
                 output_dir=output_dir,
                 inpaint_backend=getattr(cfg, "inpaint_backend", "auto"),
             )
+            rendered_images = result.get("rendered_images", [])
+            rendered_page_images = self._rendered_page_images(rendered_images)
+            if len(rendered_page_images) < len(pages_list):
+                raise RuntimeError(
+                    "Render-only produced fewer page images than expected "
+                    f"({len(rendered_page_images)}/{len(pages_list)}): {rendered_page_images}"
+                )
             context.artifacts[self.name] = {
                 "mode": "render-only",
-                "rendered_images": result.get("rendered_images", []),
+                "rendered_images": rendered_images,
                 "output_dir": str(output_dir),
-                "pages_rendered": len(pages_list),
+                "pages_rendered": len(rendered_page_images),
             }
         except Exception as e:
             logger.error(f"Render-only failed: {e}")
@@ -169,6 +183,14 @@ class RenderStage(PipelineStage):
             if isinstance(default_renderer, dict) and default_renderer:
                 return default_renderer
         return None
+
+    @staticmethod
+    def _rendered_page_images(rendered_images: list[str]) -> list[str]:
+        return [
+            image
+            for image in rendered_images
+            if Path(image).name.startswith("page-")
+        ]
 
     @staticmethod
     def _load_region_metadata(
@@ -315,6 +337,273 @@ class RenderStage(PipelineStage):
             )
 
     @staticmethod
+    def _restore_inpainted_page_from_original(
+        payload_path: Path,
+        page_idx: int,
+        input_image_path: str | None,
+    ) -> None:
+        """Reset render-only base image to the original page.
+
+        When all title/contents text is handled as footnotes, any Pass-1
+        inpainted base may already contain stale overlaid text from a prior
+        render pass. Resetting the whole base is safer than bbox restoration
+        because OCR title boxes are often incomplete or already pruned.
+        """
+        if not input_image_path:
+            return
+        inpainted_file = RenderStage._inpainted_path(payload_path, page_idx)
+        if not inpainted_file.exists():
+            return
+        try:
+            from PIL import Image
+
+            with Image.open(input_image_path).convert("RGB") as original:
+                original.save(inpainted_file)
+        except Exception as e:  # pragma: no cover - restoration is best-effort
+            logger.warning(
+                "render: could not restore page %d base image from original (%s)",
+                page_idx,
+                e,
+            )
+
+    @staticmethod
+    def _clear_inpainted_regions(
+        payload_path: Path,
+        page_idx: int,
+        regions: list[dict[str, Any]],
+        *,
+        whole_region_fallback: bool = True,
+    ) -> None:
+        """Clear newly-injected page-text seats on the render-only base image.
+
+        Pass 1 inpaints only OCR-derived regions. Vision-only page text such as
+        cover titles is injected after Pass 1, so render-only would otherwise
+        draw the translation over the original lettering. Use a conservative
+        local fill sampled from the bbox border; this is deliberately limited to
+        page-text seats, not speech bubbles with authoritative OCR geometry.
+        """
+        if not regions:
+            return
+        inpainted_file = RenderStage._inpainted_path(payload_path, page_idx)
+        if not inpainted_file.exists():
+            return
+        try:
+            import cv2
+            from PIL import Image
+            import numpy as np
+
+            with Image.open(inpainted_file).convert("RGB") as image:
+                arr = np.asarray(image).copy()
+                for region in regions:
+                    bbox = RenderStage._bbox_from_lines(region.get("lines"))
+                    if bbox is None:
+                        continue
+                    x, y, w, h = bbox
+                    pad = max(3, int(min(w, h) * 0.04))
+                    x0 = max(0, x)
+                    y0 = max(0, y)
+                    x1 = min(image.width, x + w)
+                    y1 = min(image.height, y + h)
+                    if x1 <= x0 or y1 <= y0:
+                        continue
+                    sx0 = max(0, x0 - pad)
+                    sy0 = max(0, y0 - pad)
+                    sx1 = min(image.width, x1 + pad)
+                    sy1 = min(image.height, y1 + pad)
+                    sample = arr[sy0:sy1, sx0:sx1].copy()
+                    inner_x0 = x0 - sx0
+                    inner_y0 = y0 - sy0
+                    inner_x1 = x1 - sx0
+                    inner_y1 = y1 - sy0
+                    inner = sample[inner_y0:inner_y1, inner_x0:inner_x1]
+                    border_mask = np.ones(sample.shape[:2], dtype=bool)
+                    border_mask[inner_y0:inner_y1, inner_x0:inner_x1] = False
+                    border_pixels = sample[border_mask]
+                    if border_pixels.size:
+                        fill = np.median(border_pixels.reshape(-1, 3), axis=0)
+                        border_gray = float(np.median(cv2.cvtColor(
+                            border_pixels.reshape(1, -1, 3).astype(np.uint8),
+                            cv2.COLOR_RGB2GRAY,
+                        )))
+                    else:
+                        fill = np.array([255, 255, 255], dtype=np.float32)
+                        border_gray = 255.0
+
+                    gray = cv2.cvtColor(inner, cv2.COLOR_RGB2GRAY)
+                    hsv = cv2.cvtColor(inner, cv2.COLOR_RGB2HSV)
+                    delta = np.linalg.norm(inner.astype(np.float32) - fill, axis=2)
+                    box_type = str(region.get("box_type") or "").strip().lower()
+                    candidate = (
+                        (delta > 65)
+                        & (
+                            (gray.astype(np.float32) < border_gray - 25)
+                            | (gray.astype(np.float32) > border_gray + 35)
+                            | ((hsv[:, :, 1] > 90) & (hsv[:, :, 2] < 210))
+                        )
+                    )
+                    if box_type == "cover_title":
+                        # Cover-title glyphs are often white lettering painted
+                        # over full-color art. The regular border-delta mask can
+                        # treat them as background, so add a local bright/low-
+                        # saturation text mask, scoped only to explicit title
+                        # seats to avoid broad artwork damage.
+                        bright_text = (
+                            (gray > 215)
+                            & (hsv[:, :, 1] < 85)
+                            & (delta > 28)
+                        )
+                        candidate |= bright_text
+                    candidate = candidate.astype(np.uint8) * 255
+                    kernel = np.ones((3, 3), dtype=np.uint8)
+                    candidate = cv2.morphologyEx(candidate, cv2.MORPH_CLOSE, kernel, iterations=1)
+                    candidate = cv2.dilate(candidate, kernel, iterations=1)
+
+                    kept = np.zeros_like(candidate)
+                    count, labels, stats, _ = cv2.connectedComponentsWithStats(candidate, connectivity=8)
+                    min_area = max(24, int((x1 - x0) * (y1 - y0) * 0.002))
+                    for label in range(1, count):
+                        area = int(stats[label, cv2.CC_STAT_AREA])
+                        comp_w = int(stats[label, cv2.CC_STAT_WIDTH])
+                        comp_h = int(stats[label, cv2.CC_STAT_HEIGHT])
+                        if area >= min_area and (
+                            comp_w >= max(6, int((x1 - x0) * 0.08))
+                            or comp_h >= max(6, int((y1 - y0) * 0.15))
+                        ):
+                            kept[labels == label] = 255
+
+                    mask = np.zeros(sample.shape[:2], dtype=np.uint8)
+                    if np.count_nonzero(kept):
+                        mask[inner_y0:inner_y1, inner_x0:inner_x1] = kept
+                    elif whole_region_fallback:
+                        mask[inner_y0:inner_y1, inner_x0:inner_x1] = 255
+
+                    if not np.count_nonzero(mask):
+                        continue
+                    if np.count_nonzero(mask) == mask.size:
+                        fill = np.full_like(sample, 255)
+                        repaired = fill
+                    else:
+                        repaired = cv2.inpaint(sample, mask, max(3, pad), cv2.INPAINT_TELEA)
+                    arr[y0:y1, x0:x1] = repaired[inner_y0:inner_y1, inner_x0:inner_x1]
+                image = Image.fromarray(arr)
+                image.save(inpainted_file)
+        except Exception as e:  # pragma: no cover - clearing is best-effort
+            logger.warning(
+                "render: could not clear injected page text on page %d (%s)",
+                page_idx,
+                e,
+            )
+
+    @staticmethod
+    def _clear_rendered_bubble_residue(
+        payload_path: Path,
+        page_idx: int,
+        region: dict[str, Any] | None,
+    ) -> None:
+        if not isinstance(region, dict):
+            return
+        lines = region.get("lines")
+        if not isinstance(lines, list) or len(lines) < 2:
+            return
+        box_type = str(region.get("box_type") or "dialogue").strip().lower()
+        if box_type not in {"", "dialogue", "speech", "thought", "narration", "narrator"}:
+            return
+        inpainted_file = RenderStage._inpainted_path(payload_path, page_idx)
+        bbox = RenderStage._bbox_from_lines(lines)
+        if RenderStage._region_has_white_dominant_background(str(inpainted_file), bbox):
+            RenderStage._fill_region_with_local_background(inpainted_file, bbox)
+            return
+        RenderStage._clear_inpainted_regions(
+            payload_path,
+            page_idx,
+            [region],
+            whole_region_fallback=False,
+        )
+
+    @staticmethod
+    def _fill_region_with_local_background(
+        image_path: Path,
+        bbox: tuple[int, int, int, int] | None,
+    ) -> None:
+        if bbox is None or not image_path.exists():
+            return
+        x, y, w, h = bbox
+        if w <= 0 or h <= 0:
+            return
+        try:
+            from PIL import Image
+            import numpy as np
+
+            with Image.open(image_path).convert("RGB") as image:
+                x0 = max(0, x)
+                y0 = max(0, y)
+                x1 = min(image.width, x + w)
+                y1 = min(image.height, y + h)
+                if x1 <= x0 or y1 <= y0:
+                    return
+                arr = np.asarray(image)
+                pad = max(4, int(min(w, h) * 0.08))
+                sx0 = max(0, x0 - pad)
+                sy0 = max(0, y0 - pad)
+                sx1 = min(image.width, x1 + pad)
+                sy1 = min(image.height, y1 + pad)
+                sample = arr[sy0:sy1, sx0:sx1]
+                bright = sample[np.all(sample > 210, axis=2)]
+                if bright.size:
+                    fill = tuple(int(v) for v in np.median(bright.reshape(-1, 3), axis=0))
+                else:
+                    fill = (255, 255, 255)
+                out = image.copy()
+                for yy in range(y0, y1):
+                    for xx in range(x0, x1):
+                        out.putpixel((xx, yy), fill)
+                out.save(image_path)
+        except Exception as e:  # pragma: no cover - clearing is best-effort
+            logger.warning("render: could not fill bubble residue region (%s)", e)
+
+    @staticmethod
+    def _shrink_overlong_vertical_region_font(region: dict[str, Any] | None, render_text: str) -> bool:
+        if not isinstance(region, dict):
+            return False
+        lines = region.get("lines")
+        if not isinstance(lines, list) or len(lines) < 2:
+            return False
+        direction = str(region.get("direction") or "auto").strip().lower()
+        if direction not in {"auto", "vertical"}:
+            return False
+        text_len = len(RenderStage._source_text_key(render_text))
+        if text_len < 18:
+            return False
+        try:
+            current = int(float(region.get("font_size") or 0))
+        except (TypeError, ValueError):
+            return False
+        if current <= 0:
+            return False
+        target = max(48, int(current * 0.78))
+        if target < current:
+            region["font_size"] = target
+            return True
+        return False
+
+    @staticmethod
+    def _update_artifact_region(
+        payload_path: Path,
+        page_idx: int,
+        region_idx: int,
+        region: dict[str, Any],
+    ) -> None:
+        artifact = RenderStage._load_artifact(payload_path, page_idx)
+        if not artifact:
+            return
+        regions = artifact.get("text_regions", [])
+        if not isinstance(regions, list) or region_idx < 0 or region_idx >= len(regions):
+            return
+        regions[region_idx] = region
+        artifact["text_regions"] = regions
+        RenderStage._write_artifact(payload_path, page_idx, artifact)
+
+    @staticmethod
     def _prune_artifact_to_rendered_regions(
         payload_path: Path,
         page_idx: int,
@@ -393,6 +682,405 @@ class RenderStage(PipelineStage):
         return texts
 
     @staticmethod
+    def _is_main_cover_title_region(region: dict[str, Any] | None, translation: str) -> bool:
+        if not isinstance(region, dict):
+            return False
+        if str(region.get("box_type") or "").strip().lower() != "cover_title":
+            return False
+        source = str(region.get("text") or "").strip()
+        text = str(translation or "").strip()
+        if not source or not text or text == source:
+            return False
+        if any(ch.isdigit() for ch in source + text):
+            return False
+        if any("A" <= ch.upper() <= "Z" for ch in source + text):
+            return False
+        if not any("\u3040" <= ch <= "\u30ff" for ch in source):
+            return False
+        return 2 <= len(text) <= 8
+
+    @staticmethod
+    def _is_cover_title_metadata_duplicate(region: dict[str, Any] | None, translation: str) -> bool:
+        if not isinstance(region, dict):
+            return False
+        if str(region.get("box_type") or "").strip().lower() != "cover_title":
+            return False
+        source = str(region.get("text") or "").strip()
+        text = str(translation or "").strip()
+        if not source or not text:
+            return False
+        if source == text:
+            return True
+        source_has_ascii = any("A" <= ch.upper() <= "Z" for ch in source)
+        source_has_kana = any("\u3040" <= ch <= "\u30ff" for ch in source)
+        translation_has_ascii = any("A" <= ch.upper() <= "Z" for ch in text)
+        return source_has_ascii and not source_has_kana and not translation_has_ascii and len(text) <= 4
+
+    @staticmethod
+    def _is_title_footnote_region(region: dict[str, Any] | None, translation: str) -> bool:
+        if not isinstance(region, dict):
+            return False
+        box_type = str(region.get("box_type") or "").strip().lower()
+        if box_type == "cover_title":
+            return RenderStage._is_main_cover_title_region(region, translation)
+        if box_type == "chapter_title":
+            source = str(region.get("text") or "").strip()
+            text = str(translation or "").strip()
+            if re.fullmatch(r"[\d\uff10-\uff19]+", source):
+                return False
+            return bool(source and text and source != text)
+        return False
+
+    @staticmethod
+    def _append_title_footnote(
+        footnotes: list[dict[str, Any]],
+        seen_footnote_keys: set[tuple[str, str]],
+        *,
+        source_text: Any,
+        translation: Any,
+        kind: str,
+    ) -> bool:
+        original = RenderStage._sanitize_footnote_text(str(source_text or ""))
+        translated = RenderStage._sanitize_footnote_text(str(translation or ""))
+        if not original or not translated or original == translated:
+            return False
+        key = (original, translated)
+        if key in seen_footnote_keys:
+            return False
+        seen_footnote_keys.add(key)
+        footnotes.append({
+            "original": original,
+            "translation": translated,
+            "type": "visual",
+            "kind": kind,
+        })
+        return True
+
+    @staticmethod
+    def _is_title_page_metadata_region(region: dict[str, Any] | None) -> bool:
+        if not isinstance(region, dict):
+            return False
+        box_type = str(region.get("box_type") or "").strip().lower()
+        if box_type in _RENDERABLE_PAGE_TEXT_BOX_TYPES:
+            return True
+        return RenderStage._looks_like_non_dialogue_text(region.get("text"))
+
+    @staticmethod
+    def _write_cover_title_overlay_sidecar(
+        payload_path: Path,
+        page_idx: int,
+        entries: list[dict[str, Any]],
+        input_image_path: str | None,
+    ) -> None:
+        sidecar = payload_path / f"{_COVER_TITLE_OVERLAY_SUFFIX}-{page_idx:04d}.json"
+        if not entries:
+            try:
+                sidecar.unlink(missing_ok=True)
+            except OSError:
+                pass
+            return
+        sidecar.write_text(
+            json.dumps(
+                {
+                    "version": 1,
+                    "page_index": page_idx,
+                    "input_image_path": input_image_path,
+                    "entries": entries,
+                },
+                ensure_ascii=False,
+                indent=2,
+            ) + "\n",
+            encoding="utf-8",
+        )
+
+    @staticmethod
+    def _cover_title_columns_from_image(
+        image_path: str | None,
+        entry_count: int,
+    ) -> list[tuple[int, int, int, int]]:
+        if not image_path or entry_count <= 0:
+            return []
+        try:
+            from PIL import Image
+            import numpy as np
+
+            with Image.open(image_path).convert("RGB") as image:
+                arr = np.asarray(image)
+        except Exception:
+            return []
+        if arr.size == 0:
+            return []
+        height, width = arr.shape[:2]
+        maxc = arr.max(axis=2)
+        minc = arr.min(axis=2)
+        white_mask = (maxc > 238) & (minc > 215) & ((maxc - minc) < 55)
+        density = white_mask.mean(axis=0)
+        threshold = 0.04
+        min_width = max(36, int(width * 0.035))
+        max_gap = max(8, int(width * 0.008))
+        runs: list[tuple[int, int]] = []
+        start: int | None = None
+        last_seen: int | None = None
+        for x, active in enumerate(density > threshold):
+            if active:
+                if start is None:
+                    start = x
+                last_seen = x
+            elif start is not None and last_seen is not None and x - last_seen > max_gap:
+                runs.append((start, last_seen + 1))
+                start = None
+                last_seen = None
+        if start is not None and last_seen is not None:
+            runs.append((start, last_seen + 1))
+
+        candidates: list[tuple[float, tuple[int, int, int, int]]] = []
+        for x0, x1 in runs:
+            if x1 - x0 < min_width:
+                continue
+            if not (x0 < width * 0.28 or x1 > width * 0.72):
+                continue
+            run_mask = white_mask[:, x0:x1]
+            row_density = run_mask.mean(axis=1)
+            ys = np.where(row_density > threshold)[0]
+            if ys.size == 0:
+                continue
+            y0 = max(0, int(ys[0]) - 12)
+            y1 = min(height, int(ys[-1]) + 13)
+            if y1 - y0 < height * 0.2:
+                continue
+            candidates.append((float(density[x0:x1].mean()) * float(x1 - x0), (x0, y0, x1, y1)))
+
+        side_best: dict[str, tuple[float, tuple[int, int, int, int]]] = {}
+        for score, box in candidates:
+            x0, _, x1, _ = box
+            side = "left" if (x0 + x1) / 2.0 < width / 2.0 else "right"
+            if side not in side_best or score > side_best[side][0]:
+                side_best[side] = (score, box)
+        boxes = [item[1] for item in side_best.values()]
+        boxes.sort(key=lambda box: (box[0] + box[2]) / 2.0, reverse=True)
+        return boxes[:entry_count]
+
+    @staticmethod
+    def _load_cover_title_font(size: int) -> Any:
+        from PIL import ImageFont
+
+        font_paths = [
+            r"C:\Windows\Fonts\NotoSerifSC-VF.ttf",
+            r"C:\Windows\Fonts\NotoSansSC-VF.ttf",
+            r"C:\Windows\Fonts\msyhbd.ttc",
+            r"C:\Windows\Fonts\simhei.ttf",
+            r"C:\Windows\Fonts\simsun.ttc",
+        ]
+        for font_path in font_paths:
+            if Path(font_path).exists():
+                try:
+                    return ImageFont.truetype(font_path, size=size, index=0)
+                except Exception:
+                    continue
+        return ImageFont.load_default()
+
+    @staticmethod
+    def _draw_vertical_cover_title(
+        image: Any,
+        box: tuple[int, int, int, int],
+        text: str,
+        text_box: tuple[int, int, int, int] | None = None,
+    ) -> None:
+        from PIL import Image, ImageDraw
+
+        x0, y0, x1, y1 = box
+        width = max(1, x1 - x0)
+        height = max(1, y1 - y0)
+        pad_x = max(10, int(width * 0.035))
+        pad_y = max(14, int(height * 0.01))
+        rx0 = max(0, x0 - pad_x)
+        ry0 = max(0, y0 - pad_y)
+        rx1 = min(image.width, x1 + pad_x)
+        ry1 = min(image.height, y1 + pad_y)
+
+        plate = Image.new("RGBA", image.size, (0, 0, 0, 0))
+        draw = ImageDraw.Draw(plate)
+        radius = max(10, min(28, int(width * 0.08)))
+        outline_width = max(3, int(width * 0.012))
+        draw.rounded_rectangle(
+            (rx0, ry0, rx1, ry1),
+            radius=radius,
+            fill=(248, 238, 211, 245),
+            outline=(88, 55, 35, 165),
+            width=outline_width,
+        )
+        inset = max(8, int(width * 0.035))
+        if rx1 - rx0 > inset * 2 and ry1 - ry0 > inset * 2:
+            draw.rounded_rectangle(
+                (rx0 + inset, ry0 + inset, rx1 - inset, ry1 - inset),
+                radius=max(6, radius - inset // 2),
+                outline=(255, 253, 242, 130),
+                width=2,
+            )
+        image.alpha_composite(plate)
+
+        draw = ImageDraw.Draw(image)
+        if text_box is not None:
+            tx0, ty0, tx1, ty1 = text_box
+            rx0 = max(rx0, tx0 - pad_x)
+            ry0 = max(ry0, ty0 - pad_y)
+            rx1 = min(rx1, tx1 + pad_x)
+            ry1 = min(ry1, ty1 + pad_y)
+        chars = list(text)
+        usable_w = max(1, (rx1 - rx0) - max(18, int(width * 0.12)) * 2)
+        usable_h = max(1, (ry1 - ry0) - max(30, int(height * 0.04)) * 2)
+        size = min(int(usable_w * 0.72), int(usable_h / max(len(chars), 1) * 0.74), 210)
+        size = max(36, size)
+        while size > 24:
+            font = RenderStage._load_cover_title_font(size)
+            stroke_width = max(2, size // 24)
+            boxes = [draw.textbbox((0, 0), ch, font=font, stroke_width=stroke_width) for ch in chars]
+            char_h = max(b[3] - b[1] for b in boxes)
+            step = max(6, int(size * 0.08))
+            total_h = char_h * len(chars) + step * max(0, len(chars) - 1)
+            if total_h <= usable_h:
+                break
+            size -= 4
+
+        font = RenderStage._load_cover_title_font(size)
+        stroke_width = max(2, size // 24)
+        boxes = [draw.textbbox((0, 0), ch, font=font, stroke_width=stroke_width) for ch in chars]
+        char_h = max(b[3] - b[1] for b in boxes)
+        step = max(6, int(size * 0.08))
+        total_h = char_h * len(chars) + step * max(0, len(chars) - 1)
+        cx = (rx0 + rx1) // 2
+        y = ry0 + ((ry1 - ry0) - total_h) // 2
+        for ch, box in zip(chars, boxes):
+            tw = box[2] - box[0]
+            draw.text(
+                (cx - tw // 2, y),
+                ch,
+                font=font,
+                fill=(38, 26, 22, 255),
+                stroke_width=stroke_width,
+                stroke_fill=(255, 250, 237, 235),
+            )
+            y += char_h + step
+
+    @staticmethod
+    def _cover_title_columns_for_entries(
+        image_path: str | None,
+        entries: list[dict[str, Any]],
+    ) -> list[tuple[int, int, int, int]]:
+        detected = RenderStage._cover_title_columns_from_image(image_path, max(len(entries), 2))
+        unused = list(detected)
+        columns: list[tuple[int, int, int, int]] = []
+
+        for entry in entries:
+            bbox = entry.get("bbox")
+            entry_box: tuple[int, int, int, int] | None = None
+            if (
+                isinstance(bbox, list)
+                and len(bbox) == 4
+                and all(isinstance(v, (int, float)) for v in bbox)
+            ):
+                x0, y0, x1, y1 = bbox
+                entry_box = (int(x0), int(y0), int(x1), int(y1))
+
+            best_idx: int | None = None
+            best_score = 0.0
+            if entry_box is not None:
+                ex0, _, ex1, _ = entry_box
+                entry_width = max(1, ex1 - ex0)
+                for idx, column in enumerate(unused):
+                    cx0, _, cx1, _ = column
+                    overlap = max(0, min(ex1, cx1) - max(ex0, cx0))
+                    score = overlap / entry_width
+                    if score > best_score:
+                        best_score = score
+                        best_idx = idx
+
+            if best_idx is not None and best_score > 0.15:
+                columns.append(unused.pop(best_idx))
+            elif unused:
+                columns.append(unused.pop(0))
+            elif entry_box is not None:
+                columns.append(entry_box)
+
+        return columns
+
+    @staticmethod
+    def _apply_cover_title_overlays(
+        payload_path: Path,
+        output_dir: Path,
+        context: PipelineContext,
+    ) -> None:
+        try:
+            from PIL import Image
+        except Exception:
+            return
+        pages_manifest = payload_path / "pages.json"
+        if pages_manifest.exists():
+            try:
+                pages_list = json.loads(pages_manifest.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                pages_list = []
+        else:
+            pages_list = [{"page_index": 0}]
+
+        for page_entry in pages_list:
+            try:
+                page_idx = int(page_entry.get("page_index", 0))
+            except (TypeError, ValueError):
+                continue
+            sidecar = payload_path / f"{_COVER_TITLE_OVERLAY_SUFFIX}-{page_idx:04d}.json"
+            if not sidecar.exists():
+                continue
+            try:
+                payload = json.loads(sidecar.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            entries = [
+                entry for entry in payload.get("entries", [])
+                if isinstance(entry, dict) and str(entry.get("translation") or "").strip()
+            ]
+            if not entries:
+                continue
+            entries.sort(key=lambda item: int(item.get("region_index", 0)))
+            input_image_path = payload.get("input_image_path") or RenderStage._page_input_image_path(context, page_idx)
+            columns = RenderStage._cover_title_columns_for_entries(input_image_path, entries)
+            if not columns:
+                continue
+            page_file = output_dir / f"page-{page_idx + 1:03d}.png"
+            if not page_file.exists():
+                continue
+            try:
+                with Image.open(page_file).convert("RGBA") as image:
+                    for entry, column in zip(entries, columns):
+                        text_box = None
+                        bbox = entry.get("bbox")
+                        if (
+                            isinstance(bbox, list)
+                            and len(bbox) == 4
+                            and all(isinstance(v, (int, float)) for v in bbox)
+                        ):
+                            x0, _, x1, _ = column
+                            text_box = (
+                                x0,
+                                max(0, int(bbox[1])),
+                                x1,
+                                min(image.height, int(bbox[3])),
+                            )
+                        RenderStage._draw_vertical_cover_title(
+                            image,
+                            column,
+                            str(entry.get("translation") or "").strip(),
+                            text_box=text_box,
+                        )
+                    image.convert("RGB").save(page_file)
+            except Exception as e:  # pragma: no cover - overlay is best-effort
+                logger.warning(
+                    "render: could not apply cover-title overlay on page %d (%s)",
+                    page_idx,
+                    e,
+                )
+
+    @staticmethod
     def _source_text_key(text: Any) -> str:
         """Normalize source text for OCR/vision de-duplication.
 
@@ -454,6 +1142,35 @@ class RenderStage(PipelineStage):
         return shared >= max(2, min(len(a), len(b)) - 1)
 
     @staticmethod
+    def _source_texts_nearly_duplicate(a: Any, b: Any) -> bool:
+        a_key = RenderStage._source_text_similarity_key(a)
+        b_key = RenderStage._source_text_similarity_key(b)
+        if not a_key or not b_key:
+            a_key = re.sub(
+                r"[^\w\u3040-\u30ff\u3400-\u9fff]",
+                "",
+                RenderStage._source_text_key(a),
+            )
+            b_key = re.sub(
+                r"[^\w\u3040-\u30ff\u3400-\u9fff]",
+                "",
+                RenderStage._source_text_key(b),
+            )
+        if not a_key or not b_key:
+            return False
+        if a_key == b_key:
+            return True
+        shorter, longer = (a_key, b_key) if len(a_key) <= len(b_key) else (b_key, a_key)
+        if len(shorter) < 8:
+            if len(shorter) < 5 or abs(len(shorter) - len(longer)) > 2:
+                return False
+            return SequenceMatcher(None, shorter, longer).ratio() >= 0.8
+        if shorter in longer:
+            return True
+        shared = len(set(shorter) & set(longer))
+        return shared / max(1, len(set(shorter))) >= 0.86
+
+    @staticmethod
     def _looks_like_non_dialogue_text(text: Any) -> bool:
         key = RenderStage._source_text_key(text).lower()
         if not key:
@@ -485,7 +1202,109 @@ class RenderStage(PipelineStage):
         normalized = str(box_type or "dialogue").strip().lower()
         if not normalized:
             return True
-        return normalized in {"dialogue", "speech", "thought", "narration", "narrator"}
+        return normalized in {
+            "dialogue",
+            "speech",
+            "thought",
+            "narration",
+            "narrator",
+            *_RENDERABLE_PAGE_TEXT_BOX_TYPES,
+        }
+
+    @staticmethod
+    def _vision_bubble_should_be_footnoted(bubble: Any) -> bool:
+        bubble_id = str(getattr(bubble, "bubble_id", "") or "")
+        source = str(getattr(bubble, "source_text", "") or "")
+        box_type = str(getattr(bubble, "box_type", "") or "dialogue").strip().lower()
+        if box_type in _FOOTNOTE_PAGE_TEXT_BOX_TYPES:
+            return True
+        if not (
+            bubble_id.startswith("vision-")
+            or getattr(bubble, "detection_source", None) == "vision"
+        ):
+            return False
+        if box_type not in {"", "dialogue", "speech", "thought", "narration", "narrator"}:
+            return False
+        key = RenderStage._source_text_key(source)
+        if not key:
+            return False
+        if RenderStage._looks_like_non_dialogue_text(source):
+            return True
+        lines = [line for line in source.splitlines() if line.strip()]
+        if len(lines) >= 3:
+            return True
+        if "\u3000" in source and len(key) >= 6:
+            return True
+        return False
+
+    @staticmethod
+    def _region_has_white_dominant_background(
+        image_path: str | None,
+        bbox: tuple[int, int, int, int] | None,
+    ) -> bool:
+        if not image_path or bbox is None:
+            return False
+        x, y, w, h = bbox
+        if w <= 0 or h <= 0:
+            return False
+        try:
+            from PIL import Image
+
+            import numpy as np
+
+            with Image.open(image_path) as img:
+                img_w, img_h = img.size
+                x0 = max(0, x)
+                y0 = max(0, y)
+                x1 = min(img_w, x + w)
+                y1 = min(img_h, y + h)
+                if x1 <= x0 or y1 <= y0:
+                    return False
+                gray = np.asarray(img.crop((x0, y0, x1, y1)).convert("L"), dtype=np.float64)
+        except Exception:
+            return False
+        if gray.size == 0:
+            return False
+        return float((gray > _BLANK_NEAR_WHITE_BRIGHTNESS).mean()) >= 0.65
+
+    @staticmethod
+    def _artifact_region_should_be_footnoted(
+        region: dict[str, Any] | None,
+        input_image_path: str | None,
+    ) -> bool:
+        if not region:
+            return False
+        box_type = str(region.get("box_type") or "dialogue").strip().lower()
+        if box_type in _FOOTNOTE_PAGE_TEXT_BOX_TYPES:
+            return True
+        if str(region.get("source") or "").strip().lower() != "vision":
+            return False
+        if box_type not in {"", "dialogue", "speech", "thought", "narration", "narrator"}:
+            return False
+        source = str(region.get("text") or "")
+        key = RenderStage._source_text_key(source)
+        if not key:
+            return False
+        lines = [line for line in source.splitlines() if line.strip()]
+        if len(lines) >= 3:
+            return True
+        bbox = RenderStage._bbox_from_lines(region.get("lines"))
+        try:
+            font_size = int(float(region.get("font_size") or 0))
+        except (TypeError, ValueError):
+            font_size = 0
+        if bbox is not None and input_image_path and not RenderStage._region_has_white_dominant_background(
+            input_image_path, bbox
+        ):
+            return True
+        looks_like_page_text = len(lines) >= 2 or font_size >= 120
+        if looks_like_page_text and not RenderStage._region_has_white_dominant_background(
+            input_image_path, bbox
+        ):
+            return True
+        if "\u3000" in source and len(key) >= 6:
+            return True
+        return False
 
     @staticmethod
     def _page_is_contents(context: PipelineContext | None, page_idx: int) -> bool:
@@ -804,23 +1623,17 @@ class RenderStage(PipelineStage):
         suppressed: dict[int, str] = {}
         ocr_similarity_keys: set[str] = set()
         ocr_short_name_keys: set[str] = set()
+        ocr_source_texts: list[Any] = []
         region_texts = [
             RenderStage._source_text_key(region.get("text")).lower()
             for region in regions
             if isinstance(region, dict)
         ]
-        page_box_types = RenderStage._page_box_types(context, page_idx)
         # Cover and contents page metadata are not speech-balloon render targets.
         # Do not suppress an entire chapter-title page just because it has a
         # chapter marker: page-008 is a real title page the product expects to
         # translate, and whole-page suppression left it untranslated.
         page_is_contents = any("contents" in text for text in region_texts) or RenderStage._page_is_contents(context, page_idx)
-        page_has_cover_marker = any(
-            isinstance(region, dict)
-            and any(token in RenderStage._source_text_key(region.get("text")).lower()
-                    for token in ("coverdesign", "コミックス", "comics", "next"))
-            for region in regions
-        )
         for fallback_idx, region in enumerate(regions):
             if not isinstance(region, dict):
                 continue
@@ -829,7 +1642,9 @@ class RenderStage(PipelineStage):
             except (TypeError, ValueError):
                 continue
             text = region.get("text")
+            box_type = str(region.get("box_type") or "").strip().lower()
             if region.get("source") != "vision":
+                ocr_source_texts.append(text)
                 near_key = RenderStage._source_text_similarity_key(text)
                 if near_key:
                     ocr_similarity_keys.add(near_key)
@@ -838,10 +1653,12 @@ class RenderStage(PipelineStage):
                     ocr_short_name_keys.add(short_name_key)
                 if page_is_contents:
                     continue
-                if RenderStage._looks_like_non_dialogue_text(text):
+                if (
+                    box_type not in _RENDERABLE_PAGE_TEXT_BOX_TYPES
+                    and box_type not in _TITLE_FOOTNOTE_BOX_TYPES
+                    and RenderStage._looks_like_non_dialogue_text(text)
+                ):
                     suppressed[idx] = "non-dialogue OCR text"
-                elif page_has_cover_marker:
-                    suppressed[idx] = "cover OCR text"
 
         for fallback_idx, region in enumerate(regions):
             if not isinstance(region, dict) or region.get("source") != "vision":
@@ -851,6 +1668,9 @@ class RenderStage(PipelineStage):
             except (TypeError, ValueError):
                 continue
             text = region.get("text")
+            if any(RenderStage._source_texts_nearly_duplicate(text, ocr_text) for ocr_text in ocr_source_texts):
+                suppressed[idx] = "near-duplicate vision text"
+                continue
             near_key = RenderStage._source_text_similarity_key(text)
             if near_key and near_key in ocr_similarity_keys:
                 suppressed[idx] = "near-duplicate vision text"
@@ -864,12 +1684,23 @@ class RenderStage(PipelineStage):
                 continue
             if page_is_contents:
                 continue
-            if RenderStage._looks_like_non_dialogue_text(text):
+            box_type = str(region.get("box_type") or "").strip().lower()
+            if (
+                box_type not in _RENDERABLE_PAGE_TEXT_BOX_TYPES
+                and box_type not in _TITLE_FOOTNOTE_BOX_TYPES
+                and RenderStage._looks_like_non_dialogue_text(text)
+            ):
                 suppressed[idx] = "non-dialogue vision text"
                 continue
-            if page_has_cover_marker:
-                suppressed[idx] = "cover vision text"
         return suppressed
+
+    @staticmethod
+    def _vision_region_font_size(width: float, height: float, is_page_text: bool) -> int:
+        """Return a bounded starting font size for injected vision regions."""
+        base = max(8, int(round(min(width, height) * 0.45)))
+        if is_page_text:
+            return min(base, _PAGE_TEXT_FONT_SIZE_MAX)
+        return base
 
     @staticmethod
     def _inject_vision_regions(
@@ -958,6 +1789,11 @@ class RenderStage(PipelineStage):
             for key in [RenderStage._source_text_similarity_key(region.get("text"))]
             if key
         }
+        occupied_source_texts = [
+            region.get("text")
+            for region in regions
+            if isinstance(region, dict) and region.get("source") != "vision"
+        ]
         occupied_short_name_texts = {
             key
             for region in regions
@@ -968,6 +1804,7 @@ class RenderStage(PipelineStage):
 
         next_index = max(used_indices, default=-1) + 1
         injected: dict[str, int] = {}
+        clear_regions: list[dict[str, Any]] = []
         appended = 0
         page_is_contents = (
             RenderStage._page_is_contents(context, page_idx)
@@ -985,10 +1822,17 @@ class RenderStage(PipelineStage):
                 regions, contents_columns
             )
         for b in vision_bubbles:
+            box_type = str(getattr(b, "box_type", "") or "dialogue").strip().lower()
+            if RenderStage._vision_bubble_should_be_footnoted(b):
+                logger.info(
+                    "render: skipping vision bubble %s on page %d because "
+                    "it is page text handled as a footnote",
+                    b.bubble_id, page_idx,
+                )
+                continue
             if b.bubble_id in existing_vision:
                 injected[b.bubble_id] = existing_vision[b.bubble_id]
                 continue
-            box_type = str(getattr(b, "box_type", "") or "dialogue").strip().lower()
             is_contents_entry = page_is_contents and box_type not in {"sfx", "graffiti"}
             if is_contents_entry and "contents" in RenderStage._source_text_key(b.source_text).lower():
                 continue
@@ -996,6 +1840,7 @@ class RenderStage(PipelineStage):
                 injected[b.bubble_id] = contents_existing_indices[contents_existing_idx]
                 contents_existing_idx += 1
                 continue
+            is_renderable_page_text = box_type in _RENDERABLE_PAGE_TEXT_BOX_TYPES
             if not is_contents_entry and not RenderStage._is_renderable_vision_box_type(box_type):
                 logger.info(
                     "render: skipping vision bubble %s on page %d because "
@@ -1012,6 +1857,13 @@ class RenderStage(PipelineStage):
                 )
                 continue
             similarity_key = RenderStage._source_text_similarity_key(b.source_text)
+            if any(RenderStage._source_texts_nearly_duplicate(b.source_text, text) for text in occupied_source_texts):
+                logger.info(
+                    "render: skipping vision bubble %s on page %d because "
+                    "OCR already has a near-duplicate source text",
+                    b.bubble_id, page_idx,
+                )
+                continue
             if similarity_key and similarity_key in occupied_similarity_texts:
                 logger.info(
                     "render: skipping vision bubble %s on page %d because "
@@ -1030,7 +1882,11 @@ class RenderStage(PipelineStage):
                     b.bubble_id, page_idx,
                 )
                 continue
-            if not is_contents_entry and RenderStage._looks_like_non_dialogue_text(b.source_text):
+            if (
+                not is_contents_entry
+                and not is_renderable_page_text
+                and RenderStage._looks_like_non_dialogue_text(b.source_text)
+            ):
                 logger.info(
                     "render: skipping vision bubble %s on page %d because "
                     "it looks like cover/contents/chapter metadata, not dialogue",
@@ -1060,24 +1916,22 @@ class RenderStage(PipelineStage):
                     b.bubble_id, page_idx,
                 )
                 continue
+            font_size = RenderStage._vision_region_font_size(w, h, is_renderable_page_text)
+            direction = "vertical" if is_renderable_page_text else "auto"
+
             # lines = quadrilateral polygon [[x,y],[x+w,y],[x+w,y+h],[x,y+h]];
             # the runtime's text renderer uses lines to position + size text.
             region = {
                 "index": next_index,
                 "source": "vision",
                 "bubble_id": b.bubble_id,
+                "box_type": box_type,
                 "text": b.source_text or "",
                 "texts": [b.source_text or ""],
                 "lines": [[[x, y], [x + w, y], [x + w, y + h], [x, y + h]]],
-                # font_size: use bbox height (matches OCR detector convention where
-                # font_size ≈ text height). -1 = auto-calc, but the runtime's
-                # _fit_font_size_to_region binary-searches up to 2×bbox height
-                # (e.g. 1822px for a 911px-tall vision bubble), and freetype's
-                # set_pixel_sizes(0, 1822) raises FT_Exception: raster overflow.
-                # Using bbox height caps the starting font size to a sane value.
-                "font_size": max(8, int(round(min(w, h) * 0.45))),
+                "font_size": font_size,
                 "angle": 0.0,
-                "direction": "auto",
+                "direction": direction,
                 "alignment": "auto",
                 "fg_color": [0, 0, 0],
                 "bg_color": [255, 255, 255],
@@ -1093,6 +1947,8 @@ class RenderStage(PipelineStage):
             }
             regions.append(region)
             injected[b.bubble_id] = next_index
+            if is_renderable_page_text:
+                clear_regions.append(region)
             next_index += 1
             appended += 1
 
@@ -1101,6 +1957,7 @@ class RenderStage(PipelineStage):
                 json.dumps(artifact, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
             )
+            RenderStage._clear_inpainted_regions(payload_path, page_idx, clear_regions)
             logger.info(
                 "render: injected %d vision region(s) into artifact-%s.json "
                 "(indices %d..%d)",
@@ -1334,6 +2191,60 @@ class RenderStage(PipelineStage):
         )
         suppressed_region_indices = self._suppressed_region_indices(payload_path, page_idx, context)
         emitted_region_indices: set[int] = set()
+        title_footnotes_added = False
+        handled_title_bubble_ids: set[str] = set()
+        rendered_source_texts: list[Any] = []
+        page_obj = next(
+            (p for p in context.pages if p.page_index == page_idx),
+            None,
+        )
+        page_has_title_bubbles = any(
+            str(getattr(bubble, "box_type", "") or "").strip().lower() in _TITLE_FOOTNOTE_BOX_TYPES
+            for bubble in getattr(page_obj, "bubbles", []) or []
+        ) if page_obj is not None else False
+        title_footnote_mode = page_has_title_bubbles and len(artifact_regions_by_index) <= 1
+        translations_by_bubble = {t.bubble_id: t for t in context.translations}
+        title_render_texts: set[str] = set()
+        title_source_keys: set[str] = set()
+        if title_footnote_mode and page_obj is not None:
+            for bubble in getattr(page_obj, "bubbles", []) or []:
+                box_type = str(getattr(bubble, "box_type", "") or "").strip().lower()
+                if box_type not in _TITLE_FOOTNOTE_BOX_TYPES:
+                    continue
+                source_key = RenderStage._source_text_key(getattr(bubble, "source_text", ""))
+                if source_key:
+                    title_source_keys.add(source_key)
+                candidate = translations_by_bubble.get(str(getattr(bubble, "bubble_id", "") or ""))
+                if candidate is None:
+                    continue
+                title_text = self._extract_render_text(candidate.text)
+                if s2t_converter is not None:
+                    title_text = s2t_converter.convert(title_text)
+                if title_text:
+                    title_render_texts.add(title_text)
+        if page_obj is not None:
+            for bubble in getattr(page_obj, "bubbles", []) or []:
+                box_type = str(getattr(bubble, "box_type", "") or "").strip().lower()
+                if (
+                    box_type not in _FOOTNOTE_PAGE_TEXT_BOX_TYPES
+                    and not self._vision_bubble_should_be_footnoted(bubble)
+                ):
+                    continue
+                bubble_id = str(getattr(bubble, "bubble_id", "") or "")
+                candidate = translations_by_bubble.get(bubble_id)
+                if candidate is None:
+                    continue
+                render_text = self._extract_render_text(candidate.text)
+                if s2t_converter is not None:
+                    render_text = s2t_converter.convert(render_text)
+                title_footnotes_added = self._append_title_footnote(
+                    footnotes,
+                    seen_footnote_keys,
+                    source_text=getattr(bubble, "source_text", ""),
+                    translation=render_text,
+                    kind=box_type or "page_text",
+                ) or title_footnotes_added
+                handled_title_bubble_ids.add(bubble_id)
 
         for t in context.translations:
             if t.bubble_id not in vision_region_index and not t.bubble_id.startswith(prefix):
@@ -1424,11 +2335,74 @@ class RenderStage(PipelineStage):
                 )
             if s2t_converter is not None:
                 render_text = s2t_converter.convert(render_text)
+            if self._artifact_region_should_be_footnoted(content_region, input_image_path):
+                content_box_type = (
+                    str(content_region.get("box_type") or "page_text").strip().lower()
+                    if content_region else "page_text"
+                )
+                title_footnotes_added = self._append_title_footnote(
+                    footnotes,
+                    seen_footnote_keys,
+                    source_text=content_region.get("text") if content_region else "",
+                    translation=render_text,
+                    kind=content_box_type or "page_text",
+                ) or title_footnotes_added
+                handled_title_bubble_ids.add(t.bubble_id)
+                emitted_region_indices.add(region_idx)
+                continue
+            if self._is_title_footnote_region(content_region, render_text):
+                title_footnotes_added = self._append_title_footnote(
+                    footnotes,
+                    seen_footnote_keys,
+                    source_text=content_region.get("text") if content_region else "",
+                    translation=render_text,
+                    kind=str(content_region.get("box_type") or "title") if content_region else "title",
+                ) or title_footnotes_added
+                handled_title_bubble_ids.add(t.bubble_id)
+                emitted_region_indices.add(region_idx)
+                continue
+            content_source_key = RenderStage._source_text_key(content_region.get("text") if content_region else "")
+            if title_footnote_mode and (
+                render_text in title_render_texts
+                or (content_source_key and content_source_key in title_source_keys)
+            ):
+                emitted_region_indices.add(region_idx)
+                continue
+            if title_footnote_mode and self._is_title_page_metadata_region(content_region):
+                title_footnotes_added = self._append_title_footnote(
+                    footnotes,
+                    seen_footnote_keys,
+                    source_text=content_region.get("text") if content_region else "",
+                    translation=render_text,
+                    kind=str(content_region.get("box_type") or "metadata") if content_region else "metadata",
+                ) or title_footnotes_added
+                emitted_region_indices.add(region_idx)
+                continue
+            if self._is_cover_title_metadata_duplicate(content_region, render_text):
+                emitted_region_indices.add(region_idx)
+                continue
+            content_box_type = str(content_region.get("box_type") or "").strip().lower() if content_region else ""
+            if content_box_type in _FOOTNOTE_PAGE_TEXT_BOX_TYPES:
+                title_footnotes_added = self._append_title_footnote(
+                    footnotes,
+                    seen_footnote_keys,
+                    source_text=content_region.get("text") if content_region else "",
+                    translation=render_text,
+                    kind=content_box_type,
+                ) or title_footnotes_added
+                handled_title_bubble_ids.add(t.bubble_id)
+                emitted_region_indices.add(region_idx)
+                continue
+            if self._shrink_overlong_vertical_region_font(content_region, render_text):
+                self._update_artifact_region(payload_path, page_idx, region_idx, content_region)
+            self._clear_rendered_bubble_residue(payload_path, page_idx, content_region)
             translations.append({
                 "region_index": region_idx,
                 "translation": render_text,
                 "target_lang": _normalize_runtime_lang_code(cfg.target_lang or "CHS"),
             })
+            if content_region is not None:
+                rendered_source_texts.append(content_region.get("text"))
             emitted_region_indices.add(region_idx)
 
             # Name footnotes are intentionally disabled by product rule.
@@ -1436,37 +2410,40 @@ class RenderStage(PipelineStage):
         # Term footnotes: prefer the page-level compiled set (deduplicated,
         # database-enriched explanations, all explanatory types). Fall back to
         # bubble-level candidates when compilation has not run.
-        page_obj = next(
-            (p for p in context.pages if p.page_index == page_idx),
-            None,
-        )
-        compiled = list(getattr(page_obj, "page_footnotes", []) or []) if page_obj else []
-        if compiled:
-            for fn in compiled:
-                original = self._sanitize_footnote_text(fn.term)
-                translation = self._sanitize_footnote_text(fn.translation)
-                if not original or not translation:
+        if title_footnote_mode and page_obj is not None:
+            for bubble in getattr(page_obj, "bubbles", []) or []:
+                bubble_id = str(getattr(bubble, "bubble_id", "") or "")
+                if not bubble_id or bubble_id in handled_title_bubble_ids:
                     continue
-                key = (original, translation)
-                if key in seen_footnote_keys:
+                box_type = str(getattr(bubble, "box_type", "") or "").strip().lower()
+                if box_type not in _TITLE_FOOTNOTE_BOX_TYPES:
                     continue
-                seen_footnote_keys.add(key)
-                footnotes.append({
-                    "original": original,
-                    "translation": translation,
-                    "type": fn.type,
-                    "explanation": self._sanitize_footnote_text(fn.explanation),
-                })
-        else:
-            for t in context.translations:
-                if t.bubble_id not in vision_region_index and not t.bubble_id.startswith(prefix):
+                candidate = translations_by_bubble.get(bubble_id)
+                if candidate is None:
                     continue
-                for fn in t.footnotes:
-                    original = self._sanitize_footnote_text(fn.original)
+                render_text = self._extract_render_text(candidate.text)
+                if s2t_converter is not None:
+                    render_text = s2t_converter.convert(render_text)
+                region = {
+                    "box_type": box_type,
+                    "text": getattr(bubble, "source_text", ""),
+                }
+                if not self._is_title_footnote_region(region, render_text):
+                    continue
+                title_footnotes_added = self._append_title_footnote(
+                    footnotes,
+                    seen_footnote_keys,
+                    source_text=getattr(bubble, "source_text", ""),
+                    translation=render_text,
+                    kind=box_type,
+                ) or title_footnotes_added
+        if not page_is_contents:
+            compiled = list(getattr(page_obj, "page_footnotes", []) or []) if page_obj else []
+            if compiled:
+                for fn in compiled:
+                    original = self._sanitize_footnote_text(fn.term)
                     translation = self._sanitize_footnote_text(fn.translation)
                     if not original or not translation:
-                        continue
-                    if fn.type not in {"loanword", "sfx", "visual", "cultural", "coined", "fictional"}:
                         continue
                     key = (original, translation)
                     if key in seen_footnote_keys:
@@ -1476,8 +2453,29 @@ class RenderStage(PipelineStage):
                         "original": original,
                         "translation": translation,
                         "type": fn.type,
-                        "explanation": self._sanitize_footnote_text(fn.explanation or ""),
+                        "explanation": self._sanitize_footnote_text(fn.explanation),
                     })
+            else:
+                for t in context.translations:
+                    if t.bubble_id not in vision_region_index and not t.bubble_id.startswith(prefix):
+                        continue
+                    for fn in t.footnotes:
+                        original = self._sanitize_footnote_text(fn.original)
+                        translation = self._sanitize_footnote_text(fn.translation)
+                        if not original or not translation:
+                            continue
+                        if fn.type not in {"loanword", "sfx", "visual", "cultural", "coined", "fictional"}:
+                            continue
+                        key = (original, translation)
+                        if key in seen_footnote_keys:
+                            continue
+                        seen_footnote_keys.add(key)
+                        footnotes.append({
+                            "original": original,
+                            "translation": translation,
+                            "type": fn.type,
+                            "explanation": self._sanitize_footnote_text(fn.explanation or ""),
+                        })
 
         for page in context.pages:
             if page.page_index != page_idx:
@@ -1486,6 +2484,16 @@ class RenderStage(PipelineStage):
                 original = self._sanitize_footnote_text(fn.source_text)
                 translation = self._sanitize_footnote_text(fn.translation_hint or fn.notes or "见图中文字")
                 if not original:
+                    continue
+                if page_is_contents:
+                    continue
+                if (
+                    str(getattr(fn, "kind", "") or "").strip().lower() in {"dialogue", "speech", "thought", "narration", "narrator"}
+                    and any(
+                        RenderStage._source_texts_nearly_duplicate(original, rendered_text)
+                        for rendered_text in rendered_source_texts
+                    )
+                ):
                     continue
                 key = (original, translation)
                 if key in seen_footnote_keys:
@@ -1509,7 +2517,19 @@ class RenderStage(PipelineStage):
             translations,
             input_image_path,
         )
-        if page_is_contents or not translations:
+        if not translations and title_footnotes_added:
+            self._restore_inpainted_page_from_original(
+                payload_path,
+                page_idx,
+                input_image_path,
+            )
+        self._write_cover_title_overlay_sidecar(
+            payload_path,
+            page_idx,
+            [],
+            input_image_path,
+        )
+        if not translations and not title_footnotes_added:
             footnotes = []
         elif not getattr(cfg, "render_footnotes", False):
             footnotes = []
@@ -1607,6 +2627,12 @@ class RenderStage(PipelineStage):
         s = RenderStage._strip_inline_footnote_noise(
             RenderStage._strip_llm_chatter(text)
         )
+        s = re.split(
+            r"\s*(?:\*\*\s*)?(?:Explanation|Rationale|Reasoning)(?:\s*\*\*)?\s*:",
+            s,
+            maxsplit=1,
+            flags=re.IGNORECASE,
+        )[0].strip()
         # Collapse LLM-introduced line breaks and extra spaces. Manga dialogue
         # text should be a single line — the runtime handles wrapping.
         s = re.sub(r"\s*\n\s*", " ", s).strip()

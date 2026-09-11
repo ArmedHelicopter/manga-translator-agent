@@ -1,7 +1,48 @@
 """Tests for vision-supplemented bubble detection (Experiment #14)."""
 from mga.models import BoundingBox, Bubble, Page, PageImage, ProjectConfig
 from mga.pipeline.stages import PipelineContext
-from mga.pipeline.vision_stage import VisionEnrichmentStage, _compute_iou
+from mga.pipeline.vision_stage import (
+    VisionEnrichmentStage,
+    _build_cover_title_focus_prompt,
+    _build_vision_prompt,
+    _compute_iou,
+)
+from PIL import Image, ImageDraw
+
+
+class TestVisionPrompt:
+    def test_cover_title_prompt_requests_tight_split_boxes(self):
+        prompt = _build_vision_prompt()
+
+        assert "cover_title" in prompt
+        assert "Split the title" in prompt
+        assert "bbox tightly covers only the visible strokes" in prompt
+        assert "relative to the image you receive" in prompt
+        assert "SINGLE bounding box" not in prompt
+
+    def test_cover_title_focus_prompt_describes_high_contrast_preprocessing(self):
+        prompt = _build_cover_title_focus_prompt()
+
+        assert "high-contrast black-on-white OCR" in prompt
+        assert "second image is the original crop" in prompt
+
+
+class TestCoverTitlePreprocessing:
+    def test_white_title_crop_is_converted_to_black_on_white_ocr_image(self):
+        import io
+        import numpy as np
+
+        img = Image.new("RGB", (120, 240), (180, 95, 55))
+        draw = ImageDraw.Draw(img)
+        draw.rectangle((40, 20, 80, 210), fill=(252, 250, 245))
+
+        processed = VisionEnrichmentStage._preprocess_cover_title_crop_for_ocr(img)
+
+        assert processed is not None
+        out = Image.open(io.BytesIO(processed)).convert("L")
+        arr = np.asarray(out)
+        assert float((arr < 64).mean()) > 0.05
+        assert float((arr > 240).mean()) > 0.5
 
 
 class TestComputeIoU:
@@ -168,6 +209,314 @@ class TestVisionSupplementedBubbles:
         stage._apply_enrichment_to_page(page, vision_result)
 
         assert page.bubbles[0].source_text == "OCR_AUTHORITATIVE_TEXT"
+
+    def test_cover_title_is_added_instead_of_matching_ocr_order(self):
+        ocr_bubbles = [
+            Bubble(
+                bubble_id="region-0000-0000",
+                bbox=BoundingBox(x=50, y=500, width=140, height=40),
+                source_text="COMICS",
+                reading_order=0,
+                detection_source="ocr",
+            ),
+        ]
+        page = self._make_page(ocr_bubbles)
+        page.page_index = 0
+
+        vision_result = {
+            "bubbles": [
+                {
+                    "source_text": "私を喰べたい",
+                    "bbox": {"x": 100, "y": 80, "width": 240, "height": 420},
+                    "box_type": "cover_title",
+                    "reading_order": 0,
+                    "confidence": 0.95,
+                },
+            ],
+            "visual_footnotes": [],
+            "voice_hints": [],
+            "scene_summary": "",
+        }
+
+        stage = VisionEnrichmentStage()
+        stage._apply_enrichment_to_page(page, vision_result)
+
+        assert [bubble.bubble_id for bubble in page.bubbles] == [
+            "region-0000-0000",
+            "vision-0000-0000",
+        ]
+        assert page.bubbles[0].source_text == "COMICS"
+        assert page.bubbles[1].source_text == "私を喰べたい"
+        assert page.bubbles[1].box_type == "cover_title"
+
+    def test_cover_title_single_character_fragments_are_merged(self):
+        page = self._make_page([])
+        page.page_index = 0
+        vision_result = {
+            "bubbles": [
+                {"source_text": "8", "bbox": {"x": 130, "y": 25, "width": 50, "height": 50}, "box_type": "cover_title", "reading_order": 0},
+                {"source_text": "私", "bbox": {"x": 470, "y": 20, "width": 90, "height": 130}, "box_type": "cover_title", "reading_order": 1},
+                {"source_text": "を", "bbox": {"x": 510, "y": 150, "width": 70, "height": 100}, "box_type": "cover_title", "reading_order": 2},
+                {"source_text": "喰", "bbox": {"x": 470, "y": 260, "width": 110, "height": 130}, "box_type": "cover_title", "reading_order": 3},
+                {"source_text": "べ", "bbox": {"x": 510, "y": 395, "width": 70, "height": 100}, "box_type": "cover_title", "reading_order": 4},
+                {"source_text": "た", "bbox": {"x": 470, "y": 510, "width": 90, "height": 110}, "box_type": "cover_title", "reading_order": 5},
+                {"source_text": "い", "bbox": {"x": 510, "y": 625, "width": 60, "height": 100}, "box_type": "cover_title", "reading_order": 6},
+                {"source_text": "ひ", "bbox": {"x": 30, "y": 25, "width": 80, "height": 110}, "box_type": "cover_title", "reading_order": 7},
+                {"source_text": "と", "bbox": {"x": 30, "y": 145, "width": 80, "height": 110}, "box_type": "cover_title", "reading_order": 8},
+                {"source_text": "で", "bbox": {"x": 30, "y": 265, "width": 80, "height": 110}, "box_type": "cover_title", "reading_order": 9},
+                {"source_text": "な", "bbox": {"x": 30, "y": 385, "width": 80, "height": 110}, "box_type": "cover_title", "reading_order": 10},
+                {"source_text": "し", "bbox": {"x": 30, "y": 505, "width": 80, "height": 110}, "box_type": "cover_title", "reading_order": 11},
+                {"source_text": "苗川采", "bbox": {"x": 365, "y": 380, "width": 50, "height": 130}, "box_type": "cover_title", "reading_order": 12},
+                {"source_text": "NEXT", "bbox": {"x": 100, "y": 760, "width": 100, "height": 25}, "box_type": "cover_title", "reading_order": 13},
+            ],
+            "visual_footnotes": [],
+            "voice_hints": [],
+            "scene_summary": "",
+        }
+
+        stage = VisionEnrichmentStage()
+        stage._apply_enrichment_to_page(page, vision_result)
+
+        cover_texts = [b.source_text for b in page.bubbles if b.box_type == "cover_title"]
+        assert "私を喰べたい" in cover_texts
+        assert "ひとでなし" in cover_texts
+        assert "8" in cover_texts
+        assert "苗川采" in cover_texts
+        assert "NEXT" in cover_texts
+        assert "喰" not in cover_texts
+        assert "し" not in cover_texts
+
+    def test_cover_title_short_column_fragments_are_merged(self):
+        page = self._make_page([])
+        page.page_index = 0
+        vision_result = {
+            "bubbles": [
+                {"source_text": "私を", "bbox": {"x": 1200, "y": 52, "width": 340, "height": 338}, "box_type": "cover_title", "reading_order": 0},
+                {"source_text": "喰べ", "bbox": {"x": 1200, "y": 430, "width": 340, "height": 338}, "box_type": "cover_title", "reading_order": 1},
+                {"source_text": "たい、", "bbox": {"x": 1200, "y": 807, "width": 340, "height": 338}, "box_type": "cover_title", "reading_order": 2},
+                {"source_text": "ひとで", "bbox": {"x": 0, "y": 65, "width": 340, "height": 338}, "box_type": "cover_title", "reading_order": 3},
+                {"source_text": "なし", "bbox": {"x": 0, "y": 430, "width": 340, "height": 338}, "box_type": "cover_title", "reading_order": 4},
+                {"source_text": "苗川采", "bbox": {"x": 938, "y": 886, "width": 156, "height": 468}, "box_type": "cover_title", "reading_order": 5},
+                {"source_text": "NAEKAWA SAI", "bbox": {"x": 1108, "y": 990, "width": 78, "height": 338}, "box_type": "cover_title", "reading_order": 6},
+            ],
+            "visual_footnotes": [],
+            "voice_hints": [],
+            "scene_summary": "",
+        }
+
+        stage = VisionEnrichmentStage()
+        stage._apply_enrichment_to_page(page, vision_result)
+
+        cover_texts = [b.source_text for b in page.bubbles if b.box_type == "cover_title"]
+        assert "私を喰べたい、" in cover_texts
+        assert "ひとでなし" in cover_texts
+        assert "苗川采" in cover_texts
+        assert "NAEKAWA SAI" in cover_texts
+        assert "ひとで" not in cover_texts
+        assert "なし" not in cover_texts
+
+    def test_missing_cover_title_column_gets_focused_supplement(self, tmp_path):
+        image_path = tmp_path / "cover.png"
+        img = Image.new("RGB", (1000, 1400), (190, 110, 70))
+        draw = ImageDraw.Draw(img)
+        draw.rectangle((40, 80, 180, 1180), fill=(250, 250, 248))
+        draw.rectangle((820, 80, 960, 1180), fill=(250, 250, 248))
+        img.save(image_path)
+
+        page = self._make_page([
+            Bubble(
+                bubble_id="vision-0000-0000",
+                bbox=BoundingBox(x=820, y=80, width=140, height=1100),
+                source_text="私を喰べたい",
+                reading_order=0,
+                detection_source="vision",
+                box_type="cover_title",
+            )
+        ])
+        page.page_index = 0
+        page.image = PageImage(path=str(image_path), width=1000, height=1400)
+
+        class FocusProvider:
+            errors = []
+            calls = []
+
+            def call_vision_structured(self, **kwargs):
+                self.calls.append(kwargs.get("operation"))
+                return (
+                    {
+                        "bubbles": [
+                            {
+                                "source_text": "ひとでなし",
+                                "bbox": {"x": 10, "y": 20, "width": 100, "height": 800},
+                                "box_type": "cover_title",
+                                "confidence": 0.9,
+                            }
+                        ]
+                    },
+                    object(),
+                )
+
+        stage = VisionEnrichmentStage()
+        stage._supplement_missing_cover_title_columns(page, FocusProvider(), ProjectConfig())
+
+        cover_texts = [b.source_text for b in page.bubbles if b.box_type == "cover_title"]
+        assert "私を喰べたい" in cover_texts
+        assert "ひとでなし" in cover_texts
+        assert page.bubbles[-1].bbox.x >= 40
+
+    def test_missing_cover_title_column_supplements_when_existing_count_matches_columns(self, tmp_path):
+        image_path = tmp_path / "cover.png"
+        img = Image.new("RGB", (1000, 1400), (190, 110, 70))
+        draw = ImageDraw.Draw(img)
+        draw.rectangle((40, 80, 180, 1180), fill=(250, 250, 248))
+        draw.rectangle((820, 80, 960, 1180), fill=(250, 250, 248))
+        img.save(image_path)
+
+        page = self._make_page([
+            Bubble(
+                bubble_id="vision-0000-0000",
+                bbox=BoundingBox(x=820, y=80, width=140, height=360),
+                source_text="私を",
+                reading_order=0,
+                detection_source="vision",
+                box_type="cover_title",
+            ),
+            Bubble(
+                bubble_id="vision-0000-0001",
+                bbox=BoundingBox(x=820, y=460, width=140, height=360),
+                source_text="喰べ",
+                reading_order=1,
+                detection_source="vision",
+                box_type="cover_title",
+            ),
+        ])
+        page.page_index = 0
+        page.image = PageImage(path=str(image_path), width=1000, height=1400)
+
+        class FocusProvider:
+            errors = []
+            calls = []
+
+            def call_vision_structured(self, **kwargs):
+                self.calls.append(kwargs.get("operation"))
+                return (
+                    {
+                        "bubbles": [
+                            {
+                                "source_text": "ひとでなし",
+                                "bbox": {"x": 10, "y": 20, "width": 100, "height": 800},
+                                "box_type": "cover_title",
+                                "confidence": 0.9,
+                            }
+                        ]
+                    },
+                    object(),
+                )
+
+        provider = FocusProvider()
+        stage = VisionEnrichmentStage()
+        stage._supplement_missing_cover_title_columns(page, provider, ProjectConfig())
+
+        cover_texts = [b.source_text for b in page.bubbles if b.box_type == "cover_title"]
+        assert "ひとでなし" in cover_texts
+        assert provider.calls == ["vision_cover_title_focus"]
+
+
+    def test_cover_title_focus_sends_processed_crop_before_raw_crop(self, tmp_path):
+        image_path = tmp_path / "cover.png"
+        img = Image.new("RGB", (1000, 1400), (190, 110, 70))
+        draw = ImageDraw.Draw(img)
+        draw.rectangle((40, 80, 180, 1180), fill=(250, 250, 248))
+        draw.rectangle((820, 80, 960, 1180), fill=(250, 250, 248))
+        img.save(image_path)
+
+        page = self._make_page([
+            Bubble(
+                bubble_id="vision-0000-0000",
+                bbox=BoundingBox(x=820, y=80, width=140, height=1100),
+                source_text="あああ",
+                reading_order=0,
+                detection_source="vision",
+                box_type="cover_title",
+            )
+        ])
+        page.page_index = 0
+        page.image = PageImage(path=str(image_path), width=1000, height=1400)
+
+        class FocusProvider:
+            errors = []
+            calls = []
+            image_counts = []
+
+            def call_vision_structured(self, **kwargs):
+                self.calls.append(kwargs.get("operation"))
+                self.image_counts.append(len(kwargs.get("images") or []))
+                return (
+                    {
+                        "bubbles": [
+                            {
+                                "source_text": "いいい",
+                                "bbox": {"x": 10, "y": 20, "width": 100, "height": 800},
+                                "box_type": "cover_title",
+                                "confidence": 0.9,
+                            }
+                        ]
+                    },
+                    object(),
+                )
+
+        provider = FocusProvider()
+        stage = VisionEnrichmentStage()
+        stage._supplement_missing_cover_title_columns(page, provider, ProjectConfig())
+
+        assert provider.calls == ["vision_cover_title_focus"]
+        assert provider.image_counts == [2]
+
+    def test_cover_title_corrections_replace_overlapping_vision_titles(self, tmp_path):
+        image_path = tmp_path / "cover.png"
+        img = Image.new("RGB", (1000, 1400), (190, 110, 70))
+        draw = ImageDraw.Draw(img)
+        draw.rectangle((40, 80, 180, 1180), fill=(250, 250, 248))
+        draw.rectangle((820, 80, 960, 1180), fill=(250, 250, 248))
+        img.save(image_path)
+
+        page = self._make_page([
+            Bubble(
+                bubble_id="vision-0000-wrong-right",
+                bbox=BoundingBox(x=820, y=80, width=140, height=1100),
+                source_text="wrong right",
+                reading_order=0,
+                detection_source="vision",
+                box_type="cover_title",
+            ),
+            Bubble(
+                bubble_id="vision-0000-wrong-left",
+                bbox=BoundingBox(x=40, y=80, width=140, height=1100),
+                source_text="wrong left",
+                reading_order=1,
+                detection_source="vision",
+                box_type="cover_title",
+            ),
+        ])
+        page.page_index = 0
+        page.image = PageImage(path=str(image_path), width=1000, height=1400)
+        cfg = ProjectConfig(
+            plugins={
+                "cover_title_corrections": {
+                    "pages": {
+                        "page_0000": {
+                            "source_texts": ["私を喰べたい", "ひとでなし"],
+                        }
+                    }
+                }
+            }
+        )
+
+        VisionEnrichmentStage()._apply_cover_title_corrections(page, cfg)
+
+        cover_titles = [b.source_text for b in page.bubbles if b.box_type == "cover_title"]
+        assert cover_titles == ["私を喰べたい", "ひとでなし"]
+        assert all("corrected" in b.bubble_id for b in page.bubbles)
 
 
 class TestZeroVisionCallsWarning:

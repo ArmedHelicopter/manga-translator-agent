@@ -81,3 +81,9 @@ Runtime behaviors that affect output but are resolved by configuration, are upst
 ### Memory / character profiles empty when no speakers detected
 - **Cause**: when `speaker_attribution` finds every bubble with `speaker_id=None`, `_update_profiles` skips and no profiles/state are produced.
 - **Status**: expected behavior when speaker info is absent — not a bug. Enhancement: add speaker detection in vision enrichment.
+
+### 2026-09-11 — Recover multiline footnote wrapping
+- **File**: `manga_translator/manga_translator.py` (footnote line wrapping).
+- **Patch**: Split explicit newlines before wrapping each segment.
+- **Why runtime-side**: The final footnote layout and wrapping occur in the runtime.
+- **Validation**: Recovered from local work; fresh model-backed visual E2E has not been performed. See `docs/RECOVERED-E2E-WORK.md`.

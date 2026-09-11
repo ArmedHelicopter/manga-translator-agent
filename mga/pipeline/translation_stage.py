@@ -51,6 +51,7 @@ class TranslationStage(PipelineStage):
     """Translate each bubble using LLM with character and cultural context."""
 
     _RENDERABLE_VISION_BOX_TYPES = {"dialogue", "speech", "thought", "narration", "narrator"}
+    _TRANSLATABLE_PAGE_TEXT_BOX_TYPES = {"cover_title", "chapter_title", "sign", "letter"}
 
     def __init__(self) -> None:
         self._logger = logging.getLogger(__name__)
@@ -69,19 +70,11 @@ class TranslationStage(PipelineStage):
         provider_cascade = ProviderCascade(cfg, "translation")
         project_dir = Path(cfg.working_dir) if cfg.working_dir else Path(".")
 
-        # Determine parallel mode from config.
-        # Default to SERIAL: the configured translation provider (mimo token-plan)
-        # has a low concurrency limit, so semantic-parallel's max_concurrent_requests
-        # workers (5) exceed it → concurrent calls fail with "No provider available",
-        # burn the 60s semantic_timeout, then fall back to serial anyway. Serial by
-        # default avoids that wasted timeout on every page. semantic-parallel remains
-        # available via config for providers that allow real concurrency (OpenAI/Gemini);
-        # a ParallelExecutionError fallback to serial (:129) guarantees it can never be
-        # worse than serial when explicitly enabled.
-        # (Background: translation is 87% of runtime — parallel would help ~5x IF the
-        # provider allows concurrency; mimo token-plan does not. docs/p4-performance-analysis.md)
+        # Determine translation parallelism from the stage config first, then
+        # from CLI-level ProjectConfig fields for direct ProjectConfig callers.
+        # Providers with low request limits can still opt into small batches.
         parallel_config = cfg.translation_config or {}
-        parallel_mode = parallel_config.get("parallel_mode", "serial")
+        parallel_mode = parallel_config.get("parallel_mode") or cfg.parallel_mode or "serial"
 
         # Use optimized services if available in metadata
         memory_service = context.metadata.get("memory_service")
@@ -276,7 +269,7 @@ class TranslationStage(PipelineStage):
         parallel_config: dict[str, Any],
     ) -> tuple[list[TranslationCandidate], list[DialogueRealizationTrace]]:
         """Execute translation with semantic-parallel bubble processing."""
-        max_concurrent = parallel_config.get("max_concurrent_requests", 3)
+        max_concurrent = parallel_config.get("max_concurrent_requests", cfg.translation_max_workers)
         semantic_timeout = parallel_config.get("semantic_timeout", 60)
 
         all_translations: list[TranslationCandidate] = []
@@ -324,8 +317,8 @@ class TranslationStage(PipelineStage):
         parallel_config: dict[str, Any],
     ) -> tuple[list[TranslationCandidate], list[DialogueRealizationTrace]]:
         """Execute translation with batch-parallel page processing."""
-        batch_size = parallel_config.get("batch_size", 3)
-        max_concurrent = parallel_config.get("max_concurrent_requests", 3)
+        batch_size = parallel_config.get("batch_size", cfg.pipeline_concurrency)
+        max_concurrent = parallel_config.get("max_concurrent_requests", cfg.translation_max_workers)
         semantic_timeout = parallel_config.get("semantic_timeout", 60)
 
         all_translations: list[TranslationCandidate] = []
@@ -955,7 +948,12 @@ class TranslationStage(PipelineStage):
         box_type = str(getattr(bubble, "box_type", "") or "dialogue").strip().lower()
         if not box_type:
             return True
+        source_text = str(getattr(bubble, "source_text", "") or "").strip()
+        if source_text and len(source_text) <= 4 and source_text.isascii() and source_text.replace(" ", "").isalpha():
+            return False
         if page_is_contents and box_type not in {"sfx", "graffiti"}:
+            return True
+        if box_type in cls._TRANSLATABLE_PAGE_TEXT_BOX_TYPES:
             return True
         # Vision reports all visible text, including SFX, page numbers, signs,
         # and chapter labels. Translating those as dialogue recreates the

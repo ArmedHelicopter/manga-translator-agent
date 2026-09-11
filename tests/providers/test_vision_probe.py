@@ -9,6 +9,7 @@ from mga.cli.main import _check_vision_provider_capability
 from mga.models import ProjectConfig, ProviderRoute, StageProviderConfig
 from mga.providers import vision_probe
 from mga.providers.vision_probe import (
+    PROBE_TIMEOUT_SECONDS,
     TINY_PNG,
     discover_vision_models,
     is_image_rejection_error,
@@ -25,7 +26,7 @@ class FakeProvider:
         self.vision_calls = []
 
     def vision(self, messages, images, **kwargs):
-        self.vision_calls.append((messages, images))
+        self.vision_calls.append((messages, images, kwargs))
         if not self._vision_ok:
             raise RuntimeError(self._error or "boom")
         return "OK"
@@ -41,6 +42,7 @@ def test_probe_vision_success():
     assert err == ""
     # The probe must send the tiny PNG.
     assert provider.vision_calls[0][1] == [TINY_PNG]
+    assert provider.vision_calls[0][2]["timeout"] == PROBE_TIMEOUT_SECONDS
 
 
 def test_probe_vision_failure_returns_error():

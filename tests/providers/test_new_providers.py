@@ -251,6 +251,20 @@ class TestMistralProvider:
         )
         assert result == {"result": True}
 
+    def test_timeout_passed_to_client_and_requests(self):
+        """Mimo timeout config should bound provider calls."""
+        with patch("openai.OpenAI") as mock_openai_cls:
+            mock_client = MagicMock()
+            mock_client.chat.completions.create.return_value = _make_openai_response("ok")
+            mock_openai_cls.return_value = mock_client
+
+            from mga.providers.mimo_provider import MimoProvider
+            provider = MimoProvider(api_key="test-key", timeout=7)
+            provider.chat([{"role": "user", "content": "Hi"}])
+
+        assert mock_openai_cls.call_args.kwargs["timeout"] == 7
+        assert mock_client.chat.completions.create.call_args.kwargs["timeout"] == 7
+
     def test_vision_injects_images(self, provider):
         """Test vision injects images into messages."""
         provider._vision_model = "pixtral-12b-2409"  # Make it vision-capable

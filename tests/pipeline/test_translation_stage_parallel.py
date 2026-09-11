@@ -72,6 +72,38 @@ def test_translation_stage_semantic_parallel_mode_translates_page(tmp_path, monk
     assert artifact["dialogue_realization"]["semantic_count"] == 2
 
 
+def test_translation_stage_uses_project_parallel_mode_fallback(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(
+        "mga.providers.cascade.get_provider",
+        lambda name, **settings: SemanticParallelProvider(),
+    )
+    ctx = PipelineContext(
+        project_config=ProjectConfig(
+            working_dir=str(tmp_path),
+            target_lang="zh-CN",
+            parallel_mode="semantic-parallel",
+            translation_max_workers=2,
+            provider_routes={
+                "translation": StageProviderConfig(primary=ProviderRoute(provider="fake")),
+            },
+        ),
+        pages=[
+            Page(
+                page_id="p1",
+                bubbles=[
+                    Bubble(bubble_id="b1", source_text="source one", reading_order=0),
+                    Bubble(bubble_id="b2", source_text="source two", reading_order=1),
+                ],
+            )
+        ],
+    )
+
+    result = TranslationStage().execute(ctx)
+
+    assert [candidate.bubble_id for candidate in result.translations] == ["b1", "b2"]
+    assert result.artifacts["translation"]["parallel_mode"] == "semantic-parallel"
+
+
 def test_translation_stage_skips_non_renderable_vision_text(tmp_path, monkeypatch) -> None:
     calls: list[str] = []
 

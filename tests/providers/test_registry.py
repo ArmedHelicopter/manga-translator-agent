@@ -48,6 +48,7 @@ def test_get_provider_mimo_uses_openai_compatible_defaults(monkeypatch):
     assert provider.model_name == "mimo-v2.5"
     assert captured["api_key"] == "mimo-key"
     assert str(captured["base_url"]) == "https://token-plan-cn.xiaomimimo.com/v1"
+    assert captured["timeout"] == 120.0
 
 
 def test_get_provider_uses_openai_compatible_provider_type(monkeypatch):
@@ -67,6 +68,7 @@ def test_get_provider_uses_openai_compatible_provider_type(monkeypatch):
         base_url="https://compatible.example/v1",
         vision_model="vision-model",
         text_model="text-model",
+        timeout=42,
     )
 
     assert provider.__class__.__name__ == "OpenAIProvider"
@@ -74,6 +76,44 @@ def test_get_provider_uses_openai_compatible_provider_type(monkeypatch):
     assert provider._translate_model == "text-model"
     assert captured["api_key"] == "compat-key"
     assert str(captured["base_url"]) == "https://compatible.example/v1"
+    assert captured["timeout"] == 42
+
+
+def test_openai_provider_uses_text_model_and_timeout_for_chat_request(monkeypatch):
+    captured = {}
+
+    class FakeCompletions:
+        def create(self, **kwargs):
+            captured.update(kwargs)
+
+            class FakeMessage:
+                content = "{}"
+
+            class FakeChoice:
+                message = FakeMessage()
+
+            class FakeResponse:
+                choices = [FakeChoice()]
+
+            return FakeResponse()
+
+    class FakeOpenAI:
+        def __init__(self, **kwargs):
+            self.chat = type("Chat", (), {"completions": FakeCompletions()})()
+
+    monkeypatch.setattr("mga.providers.openai_provider.openai.OpenAI", FakeOpenAI)
+
+    provider = get_provider(
+        "openai",
+        api_key="test-key",
+        vision_model="vision-model",
+        text_model="text-model",
+        timeout=7,
+    )
+    provider.chat([{"role": "user", "content": "hi"}])
+
+    assert captured["model"] == "text-model"
+    assert captured["timeout"] == 7
 
 
 def test_get_provider_anthropic():

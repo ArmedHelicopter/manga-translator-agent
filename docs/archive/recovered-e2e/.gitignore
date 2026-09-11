@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (user content + models)
+data/input/
+data/output/
+data/models/
+
+# External runtime clone
+external/
+
+# Provider keys
+.env
+.env.local
+mga.toml
+configs/providers.toml
+configs/providers.*.toml
+!configs/providers.toml.example
+
+# Model weights
+*.bin
+*.safetensors
+*.onnx
+*.pt
+
+# Cache
+.cache/
+.pytest_cache/
+temp/
+
+# Legacy
+legacy/
+
+# Misc
+uv.lock

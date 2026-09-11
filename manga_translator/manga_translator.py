@@ -877,7 +877,8 @@ class MangaTranslator:
 
         wrapped_lines = []
         for line in lines:
-            wrapped_lines.extend(_wrap(line))
+            for segment in str(line).splitlines() or [""]:
+                wrapped_lines.extend(_wrap(segment))
         lines = wrapped_lines
 
         # Compute text box size

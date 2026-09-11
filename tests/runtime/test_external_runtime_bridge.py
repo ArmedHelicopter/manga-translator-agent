@@ -51,6 +51,9 @@ def test_run_export_artifact_writes_fast_export_config(tmp_path, monkeypatch):
     image = tmp_path / "page.png"
     Image.new("RGB", (8, 8), "white").save(image)
     payload_dir = tmp_path / "payload"
+    model_dir = tmp_path / "models"
+    monkeypatch.setenv("MANGA_TRANSLATOR_MODEL_DIR", str(model_dir))
+    captured_command = []
 
     class Completed:
         returncode = 0
@@ -58,6 +61,7 @@ def test_run_export_artifact_writes_fast_export_config(tmp_path, monkeypatch):
         stderr = ""
 
     def fake_run(command, **kwargs):
+        captured_command.extend(command)
         payload_dir.joinpath("artifact.json").write_text("{}", encoding="utf-8")
         return Completed()
 
@@ -70,6 +74,7 @@ def test_run_export_artifact_writes_fast_export_config(tmp_path, monkeypatch):
     assert export_config["inpainter"]["inpainter"] == "lama_large"
     assert export_config["inpainter"]["inpainting_size"] == 1024
     assert export_config["detector"]["detection_size"] == 1024
+    assert captured_command[-2:] == ["--model-dir", str(model_dir)]
 
 
 def test_run_export_artifact_fills_empty_page_when_runtime_skips_text(tmp_path, monkeypatch):

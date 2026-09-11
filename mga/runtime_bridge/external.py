@@ -59,6 +59,22 @@ def _collect_rendered_images(output_dir: Path) -> list[str]:
     )
 
 
+def _subprocess_output_tail(output: str | None, limit: int = 4000) -> str:
+    return (output or "")[-limit:]
+
+
+def _runtime_subprocess_kwargs(*, cwd: Path, env: dict[str, str]) -> dict[str, Any]:
+    return {
+        "cwd": cwd,
+        "env": env,
+        "capture_output": True,
+        "text": True,
+        "encoding": "utf-8",
+        "errors": "replace",
+        "check": False,
+    }
+
+
 def _input_signature(input_path: Path) -> dict[str, Any]:
     stat = input_path.stat()
     signature: dict[str, Any] = {
@@ -550,11 +566,7 @@ def run_external_translation_runtime(
 
     completed = subprocess.run(
         command,
-        cwd=resolved_repo,
-        env=child_env,
-        capture_output=True,
-        text=True,
-        check=False,
+        **_runtime_subprocess_kwargs(cwd=resolved_repo, env=child_env),
     )
 
     parsed_blocks: list[dict[str, Any]] = []
@@ -597,8 +609,8 @@ def run_external_translation_runtime(
             "ld_library_path_present": bool(child_env.get("LD_LIBRARY_PATH")),
             "ld_preload_present": bool(child_env.get("LD_PRELOAD")),
         },
-        "stdout": completed.stdout[-4000:],
-        "stderr": completed.stderr[-4000:],
+        "stdout": _subprocess_output_tail(completed.stdout),
+        "stderr": _subprocess_output_tail(completed.stderr),
     }
     store.write_json("external-baseline-summary.json", summary)
 
@@ -634,14 +646,13 @@ def _run_export_artifact_command(
         "--export-artifact", str(payload_dir.resolve()),
         "--config-file", str(export_config_path.resolve()),
     ]
+    model_dir = os.getenv("MANGA_TRANSLATOR_MODEL_DIR")
+    if model_dir:
+        command.extend(["--model-dir", str(Path(model_dir).expanduser())])
 
     return subprocess.run(
         command,
-        cwd=resolved_repo,
-        env=_build_external_child_env(),
-        capture_output=True,
-        text=True,
-        check=False,
+        **_runtime_subprocess_kwargs(cwd=resolved_repo, env=_build_external_child_env()),
     )
 
 
@@ -751,12 +762,15 @@ def run_export_artifact(
                 export_config_path=export_config_path,
             )
             last_completed = completed
-            output_tail = f"{completed.stdout[-4000:]}\n{completed.stderr[-4000:]}"
+            output_tail = (
+                f"{_subprocess_output_tail(completed.stdout)}\n"
+                f"{_subprocess_output_tail(completed.stderr)}"
+            )
             if completed.returncode != 0 or "ERROR:" in output_tail or "Traceback" in output_tail:
                 raise RuntimeError(
                     f"Export artifact failed for page {index} (exit {completed.returncode}).\n"
-                    f"stdout: {_sanitize_subprocess_output(completed.stdout[-2000:])}\n"
-                    f"stderr: {_sanitize_subprocess_output(completed.stderr[-2000:])}"
+                    f"stdout: {_sanitize_subprocess_output(_subprocess_output_tail(completed.stdout, 2000))}\n"
+                    f"stderr: {_sanitize_subprocess_output(_subprocess_output_tail(completed.stderr, 2000))}"
                 )
 
             _complete_runtime_artifacts(page_payload, image_path)
@@ -770,7 +784,7 @@ def run_export_artifact(
     _write_pages_manifest(payload_dir, len(image_paths))
     has_artifact = bool(image_paths)
     if not has_artifact:
-        stdout = last_completed.stdout[-2000:] if last_completed else ""
+        stdout = _subprocess_output_tail(last_completed.stdout, 2000) if last_completed else ""
         raise RuntimeError(
             f"Export artifact completed but no artifact files found in {payload_dir}.\n"
             f"stdout: {stdout}"
@@ -846,11 +860,7 @@ def run_render_only(
     child_env = _build_external_child_env()
     completed = subprocess.run(
         command,
-        cwd=resolved_repo,
-        env=child_env,
-        capture_output=True,
-        text=True,
-        check=False,
+        **_runtime_subprocess_kwargs(cwd=resolved_repo, env=child_env),
     )
 
     rendered_images = _collect_rendered_images(output_dir)
@@ -858,7 +868,7 @@ def run_render_only(
     if completed.returncode != 0:
         raise RuntimeError(
             f"Render-only failed (exit {completed.returncode}).\n"
-            f"stderr: {_sanitize_subprocess_output(completed.stderr[-2000:])}"
+            f"stderr: {_sanitize_subprocess_output(_subprocess_output_tail(completed.stderr, 2000))}"
         )
 
     return {

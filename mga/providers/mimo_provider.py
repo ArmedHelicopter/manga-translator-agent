@@ -117,6 +117,7 @@ class MimoProvider(LLMProvider):
         text_model: Optional[str] = None,
         temperature: float = 0.2,
         max_retries: int = 2,
+        timeout: float = 120.0,
     ) -> None:
         resolved_api_key = api_key
         if resolved_api_key is None and api_key_env:
@@ -127,10 +128,12 @@ class MimoProvider(LLMProvider):
         self._model = vision_model or model or DEFAULT_VISION_MODEL
         self._translate_model = text_model or model or DEFAULT_TEXT_MODEL
         self._temperature = temperature
+        self._timeout = timeout
         self._client = openai.OpenAI(
             api_key=resolved_api_key,
             base_url=resolved_base_url,
             max_retries=max_retries,
+            timeout=timeout,
         )
 
     # -- abstract properties ------------------------------------------------
@@ -152,21 +155,27 @@ class MimoProvider(LLMProvider):
     def chat(self, messages: List[Dict[str, Any]], **kwargs: Any) -> str:
         resp = self._client.chat.completions.create(
             model=self._model, messages=messages,
-            temperature=kwargs.pop("temperature", self._temperature), **kwargs,
+            temperature=kwargs.pop("temperature", self._temperature),
+            timeout=kwargs.pop("timeout", self._timeout),
+            **kwargs,
         )
         return _content(resp)
 
     def chat_structured(self, messages: List[Dict[str, Any]], schema: Dict[str, Any], **kwargs: Any) -> Dict[str, Any]:
         resp = self._client.chat.completions.create(
             model=self._model, messages=messages, response_format={"type": "json_object"},
-            temperature=kwargs.pop("temperature", self._temperature), **kwargs,
+            temperature=kwargs.pop("temperature", self._temperature),
+            timeout=kwargs.pop("timeout", self._timeout),
+            **kwargs,
         )
         return _parse_json(_content(resp))
 
     def vision(self, messages: List[Dict[str, Any]], images: List[bytes], **kwargs: Any) -> str:
         resp = self._client.chat.completions.create(
             model=self._model, messages=_inject_images(messages, _make_image_parts(images)),
-            temperature=kwargs.pop("temperature", self._temperature), **kwargs,
+            temperature=kwargs.pop("temperature", self._temperature),
+            timeout=kwargs.pop("timeout", self._timeout),
+            **kwargs,
         )
         return _content(resp)
 
@@ -174,7 +183,9 @@ class MimoProvider(LLMProvider):
         resp = self._client.chat.completions.create(
             model=self._model, messages=_inject_images(messages, _make_image_parts(images)),
             response_format={"type": "json_object"},
-            temperature=kwargs.pop("temperature", self._temperature), **kwargs,
+            temperature=kwargs.pop("temperature", self._temperature),
+            timeout=kwargs.pop("timeout", self._timeout),
+            **kwargs,
         )
         return _parse_json(_content(resp))
 
@@ -197,6 +208,7 @@ class MimoProvider(LLMProvider):
             ],
             response_format={"type": "json_object"},
             temperature=self._temperature,
+            timeout=self._timeout,
         )
 
         parsed = _parse_json(_content(resp))
@@ -249,6 +261,7 @@ class MimoProvider(LLMProvider):
             ],
             response_format={"type": "json_object"},
             temperature=self._temperature,
+            timeout=self._timeout,
         )
 
         parsed = _parse_json(_content(resp))

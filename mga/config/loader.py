@@ -21,6 +21,37 @@ STAGE_CONFIG_KEYS = {
 }
 CONFIG_ENV_VAR = "MANGA_TRANSLATE_CONFIG"
 
+
+def _load_local_env_files(config_path: Path) -> None:
+    """Load local .env values without overriding the process environment."""
+
+    candidates = [Path.cwd() / ".env", config_path.parent / ".env"]
+    seen: set[Path] = set()
+    for candidate in candidates:
+        try:
+            env_path = candidate.resolve()
+        except OSError:
+            continue
+        if env_path in seen or not env_path.exists() or not env_path.is_file():
+            continue
+        seen.add(env_path)
+        try:
+            lines = env_path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            continue
+        for line in lines:
+            item = line.strip()
+            if not item or item.startswith("#") or "=" not in item:
+                continue
+            key, value = item.split("=", 1)
+            key = key.strip()
+            if not key or key in os.environ:
+                continue
+            value = value.strip()
+            if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+                value = value[1:-1]
+            os.environ[key] = value
+
 def _resolve_config_path(config_path: str | None = None) -> Path:
     if config_path:
         return Path(config_path)
@@ -36,6 +67,7 @@ def load_provider_settings(config_path: str | None = None) -> dict:
     """Load raw provider settings from TOML."""
 
     path = _resolve_config_path(config_path)
+    _load_local_env_files(path)
     if not path.exists():
         raise ConfigError(
             f"Provider config not found at {path}. "
@@ -208,6 +240,7 @@ def build_project_config(
         plugins=dict(raw_config.get("plugins", {})),
         # Populate translation_config from [translation] TOML section
         translation_config=_load_translation_config(raw_config),
+        ocr_guard=dict(raw_config.get("ocr_guard", {})) or None,
     )
 
     # Optional [render] section: inpaint_backend, chinese_variant, render_footnotes

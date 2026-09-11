@@ -39,10 +39,11 @@ _PROVIDER_MAP: dict[str, tuple[str, str]] = {
 _PROVIDER_PROFILES: dict[str, dict[str, Any]] = {
     # ── Official Providers ──────────────────────────────────────────────────────
     "mimo": {
-        "provider_type": "mimo",
-        "api_key": "REMOVED_CREDENTIAL",
+        "provider_type": "openai",
+        "api_key_env": "MIMO_API_KEY",
+        "base_url_env": "MIMO_BASE_URL",
         "base_url": "https://token-plan-cn.xiaomimimo.com/v1",
-        "vision_model": "mimo-v2.5-pro",
+        "vision_model": "mimo-v2.5",
         "text_model": "mimo-v2.5-pro",
     },
     # ── Chinese AI Providers ────────────────────────────────────────────────────

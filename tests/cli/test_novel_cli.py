@@ -1,6 +1,7 @@
 """Tests for CLI novel mode."""
 
 import importlib
+import json
 from pathlib import Path
 
 from click.testing import CliRunner
@@ -136,6 +137,58 @@ def test_translate_verbose_flag_is_accepted_in_product_cli(tmp_path, monkeypatch
 
     assert result.exit_code == 0, result.output
     assert "Dry run" in result.output
+
+
+def test_translate_cli_parallel_flags_populate_translation_config(tmp_path, monkeypatch):
+    _setup_config(tmp_path, monkeypatch)
+    txt = tmp_path / "chapter.txt"
+    txt.write_text("Hello world", encoding="utf-8")
+    output = tmp_path / "out.txt"
+
+    runner = CliRunner()
+    result = runner.invoke(translate, [
+        str(txt), "-o", str(output),
+        "--mode", "novel", "--dry-run",
+        "--parallel-mode", "batch-parallel", "--concurrency", "2",
+    ])
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output.split("Dry run:\n", 1)[1])
+    assert payload["parallel_mode"] == "batch-parallel"
+    assert payload["pipeline_concurrency"] == 2
+    assert payload["translation_max_workers"] == 2
+    assert payload["translation_config"] == {
+        "parallel_mode": "batch-parallel",
+        "max_concurrent_requests": 2,
+        "batch_size": 2,
+    }
+
+
+def test_translate_cli_batch_parallel_preserves_configured_request_limit(tmp_path, monkeypatch):
+    config_path = tmp_path / "providers.toml"
+    config_path.write_text(
+        '[stages.vision]\nprimary = "openai"\n\n'
+        '[stages.translation]\nprimary = "openai"\n\n'
+        '[providers.openai]\napi_key = "test-key"\nvision_model = "gpt-4o"\ntext_model = "gpt-4o-mini"\n\n'
+        '[translation]\nparallel_mode = "batch-parallel"\nmax_concurrent_requests = 1\n',
+        encoding="utf-8",
+    )
+    txt = tmp_path / "chapter.txt"
+    txt.write_text("Hello world", encoding="utf-8")
+    output = tmp_path / "out.txt"
+
+    runner = CliRunner()
+    result = runner.invoke(translate, [
+        str(txt), "-o", str(output),
+        "--config", str(config_path),
+        "--mode", "novel", "--dry-run",
+        "--concurrency", "2",
+    ])
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output.split("Dry run:\n", 1)[1])
+    assert payload["translation_config"]["batch_size"] == 2
+    assert payload["translation_config"]["max_concurrent_requests"] == 1
 
 
 def test_translate_provider_override_accepts_any_configured_provider(tmp_path, monkeypatch):

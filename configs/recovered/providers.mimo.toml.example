@@ -1,0 +1,30 @@
+[stages.vision]
+primary = "mimo"
+
+[stages.translation]
+primary = "mimo"
+
+[stages.qa]
+primary = "mimo"
+
+[providers.mimo]
+provider_type = "mimo"
+api_key_env = "MIMO_API_KEY"
+base_url_env = "MIMO_BASE_URL"
+base_url = "https://token-plan-cn.xiaomimimo.com/v1"
+vision_model = "mimo-v2.5"
+text_model = "mimo-v2.5-pro"
+timeout = 180
+max_retries = 0
+
+[translation]
+parallel_mode = "serial"
+batch_size = 1
+max_concurrent_requests = 1
+semantic_timeout = 180
+
+[render]
+render_footnotes = true
+
+[plugins.cover_title_corrections.pages.page_0000]
+source_texts = ["私を喰べたい", "ひとでなし"]

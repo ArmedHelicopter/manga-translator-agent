@@ -1,0 +1,46 @@
+[stages.vision]
+primary = "icompify"
+
+[stages.translation]
+primary = "icompify"
+
+[translation]
+# semantic-parallel for icompify (deepseek-v4-pro allows real concurrency —
+# verified 5 parallel text calls wall=2.9s ≈ single, no throttle). mimo throttles
+# (docs/p4-performance-analysis.md). Keep serial when using mimo.
+parallel_mode = "semantic-parallel"
+max_concurrent_requests = 5
+semantic_timeout = 120
+
+[stages.qa]
+primary = "icompify"
+
+[ocr_guard]
+enabled = true
+consecutive_blank_threshold = 3
+min_text_length = 3
+# Empty means prompt interactively when blank pages are detected.
+auto_recovery_strategy = "continue"
+
+[ocr_guard.hybrid_mode]
+enabled = false
+# Empty means use stages.vision.primary.
+vision_model_override = ""
+
+[providers.icompify]
+provider_type = "openai"
+api_key_env = "ICOMPIFY_API_KEY"
+base_url = "http://maas.icompify.com:32788/v1"
+# minimax-m3 is the ONLY icompify model with vision (verified: reads page text;
+# glm-5.x/deepseek-v4 return NO_IMAGE). deepseek-v4-pro text is fast + allows
+# high concurrency (5 parallel wall ≈ single call).
+vision_model = "minimax-m3"
+text_model = "deepseek-v4-flash"
+
+[providers.mimo]
+provider_type = "openai"
+api_key_env = "MIMO_API_KEY"
+base_url_env = "MIMO_BASE_URL"
+base_url = "https://token-plan-cn.xiaomimimo.com/v1"
+vision_model = "mimo-v2.5"
+text_model = "mimo-v2.5-pro"

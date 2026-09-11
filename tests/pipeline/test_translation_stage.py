@@ -58,3 +58,33 @@ def test_translation_stage_keeps_bubble_when_persona_provider_fails(tmp_path, mo
     ]
     assert trace["provider"]["persona"]["operation"] == "persona_render"
     assert trace["provider"]["persona"]["provider"] == "unavailable"
+
+
+def test_translatable_bubbles_include_cover_titles_but_not_sfx() -> None:
+    page = Page(
+        page_id="p1",
+        bubbles=[
+            Bubble(
+                bubble_id="vision-0000-0000",
+                source_text="私を喰べたい",
+                detection_source="vision",
+                box_type="cover_title",
+            ),
+            Bubble(
+                bubble_id="vision-0000-0001",
+                source_text="ドン",
+                detection_source="vision",
+                box_type="sfx",
+            ),
+            Bubble(
+                bubble_id="vision-0000-0002",
+                source_text="WA",
+                detection_source="vision",
+                box_type="sign",
+            ),
+        ],
+    )
+
+    bubbles = TranslationStage._translatable_bubbles(page)
+
+    assert [bubble.bubble_id for bubble in bubbles] == ["vision-0000-0000"]

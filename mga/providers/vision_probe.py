@@ -20,6 +20,7 @@ TINY_PNG: bytes = base64.b64decode(
 )
 
 _PROBE_PROMPT = "Reply with OK."
+PROBE_TIMEOUT_SECONDS = 20
 
 # Error fragments that indicate "this model does not take images" as opposed
 # to connectivity/auth problems.
@@ -65,6 +66,7 @@ def probe_vision(provider: Any) -> tuple[bool, str]:
         provider.vision(
             messages=[{"role": "user", "content": _PROBE_PROMPT}],
             images=[TINY_PNG],
+            timeout=PROBE_TIMEOUT_SECONDS,
         )
         return True, ""
     except Exception as exc:  # noqa: BLE001 - probe converts any failure to a result.
